@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetJoy</title>
+    <link rel="stylesheet" href="{% static 'decorate.css' %}">
+</head>
+
+<body>
+    {% csrf_token %}
+
+    <header class="navbar">
+        <div class="navbar-left">
+            <div class="logo">🐾 PetJoy</div>
+        </div>
+        <div class="navbar-center">
+            <div class="search-bar">
+                <input type="text" class="search-input" placeholder="ค้นหาของเล่นสัตว์เลี้ยง...">
+                <button class="search-button">
+                    <img src="{% static 'images/search_icon.png' %}" alt="Search" class="search-icon">
+                </button>
+            </div>
+        </div>
+        <div class="navbar-right">
+            <span class="cart-icon">🛒</span>
+            {% if user.is_authenticated %}
+                <span>สวัสดี, {{ user.username }}</span>
+                <a href="{% url 'petjoy:logout' %}" class="login-text">ออกจากระบบ</a>
+            {% else %}
+                <a href="{% url 'petjoy:login' %}" class="login-text">เข้าสู่ระบบ</a>
+            {% endif %}
+        </div>
+    </header>
+
+    <main class="content">
+        <div class="welcome-banner">
+            <p>Have a good Day!</p>
+            <img src="{% static 'images/dog_banner.png' %}" alt="Happy Dog" class="banner-dog">
+            <img src="{% static 'images/smile_icon.png' %}" alt="Smile" class="banner-smile">
+        </div>
+
+        <section class="pet-selection">
+            <h3>เลือกแก๊งของคุณ</h3>
+            <div class="pet-options">
+
+                <div class="pet-card">
+                    <div class="pet-image-container">
+                        <img src="{% static 'images/dog.png' %}" alt="สุนัข">
+                    </div>
+                    <span>สุนัข</span>
+                </div>
+
+                <div class="pet-card">
+                    <div class="pet-image-container">
+                        <img src="{% static 'images/cat.png' %}" alt="แมว">
+                    </div>
+                    <span>แมว</span>
+                </div>
+
+            </div>
+        </section>
+
+        <section class="recommend-products">
+            <h3 class="recommend-title">สินค้าแนะนำ</h3>
+            <div class="products-grid">
+                <div class="product-item">
+                    <div class="product-image-placeholder">
+                        <img src="{% static 'images/Cat teaser.jpg' %}" alt="ไม้ล่อแมว" class="product-image">
+                    </div>
+                    <div class="product-name">ไม้ล่อแมว</div>
+                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-image-placeholder">
+                        <img src="{% static 'images/Cat Ball.jpg' %}" alt="ลูกบอลแมว" class="product-image">
+                    </div>
+                    <div class="product-name">ลูกบอลแมว</div>
+                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-image-placeholder">
+                        <img src="{% static 'images/Dog Ball.jpg' %}" alt="ลูกบอลสุนัข" class="product-image">
+                    </div>
+                    <div class="product-name">ลูกบอลสุนัข</div>
+                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+                </div>
+
+                <div class="product-item">
+                    <div class="product-image-placeholder">
+                        <img src="{% static 'images/Dog rubber teether toy.jpg' %}" alt="ของเล่นยางกันสุนัข" class="product-image">
+                    </div>
+                    <div class="product-name">ของเล่นกันแทะ</div>
+                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="chatbot-container" class="chatbot-popup hidden">
+        <div class="chatbot-header">
+            <span class="chatbot-header-title">🐾 PetJoy</span>
+        </div>
+        <div class="chatbot-body" id="chat-response">
+            <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำของเล่นไหมคะ?</div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="พิมพ์ข้อความ..." />
+            <button id="chatbot-send">ส่ง</button>
+        </div>
+    </div>
+
+    <button class="chatbot-toggle-button">
+        <img src="{% static 'images/dog_icon.png' %}" alt="Chatbot Dog Icon" class="chatbot-toggle-icon">
+    </button>
+
+    <script src="{% static 'js/chatbot.js' %}"></script>
+</body>
+
+</html>

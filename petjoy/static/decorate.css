@@ -1,0 +1,419 @@
+/* General Body Styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f4f4f8; /* สีพื้นหลังอ่อนๆ */
+    color: #333;
+}
+
+/* Navbar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #FF7043; /* สีส้มตาม mockup */
+    padding: 10px 40px;
+    color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-left .logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.navbar-center {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border-radius: 20px;
+    padding: 5px 15px;
+    width: 60%; /* กว้างตาม mockup */
+    max-width: 500px;
+}
+
+.search-input {
+    border: none;
+    outline: none;
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #333;
+}
+
+.search-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    margin-left: 10px;
+}
+
+.search-icon {
+    width: 20px;
+    height: 20px;
+    filter: invert(50%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(50%) contrast(100%); /* ทำให้ไอคอนเป็นสีเทา */
+}
+
+.navbar-right {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+}
+
+.cart-icon {
+    font-size: 1.5rem;
+    margin-right: 20px;
+    cursor: pointer;
+}
+
+.login-text {
+    cursor: pointer;
+}
+
+/* Main Content Area */
+.content {
+    padding: 20px 40px;
+    max-width: 1200px; /* จำกัดความกว้างเนื้อหา */
+    margin: 20px auto; /* จัดกึ่งกลาง */
+}
+
+/* Welcome Banner */
+.welcome-banner {
+    background-color: #FFDAB9; /* สีส้มอ่อน */
+    border-radius: 15px;
+    padding: 20px 30px;
+    margin-bottom: 30px;
+    display: flex;
+    align-items: center;
+    position: relative; /* สำหรับจัดตำแหน่งรูปภาพ */
+    overflow: hidden; /* ซ่อนส่วนเกินของรูปภาพ */
+}
+
+.welcome-banner p {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #E65100; /* สีส้มเข้ม */
+    margin: 0;
+    flex-grow: 1;
+}
+
+.banner-dog {
+    position: absolute;
+    right: 20px;
+    bottom: -10px; /* จัดให้ดูเหมือนสุนัขโผล่ขึ้นมา */
+    width: 120px; /* ขนาดสุนัข */
+    height: auto;
+}
+
+.banner-smile {
+    position: absolute;
+    right: 40px;
+    top: 20px;
+    width: 30px; /* ขนาดหน้ายิ้ม */
+    height: auto;
+}
+
+
+/* Pet Selection Section */
+.pet-selection {
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.pet-selection h3 {
+    font-size: 1.6rem;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+.pet-options {
+    display: flex;
+    justify-content: center;
+    gap: 40px; /* ระยะห่างระหว่างการ์ด */
+}
+
+.pet-card {
+    background-color: transparent; /* ทำให้พื้นหลังโปร่งใส */
+    width: 120px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.pet-card:hover {
+    transform: translateY(-5px);
+}
+
+.pet-card img {
+    width: 90%; /* รูปภาพเต็มวงกลม */
+    height: 90%;
+    object-fit: cover; /* ครอบคลุมพื้นที่แต่ไม่ยืด */
+    border-radius: 50%; /* ทำให้รูปภาพเป็นวงกลม */
+}
+
+.pet-card span {
+    margin-top: 10px;
+    font-weight: bold;
+    color: #555;
+}
+
+/* Recommended Products Section */
+.recommend-title {
+    font-size: 1.6rem;
+    color: #333;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 4 คอลัมน์สำหรับจอใหญ่ */
+    gap: 30px;
+    justify-content: center;
+}
+
+.product-item {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+}
+
+.product-image-placeholder {
+    width: 100%;
+    height: 120px; /* กำหนดความสูงให้ placeholder รูปภาพ */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 10px;
+    overflow: hidden; /* ซ่อนส่วนเกินของรูป */
+}
+
+.product-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain; /* ให้รูปแสดงเต็มโดยไม่ถูกตัด */
+    border-radius: 5px;
+}
+
+.product-name {
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #444;
+}
+
+.view-more-button {
+    background-color: #FF7043; /* สีส้ม */
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.2s ease;
+}
+
+.view-more-button:hover {
+    background-color: #E65100; /* สีส้มเข้มขึ้น */
+}
+
+/* === Chatbot Specific Styles === */
+
+/* ปุ่มเปิด-ปิดแชท (วงกลมเล็กๆ ขวา) */
+.chatbot-toggle-button {
+    position: fixed;
+    bottom: 30px; /* ตำแหน่งตาม mockup */
+    right: 30px; /* ตำแหน่งตาม mockup */
+    width: 60px;
+    height: 60px;
+    background-color: #FF7043; /* สีส้ม */
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* ให้ลอยอยู่บนสุด */
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.chatbot-toggle-button:hover {
+    transform: scale(1.05);
+    background-color: #E65100;
+}
+
+.chatbot-toggle-icon {
+    width: 40px; /* ขนาดไอคอนสุนัข */
+    height: 40px;
+    object-fit: contain;
+}
+
+/* หน้าต่างแชทบอท */
+.chatbot-popup {
+    position: fixed;
+    bottom: 100px; /* ตำแหน่งเหนือปุ่ม */
+    right: 30px; /* ตำแหน่งเดียวกับปุ่ม */
+    width: 350px; /* กว้างตาม mockup */
+    height: 450px; /* สูงตาม mockup */
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 999; /* อยู่ใต้ปุ่ม */
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+    transform: translateY(20px); /* ซ่อนเล็กน้อยเมื่อเริ่ม */
+    opacity: 0;
+    pointer-events: none; /* ไม่รับ event เมื่อซ่อน */
+}
+
+.chatbot-popup.hidden {
+    transform: translateY(20px);
+    opacity: 0;
+    pointer-events: none; /* ซ่อนและไม่สามารถคลิกได้ */
+}
+
+.chatbot-popup:not(.hidden) {
+    transform: translateY(0);
+    opacity: 1;
+    pointer-events: auto; /* แสดงและสามารถคลิกได้ */
+}
+
+/* Header ของ Chatbot */
+.chatbot-header {
+    background-color: #FF7043; /* สีส้ม */
+    color: white;
+    padding: 12px 15px;
+    font-weight: bold;
+    font-size: 1.1rem;
+    border-radius: 15px 15px 0 0;
+}
+
+/* Body ส่วนแสดงข้อความ */
+.chatbot-body {
+    flex-grow: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background-color: #f0f0f5; /* สีพื้นหลังของแชท */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ข้อความบอท */
+.bot-msg {
+    align-self: flex-start;
+    background-color: #E5E7EB; /* สีเทาอ่อน */
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.4;
+    word-wrap: break-word; /* ข้อความยาวๆ ไม่เลยขอบ */
+}
+
+/* ข้อความบอทแนะนำสินค้า (ตาม mockup) */
+.bot-msg-recommendation {
+    align-self: flex-start;
+    background-color: #E5E7EB; /* สีเทาอ่อน */
+    color: #333;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+.bot-msg-recommendation p {
+    margin: 5px 0;
+}
+
+.recommend-action-button {
+    background-color: #FF7043; /* สีส้ม */
+    color: white;
+    border: none;
+    border-radius: 15px;
+    padding: 8px 12px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.2s ease;
+}
+
+.recommend-action-button:hover {
+    background-color: #E65100;
+}
+
+/* ข้อความผู้ใช้ */
+.user-msg {
+    align-self: flex-end;
+    background-color: #3B82F6; /* สีน้ำเงิน (ถ้าต้องการสีอื่นตาม mockup สามารถปรับได้) */
+    color: white;
+    padding: 10px 15px;
+    border-radius: 18px;
+    max-width: 80%;
+    line-height: 1.4;
+    word-wrap: break-word;
+}
+
+/* ส่วนพิมพ์ข้อความและปุ่มส่ง */
+.chatbot-input-area {
+    display: flex;
+    padding: 10px;
+    border-top: 1px solid #E0E0E0;
+    background-color: white;
+}
+
+#chatbot-input {
+    flex-grow: 1;
+    border: 1px solid #D1D5DB;
+    border-radius: 20px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    outline: none;
+}
+
+#chatbot-input:focus {
+    border-color: #FF7043; /* เมื่อ focus ให้เป็นสีส้ม */
+}
+
+#chatbot-send {
+    background-color: #FF7043; /* สีส้ม */
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: 10px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.2s ease;
+}
+
+#chatbot-send:hover {
+    background-color: #E65100;
+}

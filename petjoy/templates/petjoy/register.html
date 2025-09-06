@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สมัครสมาชิก - PetJoy</title>
+    <link rel="stylesheet" href="{% static 'auth_style.css' %}"> {# เราจะสร้างไฟล์ CSS นี้กัน #}
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="logo">🐾 PetJoy</div>
+            <img src="{% static 'images/dog_banner.png' %}" alt="Happy Dog" class="auth-dog-image">
+            <img src="{% static 'images/smile_icon.png' %}" alt="Smile" class="auth-smile-image">
+        </div>
+        <div class="auth-right">
+            <div class="auth-box">
+                <h2>สมัครสมาชิก</h2>
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ register_form.as_p }} {# Django จะสร้างช่อง input ให้โดยอัตโนมัติ #}
+                    <button class="auth-button" type="submit">สมัครสมาชิก</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
