@@ -11,8 +11,8 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #FF7043; /* สีส้มตาม mockup */
-    padding: 10px 40px;
+    background-color: #FF7043; 
+    padding: 10px 50px;
     color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -74,6 +74,7 @@ body {
 
 .login-text {
     cursor: pointer;
+    text-decoration: none;
 }
 
 /* Main Content Area */
@@ -87,7 +88,7 @@ body {
 .welcome-banner {
     background-color: #FFDAB9; /* สีส้มอ่อน */
     border-radius: 15px;
-    padding: 20px 30px;
+    padding: 50px 30px;
     margin-bottom: 30px;
     display: flex;
     align-items: center;
@@ -96,27 +97,19 @@ body {
 }
 
 .welcome-banner p {
-    font-size: 1.8rem;
+    font-size: 2.5rem;
     font-weight: bold;
     color: #E65100; /* สีส้มเข้ม */
     margin: 0;
     flex-grow: 1;
 }
 
-.banner-dog {
-    position: absolute;
-    right: 20px;
-    bottom: -10px; /* จัดให้ดูเหมือนสุนัขโผล่ขึ้นมา */
-    width: 120px; /* ขนาดสุนัข */
-    height: auto;
-}
-
 .banner-smile {
     position: absolute;
     right: 40px;
     top: 20px;
-    width: 30px; /* ขนาดหน้ายิ้ม */
-    height: auto;
+    width: 150px; /* ขนาดหน้ายิ้ม */
+    height: 120;
 }
 
 
@@ -138,31 +131,48 @@ body {
     gap: 40px; /* ระยะห่างระหว่างการ์ด */
 }
 
+/* static/decorate.css */
+
+/* .pet-card เหมือนเดิม */
 .pet-card {
-    background-color: transparent; /* ทำให้พื้นหลังโปร่งใส */
-    width: 120px;
+    background-color: transparent; /* ทำพื้นหลังให้โปร่งใส */
+    width: 120px; /* ขนาดของ card */
     display: flex;
     flex-direction: column;
     align-items: center;
     cursor: pointer;
     transition: transform 0.2s ease;
+    text-decoration: none; /* เพิ่มเติม: สำหรับลิงก์จะได้ไม่มีขีดเส้นใต้ */
 }
 
 .pet-card:hover {
     transform: translateY(-5px);
 }
 
+
+.pet-image-container {
+    width: 100px; /* กำหนดขนาดวงกลมที่แน่นอน */
+    height: 100px; /* ต้องเท่ากับ width เพื่อให้เป็นวงกลม */
+    border-radius: 50%; /* ทำให้ container เป็นวงกลม */
+    overflow: hidden; /* สำคัญ: ซ่อนส่วนเกินของรูปภาพที่ล้นวงกลม */
+    display: flex; /* จัดรูปให้อยู่ตรงกลาง */
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เพิ่มเงาเล็กน้อย */
+}
+
 .pet-card img {
-    width: 90%; /* รูปภาพเต็มวงกลม */
-    height: 90%;
+    width: 100%; /* ทำให้รูปภาพเต็มพื้นที่ container */
+    height: 100%; /* ทำให้รูปภาพเต็มพื้นที่ container */
     object-fit: cover; /* ครอบคลุมพื้นที่แต่ไม่ยืด */
-    border-radius: 50%; /* ทำให้รูปภาพเป็นวงกลม */
+    /* ไม่ต้องใส่ border-radius: 50%; ที่ img แล้ว เพราะ container ทำหน้าที่แล้ว */
 }
 
 .pet-card span {
     margin-top: 10px;
     font-weight: bold;
     color: #555;
+    font-size: 1.1em; /* เพิ่มขนาดตัวอักษรให้ดูดีขึ้น */
 }
 
 /* Recommended Products Section */
@@ -261,10 +271,16 @@ body {
     background-color: #E65100;
 }
 
-.chatbot-toggle-icon {
-    width: 40px; /* ขนาดไอคอนสุนัข */
-    height: 40px;
-    object-fit: contain;
+/* static/decorate.css */
+
+.chatbot-toggle-button {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    /* ปรับขนาดตัวเลขตรงนี้ */
+    font-size: 28px; 
 }
 
 /* หน้าต่างแชทบอท */
