@@ -165,7 +165,7 @@ body {
     width: 100%; /* ทำให้รูปภาพเต็มพื้นที่ container */
     height: 100%; /* ทำให้รูปภาพเต็มพื้นที่ container */
     object-fit: cover; /* ครอบคลุมพื้นที่แต่ไม่ยืด */
-    /* ไม่ต้องใส่ border-radius: 50%; ที่ img แล้ว เพราะ container ทำหน้าที่แล้ว */
+    
 }
 
 .pet-card span {
