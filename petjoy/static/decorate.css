@@ -271,7 +271,7 @@ body {
     background-color: #E65100;
 }
 
-/* static/decorate.css */
+
 
 .chatbot-toggle-button {
     position: fixed;
@@ -433,3 +433,156 @@ body {
 #chatbot-send:hover {
     background-color: #E65100;
 }
+
+/* static/decorate.css */
+
+.category-page-container {
+    display: flex;
+    gap: 2rem;
+    padding: 2rem;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.sidebar {
+    flex-basis: 250px;
+    flex-shrink: 0;
+    background-color: #fff;
+    padding: 1.5rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    align-self: flex-start;
+}
+
+.sidebar h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 0.5rem;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+}
+
+.filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.product-listing {
+    flex-grow: 1;
+}
+
+.category-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.back-link {
+    font-size: 2rem;
+    text-decoration: none;
+    color: #333;
+}
+
+.category-header h1 {
+    margin: 0;
+    font-size: 1.8rem;
+}
+
+.favorite-icon {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5rem;
+    color: #ccc;
+    cursor: pointer;
+}
+
+.add-to-cart-button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    background-color: #FF7043; /* สีส้มหลัก */
+    color: white;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.product-item-link {
+    text-decoration: none;
+    color: inherit; /* ทำให้สีตัวอักษรเป็นปกติ */
+    display: block; /* ทำให้ <a> เป็น block เพื่อให้ขนาดเต็มพื้นที่ */
+}
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center; /* จัดให้อยู่กลางแนวตั้ง */
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+}
+/* --- Login Modal Styles --- */
+.modal-overlay.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.modal-content {
+    background-color: #FFF9F3;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    /* ✅ เพิ่ม transform เริ่มต้นให้ซ่อนอยู่ด้านล่าง */
+    transform: translateY(100vh); 
+}
+
+/* ✅ Keyframes สำหรับสไลด์ขึ้น */
+@keyframes slideUp {
+    from { transform: translateY(100vh); }
+    to { transform: translateY(0); }
+}
+
+/* ✅ Keyframes สำหรับสไลด์ลง */
+@keyframes slideDown {
+    from { transform: translateY(0); }
+    to { transform: translateY(100vh); }
+}
+
+/* ✅ Class สำหรับเรียกใช้ Animation */
+.modal-content.slide-up {
+    animation: slideUp 0.5s forwards ease-out;
+}
+
+.modal-content.slide-down {
+    animation: slideDown 0.5s forwards ease-out;
+}
+
+/* ... (โค้ด modal-button และอื่นๆ เหมือนเดิม) ... */
+.modal-header, .modal-text, .modal-actions { /* เพิ่มเพื่อให้แน่ใจว่าโค้ดเก่าอยู่ครบ */
+    /* ...โค้ดเดิมของคุณ... */
+}
+.modal-button {
+    padding: 12px 30px; border: none; border-radius: 10px; font-size: 1rem;
+    font-weight: bold; cursor: pointer; transition: transform 0.2s ease;
+    text-decoration: none;
+}
+.modal-button.cancel { background-color: #F87171; color: white; }
+.modal-button.confirm { background-color: #34D399; color: white; }

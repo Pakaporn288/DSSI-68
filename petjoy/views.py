@@ -1,4 +1,4 @@
-from django.shortcuts import render
+
 
 # Create your views here.
 
@@ -6,6 +6,7 @@ def homepage(request):
     return render(request, 'petjoy/homepage.html')
 
 # views.py
+from django.shortcuts import render
 import os
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -14,6 +15,7 @@ from .ai_service import get_ai_response
 from .forms import NewUserForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages  
+from django.contrib.auth import login, authenticate, logout
 
 def ask_ai_view(request):
     if request.method == 'POST':
@@ -74,5 +76,4 @@ def logout_view(request):
     logout(request)
     messages.info(request, "คุณได้ออกจากระบบแล้ว")
     return redirect("petjoy:homepage")
-
 

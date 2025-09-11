@@ -1,4 +1,4 @@
-// รอให้หน้าเว็บโหลดเสร็จก่อนเริ่มทำงาน
+
 document.addEventListener('DOMContentLoaded', () => {
     // ดึง Element ต่างๆ จากหน้า HTML มาเก็บในตัวแปร
     const chatContainer = document.getElementById('chatbot-container');
