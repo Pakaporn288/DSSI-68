@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>PetJoy</title>
+    <link rel="stylesheet" href="{% static 'decorate.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-left">
+            <div class="logo">🐾 PetJoy</div>
+        </div>
+        <div class="navbar-right">
+            {% if user.is_authenticated %}
+                <span>สวัสดี, {{ user.username }}</span>
+                <a href="{% url 'petjoy:logout' %}" class="login-text">ออกจากระบบ</a>
+            {% else %}
+                <a href="{% url 'petjoy:login' %}" class="login-text">เข้าสู่ระบบ</a>
+            {% endif %}
+        </div>
+    </header>
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+    </main>
+    <footer>
+        <p>© 2025 PetJoy</p>
+    </footer>
+</body>
+</html>

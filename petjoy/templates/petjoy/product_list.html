@@ -1,0 +1,43 @@
+{% extends "petjoy/base.html" %}
+{% block content %}
+<h2>รายการสินค้า</h2>
+<a href="{% url 'petjoy:product-create' %}" class="btn btn-primary">เพิ่มสินค้าใหม่</a>
+<table>
+    <thead>
+        <tr>
+            <th>ชื่อสินค้า</th>
+            <th>รายละเอียด</th>
+            <th>ราคา</th>
+            <th>หมวดหมู่</th>
+            <th>รูปภาพ</th>
+            <th>จัดการ</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.name }}</td>
+            <td>{{ product.description }}</td>
+            <td>{{ product.price }}</td>
+            <td>{{ product.category.display_name }}</td>
+            <td>
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" width="80">
+                {% else %}
+                    ไม่มีรูป
+                {% endif %}
+            </td>
+            <td>
+                <a href="{% url 'petjoy:product-detail' product.pk %}">ดู</a> |
+                <a href="{% url 'petjoy:product-update' product.pk %}">แก้ไข</a> |
+                <a href="{% url 'petjoy:product-delete' product.pk %}">ลบ</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="6">ไม่มีสินค้า</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

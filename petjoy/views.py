@@ -1,13 +1,10 @@
-
-
 # Create your views here.
 
 def homepage(request):
     return render(request, 'petjoy/homepage.html')
 
 # views.py
-from django.shortcuts import render
-import os
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -16,6 +13,10 @@ from .forms import NewUserForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages  
 from django.contrib.auth import login, authenticate, logout
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
+from django.urls import reverse_lazy
+from .models import Product
+from .forms import ProductForm
 
 def ask_ai_view(request):
     if request.method == 'POST':
@@ -76,4 +77,31 @@ def logout_view(request):
     logout(request)
     messages.info(request, "คุณได้ออกจากระบบแล้ว")
     return redirect("petjoy:homepage")
+
+class ProductListView(ListView):
+    model = Product
+    template_name = 'product_list.html'
+    context_object_name = 'products'
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'product_detail.html'
+    context_object_name = 'product'
+
+class ProductCreateView(CreateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('product-list')
+
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'product_form.html'
+    success_url = reverse_lazy('product-list')
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'product_confirm_delete.html'
+    success_url = reverse_lazy('product-list')
 
