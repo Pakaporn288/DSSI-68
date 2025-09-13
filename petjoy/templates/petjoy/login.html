@@ -1,32 +1,41 @@
+{% extends "petjoy/base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>เข้าสู่ระบบ - PetJoy</title>
-    <link rel="stylesheet" href="{% static 'auth_style.css' %}">
-</head>
-<body>
-    <div class="auth-container">
-        <div class="auth-left">
-            <div class="logo">🐾 PetJoy</div>
-            <img src="{% static 'images/ลบพื้นหลัง.png' %}" alt="Smile" class="banner-smile">
-        </div>
-        <div class="auth-right">
-            <div class="auth-box">
-                <h2>เข้าสู่ระบบ</h2>
-                <form method="POST">
-                    {% csrf_token %}
-                    {{ login_form.as_p }}
-                    <button class="auth-button" type="submit">เข้าสู่ระบบ</button>
-                </form>
-                <div class="auth-links">
-                    <p>ยังไม่มีบัญชี? <a href="#">สมัครสมาชิก</a></p>
-                    <p>คุณสนใจเป็นผู้ประกอบการหรือไม่? <p><a href="#">สมัครเป็นผู้ประกอบการ</a></p>
+
+{% block title %}เข้าสู่ระบบ - PetJoy{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-left-panel">
+    
+        <img src="{% static 'images/ลบพื้นหลัง.png' %}" alt="Happy Dog Illustration">
+    </div>
+    <div class="auth-right-panel">
+        <div class="auth-form-container">
+            <h2 class="auth-title">เข้าสู่ระบบ</h2> 
+            <form method="POST">
+                {% csrf_token %}
+
+                <div class="form-field">
+                    <label for="{{ login_form.username.id_for_label }}">ชื่อ</label> {# Label เป็นภาษาอังกฤษ #}
+                    {{ login_form.username }}
                 </div>
+                <div class="form-field">
+                    <label for="{{ login_form.password.id_for_label }}">รหัสผ่าน</label> {# Label เป็นภาษาอังกฤษ #}
+                    {{ login_form.password }}
+                </div>
+
+                {% if login_form.errors %}
+                    <small class="error-text">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</small>
+                {% endif %}
+
+                <button class="auth-button" type="submit">เข้าสู่ระบบ</button> {# ปุ่ม "เข้าสู่ระบบ" #}
+            </form>
+            <div class="auth-links">
+                <p>ยังไม่มีบัญชี? <a href="{% url 'petjoy:register' %}">สมัครสมาชิก</a></p> {# ลิงก์สมัครสมาชิก #}
+                <p>คุณสนใจเป็นผู้ประกอบการหรือไม่?</p> {# ข้อความเพิ่มเติม #}
+                <a href="#" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a> {# ลิงก์ผู้ประกอบการ #}
             </div>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

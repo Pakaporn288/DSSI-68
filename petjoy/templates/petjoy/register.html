@@ -1,0 +1,38 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}สมัครสมาชิก - PetJoy{% endblock %}
+
+{% block content %}
+<div class="auth-page-wrapper">
+    <div class="auth-left-panel">
+        <img src="{% static 'images/ลบพื้นหลัง.png' %}" alt="Happy Dog Illustration">
+    </div>
+    <div class="auth-right-panel">
+        <div class="auth-form-container">
+            <h2 class="auth-title">สมัครสมาชิก</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-field">
+                    <label for="id_username">ชื่อ</label>
+                    <input type="text" name="username" id="id_username" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_email">อีเมล</label>
+                    <input type="email" name="email" id="id_email" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_password1">รหัสผ่าน</label>
+                    <input type="password" name="password1" id="id_password1" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_password2">ยืนยันรหัสผ่าน</label>
+                    <input type="password" name="password2" id="id_password2" required>
+                </div>
+                <button class="auth-button" type="submit">สมัครสมาชิก</button>
+            </form>
+        
+        </div>
+    </div>
+</div>
+{% endblock %}

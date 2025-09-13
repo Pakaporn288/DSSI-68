@@ -9,9 +9,11 @@
 </head>
 <body>
 
+    {% if not auth_page %}
     <header class="navbar">
         <div class="navbar-left">
-            <class="logo-link"><div class="logo">🐾 PetJoy</div>
+                <div class="logo">🐾 PetJoy</div>
+            </a>
         </div>
         <div class="navbar-center">
             <div class="search-bar">
@@ -24,15 +26,27 @@
         <div class="navbar-right">
             <span class="cart-icon">🛒</span>
             {% if user.is_authenticated %}
-                <span>สวัสดี, {{ user.username }}</span>
-                <a href="{% url 'petjoy:logout' %}" class="login-text">ออกจากระบบ</a>
+                <a href="#" class="profile-icon">
+                    {{ user.username.0|upper }}
+                </a>
             {% else %}
                 <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
+                <a href="{% url 'petjoy:register' %}" class="login-text">สมัครสมาชิก</a>
             {% endif %}
         </div>
     </header>
+    {% endif %}
 
     <main class="content">
+        {# แสดง messages เฉพาะเมื่อไม่ได้อยู่ในหน้า auth_page #}
+        {% if messages and not auth_page %}
+            <ul class="messages">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
         {% block content %}
         {% endblock %}
     </main>

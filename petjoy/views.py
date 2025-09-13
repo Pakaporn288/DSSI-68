@@ -4,15 +4,16 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .ai_service import get_ai_response
-from .forms import NewUserForm
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib import messages 
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Product # <-- ตรวจสอบว่ามีการ import Product
+from .models import Product 
 from .forms import ProductForm
 from .models import Product, Review
+from django.shortcuts import render, redirect 
+from django.contrib.auth.forms import UserCreationForm
 
 def homepage(request):
     products = Product.objects.all()[:4]
@@ -48,7 +49,24 @@ def login_view(request):
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
     form = AuthenticationForm()
-    return render(request, "petjoy/login.html", context={"login_form": form})
+    # ✅ สำคัญ: ต้องส่ง context 'auth_page': True ด้วย
+    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
+
+
+def register_view(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ")
+            return redirect("petjoy:login")
+        else:
+            # ส่ง form ที่มี error กลับไปแสดงผล
+            return render(request, "petjoy/register.html", {'form': form, 'auth_page': True})
+
+    form = UserCreationForm()
+    return render(request, 'petjoy/register.html', {'form': form, 'auth_page': True})
+
 
 
 def logout_view(request):

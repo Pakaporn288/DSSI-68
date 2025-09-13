@@ -1,3 +1,141 @@
+/* --- Auth Page Styles (Register/Login) --- */
+.auth-page-wrapper {
+    display: flex;
+    min-height: 80vh;
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+    max-width: 900px;
+    margin: 40px auto;
+    overflow: hidden;
+}
+.auth-left-panel {
+    background: linear-gradient(135deg, #FF7043 60%, #FFDAB9 100%);
+    flex: 0 0 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: #fff;
+}
+.auth-logo {
+    font-size: 2.2rem;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #fff;
+    text-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    letter-spacing: 1px;
+}
+.auth-left-panel img {
+    width: 220px;
+    max-width: 100%;
+    margin-top: 20px;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+}
+.auth-right-panel {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    padding: 40px 30px;
+}
+.auth-form-container {
+    width: 100%;
+    max-width: 350px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    padding: 32px 28px;
+}
+.auth-title {
+    font-size: 1.7rem;
+    font-weight: bold;
+    color: #FF7043;
+    margin-bottom: 28px;
+    text-align: center;
+}
+.form-field {
+    margin-bottom: 22px;
+    display: flex;
+    flex-direction: column;
+}
+.form-field label {
+    font-weight: 500;
+    margin-bottom: 7px;
+    color: #333;
+}
+.form-field input {
+    padding: 10px 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    background: #f8f8f8;
+    transition: border-color 0.2s;
+}
+.form-field input:focus {
+    border-color: #FF7043;
+    background: #fff;
+}
+.auth-button {
+    width: 100%;
+    background: #FF7043;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 0;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: background 0.2s;
+}
+.auth-button:hover {
+    background: #E65100;
+}
+.auth-links {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 1rem;
+    
+    
+}
+.auth-links a {
+    color: #FF7043;
+    font-weight: 500;
+    text-decoration: none; /* ✅ บรรทัดนี้คือส่วนที่เพิ่มเข้ามาเพื่อลบเส้นใต้ */
+    transition: color 0.2s;
+}
+
+.auth-links a:hover {
+    color: #E65100; /* เปลี่ยนสีเมื่อเอาเมาส์ไปชี้ */
+}
+.auth-links a.white-btn {
+    margin-left: 6px;
+    padding: 6px 18px;
+    border-radius: 20px;
+    background: #fff;
+    color: #FF7043;
+    border: 1px solid #FF7043;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    
+}
+.auth-links a.white-btn:hover {
+    background: #FF7043;
+    color: #fff;
+    
+}
+.error-text {
+    color: #F87171;
+    font-size: 0.95em;
+    margin-top: 4px;
+}
 /* General Body Styles */
 body {
     font-family: Arial, sans-serif;
@@ -1086,3 +1224,4 @@ body {
 .empty-star {
     color: #e0e0e0; /* สีเทาอ่อนสำหรับดาวที่ว่าง */
 }
+
