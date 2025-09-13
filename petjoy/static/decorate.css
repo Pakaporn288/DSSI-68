@@ -239,6 +239,7 @@ body {
     cursor: pointer;
     font-size: 1rem;
     transition: background-color 0.2s ease;
+    text-decoration: none;
 }
 
 .view-more-button:hover {
@@ -586,3 +587,502 @@ body {
 }
 .modal-button.cancel { background-color: #F87171; color: white; }
 .modal-button.confirm { background-color: #34D399; color: white; }
+
+.white-btn {
+    background: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    padding: 6px 18px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: box-shadow 0.2s;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.white-btn:hover {
+    background: #f5f5f5;
+    color: #222;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.product-list-container {
+    max-width: 1100px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.product-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.product-list-header h1 {
+    margin: 0;
+}
+
+.btn-add-product {
+    background-color: #FF7043;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.product-table th, .product-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+.product-table th {
+    background-color: #f9f9f9;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.product-table-image {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.no-products {
+    text-align: center;
+    padding: 2rem;
+    color: #888;
+}
+
+    .back-arrow {
+        margin-right: 12px;
+        font-size: 2rem;
+        text-decoration: none;
+        color: #333;
+        background: #fff;
+        border-radius: 50%;
+        padding: 2px 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        border: 1px solid #eee;
+        transition: background 0.2s, color 0.2s;
+        display: inline-block;
+    }
+    .back-arrow:hover {
+        background: #f5f5f5;
+        color: #1976d2;
+    }
+    .product-list-header h1 {
+        font-size: 1.6rem;
+        font-weight: 600;
+        margin: 0;
+        color: #222;
+    }
+    .product-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 24px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .product-table th, .product-table td {
+        padding: 12px 10px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    .product-table th {
+        background: #f8f8f8;
+        font-weight: 500;
+        color: #444;
+    }
+    .product-table-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-right: 10px;
+        vertical-align: middle;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+    }
+    .product-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .white-btn {
+        background: #fff;
+        color: #333;
+        border: 1px solid #ccc;
+        padding: 4px 14px;
+        border-radius: 16px;
+        text-decoration: none;
+        font-weight: 500;
+        margin: 0 2px;
+        transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        cursor: pointer;
+    }
+    .white-btn:hover {
+        background: #f5f5f5;
+        color: #1976d2;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .no-products {
+        text-align: center;
+        color: #888;
+        font-style: italic;
+    }
+
+/* --- Simple Product Detail Page --- */
+.simple-detail-container {
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.detail-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.back-arrow {
+    font-size: 2rem;
+    text-decoration: none;
+    color: #333;
+}
+
+.detail-content-wrapper {
+    display: flex;
+    gap: 2rem;
+    align-items: flex-start; /* จัดให้อยู่ด้านบนสุด */
+}
+
+/* ✅ ปรับขนาดคอลัมน์รูปภาพให้เล็กลง */
+.detail-image-section {
+    flex: 0 0 40%; /* กำหนดความกว้าง 40% และไม่ให้ยืด/หด */
+}
+
+.detail-product-image {
+    width: 100%;
+    border-radius: 8px;
+}
+
+/* ✅ คอลัมน์ข้อมูลจะกินพื้นที่ที่เหลือ */
+.detail-info-section {
+    flex: 1;
+}
+
+.detail-product-name {
+    margin-top: 0;
+    font-size: 2rem;
+}
+
+.detail-product-price {
+    font-size: 1.5rem;
+    color: #FF7043;
+    font-weight: bold;
+    margin: 0.5rem 0;
+}
+
+.detail-product-category {
+    color: #888;
+    margin-bottom: 1.5rem;
+}
+
+.detail-product-description h3 {
+    margin-bottom: 0.5rem;
+}
+.detail-product-description p {
+    color: #555;
+}
+.add-to-cart-button {
+    background-color: #FF7043;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    margin-top: 1.5rem;
+}
+
+/* static/decorate.css */
+
+/* --- Quantity Selector Styles --- */
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.quantity-selector span {
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.quantity-controls {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #f5f5f5;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+    color: #555;
+}
+
+.quantity-btn.minus {
+    border-right: 1px solid #ccc;
+    border-top-left-radius: 7px;
+    border-bottom-left-radius: 7px;
+}
+
+.quantity-btn.plus {
+    border-left: 1px solid #ccc;
+    border-top-right-radius: 7px;
+    border-bottom-right-radius: 7px;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: none;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+/* --- Add to Cart Button --- */
+.add-to-cart-button {
+    width: 100%;
+    padding: 15px;
+    background-color: #FF7043;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 2rem;
+}
+/* static/decorate.css */
+
+/* --- Action Buttons --- */
+.action-buttons {
+    display: flex;
+    gap: 1rem; /* ระยะห่างระหว่างปุ่ม */
+    margin-bottom: 2rem;
+}
+
+.add-to-cart-button, .buy-now-button {
+    flex: 1; /* ทำให้ปุ่มแบ่งพื้นที่เท่าๆ กัน */
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: center;
+    border: none;
+}
+
+.add-to-cart-button {
+    background-color: #f0f0f0;
+    color: #333;
+    border: 1px solid #ccc;
+}
+
+.buy-now-button {
+    background-color: #FF7043;
+    color: white;
+}
+
+
+/* --- Product Specs Section --- */
+.product-specs-section {
+    border-top: 1px solid #eee;
+    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.product-specs-section h3 {
+    margin-bottom: 1rem;
+}
+
+.product-specs-section ul {
+    list-style: none;
+    padding-left: 0;
+    margin: 0;
+    color: #555;
+}
+
+.product-specs-section li {
+    margin-bottom: 0.5rem;
+}
+.action-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* 1. กำหนดสไตล์ "ร่วมกัน" สำหรับปุ่มทั้งสอง */
+.add-to-cart-button, 
+.buy-now-button {
+    flex: 1;                /* แบ่งพื้นที่เท่ากัน */
+    padding: 15px;          /* ระยะห่างภายในปุ่ม */
+    border-radius: 8px;     /* ความโค้งของขอบ */
+    font-size: 1.1rem;      /* ขนาดตัวอักษร */
+    font-weight: bold;      /* ความหนาตัวอักษร */
+    cursor: pointer;        /* เปลี่ยนเมาส์เป็นรูปมือ */
+    text-align: center;     /* จัดข้อความกึ่งกลาง */
+    border: 1px solid #ccc; /* กำหนดเส้นขอบให้เหมือนกัน */
+}
+
+/* 2. สไตล์ของปุ่ม "เพิ่มลงตะกร้า" (ปุ่มเทา) */
+.add-to-cart-button {
+    background-color: #f0f0f0;
+    color: #333;
+}
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* จัดให้อยู่ตรงกลาง */
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+}
+
+.quantity-selector span {
+    font-weight: bold;
+    font-size: 1rem;
+    margin-right: 1rem; /* เพิ่มระยะห่างจากกล่อง */
+}
+
+.quantity-controls {
+    display: flex;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden; /* ทำให้ขอบโค้งสวยงาม */
+}
+
+.quantity-btn {
+    width: 40px;
+    height: 40px;
+    background-color: #f5f5f5;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    color: #555;
+}
+
+.quantity-btn.minus {
+    border-right: 1px solid #ccc;
+}
+
+.quantity-btn.plus {
+    border-left: 1px solid #ccc;
+}
+
+.quantity-input {
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    border: none;
+    font-size: 1.1rem;
+    font-weight: bold;
+    /* ป้องกันไม่ให้ผู้ใช้พิมพ์ตัวอักษร */
+    -moz-appearance: textfield;
+}
+
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.store-info-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    border: 1px solid #eee; /* เปลี่ยนเป็นเส้นขอบรอบๆ */
+    border-radius: 8px;   /* เพิ่มความโค้ง */
+    padding: 1rem;        /* เพิ่มระยะห่างภายใน */
+    margin-top: 1.5rem;   /* ระยะห่างจากรูปภาพ */
+}
+
+.store-logo {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.store-details {
+    display: flex;
+    flex-direction: column;
+}
+
+.store-name {
+    font-weight: bold;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.store-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.store-btn {
+    padding: 6px 12px;
+    border: 1px solid #FF7043;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    color: #FF7043;
+}
+
+.star-rating {
+    margin: 0.5rem 0;
+    color: #ffc107; /* สีเหลืองทองสำหรับดาวที่เต็ม */
+    font-size: 1.2rem;
+}
+
+.empty-star {
+    color: #e0e0e0; /* สีเทาอ่อนสำหรับดาวที่ว่าง */
+}

@@ -1,24 +1,17 @@
+# petjoy/urls.py
 from django.urls import path
-from .views import (
-    homepage,
-    ProductListView,
-    ProductDetailView,
-    ProductCreateView,
-    ProductUpdateView,
-    ProductDeleteView,
-    login_view,
-    logout_view,
-)
+from . import views
 
 app_name = 'petjoy'
 
 urlpatterns = [
-    path('', homepage, name='homepage'),
-    path('login/', login_view, name='login'),
-    path('logout/', logout_view, name='logout'),
-    path('products/', ProductListView.as_view(), name='product-list'),
-    path('products/<int:pk>/', ProductDetailView.as_view(), name='product-detail'),
-    path('products/create/', ProductCreateView.as_view(), name='product-create'),
-    path('products/<int:pk>/update/', ProductUpdateView.as_view(), name='product-update'),
-    path('products/<int:pk>/delete/', ProductDeleteView.as_view(), name='product-delete'),
+    path('', views.homepage, name='homepage'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('products/', views.ProductListView.as_view(), name='product-list'),
+    path('product/<int:product_id>/', views.product_detail_view, name='product-detail'),
+    # โค้ดสำหรับอนาคต (CRUD) สามารถเก็บไว้ได้
+    # path('products/create/', views.ProductCreateView.as_view(), name='product-create'),
+    # path('products/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product-update'),
+    # path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product-delete'),
 ]
