@@ -1,0 +1,25 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}โปรไฟล์ของฉัน{% endblock %}
+
+{% block content %}
+<div class="profile-container">
+    <div class="profile-card">
+        <img class="profile-pic" src="{{ user.profile.image.url }}">
+        <h2>{{ user.username }}</h2>
+        <p>{{ user.email }}</p>
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend>แก้ไขข้อมูลโปรไฟล์</legend>
+                {{ p_form.as_p }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn-save" type="submit">อัปเดต</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
