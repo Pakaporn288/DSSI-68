@@ -26,12 +26,12 @@
         <div class="navbar-right">
             <span class="cart-icon">🛒</span>
             {% if user.is_authenticated %}
-                <a href="#" class="profile-icon">
-                    {{ user.username.0|upper }}
+                <a href="#" >
+                    <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-icon">
+
                 </a>
             {% else %}
                 <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
-                <a href="{% url 'petjoy:register' %}" class="login-text">สมัครสมาชิก</a>
             {% endif %}
         </div>
     </header>

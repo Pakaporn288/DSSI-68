@@ -1377,3 +1377,16 @@ body {
 		font-size: 1rem;
 		font-weight: 500;
 }
+.profile-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;          /* ความกว้าง */
+    height: 40px;         /* ความสูง */
+    background-color: #FF7043; /* สีพื้นหลัง */
+    color: white;         /* สีตัวอักษร */
+    border-radius: 50%;   /* ทำให้เป็นวงกลม */
+    font-size: 1.2rem;    /* ขนาดตัวอักษร */
+    font-weight: bold;
+    text-decoration: none; /* ลบเส้นใต้ */
+}
