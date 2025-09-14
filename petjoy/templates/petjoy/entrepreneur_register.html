@@ -1,0 +1,47 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}สมัครเป็นผู้ประกอบการ - PetJoy{% endblock %}
+
+{% block content %}
+<style>
+    .navbar { display: none !important; }
+</style>
+<div class="auth-page-wrapper">
+    <div class="auth-left-panel">
+        <img src="{% static 'images/ลบพื้นหลัง.png' %}" alt="Entrepreneur Illustration">
+    </div>
+    <div class="auth-right-panel">
+        <div class="auth-form-container">
+            <h2 class="auth-title">สมัครเป็นผู้ประกอบการ</h2>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-field">
+                    <label for="id_name">ชื่อร้าน/บริษัท</label>
+                    <input type="text" name="name" id="id_name" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_owner">ชื่อผู้ประกอบการ</label>
+                    <input type="text" name="owner" id="id_owner" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_email">อีเมล</label>
+                    <input type="email" name="email" id="id_email" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_phone">เบอร์โทรศัพท์</label>
+                    <input type="text" name="phone" id="id_phone" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_password">รหัสผ่าน</label>
+                    <input type="password" name="password" id="id_password" required>
+                </div>
+                <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
+            </form>
+            <div class="auth-links">
+                <p>มีบัญชีผู้ประกอบการอยู่แล้ว? <a href="{% url 'petjoy:login' %}" class="white-btn">เข้าสู่ระบบ</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,106 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'decorate.css' %}">
+
+{% block content %}
+<style>
+    .navbar { display: none !important; }
+    .edit-pencil {
+        display: inline-block;
+        margin-left: 8px;
+        cursor: pointer;
+        color: #2563eb;
+        font-size: 1.1em;
+        vertical-align: middle;
+    }
+    .edit-field {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
+    .edit-input {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #d1d5db;
+        font-size: 1rem;
+        background: #f9fafb;
+        width: 100%;
+    }
+    .edit-btn-save {
+        background: #2563eb;
+        color: #fff;
+        border-radius: 8px;
+        border: none;
+        padding: 10px 28px;
+        font-weight: 500;
+        font-size: 1rem;
+        margin-top: 18px;
+        cursor: pointer;
+    }
+</style>
+<div class="entrepreneur-container">
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
+            <a href="#">รายละเอียดคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
+            <a href="#">ข้อความ</a>
+            <a href="#">แก้ไขรายละเอียด</a>
+            <a href="#">รายได้</a>
+        </nav>
+        <form method="post" action="{% url 'petjoy:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">ออกจากระบบ</button>
+        </form>
+    </aside>
+    <main class="main-content">
+        <section class="profile-section">
+            <form method="POST" enctype="multipart/form-data" style="max-width: 500px; margin: 0 auto; background: #fff; padding: 32px 28px; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);">
+                {% csrf_token %}
+                <h2 style="text-align:center; font-size:1.2rem; font-weight:600; color:#fb923c; margin-bottom:18px;">แก้ไขโปรไฟล์ผู้ประกอบการ</h2>
+                <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:22px;">
+                    <img id="profilePreview" src="{% if entrepreneur.profile_image %}{{ entrepreneur.profile_image.url }}{% else %}{% static 'images/ร้าน.png' %}{% endif %}" alt="โปรไฟล์ผู้ขาย" style="width:120px; height:120px; object-fit:cover; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:10px;">
+                    <input type="file" id="id_profile_image" name="profile_image" class="edit-input" style="width:220px;" onchange="previewProfileImage(event)">
+                </div>
+                <div class="edit-field">
+                    <label for="id_store_name">ชื่อร้าน</label>
+                    <input type="text" id="id_store_name" name="store_name" class="edit-input" value="{{ entrepreneur.store_name }}">
+                    <span class="edit-pencil" onclick="editField('id_store_name')">&#9998;</span>
+                </div>
+                <div class="edit-field">
+                    <label for="id_phone">หมายเลขเบอร์โทรศัพท์</label>
+                    <input type="text" id="id_phone" name="phone" class="edit-input" value="{{ entrepreneur.phone }}">
+                    <span class="edit-pencil" onclick="editField('id_phone')">&#9998;</span>
+                </div>
+                <div class="edit-field">
+                    <label for="id_email">อีเมล</label>
+                    <input type="email" id="id_email" name="email" class="edit-input" value="{{ entrepreneur.email }}">
+                    <span class="edit-pencil" onclick="editField('id_email')">&#9998;</span>
+                </div>
+                <div class="edit-field">
+                    <label for="id_password">รหัสผ่าน</label>
+                    <input type="password" id="id_password" name="password" class="edit-input" value="">
+                    <span class="edit-pencil" onclick="editField('id_password')">&#9998;</span>
+                </div>
+                <button type="submit" class="edit-btn-save" style="background:#fb923c; color:#fff;">บันทึกการเปลี่ยนแปลง</button>
+            </form>
+        </section>
+    </main>
+</div>
+<script>
+    function editField(id) {
+        var input = document.getElementById(id);
+        input.focus();
+        input.select && input.select();
+    }
+    function previewProfileImage(event) {
+        var reader = new FileReader();
+        reader.onload = function(){
+            var output = document.getElementById('profilePreview');
+            output.src = reader.result;
+        };
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
+{% endblock %}

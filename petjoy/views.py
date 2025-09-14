@@ -1,19 +1,17 @@
-# views.py
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from .ai_service import get_ai_response
-from django.contrib.auth.forms import AuthenticationForm
-from django.contrib import messages 
+from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Product 
-from .forms import ProductForm
 from .models import Product, Review
-from django.shortcuts import render, redirect 
-from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Avg
+from .forms import ProductForm
+from django.contrib.admin.views.decorators import staff_member_required
 
 def homepage(request):
     products = Product.objects.all()[:4]
@@ -28,9 +26,19 @@ def ask_ai_view(request):
             return JsonResponse({'error': 'No message provided'}, status=400)
 
         ai_reply = get_ai_response(user_message)
+
+        # Save chat history
+        from .models import ChatHistory
+        ChatHistory.objects.create(
+            user=request.user if request.user.is_authenticated else None,
+            user_message=user_message,
+            ai_response=ai_reply
+        )
+
         return JsonResponse({'reply': ai_reply})
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
+
 
 def login_view(request):
     if request.method == "POST":
@@ -52,6 +60,12 @@ def login_view(request):
     # ✅ สำคัญ: ต้องส่ง context 'auth_page': True ด้วย
     return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
 
+def logout_view(request):
+    logout(request)
+    messages.info(request, "คุณได้ออกจากระบบแล้ว")
+    return redirect("petjoy:homepage")
+
+
 
 def register_view(request):
     if request.method == "POST":
@@ -68,51 +82,96 @@ def register_view(request):
     return render(request, 'petjoy/register.html', {'form': form, 'auth_page': True})
 
 
-
-def logout_view(request):
-    logout(request)
-    messages.info(request, "คุณได้ออกจากระบบแล้ว")
-    return redirect("petjoy:homepage")
-
+# If you want to show reviews, use this version:
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    return render(request, 'petjoy/product_detail.html', {'product': product})
-
-def product_detail_view(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    # ดึงรีวิวทั้งหมดของสินค้านี้ เรียงจากใหม่ไปเก่า
     reviews = product.reviews.all().order_by('-created_at')
-    
-    # ส่งข้อมูลทั้ง product และ reviews ไปที่ Template
     return render(request, 'petjoy/product_detail.html', {
         'product': product,
         'reviews': reviews
     })
 
+def entrepreneur_profile_edit(request):
+    entrepreneur = None
+    if hasattr(request.user, 'entrepreneur'):
+        entrepreneur = request.user.entrepreneur
+
+    if request.method == "POST" and entrepreneur:
+        # รับค่าจากฟอร์ม
+        store_name = request.POST.get('store_name')
+        phone = request.POST.get('phone')
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+        profile_image = request.FILES.get('profile_image')
+
+        # อัปเดตข้อมูล
+        entrepreneur.store_name = store_name
+        entrepreneur.phone = phone
+        if profile_image:
+            entrepreneur.profile_image = profile_image
+        entrepreneur.save()
+
+        # อัปเดตข้อมูล user
+        user = request.user
+        user.email = email
+        if password:
+            user.set_password(password)
+        user.save()
+
+        messages.success(request, "บันทึกการเปลี่ยนแปลงสำเร็จ!")
+        # render หน้าเดิมพร้อมข้อมูลใหม่
+        return render(request, 'petjoy/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
+
+    return render(request, 'petjoy/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
+
+
 class ProductListView(ListView):
     model = Product
-    template_name = 'product_list.html'
+    template_name = 'petjoy/product_list.html'
     context_object_name = 'products'
 
 class ProductDetailView(DetailView):
     model = Product
-    template_name = 'product_detail.html'
+    template_name = 'petjoy/product_detail.html'
     context_object_name = 'product'
 
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    template_name = 'product_form.html'
-    success_url = reverse_lazy('product-list')
+    template_name = 'petjoy/product_form.html'
+    success_url = reverse_lazy('petjoy:product-list')
 
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'product_form.html'
-    success_url = reverse_lazy('product-list')
+    template_name = 'petjoy/product_update_form.html'
+    success_url = reverse_lazy('petjoy:product-list')
 
 class ProductDeleteView(DeleteView):
     model = Product
-    template_name = 'product_confirm_delete.html'
-    success_url = reverse_lazy('product-list')
+    template_name = 'petjoy/product_confirm_delete.html'
+    success_url = reverse_lazy('petjoy:product-list')
+
+
+def entrepreneur_register(request):
+    return render(request, 'petjoy/entrepreneur_register.html')
+
+
+@staff_member_required
+def entrepreneur_home(request):
+    from .models import Product, Review
+    products = Product.objects.all()
+    product_count = products.count()
+    # รวมคะแนนรีวิวจากลูกค้าทั้งหมดของสินค้าทุกรายการ
+    all_reviews = Review.objects.filter(product__in=products)
+    if all_reviews.exists():
+        avg_score = round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
+    else:
+        avg_score = None
+    return render(request, 'petjoy/entrepreneur_home.html', {
+        'product_count': product_count,
+        'products': products,
+        'avg_score': avg_score
+    })
+
 

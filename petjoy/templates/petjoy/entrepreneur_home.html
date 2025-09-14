@@ -1,0 +1,58 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'decorate.css' %}">
+
+{% block content %}
+<style>
+    .navbar { display: none !important; }
+</style>
+<div class="entrepreneur-container">
+	<aside class="sidebar">
+		<nav class="sidebar-menu">
+			<a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
+			<a href="#">รายละเอียดคำสั่งซื้อ</a>
+			<a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
+			<a href="#">ข้อความ</a>
+			<a href="#">แก้ไขรายละเอียด</a>
+			<a href="#">รายได้</a>
+		</nav>
+		<form method="post" action="{% url 'petjoy:logout' %}">
+			{% csrf_token %}
+			<button type="submit" class="logout-btn">ออกจากระบบ</button>
+		</form>
+	</aside>
+	<main class="main-content">
+		<section class="profile-section">
+			<img src="{% static 'images/ร้าน.png' %}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
+			<div class="profile-info">
+				<h2>Happy Dog</h2>
+				<div class="review-score">
+					⭐ {% if avg_score %}{{ avg_score }}{% else %}-{% endif %} คะแนนรีวิว
+				</div>
+				<a href="{% url 'petjoy:entrepreneur-profile-edit' %}" class="edit-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;background:#fb923c;color:#fff;padding:8px 18px;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+					แก้ไขโปรไฟล์ <span style="font-size:1.1em;color:#fff;">&#9998;</span>
+				</a>
+				<div class="profile-stats">
+					<div class="profile-stat">จำนวนสินค้า<br>{{ product_count }}</div>
+					<div class="profile-stat">คะแนนรีวิว<br>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</div>
+				</div>
+			</div>
+		</section>
+		<section class="product-cards">
+			{% for product in products %}
+			<div class="product-card">
+				{% if product.image %}
+					<img src="{{ product.image.url }}" alt="{{ product.name }}">
+				{% else %}
+					<img src="{% static 'images/CAT.jpg' %}" alt="{{ product.name }}">
+				{% endif %}
+				<div class="product-name">{{ product.name }}</div>
+				<div class="product-price">฿{{ product.price }}</div>
+			</div>
+			{% empty %}
+			<div>ไม่มีสินค้าภายในร้าน</div>
+			{% endfor %}
+		</section>
+	</main>
+</div>
+{% endblock %}

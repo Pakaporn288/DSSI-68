@@ -31,9 +31,9 @@
                 <button class="auth-button" type="submit">เข้าสู่ระบบ</button> {# ปุ่ม "เข้าสู่ระบบ" #}
             </form>
             <div class="auth-links">
-                <p>ยังไม่มีบัญชี? <a href="{% url 'petjoy:register' %}">สมัครสมาชิก</a></p> {# ลิงก์สมัครสมาชิก #}
-                <p>คุณสนใจเป็นผู้ประกอบการหรือไม่?</p> {# ข้อความเพิ่มเติม #}
-                <a href="#" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a> {# ลิงก์ผู้ประกอบการ #}
+                <p>ยังไม่มีบัญชี? <a href="{% url 'petjoy:register' %}">สมัครสมาชิก</a></p>
+                <p>คุณสนใจเป็นผู้ประกอบการหรือไม่?</p>
+                <a href="{% url 'petjoy:entrepreneur-register' %}" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a>
             </div>
         </div>
     </div>

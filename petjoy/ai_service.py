@@ -31,7 +31,7 @@ def get_ai_response(user_message):
 
         full_prompt = f"""
         คุณคือ "PetJoy Bot" ผู้ช่วยอัจฉริยะของร้าน PetJoy
-        หน้าที่ของคุณคือตอบคำถามและแนะนำของเล่นสัตว์เลี้ยงอย่างเป็นมิตร
+        ตอบคำถามและแนะนำสินค้าให้สั้น กระชับ ได้ใจความ ไม่เกิน 2-3 ประโยค
         ให้ใช้ข้อมูลสินค้าจากรายการ "ที่มีอยู่จริง" ต่อไปนี้ในการแนะนำเท่านั้น:
 
         --- รายการสินค้าที่มีอยู่จริง ---
@@ -43,8 +43,7 @@ def get_ai_response(user_message):
 
         response = model.generate_content(full_prompt)
         return response.text
-
     except Exception as e:
         # ใช้ logger เพื่อบันทึก error ที่เกิดขึ้นจริงลงใน console
-        logger.error(f"Error from Gemini API: {e}") 
+        logger.error(f"Error from Gemini API: {e}")
         return "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ"

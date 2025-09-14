@@ -78,19 +78,16 @@ WSGI_APPLICATION = 'petjoy_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+load_dotenv(os.path.join(BASE_DIR, ".env"))
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-        'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('Petjoy_db'),
-        'USER': os.getenv('petjoy_user'),
-        'PASSWORD': os.getenv('12345'),
-        'HOST': os.getenv('localhost'),
-        'PORT': os.getenv('5432'),
-    }
-
+        'NAME': 'Petjoy_db',          
+        'USER': 'petjoy_user',        
+        'PASSWORD': '12345',         
+        'HOST': 'localhost',         
+        'PORT': '5432',               
     }
 }
 

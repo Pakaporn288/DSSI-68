@@ -1,6 +1,6 @@
 {% extends "petjoy/base.html" %}
 {% load static %}
-
+<!-- สินค้าชิ้นแรก ไม้ล่อแมว -->
 {% block title %}{{ product.name }} - PetJoy{% endblock %}
 
 {% block content %}
@@ -60,30 +60,51 @@
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
             <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
             
-            <div class="quantity-selector">
+            <div class="quantity-selector" style="margin-bottom: 18px;">
                 <span>จำนวน</span>
-                <div class="quantity-controls">
-                    <button class="quantity-btn minus" type="button">-</button>
-                    <input type="text" class="quantity-input" value="1">
-                    <button class="quantity-btn plus" type="button">+</button>
+                <div class="quantity-controls" style="display: flex; align-items: center; gap: 8px;">
+                    <button class="quantity-btn minus" type="button" onclick="changeQuantity(-1)">-</button>
+                    <input type="text" class="quantity-input" id="quantityInput" value="1" style="width: 48px; text-align: center; font-size: 1.1rem;">
+                    <button class="quantity-btn plus" type="button" onclick="changeQuantity(1)">+</button>
                 </div>
             </div>
 
-            <div class="action-buttons">
-                <button type="button" class="add-to-cart-button">เพิ่มลงตะกร้า</button>
-                
+            <div class="action-buttons" style="display: flex; gap: 12px;">
+                <button type="button" class="action-btn" style="flex:1; background: #F3F4F6; color: #ce4d2d;">เพิ่มลงตะกร้า</button>
+                <button type="button" class="action-btn" style="flex:1; background: #ce4d2d; color: #fff;">สั่งซื้อสินค้า</button>
             </div>
+            <style>
+                .action-btn {
+                    border-radius: 8px;
+                    border: none;
+                    padding: 10px 0;
+                    font-weight: 500;
+                    font-size: 1rem;
+                    width: 100%;
+                    min-width: 0;
+                    box-sizing: border-box;
+                    transition: background 0.2s;
+                }
+                .action-btn:active {
+                    opacity: 0.9;
+                }
+            </style>
+            <script>
+                function changeQuantity(delta) {
+                    var input = document.getElementById('quantityInput');
+                    var value = parseInt(input.value) || 1;
+                    value += delta;
+                    if (value < 1) value = 1;
+                    input.value = value;
+                }
+            </script>
 
             <div class="detail-product-description">
                 <h3>คำอธิบาย</h3>
                 <p>{{ product.description|linebreaks }}</p>
             </div>
                 <h3>คุณสมบัติ</h3>
-                <ul>
-                    <li><strong>วัสดุ:</strong> ทำจากไม้เนื้อแข็งหรือพลาสติกแข็งคุณภาพดี จับถนัดมือ น้ำหนักเบา</li>
-                    <li><strong>น้ำหนัก:</strong> เบาเพียง 50 – 150 กรัม เหมาะสำหรับเล่นได้นานๆ ไม่เมื่อยมือ</li>
-                    <li><strong>การใช้งาน:</strong> ใช้เล่นกับแมวเพื่อออกกำลังกาย ลดความเครียด และกระชับความสัมพันธ์ระหว่างเจ้าของกับสัตว์เลี้ยง</li>
-                </ul>
+                <p>{{ product.features|linebreaks }}</p>
             </div>
 
         </div>
