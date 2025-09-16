@@ -154,35 +154,14 @@ class ProductDeleteView(DeleteView):
     success_url = reverse_lazy('petjoy:product-list')
 
 
-from .models import Entrepreneur
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-
-@login_required
 def entrepreneur_register(request):
-    if hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:entrepreneur-home')
-    if request.method == 'POST':
-        store_name = request.POST.get('name')
-        owner_name = request.POST.get('owner')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        # ไม่เปลี่ยนรหัสผ่าน user หลัก
-        Entrepreneur.objects.create(
-            user=request.user,
-            store_name=store_name,
-            owner_name=owner_name,
-            email=email,
-            phone=phone
-        )
-        return redirect('petjoy:entrepreneur-home')
     return render(request, 'petjoy/entrepreneur_register.html')
 
 
 from django.contrib.auth.decorators import login_required
 @login_required
 def entrepreneur_home(request):
-    # ไม่ต้องเช็ค user, ใครก็เข้าได้
+    # (ลบการเช็คว่า user ต้องเป็น entrepreneur)
     from .models import Product, Review
     products = Product.objects.all()
     product_count = products.count()
@@ -206,103 +185,18 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                messages.info(request, f"ยินดีต้อนรับกลับมา, {username}")
-                if user.is_authenticated:
-                    if hasattr(user, 'entrepreneur'):
-                        return redirect('petjoy:entrepreneur-home')
-                    else:
-                        return redirect('petjoy:homepage')
+                
+                # ตรวจสอบว่า user คนนี้เป็นผู้ประกอบการหรือไม่ (รองรับทั้งชื่อ field entrepreneur และ entrepreneur_profile)
+                # บังคับให้ไปหน้า entrepreneur_home ทุกกรณี
+                messages.info(request, f"ยินดีต้อนรับ, {username}!")
+                return redirect("petjoy:entrepreneur-home")
+                    
             else:
                 messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
         else:
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
     form = AuthenticationForm()
-    # ✅ สำคัญ: ต้องส่ง context 'auth_page': True ด้วย
-    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
-
-# หน้าโปรไฟล์ผู้ใช้ทั่วไป
-from .models import Profile
-@login_required
-def profile_view(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
-    return render(request, 'petjoy/profile.html', {'profile': profile})
-# สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
-def cat_products_view(request):
-    cat_category = Category.objects.filter(name__iexact='cat').first()
-    products = Product.objects.filter(category=cat_category) if cat_category else Product.objects.none()
-    return render(request, 'petjoy/cat_products.html', {'products': products})
-from .models import Product, Review, Category
-# สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
-def dog_products_view(request):
-    dog_category = Category.objects.filter(name__iexact='dog').first()
-    products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
-    return render(request, 'petjoy/dog_products.html', {'products': products})
-
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect
-
-@login_required
-def entrepreneur_register(request):
-    if hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:entrepreneur-home')
-    if request.method == 'POST':
-        store_name = request.POST.get('name')
-        owner_name = request.POST.get('owner')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        # ไม่เปลี่ยนรหัสผ่าน user หลัก
-        Entrepreneur.objects.create(
-            user=request.user,
-            store_name=store_name,
-            owner_name=owner_name,
-            email=email,
-            phone=phone
-        )
-        return redirect('petjoy:entrepreneur-home')
-    return render(request, 'petjoy/entrepreneur_register.html')
-
-
-from django.contrib.auth.decorators import login_required
-@login_required
-def entrepreneur_home(request):
-    # ไม่ต้องเช็ค user, ใครก็เข้าได้
-    from .models import Product, Review
-    products = Product.objects.all()
-    product_count = products.count()
-    all_reviews = Review.objects.filter(product__in=products)
-    if all_reviews.exists():
-        avg_score = round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
-    else:
-        avg_score = None
-    return render(request, 'petjoy/entrepreneur_home.html', {
-        'product_count': product_count,
-        'products': products,
-        'avg_score': avg_score
-    })
-
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(request, f"ยินดีต้อนรับกลับมา, {username}")
-                if user.is_authenticated:
-                    if hasattr(user, 'entrepreneur'):
-                        return redirect('petjoy:entrepreneur-home')
-                    else:
-                        return redirect('petjoy:homepage')
-            else:
-                messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-        else:
-            messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-
-    form = AuthenticationForm()
-    # ✅ สำคัญ: ต้องส่ง context 'auth_page': True ด้วย
     return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
 
 # หน้าโปรไฟล์ผู้ใช้ทั่วไป

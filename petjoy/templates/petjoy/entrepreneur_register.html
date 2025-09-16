@@ -17,12 +17,16 @@
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-field">
+                    <label for="id_username">ชื่อผู้ใช้ (Username)</label>
+                    <input type="text" name="username" id="id_username" required>
+                </div>
+                <div class="form-field">
                     <label for="id_name">ชื่อร้าน/บริษัท</label>
-                    <input type="text" name="name" id="id_name" required>
+                    <input type="text" name="store_name" id="id_name" required>
                 </div>
                 <div class="form-field">
                     <label for="id_owner">ชื่อผู้ประกอบการ</label>
-                    <input type="text" name="owner" id="id_owner" required>
+                    <input type="text" name="owner_name" id="id_owner" required>
                 </div>
                 <div class="form-field">
                     <label for="id_email">อีเมล</label>
