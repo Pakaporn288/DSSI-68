@@ -1,8 +1,9 @@
+# ผู้ประกอบการ (1 user = 1 ร้าน)
+from django.conf import settings
+from django.db import models
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
-# petjoy/models.py
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -18,6 +19,8 @@ class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     image = models.ImageField(upload_to='product_images/', blank=True, null=True)
     features = models.TextField(blank=True, null=True, help_text='คุณสมบัติสินค้า')
+    total_stock = models.PositiveIntegerField(default=0, help_text='จำนวนสินค้าทั้งหมด')
+    stock = models.PositiveIntegerField(default=0, help_text='จำนวนสินค้าคงเหลือ')
 
     def __str__(self):
         return self.name
@@ -46,4 +49,25 @@ class ChatHistory(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Chat by {self.user.username if self.user else 'Anonymous'} at {self.created_at}" 
+        return f"Chat by {self.user.username if self.user else 'Anonymous'} at {self.created_at}"
+
+class Entrepreneur(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    store_name = models.CharField(max_length=100)
+    owner_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+
+    def __str__(self):
+        return self.store_name
+    
+class Entrepreneur(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    store_name = models.CharField(max_length=100)
+    owner_name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20)
+    # เพิ่ม field อื่นๆ ได้ตามต้องการ
+
+    def __str__(self):
+        return self.store_name

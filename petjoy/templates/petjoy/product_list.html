@@ -35,6 +35,7 @@
                     <th>รายละเอียด</th>
                     <th style="width: 100px; text-align: right;">ราคา</th>
                     <th style="width: 120px;">หมวดหมู่</th>
+                    <th style="width: 120px; text-align: center;">จำนวน (ทั้งหมด/คงเหลือ)</th>
                     <th style="width: 180px; text-align: center;">จัดการ</th>
                 </tr>
             </thead>
@@ -52,10 +53,13 @@
                     <td style="color: #555;">{{ product.description }}</td>
                     <td style="text-align: right; color: #E65100; font-weight: 500;">{{ product.price }} บาท</td>
                     <td>{{ product.category.display_name }}</td>
+                    <td style="text-align: center;">{{ product.total_stock }}/{{ product.stock }}</td>
                     <td style="text-align: center;">
-                        <a href="{% url 'petjoy:product-detail' product.pk %}" class="white-btn">ดู</a>
-                        <a href="{% url 'petjoy:product-update' product.pk %}" class="white-btn">แก้ไข</a>
-                        <a href="{% url 'petjoy:product-delete' product.pk %}" class="white-btn">ลบ</a>
+                        <div class="btn-group" style="display:inline-flex;gap:8px;">
+                            <a href="{% url 'petjoy:product-detail' product.pk %}" class="white-btn" style="background:#f3f4f6;color:#2563eb;">ดู</a>
+                            <a href="{% url 'petjoy:product-update' product.pk %}" class="white-btn" style="background:#fbbf24;color:#fff;">แก้ไข</a>
+                            <a href="{% url 'petjoy:product-delete' product.pk %}" class="white-btn" style="background:#ef4444;color:#fff;">ลบ</a>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

@@ -4,22 +4,41 @@
 {% block title %}โปรไฟล์ของฉัน{% endblock %}
 
 {% block content %}
-<div class="profile-container">
-    <div class="profile-card">
-        <img class="profile-pic" src="{{ user.profile.image.url }}">
-        <h2>{{ user.username }}</h2>
-        <p>{{ user.email }}</p>
-
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <fieldset class="form-group">
-                <legend>แก้ไขข้อมูลโปรไฟล์</legend>
-                {{ p_form.as_p }}
-            </fieldset>
-            <div class="form-group">
-                <button class="btn-save" type="submit">อัปเดต</button>
+<div class="profile-page-wrapper" style="display:flex; gap:2.5rem; max-width:1300px; margin:60px auto; align-items:flex-start;">
+    <aside class="profile-sidebar" style="width:270px; background:#fff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06); padding:2.5rem 2rem;">
+        <h3 style="margin-top:0; color:#FF7043;">ข้อมูลส่วนตัว</h3>
+        <nav class="profile-menu" style="display:flex; flex-direction:column; gap:1rem; margin-top:2rem;">
+            <a href="#" class="profile-menu-item active" style="background:#FF7043; color:#fff; border-radius:6px; padding:0.7em 1em; text-decoration:none;">ข้อมูลส่วนตัว</a>
+            <a href="#" class="profile-menu-item" style="color:#FF7043;">ที่อยู่</a>
+            <a href="#" class="profile-menu-item" style="color:#FF7043;">ประวัติการสั่งซื้อ</a>
+            <a href="#" class="profile-menu-item" style="color:#FF7043;">รายการโปรด</a>
+            <form method="post" action="{% url 'petjoy:logout' %}" style="margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="profile-menu-item" style="color:#FF7043; background:none; border:none; padding:0.7em 1em; text-align:left; width:100%; cursor:pointer;">ออกจากระบบ</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="profile-card" style="flex:1; display:flex; gap:2.5rem; align-items:flex-start; background:#fff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06); padding:2.5rem; min-width:400px;">
+        <div class="profile-image-section">
+            <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image-large" style="width:130px; height:130px; border-radius:50%; object-fit:cover; border:4px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+        </div>
+        <div class="profile-info-section" style="flex:1; font-size:1.18em;">
+            <h2 style="margin-bottom:0; font-size:2em;">{{ user.get_full_name|default:user.username }}</h2>
+            <div class="profile-email" style="color:#888; margin-bottom:2rem; font-size:1.1em;">{{ user.email }}</div>
+            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
+                <b>ชื่อ-นามสกุล</b> {{ user.get_full_name|default:user.username }}
+                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
             </div>
-        </form>
+            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
+                <b>อีเมล์</b> {{ user.email }}
+                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
+            </div>
+            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
+                <b>รหัสผ่าน</b> ******
+                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
+            </div>
+            <a href="?edit=1" class="profile-edit-btn" style="display:inline-block; margin-top:2rem; background:#FF7043; color:#fff; padding:0.7em 2em; border-radius:8px; text-decoration:none; font-size:1.1em;">{% if request.GET.edit %}กำลังแก้ไข{% else %}แก้ไข{% endif %}</a>
+        </div>
     </div>
 </div>
 {% endblock %}

@@ -15,20 +15,27 @@
             <form method="POST">
                 {% csrf_token %}
 
+
                 <div class="form-field">
-                    <label for="{{ login_form.username.id_for_label }}">ชื่อ</label> {# Label เป็นภาษาอังกฤษ #}
-                    {{ login_form.username }}
+                    <label for="{{ login_form.username.id_for_label }}">ชื่อผู้ใช้</label>
+                    <input type="text" name="username" id="{{ login_form.username.id_for_label }}" class="input-auth" autofocus required>
                 </div>
                 <div class="form-field">
-                    <label for="{{ login_form.password.id_for_label }}">รหัสผ่าน</label> {# Label เป็นภาษาอังกฤษ #}
-                    {{ login_form.password }}
+                    <label for="{{ login_form.password.id_for_label }}">รหัสผ่าน</label>
+                    <input type="password" name="password" id="{{ login_form.password.id_for_label }}" class="input-auth" required>
                 </div>
 
-                {% if login_form.errors %}
-                    <small class="error-text">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</small>
+                {% if login_form.non_field_errors %}
+                    <small class="error-text">{{ login_form.non_field_errors.0 }}</small>
+                {% endif %}
+                {% if login_form.username.errors %}
+                    <small class="error-text">{{ login_form.username.errors.0 }}</small>
+                {% endif %}
+                {% if login_form.password.errors %}
+                    <small class="error-text">{{ login_form.password.errors.0 }}</small>
                 {% endif %}
 
-                <button class="auth-button" type="submit">เข้าสู่ระบบ</button> {# ปุ่ม "เข้าสู่ระบบ" #}
+                <button class="auth-button" type="submit">เข้าสู่ระบบ</button>
             </form>
             <div class="auth-links">
                 <p>ยังไม่มีบัญชี? <a href="{% url 'petjoy:register' %}">สมัครสมาชิก</a></p>

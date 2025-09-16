@@ -16,15 +16,15 @@ class RegisterForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['username'].widget.attrs.update({'placeholder': 'ชื่อผู้ใช้'})
         self.fields['email'].widget.attrs.update({'placeholder': 'อีเมล'})
-        self.fields['password'].widget.attrs.update({'placeholder': 'รหัสผ่าน'})
+        self.fields['password1'].widget.attrs.update({'placeholder': 'รหัสผ่าน'})
         self.fields['password2'].widget.attrs.update({'placeholder': 'ยืนยันรหัสผ่าน'})
         self.fields['username'].label = "ชื่อผู้ใช้"
         self.fields['email'].label = "อีเมล"
-        self.fields['password'].label = "รหัสผ่าน"
+        self.fields['password1'].label = "รหัสผ่าน"
         self.fields['password2'].label = "ยืนยันรหัสผ่าน"
 
 # ฟอร์มนี้สำหรับสินค้า เก็บไว้ใช้ในอนาคต
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
-        fields = ['name', 'description', 'features', 'price', 'category', 'image']
+        fields = ['name', 'description', 'features', 'price', 'category', 'image', 'total_stock', 'stock']

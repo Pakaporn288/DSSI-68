@@ -11,23 +11,35 @@
     <div class="auth-right-panel">
         <div class="auth-form-container">
             <h2 class="auth-title">สมัครสมาชิก</h2>
-            <form method="POST">
+            <form method="POST" class="register-form">
                 {% csrf_token %}
                 <div class="form-field">
-                    <label for="id_username">ชื่อ</label>
-                    <input type="text" name="username" id="id_username" required>
+                    <label for="id_username">ชื่อผู้ใช้</label>
+                    {{ form.username }}
+                    {% if form.username.errors %}
+                        <small class="error-text">{{ form.username.errors.0 }}</small>
+                    {% endif %}
                 </div>
                 <div class="form-field">
                     <label for="id_email">อีเมล</label>
-                    <input type="email" name="email" id="id_email" required>
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <small class="error-text">{{ form.email.errors.0 }}</small>
+                    {% endif %}
                 </div>
                 <div class="form-field">
                     <label for="id_password1">รหัสผ่าน</label>
-                    <input type="password" name="password1" id="id_password1" required>
+                    {{ form.password1 }}
+                    {% if form.password1.errors %}
+                        <small class="error-text">{{ form.password1.errors.0 }}</small>
+                    {% endif %}
                 </div>
                 <div class="form-field">
                     <label for="id_password2">ยืนยันรหัสผ่าน</label>
-                    <input type="password" name="password2" id="id_password2" required>
+                    {{ form.password2 }}
+                    {% if form.password2.errors %}
+                        <small class="error-text">{{ form.password2.errors.0 }}</small>
+                    {% endif %}
                 </div>
                 <button class="auth-button" type="submit">สมัครสมาชิก</button>
             </form>
