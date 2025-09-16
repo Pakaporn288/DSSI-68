@@ -43,18 +43,18 @@
         <section class="pet-selection">
             <h3>เลือกแก๊งของคุณ</h3>
             <div class="pet-options">
-                <div class="pet-card">
+                <a href="{% url 'petjoy:dog-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
                     <div class="pet-image-container">
                         <img src="{% static 'images/DOG.jpg' %}" alt="สุนัข">
                     </div>
                     <span>สุนัข</span>
-                </div>
-                <div class="pet-card">
+                </a>
+                <a href="{% url 'petjoy:cat-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
                     <div class="pet-image-container">
                         <img src="{% static 'images/CAT.jpg' %}" alt="แมว">
                     </div>
                     <span>แมว</span>
-                </div>
+                </a>
             </div>
         </section>
         <section class="recommend-products">

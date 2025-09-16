@@ -1,3 +1,14 @@
+# สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
+def cat_products_view(request):
+    cat_category = Category.objects.filter(name__iexact='cat').first()
+    products = Product.objects.filter(category=cat_category) if cat_category else Product.objects.none()
+    return render(request, 'petjoy/cat_products.html', {'products': products})
+from .models import Product, Review, Category
+# สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
+def dog_products_view(request):
+    dog_category = Category.objects.filter(name__iexact='dog').first()
+    products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
+    return render(request, 'petjoy/dog_products.html', {'products': products})
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt

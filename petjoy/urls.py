@@ -17,6 +17,8 @@ urlpatterns = [
     path('entrepreneur_home/', entrepreneur_home, name='entrepreneur-home'),
     path('entrepreneur/profile/edit/', views.entrepreneur_profile_edit, name='entrepreneur-profile-edit'),
     path('ask-ai/', views.ask_ai_view, name='ask-ai'),
+    path('dog-products/', views.dog_products_view, name='dog-products'),
+    path('cat-products/', views.cat_products_view, name='cat-products'),
     # โค้ดสำหรับอนาคต (CRUD) สามารถเก็บไว้ได้
     path('products/create/', views.ProductCreateView.as_view(), name='product-create'),
     path('products/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product-update'),
