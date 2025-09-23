@@ -13,6 +13,7 @@ from .models import Product, Review
 from django.db.models import Avg
 from .forms import ProductForm
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 
 def homepage(request):
     products = Product.objects.all()[:4]
@@ -65,7 +66,6 @@ def logout_view(request):
     logout(request)
     messages.info(request, "คุณได้ออกจากระบบแล้ว")
     return redirect("petjoy:homepage")
-
 
 
 def register_view(request):
@@ -158,7 +158,7 @@ def entrepreneur_register(request):
     return render(request, 'petjoy/entrepreneur_register.html')
 
 
-from django.contrib.auth.decorators import login_required
+
 @login_required
 def entrepreneur_home(request):
     # (ลบการเช็คว่า user ต้องเป็น entrepreneur)
