@@ -121,9 +121,7 @@ def entrepreneur_profile_edit(request):
 
         messages.success(request, "บันทึกการเปลี่ยนแปลงสำเร็จ!")
         # render หน้าเดิมพร้อมข้อมูลใหม่
-        return render(request, 'petjoy/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
-
-    return render(request, 'petjoy/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
+    return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
 
 class ProductListView(ListView):
@@ -155,7 +153,7 @@ class ProductDeleteView(DeleteView):
 
 
 def entrepreneur_register(request):
-    return render(request, 'petjoy/entrepreneur_register.html')
+    return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
 
 
@@ -170,7 +168,7 @@ def entrepreneur_home(request):
         avg_score = round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
     else:
         avg_score = None
-    return render(request, 'petjoy/entrepreneur_home.html', {
+    return render(request, 'petjoy/entrepreneur/entrepreneur_home.html', {
         'product_count': product_count,
         'products': products,
         'avg_score': avg_score

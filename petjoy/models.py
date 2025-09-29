@@ -1,4 +1,3 @@
-# ผู้ประกอบการ (1 user = 1 ร้าน)
 from django.conf import settings
 from django.db import models
 from django.db import models
