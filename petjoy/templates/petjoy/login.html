@@ -19,9 +19,13 @@
                 {% endif %}
 
 
+                {% comment %} Show registered message and prefill username if redirect came with params {% endcomment %}
+                {% if request.GET.registered %}
+                    <div class="success-text" style="margin-bottom:8px;">สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ</div>
+                {% endif %}
                 <div class="form-field">
                     <label for="{{ login_form.username.id_for_label }}">ชื่อผู้ใช้</label>
-                    <input type="text" name="username" id="{{ login_form.username.id_for_label }}" class="input-auth" autofocus required>
+                    <input type="text" name="username" id="{{ login_form.username.id_for_label }}" class="input-auth" autofocus required value="{% if request.GET.username %}{{ request.GET.username }}{% endif %}">
                 </div>
                 <div class="form-field">
                     <label for="{{ login_form.password.id_for_label }}">รหัสผ่าน</label>

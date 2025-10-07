@@ -7,6 +7,9 @@ from .models import Product
 # ฟอร์มนี้คือฟอร์มสมัครสมาชิกที่ถูกต้องเพียงอันเดียวที่เราจะใช้
 class RegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
+    # Override username to allow Unicode characters (e.g., Thai) and avoid the
+    # default restrictive validator that disallows non ASCII characters.
+    username = forms.CharField(max_length=150, required=True)
 
     class Meta(UserCreationForm.Meta):
         model = User
@@ -22,6 +25,14 @@ class RegisterForm(UserCreationForm):
         self.fields['email'].label = "อีเมล"
         self.fields['password1'].label = "รหัสผ่าน"
         self.fields['password2'].label = "ยืนยันรหัสผ่าน"
+
+    def clean_username(self):
+        username = self.cleaned_data.get('username')
+        if username:
+            # Ensure username uniqueness (case-insensitive)
+            if User.objects.filter(username__iexact=username).exists():
+                raise forms.ValidationError("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว โปรดเลือกชื่ออื่น")
+        return username
 
 # ฟอร์มนี้สำหรับสินค้า เก็บไว้ใช้ในอนาคต
 class ProductForm(forms.ModelForm):

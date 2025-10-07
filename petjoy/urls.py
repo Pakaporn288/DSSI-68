@@ -17,6 +17,7 @@ urlpatterns = [
     path('entrepreneur_home/', entrepreneur_home, name='entrepreneur-home'),
     path('entrepreneur/profile/edit/', views.entrepreneur_profile_edit, name='entrepreneur-profile-edit'),
     path('ask-ai/', views.ask_ai_view, name='ask-ai'),
+    path('search/', views.search_view, name='search'),
     path('dog-products/', views.dog_products_view, name='dog-products'),
     path('cat-products/', views.cat_products_view, name='cat-products'),
     path('profile/', views.profile_view, name='profile'),

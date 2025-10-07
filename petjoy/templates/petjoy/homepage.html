@@ -16,10 +16,12 @@
         </div>
         <div class="navbar-center">
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="ค้นหาของเล่นสัตว์เลี้ยง...">
-                <button class="search-button">
-                    <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
-                </button>
+                <form method="get" action="{% url 'petjoy:search' %}" style="display:flex;align-items:center;">
+                    <input name="q" type="text" class="search-input" placeholder="ค้นหาของเล่นสัตว์เลี้ยง...">
+                    <button type="submit" class="search-button">
+                        <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
+                    </button>
+                </form>
             </div>
         </div>
         <div class="navbar-right">

@@ -9,8 +9,8 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Product, Review
-from django.db.models import Avg
+from .models import Product, Review, Category
+from django.db.models import Avg, Q
 from .forms import ProductForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -74,8 +74,10 @@ def register_view(request):
         form = RegisterForm(request.POST)
         if form.is_valid():
             form.save()
+            # Redirect to login and include a flag + username so the login page can show a message and prefill
+            username = form.cleaned_data.get('username')
             messages.success(request, "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ")
-            return redirect("petjoy:login")
+            return redirect(f"{reverse_lazy('petjoy:login')}?registered=1&username={username}")
         else:
             return render(request, "petjoy/register.html", {'form': form, 'auth_page': True})
 
@@ -175,6 +177,9 @@ def entrepreneur_home(request):
     })
 
 def login_view(request):
+    # Support redirecting to a `next` URL after login (from ?next=...)
+    next_url = request.GET.get('next') or request.POST.get('next')
+
     if request.method == "POST":
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
@@ -183,12 +188,17 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
-                
-                # ตรวจสอบว่า user คนนี้เป็นผู้ประกอบการหรือไม่ (รองรับทั้งชื่อ field entrepreneur และ entrepreneur_profile)
-                # บังคับให้ไปหน้า entrepreneur_home ทุกกรณี
                 messages.info(request, f"ยินดีต้อนรับ, {username}!")
-                return redirect("petjoy:entrepreneur-home")
-                    
+
+                # If a next URL was provided, use it first.
+                if next_url:
+                    return redirect(next_url)
+
+                # Redirect entrepreneur users to entrepreneur_home, others to homepage
+                if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
+                    return redirect("petjoy:entrepreneur-home")
+
+                return redirect("petjoy:homepage")
             else:
                 messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
         else:
@@ -214,3 +224,21 @@ def dog_products_view(request):
     dog_category = Category.objects.filter(name__iexact='dog').first()
     products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
     return render(request, 'petjoy/dog_products.html', {'products': products})
+from .models import Category
+
+
+def search_view(request):
+    q = request.GET.get('q', '').strip()
+    products = Product.objects.none()
+    categories = Category.objects.none()
+    if q:
+        products = Product.objects.filter(
+            Q(name__icontains=q) | Q(description__icontains=q) | Q(features__icontains=q)
+        )
+        categories = Category.objects.filter(name__icontains=q) | Category.objects.filter(display_name__icontains=q)
+
+    return render(request, 'petjoy/search_results.html', {
+        'query': q,
+        'products': products,
+        'categories': categories,
+    })
