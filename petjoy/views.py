@@ -16,7 +16,7 @@ from .models import Product, Review, Category, Profile
 from django.db.models import Avg, Q
 from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
-from django.contrib.auth.decorators import login_required
+
 logger = logging.getLogger(__name__)
 
 def homepage(request):
@@ -111,6 +111,9 @@ def entrepreneur_profile_edit(request):
         # render หน้าเดิมพร้อมข้อมูลใหม่
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
+def entrepreneur_register(request):
+    return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
 
 class ProductListView(ListView):
     model = Product
@@ -139,9 +142,6 @@ class ProductDeleteView(DeleteView):
     template_name = 'petjoy/products/product_confirm_delete.html'
     success_url = reverse_lazy('petjoy:product-list')
 
-
-def entrepreneur_register(request):
-    return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
 
 
@@ -220,7 +220,6 @@ def login_view(request):
 
     return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True, 'next': next_url})
 
-# หน้าโปรไฟล์ผู้ใช้ทั่วไป
 
 @login_required
 def profile_view(request):
@@ -262,12 +261,12 @@ def profile_view(request):
         'profile_form': profile_form,
         'editing': request.GET.get('edit') == '1'
     })
+
 # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
 def cat_products_view(request):
     cat_category = Category.objects.filter(name__iexact='cat').first()
     products = Product.objects.filter(category=cat_category) if cat_category else Product.objects.none()
     return render(request, 'petjoy/cat_products.html', {'products': products})
-from .models import Product, Review, Category
 # สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
 def dog_products_view(request):
     dog_category = Category.objects.filter(name__iexact='dog').first()
