@@ -26,7 +26,9 @@ class Product(models.Model):
     
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
+    # Remove hard-coded default file path. Use blank/null so templates can
+    # provide a static fallback when no image is uploaded.
+    image = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     # Users can favorite products; only registered users have a Profile
     favorites = models.ManyToManyField('Product', blank=True, related_name='favorited_by')
 

@@ -20,7 +20,7 @@
     </aside>
     <div class="profile-card">
         <div class="profile-image-section">
-            {% if user.profile.image.name != 'profile_pics/default.jpg' and user.profile.image.name %}
+            {% if user.profile.image %}
             <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image-large">
             {% else %}
             <img src="{% static 'images/อินแล้ว.jpg' %}" alt="{{ user.username }}" class="profile-image-large">

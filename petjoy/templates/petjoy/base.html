@@ -25,10 +25,10 @@
             <span class="cart-icon">🛒</span>
             {% if user.is_authenticated %}
                 <a href="{% url 'petjoy:profile' %}" class="profile-link">
-                    {% if user.profile.image.name != 'profile_pics/default.jpg' and user.profile.image.name %}
+                    {% if user.profile.image %}
                         <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                     {% else %}
-                        <img src="{% static 'images/default_profile.svg' %}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <img src="{% static 'images/อินแล้ว.jpg' %}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                     {% endif %}
                 </a>
             {% else %}
