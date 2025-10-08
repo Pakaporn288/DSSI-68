@@ -1,41 +1,9 @@
+{% extends 'petjoy/base.html' %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PetJoy</title>
-    <link rel="stylesheet" href="{% static 'decorate.css' %}">
-</head>
-<body>
-    {% csrf_token %}
-    <header class="navbar">
-        <div class="navbar-left">
-            <div class="logo">🐾 PetJoy</div>
-        </div>
-        <div class="navbar-center">
-            <div class="search-bar">
-                <form method="get" action="{% url 'petjoy:search' %}" style="display:flex;align-items:center;">
-                    <input name="q" type="text" class="search-input" placeholder="ค้นหาของเล่นสัตว์เลี้ยง...">
-                    <button type="submit" class="search-button">
-                        <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
-                    </button>
-                </form>
-            </div>
-        </div>
-        <div class="navbar-right">
-            <span class="cart-icon">🛒</span>
-            {% if user.is_authenticated %}
-                <a href="#" class="profile-icon">
-                    {{ user.username.0|upper }}
-                </a>
-            {% else %}
-                <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
-            {% endif %}
-        </div>
-    </header>
+{% block title %}PetJoy{% endblock %}
 
+{% block content %}
     <main class="content">
         <div class="welcome-banner">
             <p>Have a good Day!</p>
@@ -107,7 +75,5 @@
     </div>
     <button class="chatbot-toggle-button">💬</button>
 
-    <script src="{% static 'js/chatbot.js' %}"></script>
-    <script src="{% static 'js/main.js' %}"></script>
-</body>
-</html>
+    {# scripts are included in base.html to avoid duplicates #}
+{% endblock %}

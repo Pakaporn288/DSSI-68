@@ -1,46 +1,26 @@
+{% extends 'petjoy/base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="th">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>ผลการค้นหา - PetJoy</title>
-    <link rel="stylesheet" href="{% static 'decorate.css' %}">
-</head>
-<body>
-    <header class="navbar">
-        <div class="navbar-left"><div class="logo">🐾 PetJoy</div></div>
-        <div class="navbar-center">
-            <form method="get" action="{% url 'petjoy:search' %}" style="display:flex;align-items:center;">
-                <input name="q" type="text" class="search-input" value="{{ query }}" placeholder="ค้นหาสินค้า...">
-                <button type="submit" class="search-button">
-                    <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
-                </button>
-            </form>
-        </div>
-        <div class="navbar-right">
-            {% if user.is_authenticated %}
-                <a href="#" class="profile-icon">{{ user.username.0|upper }}</a>
-            {% else %}
-                <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
-            {% endif %}
-        </div>
-    </header>
 
-    <main class="content">
-        <section class="search-results" style="padding:20px; max-width:1100px; margin:0 auto;">
-            <div class="search-header" style="display:flex;align-items:center;justify-content:space-between;gap:12px;">
-                <h2 style="margin:0; font-size:1.25rem;">ผลการค้นหา</h2>
-                <div style="color:#6b7280">คำค้น: "<strong>{{ query }}</strong>"</div>
+{% block title %}ค้นหา - PetJoy{% endblock %}
+
+{% block content %}
+<main class="content" style="padding:20px; max-width:1100px; margin:0 auto;">
+    <section class="search-results">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
+            <div style="display:flex;align-items:center;gap:12px;">
+                <button type="button" onclick="history.back()" class="back-btn" aria-label="ย้อนกลับ">&lt;</button>
+                <h2 style="margin:0;">ค้นหา</h2>
             </div>
+            <div style="color:#6b7280">ผลการค้นหา: "<strong>{{ query }}</strong>"</div>
+        </div>
 
-            <div style="margin-top:12px; display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
-                <div class="left-col" style="flex:1 1 65%; min-width:300px;">
-                    <div style="margin-bottom:8px; color:#374151;">ผลลัพธ์สินค้า ({{ products|length }})</div>
-                    {% if products %}
-                    <div class="products-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px;">
+        <div style="margin-top:16px; display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
+            <div style="flex:1 1 65%; min-width:300px;">
+                <div style="margin-bottom:8px; color:#374151;">สินค้าที่พบ ({{ products|length }})</div>
+                {% if products %}
+                    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px;">
                         {% for product in products %}
-                        <article class="product-card" style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; background:#fff;">
+                        <article style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; background:#fff;">
                             <a href="{% url 'petjoy:product-detail' product.id %}" style="text-decoration:none;color:inherit; display:block;">
                                 <div style="height:150px;display:flex;align-items:center;justify-content:center;background:#f9fafb;">
                                     {% if product.image %}
@@ -52,9 +32,9 @@
                                 <div style="padding:10px;">
                                     <h3 style="margin:0 0 6px 0; font-size:1rem;">{{ product.name }}</h3>
                                     {% if product.features %}
-                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem; line-height:1.2; max-height:3.6em; overflow:hidden;">{{ product.features|truncatechars:120 }}</p>
+                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem;">{{ product.features|truncatechars:120 }}</p>
                                     {% elif product.description %}
-                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem; line-height:1.2; max-height:3.6em; overflow:hidden;">{{ product.description|truncatechars:120 }}</p>
+                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem;">{{ product.description|truncatechars:120 }}</p>
                                     {% endif %}
                                     {% if product.price %}
                                         <div style="font-weight:600; color:#111827;">฿{{ product.price }}</div>
@@ -64,37 +44,26 @@
                         </article>
                         {% endfor %}
                     </div>
+                {% else %}
+                    <div class="no-results" style="padding:16px; background:#fff; border:1px dashed #e5e7eb; border-radius:8px;">ไม่มีสินค้า</div>
+                {% endif %}
+            </div>
+
+            <aside style="flex:1 1 30%; min-width:220px;">
+                <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #e5e7eb;">
+                    <h4 style="margin-top:0;">หมวดหมู่ที่เกี่ยวข้อง</h4>
+                    {% if categories %}
+                        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;">
+                            {% for cat in categories %}
+                                <li style="padding:8px; border-radius:6px; background:#f8fafc;">{{ cat.display_name }}</li>
+                            {% endfor %}
+                        </ul>
                     {% else %}
-                        <div class="no-results" style="padding:16px; background:#fff; border:1px dashed #e5e7eb; border-radius:8px;">ไม่พบสินค้า</div>
+                        <div style="color:#6b7280;">ไม่มีหมวดหมู่ที่เกี่ยวข้อง</div>
                     {% endif %}
                 </div>
-
-                <aside class="right-col" style="flex:1 1 30%; min-width:220px;">
-                    <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #e5e7eb;">
-                        <h4 style="margin-top:0;">หมวดหมู่ที่เกี่ยวข้อง</h4>
-                        {% if categories %}
-                            <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;">
-                                {% for cat in categories %}
-                                    <li style="padding:8px; border-radius:6px; background:#f8fafc;">{{ cat.display_name }}</li>
-                                {% endfor %}
-                            </ul>
-                        {% else %}
-                            <div style="color:#6b7280;">ไม่พบหมวดหมู่ที่เกี่ยวข้อง</div>
-                        {% endif %}
-                    </div>
-                </aside>
-            </div>
-        </section>
-    </main>
-
-    <script>
-        // small helper: focus search input on page load
-        (function(){
-            var input = document.querySelector('input[name="q"]');
-            if(input){ input.focus(); }
-        })();
-    </script>
-
-    <script src="{% static 'js/main.js' %}"></script>
-</body>
-</html>
+            </aside>
+        </div>
+    </section>
+</main>
+{% endblock %}

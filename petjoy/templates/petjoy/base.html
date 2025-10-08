@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PetJoy{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'decorate.css' %}">
+    <link rel="stylesheet" href="{% static 'search_form.css' %}">
 </head>
 <body>
 
@@ -17,10 +18,7 @@
         </div>
         <div class="navbar-center">
             <div class="search-bar">
-                <input type="text" class="search-input" placeholder="ค้นหาของเล่นสัตว์เลี้ยง...">
-                <button class="search-button">
-                    <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
-                </button>
+                {% include 'petjoy/partials/search_form.html' %}
             </div>
         </div>
         <div class="navbar-right">

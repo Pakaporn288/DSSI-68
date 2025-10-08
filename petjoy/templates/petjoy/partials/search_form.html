@@ -1,0 +1,7 @@
+{% load static %}
+<form method="get" action="{% url 'petjoy:search' %}" class="search-form">
+    <input name="q" type="search" class="search-input" placeholder="ค้นหาสินค้า..." value="{% if value %}{{ value }}{% elif request.GET.q %}{{ request.GET.q }}{% endif %}" aria-label="ค้นหา">
+    <button type="submit" class="search-button" aria-label="ค้นหา">
+        <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
+    </button>
+</form>

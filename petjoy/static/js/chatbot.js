@@ -6,28 +6,39 @@ document.addEventListener('DOMContentLoaded', () => {
     const sendButton = document.getElementById('chatbot-send');
     const inputField = document.getElementById('chatbot-input');
     const chatBody = document.getElementById('chat-response');
-    // ดึงบัตรผ่าน (CSRF Token) ที่เราใส่ไว้ใน HTML
-    const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value; 
+    // ดึงบัตรผ่าน (CSRF Token) ที่เราใส่ไว้ใน HTML -- guard in case it's not present
+    const csrfElem = document.querySelector('[name=csrfmiddlewaretoken]');
+    const csrfToken = csrfElem ? csrfElem.value : null;
 
     // --- ฟังก์ชันควบคุมการทำงาน ---
 
     // 1. ฟังก์ชันเปิด-ปิดหน้าต่างแชท
-    toggleButton.addEventListener('click', () => {
-        chatContainer.classList.toggle('hidden');
-    });
+    if (toggleButton && chatContainer) {
+        toggleButton.addEventListener('click', () => {
+            chatContainer.classList.toggle('hidden');
+        });
+    } else {
+        // If elements are missing, skip wiring but do not throw.
+        console.warn('Chatbot elements not found; toggle unavailable.');
+        return; // nothing more to do
+    }
 
     // 2. ฟังก์ชันส่งข้อความ (เมื่อกดปุ่ม "ส่ง")
-    sendButton.addEventListener('click', () => {
-        sendMessage();
-    });
+    if (sendButton) {
+        sendButton.addEventListener('click', () => {
+            sendMessage();
+        });
+    }
 
     // 3. ฟังก์ชันส่งข้อความ (เมื่อกดปุ่ม "Enter" บนคีย์บอร์ด)
-    inputField.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter') {
-            event.preventDefault(); // ไม่ให้ฟอร์มขึ้นบรรทัดใหม่
-            sendMessage();
-        }
-    });
+    if (inputField) {
+        inputField.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // ไม่ให้ฟอร์มขึ้นบรรทัดใหม่
+                sendMessage();
+            }
+        });
+    }
 
     // --- ฟังก์ชันหลักในการส่งและรับข้อความ ---
 

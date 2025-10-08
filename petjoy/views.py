@@ -14,6 +14,8 @@ from django.db.models import Avg, Q
 from .forms import ProductForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from .models import Profile
+from .models import Category
 
 def homepage(request):
     products = Product.objects.all()[:4]
@@ -208,7 +210,7 @@ def login_view(request):
     return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
 
 # หน้าโปรไฟล์ผู้ใช้ทั่วไป
-from .models import Profile
+
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -224,7 +226,7 @@ def dog_products_view(request):
     dog_category = Category.objects.filter(name__iexact='dog').first()
     products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
     return render(request, 'petjoy/dog_products.html', {'products': products})
-from .models import Category
+
 
 
 def search_view(request):
