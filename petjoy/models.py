@@ -27,6 +27,8 @@ class Product(models.Model):
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     image = models.ImageField(default='profile_pics/default.jpg', upload_to='profile_pics')
+    # Users can favorite products; only registered users have a Profile
+    favorites = models.ManyToManyField('Product', blank=True, related_name='favorited_by')
 
     def __str__(self):
         return f'{self.user.username} Profile'

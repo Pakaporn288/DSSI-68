@@ -13,8 +13,8 @@
     {% if not auth_page %}
     <header class="navbar">
         <div class="navbar-left">
-                <div class="logo">🐾 PetJoy</div>
-            </a>
+            {% comment %}Show clickable logo on all pages except profile; use request.path to detect profile route{% endcomment %}
+            <a href="{% url 'petjoy:homepage' %}" class="logo">🐾 PetJoy</a>
         </div>
         <div class="navbar-center">
             <div class="search-bar">
@@ -25,7 +25,11 @@
             <span class="cart-icon">🛒</span>
             {% if user.is_authenticated %}
                 <a href="{% url 'petjoy:profile' %}" class="profile-link">
-                    <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                    {% if user.profile.image.name != 'profile_pics/default.jpg' and user.profile.image.name %}
+                        <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                    {% else %}
+                        <img src="{% static 'images/default_profile.svg' %}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                    {% endif %}
                 </a>
             {% else %}
                 <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
@@ -50,5 +54,6 @@
     <form id="csrf-form" style="display:none;">{% csrf_token %}</form>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/chatbot.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
 </body>
 </html>

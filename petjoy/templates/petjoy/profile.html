@@ -4,40 +4,75 @@
 {% block title %}โปรไฟล์ของฉัน{% endblock %}
 
 {% block content %}
-<div class="profile-page-wrapper" style="display:flex; gap:2.5rem; max-width:1300px; margin:60px auto; align-items:flex-start;">
-    <aside class="profile-sidebar" style="width:270px; background:#fff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06); padding:2.5rem 2rem;">
-        <h3 style="margin-top:0; color:#FF7043;">ข้อมูลส่วนตัว</h3>
-        <nav class="profile-menu" style="display:flex; flex-direction:column; gap:1rem; margin-top:2rem;">
-            <a href="#" class="profile-menu-item active" style="background:#FF7043; color:#fff; border-radius:6px; padding:0.7em 1em; text-decoration:none;">ข้อมูลส่วนตัว</a>
-            <a href="#" class="profile-menu-item" style="color:#FF7043;">ที่อยู่</a>
-            <a href="#" class="profile-menu-item" style="color:#FF7043;">ประวัติการสั่งซื้อ</a>
-            <a href="#" class="profile-menu-item" style="color:#FF7043;">รายการโปรด</a>
-            <form method="post" action="{% url 'petjoy:logout' %}" style="margin:0;">
+<div class="profile-page-wrapper">
+    <aside class="profile-sidebar">
+        <h3 class="profile-sidebar-title">ข้อมูลส่วนตัว</h3>
+        <nav class="profile-menu">
+            <a href="#" class="profile-menu-item active">ข้อมูลส่วนตัว</a>
+            <a href="#" class="profile-menu-item">ที่อยู่</a>
+            <a href="#" class="profile-menu-item">ประวัติการสั่งซื้อ</a>
+            <a href="{% url 'petjoy:favorites_list' %}" class="profile-menu-item">รายการโปรด</a>
+            <form method="post" action="{% url 'petjoy:logout' %}" class="logout-form">
                 {% csrf_token %}
-                <button type="submit" class="profile-menu-item" style="color:#FF7043; background:none; border:none; padding:0.7em 1em; text-align:left; width:100%; cursor:pointer;">ออกจากระบบ</button>
+                <button type="submit" class="profile-menu-item logout-button">ออกจากระบบ</button>
             </form>
         </nav>
     </aside>
-    <div class="profile-card" style="flex:1; display:flex; gap:2.5rem; align-items:flex-start; background:#fff; border-radius:16px; box-shadow:0 4px 16px rgba(0,0,0,0.06); padding:2.5rem; min-width:400px;">
+    <div class="profile-card">
         <div class="profile-image-section">
-            <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image-large" style="width:130px; height:130px; border-radius:50%; object-fit:cover; border:4px solid #fff; box-shadow:0 2px 8px rgba(0,0,0,0.12);">
+            {% if user.profile.image.name != 'profile_pics/default.jpg' and user.profile.image.name %}
+            <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image-large">
+            {% else %}
+            <img src="{% static 'images/อินแล้ว.jpg' %}" alt="{{ user.username }}" class="profile-image-large">
+            {% endif %}
         </div>
-        <div class="profile-info-section" style="flex:1; font-size:1.18em;">
-            <h2 style="margin-bottom:0; font-size:2em;">{{ user.get_full_name|default:user.username }}</h2>
-            <div class="profile-email" style="color:#888; margin-bottom:2rem; font-size:1.1em;">{{ user.email }}</div>
-            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
-                <b>ชื่อ-นามสกุล</b> {{ user.get_full_name|default:user.username }}
-                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
+        <div class="profile-info-section">
+            {% if editing %}
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="form-row">
+                    {{ user_form.first_name.label_tag }}
+                    {{ user_form.first_name }}
+                </div>
+                <div class="form-row">
+                    {{ user_form.last_name.label_tag }}
+                    {{ user_form.last_name }}
+                </div>
+                <div class="form-row">
+                    {{ user_form.email.label_tag }}
+                    {{ user_form.email }}
+                </div>
+                <div class="form-row">
+                    <label for="id_image">รูปโปรไฟล์</label>
+                    {{ profile_form.image }}
+                </div>
+                <div class="form-row">
+                    {{ user_form.password.label_tag }}
+                    {{ user_form.password }}
+                    <small>เว้นว่างไว้หากไม่ต้องการเปลี่ยนรหัสผ่าน</small>
+                </div>
+                <div style="margin-top:16px;">
+                    <button type="submit" class="profile-edit-btn">บันทึกการเปลี่ยนแปลง</button>
+                    <a href="{% url 'petjoy:profile' %}" class="white-btn" style="margin-left:8px;">ยกเลิก</a>
+                </div>
+            </form>
+            {% else %}
+            <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
+            <div class="profile-email">{{ user.email }}</div>
+            <div class="profile-detail-row">
+                <b>ชื่อ-นามสกุล</b>
+                <span class="profile-detail-value">{{ user.get_full_name|default:user.username }}</span>
             </div>
-            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
-                <b>อีเมล์</b> {{ user.email }}
-                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
+            <div class="profile-detail-row">
+                <b>อีเมล์</b>
+                <span class="profile-detail-value">{{ user.email }}</span>
             </div>
-            <div class="profile-detail-row" style="margin-bottom:1.1rem; display:flex; align-items:center; gap:0.5em;">
-                <b>รหัสผ่าน</b> ******
-                {% if request.GET.edit %}<span title="แก้ไข" style="color:#FF7043; cursor:pointer; font-size:1.1em;">&#9998;</span>{% endif %}
+            <div class="profile-detail-row">
+                <b>รหัสผ่าน</b>
+                <span class="profile-detail-value">******</span>
             </div>
-            <a href="?edit=1" class="profile-edit-btn" style="display:inline-block; margin-top:2rem; background:#FF7043; color:#fff; padding:0.7em 2em; border-radius:8px; text-decoration:none; font-size:1.1em;">{% if request.GET.edit %}กำลังแก้ไข{% else %}แก้ไข{% endif %}</a>
+            <a href="?edit=1" class="profile-edit-btn">แก้ไข</a>
+            {% endif %}
         </div>
     </div>
 </div>

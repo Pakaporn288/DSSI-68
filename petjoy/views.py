@@ -7,15 +7,17 @@ from .ai_service import get_ai_response
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth import update_session_auth_hash
+import logging
+from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
-from .models import Product, Review, Category
+from .models import Product, Review, Category, Profile
 from django.db.models import Avg, Q
-from .forms import ProductForm
+from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
-from .models import Profile
-from .models import Category
+logger = logging.getLogger(__name__)
 
 def homepage(request):
     products = Product.objects.all()[:4]
@@ -44,25 +46,7 @@ def ask_ai_view(request):
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
-def login_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(request, data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=password)
-            if user is not None:
-                login(request, user)
-                messages.info(request, f"ยินดีต้อนรับกลับมา, {username}")
-                return redirect("petjoy:homepage")
-            else:
-                messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
-        else:
-            messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
-    form = AuthenticationForm()
-    # ✅ สำคัญ: ต้องส่ง context 'auth_page': True ด้วย
-    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
 
 def logout_view(request):
     logout(request)
@@ -91,7 +75,7 @@ def register_view(request):
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     reviews = product.reviews.all().order_by('-created_at')
-    return render(request, 'petjoy/product_detail.html', {
+    return render(request, 'petjoy/products/product_detail.html', {
         'product': product,
         'reviews': reviews
     })
@@ -130,29 +114,29 @@ def entrepreneur_profile_edit(request):
 
 class ProductListView(ListView):
     model = Product
-    template_name = 'petjoy/product_list.html'
+    template_name = 'petjoy/products/product_list.html'
     context_object_name = 'products'
 
 class ProductDetailView(DetailView):
     model = Product
-    template_name = 'petjoy/product_detail.html'
+    template_name = 'petjoy/products/product_detail.html'
     context_object_name = 'product'
 
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
-    template_name = 'petjoy/product_form.html'
+    template_name = 'petjoy/products/product_form.html'
     success_url = reverse_lazy('petjoy:product-list')
 
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
-    template_name = 'petjoy/product_update_form.html'
+    template_name = 'petjoy/products/product_update_form.html'
     success_url = reverse_lazy('petjoy:product-list')
 
 class ProductDeleteView(DeleteView):
     model = Product
-    template_name = 'petjoy/product_confirm_delete.html'
+    template_name = 'petjoy/products/product_confirm_delete.html'
     success_url = reverse_lazy('petjoy:product-list')
 
 
@@ -186,9 +170,11 @@ def login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
+            logger.debug(f"Login attempt for username (raw): '{username}'")
             password = form.cleaned_data.get('password')
             user = authenticate(username=username, password=password)
             if user is not None:
+                logger.debug(f"authenticate() returned user id={user.id} username={user.username}")
                 login(request, user)
                 messages.info(request, f"ยินดีต้อนรับ, {username}!")
 
@@ -202,19 +188,80 @@ def login_view(request):
 
                 return redirect("petjoy:homepage")
             else:
+                # As a fallback, try to locate a user with a case-insensitive username
+                # (helps with users who typed different case or unicode normalization differences)
+                User = get_user_model()
+                try:
+                    found = User.objects.filter(username__iexact=username).first()
+                except Exception:
+                    found = None
+
+                if found:
+                    logger.debug(f"Found user by iexact lookup: {found.username} (id={found.id}) - trying authenticate with found.username")
+                    user = authenticate(username=found.username, password=password)
+                    if user is not None:
+                        logger.debug(f"Fallback authenticate succeeded for user id={user.id}")
+                        login(request, user)
+                        messages.info(request, f"ยินดีต้อนรับ, {found.username}!")
+                        if next_url:
+                            return redirect(next_url)
+                        if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
+                            return redirect("petjoy:entrepreneur-home")
+                        return redirect("petjoy:homepage")
+
+                logger.debug("authenticate() failed and fallback did not find valid credentials")
                 messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
         else:
+            # Keep the bound form so template can render specific form errors
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
-    form = AuthenticationForm()
-    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True})
+    else:
+        form = AuthenticationForm(request)
+
+    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True, 'next': next_url})
 
 # หน้าโปรไฟล์ผู้ใช้ทั่วไป
 
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
-    return render(request, 'petjoy/profile.html', {'profile': profile})
+
+    # If editing (via ?edit=1) show forms and accept POST
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+            password = user_form.cleaned_data.get('password')
+            if password:
+                user.set_password(password)
+            user.save()
+            profile_form.save()
+            messages.success(request, 'อัปเดตข้อมูลสำเร็จ')
+            # If password changed we need to re-authenticate; redirect to login
+            if password:
+                # Update the session auth hash so the user stays logged in after password change
+                try:
+                    update_session_auth_hash(request, user)
+                    logger.debug(f"update_session_auth_hash called for user {user.username} (id={user.id})")
+                    messages.info(request, 'เข้าสู่ระบบใหม่เรียบร้อยหลังการเปลี่ยนรหัสผ่าน')
+                except Exception as e:
+                    logger.exception('update_session_auth_hash failed')
+                    # If update fails for any reason, fallback to asking user to log in again
+                    return redirect('petjoy:login')
+            return redirect('petjoy:profile')
+        else:
+            messages.error(request, 'มีข้อผิดพลาดในการกรอกข้อมูล')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile)
+
+    return render(request, 'petjoy/profile.html', {
+        'profile': profile,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'editing': request.GET.get('edit') == '1'
+    })
 # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
 def cat_products_view(request):
     cat_category = Category.objects.filter(name__iexact='cat').first()
@@ -244,3 +291,42 @@ def search_view(request):
         'products': products,
         'categories': categories,
     })
+
+
+@login_required
+def toggle_favorite(request):
+    """AJAX endpoint to toggle favorite for the logged-in user.
+    Expects POST with JSON: {"product_id": <id>} or form-encoded product_id.
+    Returns JSON {"status": "added"|"removed", "favorites_count": <int>}.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    # Try to parse JSON body first, fall back to POST data
+    try:
+        data = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except Exception:
+        data = {}
+
+    product_id = data.get('product_id') or request.POST.get('product_id')
+    if not product_id:
+        return JsonResponse({'error': 'product_id required'}, status=400)
+
+    product = get_object_or_404(Product, id=product_id)
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    if product in profile.favorites.all():
+        profile.favorites.remove(product)
+        status = 'removed'
+    else:
+        profile.favorites.add(product)
+        status = 'added'
+
+    return JsonResponse({'status': status, 'favorites_count': profile.favorites.count()})
+
+
+@login_required
+def favorites_list(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    products = profile.favorites.all()
+    return render(request, 'petjoy/favorites_list.html', {'products': products})

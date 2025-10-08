@@ -7,6 +7,7 @@
 <style>
     .navbar { display: none !important; }
 </style>
+<!-- #หน้ารายการสินค้า -->
 <div style="display: flex; gap: 2rem; max-width: 1200px; margin: 40px auto;">
     <aside class="sidebar">
         <nav class="sidebar-menu">
@@ -50,6 +51,9 @@
                         {% endif %}
                     </td>
                     <td style="font-weight: bold; color: #FF7043;">{{ product.name }}</td>
+                    <td style="text-align: center;">
+                        <button class="favorite-toggle" data-product-id="{{ product.pk }}" aria-pressed="false" title="เพิ่มลงรายการโปรด">♡</button>
+                    </td>
                     <td style="color: #555;">{{ product.description }}</td>
                     <td style="text-align: right; color: #E65100; font-weight: 500;">{{ product.price }} บาท</td>
                     <td>{{ product.category.display_name }}</td>
@@ -71,4 +75,5 @@
         </table>
     </div>
 </div>
+<script src="{% static 'js/favorites.js' %}"></script>
 {% endblock %}

@@ -3,6 +3,28 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from .models import Product
+from django.contrib.auth.models import User
+from .models import Profile
+
+
+class UserUpdateForm(forms.ModelForm):
+    first_name = forms.CharField(required=False, label='ชื่อ')
+    last_name = forms.CharField(required=False, label='นามสกุล')
+    email = forms.EmailField(required=True, label='อีเมล์')
+    password = forms.CharField(required=False, widget=forms.PasswordInput, label='เปลี่ยนรหัสผ่าน')
+
+    class Meta:
+        model = User
+        # Do not include 'password' in the Meta.fields: we handle password updates
+        # manually in the view using set_password(). If 'password' is present here,
+        # form.save() will overwrite the hashed password with the raw value (or blank).
+        fields = ['first_name', 'last_name', 'email']
+
+
+class ProfileUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        fields = ['image']
 
 # ฟอร์มนี้คือฟอร์มสมัครสมาชิกที่ถูกต้องเพียงอันเดียวที่เราจะใช้
 class RegisterForm(UserCreationForm):
@@ -29,6 +51,7 @@ class RegisterForm(UserCreationForm):
     def clean_username(self):
         username = self.cleaned_data.get('username')
         if username:
+            username = username.strip()
             # Ensure username uniqueness (case-insensitive)
             if User.objects.filter(username__iexact=username).exists():
                 raise forms.ValidationError("ชื่อผู้ใช้นี้ถูกใช้งานแล้ว โปรดเลือกชื่ออื่น")

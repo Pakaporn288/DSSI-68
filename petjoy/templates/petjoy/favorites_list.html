@@ -1,0 +1,45 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}รายการโปรดของฉัน{% endblock %}
+
+{% block content %}
+<div class="profile-page-wrapper">
+    <aside class="profile-sidebar">
+        <h3 class="profile-sidebar-title">ข้อมูลส่วนตัว</h3>
+        <nav class="profile-menu">
+            <a href="{% url 'petjoy:profile' %}" class="profile-menu-item">ข้อมูลส่วนตัว</a>
+            <a href="#" class="profile-menu-item">ที่อยู่</a>
+            <a href="#" class="profile-menu-item">ประวัติการสั่งซื้อ</a>
+            <a href="{% url 'petjoy:favorites_list' %}" class="profile-menu-item active">รายการโปรด</a>
+            <form method="post" action="{% url 'petjoy:logout' %}" class="logout-form">
+                {% csrf_token %}
+                <button type="submit" class="profile-menu-item logout-button">ออกจากระบบ</button>
+            </form>
+        </nav>
+    </aside>
+    <div class="profile-card">
+        <div style="flex:1;">
+            <h1 style="margin-top:0; color:#FF7043;">รายการโปรดของฉัน</h1>
+            <div class="favorites-grid">
+                {% for product in products %}
+                <div class="fav-item">
+                    {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="fav-image">
+                    {% endif %}
+                    <h3 class="fav-title">{{ product.name }}</h3>
+                    <p class="fav-price">{{ product.price }} บาท</p>
+                    <div class="fav-actions">
+                        <a href="{% url 'petjoy:product-detail' product.pk %}" class="white-btn">ดู</a>
+                        <button class="favorite-toggle" data-product-id="{{ product.pk }}">ลบ</button>
+                    </div>
+                </div>
+                {% empty %}
+                <p>ยังไม่มีรายการโปรด</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+<script src="{% static 'js/favorites.js' %}"></script>
+{% endblock %}
