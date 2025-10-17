@@ -19,7 +19,6 @@
                 {% endif %}
             </div>
             <div class="product-name">{{ product.name }}</div>
-            <div class="product-desc">{{ product.description }}</div>
             <div class="product-price">{{ product.price }} บาท</div>
             <a href="{% url 'petjoy:product-detail' product.pk %}" class="view-more-button">ดูรายละเอียด</a>
         </div>

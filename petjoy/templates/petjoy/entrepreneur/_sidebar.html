@@ -1,0 +1,15 @@
+{% load static %}
+<aside class="sidebar">
+    <nav class="sidebar-menu">
+        <a href="{% url 'petjoy:entrepreneur-home' %}" class="active">โปรไฟล์</a>
+        <a href="#">รายละเอียดคำสั่งซื้อ</a>
+        <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
+        <a href="#">ข้อความ</a>
+        <a href="#">แก้ไขรายละเอียด</a>
+        <a href="#">รายได้</a>
+    </nav>
+    <form method="post" action="{% url 'petjoy:logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="logout-btn">ออกจากระบบ</button>
+    </form>
+</aside>

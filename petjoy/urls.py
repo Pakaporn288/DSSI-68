@@ -15,6 +15,7 @@ urlpatterns = [
     path('register/', views.register_view, name='register'),
     path('entrepreneur/register/', entrepreneur_register, name='entrepreneur-register'),
     path('entrepreneur_home/', entrepreneur_home, name='entrepreneur-home'),
+    path('entrepreneur/<int:pk>/', views.entrepreneur_public, name='entrepreneur-public'),
     path('entrepreneur/profile/edit/', views.entrepreneur_profile_edit, name='entrepreneur-profile-edit'),
     path('ask-ai/', views.ask_ai_view, name='ask-ai'),
     path('search/', views.search_view, name='search'),

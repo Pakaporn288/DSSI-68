@@ -72,6 +72,7 @@ class Entrepreneur(models.Model):
     owner_name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=20)
+    profile_image = models.ImageField(upload_to='entrepreneur_profiles/', blank=True, null=True)
     # เพิ่ม field อื่นๆ ได้ตามต้องการ
 
     def __str__(self):

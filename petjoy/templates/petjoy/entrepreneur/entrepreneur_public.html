@@ -1,0 +1,45 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="entrepreneur-container">
+    <aside class="sidebar">
+        <nav class="sidebar-menu">
+            <a href="#">โปรไฟล์ร้าน</a>
+            <a href="#">สินค้า</a>
+        </nav>
+    </aside>
+    <main class="main-content">
+        <section class="profile-section">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" alt="{{ entrepreneur.store_name }}" class="profile-image">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" alt="{{ entrepreneur.store_name }}" class="profile-image">
+            {% endif %}
+            <div class="profile-info">
+                <h2>{{ entrepreneur.store_name }}</h2>
+                <div class="profile-owner">ผู้ดูแล: {{ entrepreneur.owner_name }}</div>
+                <div class="profile-stats">
+                    <div class="profile-stat">จำนวนสินค้า<br>{{ product_count }}</div>
+                    <div class="profile-stat">คะแนนรีวิว<br>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</div>
+                </div>
+            </div>
+        </section>
+        <section class="product-cards">
+            {% for product in products %}
+            <div class="product-card">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'images/CAT.jpg' %}" alt="{{ product.name }}">
+                {% endif %}
+                <div class="product-name">{{ product.name }}</div>
+                <div class="product-price">฿{{ product.price }}</div>
+            </div>
+            {% empty %}
+            <div>ไม่มีสินค้าภายในร้าน</div>
+            {% endfor %}
+        </section>
+    </main>
+</div>
+{% endblock %}

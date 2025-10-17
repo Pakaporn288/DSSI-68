@@ -47,11 +47,7 @@
             <div class="auth-links">
                 <p>ยังไม่มีบัญชี? <a href="{% url 'petjoy:register' %}">สมัครสมาชิก</a></p>
                 <p>คุณสนใจเป็นผู้ประกอบการหรือไม่?</p>
-                {% if user.is_authenticated %}
-                    <a href="{% url 'petjoy:entrepreneur-register' %}" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a>
-                {% else %}
-                    <a href="{% url 'petjoy:register' %}?as_entrepreneur=1" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a>
-                {% endif %}
+                <a href="{% url 'petjoy:entrepreneur-register' %}" class="auth-partner-link">สมัครเป็นผู้ประกอบการ</a>
             </div>
         </div>
     </div>

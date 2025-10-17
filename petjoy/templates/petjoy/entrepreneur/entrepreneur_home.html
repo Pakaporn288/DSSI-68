@@ -1,4 +1,4 @@
-{% extends "petjoy/base.html" %}
+
 {% load static %}
 <link rel="stylesheet" href="{% static 'decorate.css' %}">
 
@@ -29,7 +29,11 @@
 	</aside>
 	<main class="main-content">
 		<section class="profile-section">
-			<img src="{% static 'images/ร้าน.png' %}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
+			{% if entrepreneur.profile_image %}
+				<img src="{{ entrepreneur.profile_image.url }}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
+			{% else %}
+				<img src="{% static 'images/ร้าน.png' %}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
+			{% endif %}
 			<div class="profile-info">
 				<h2>{% if entrepreneur %}{{ entrepreneur.store_name }}{% else %}ร้านผู้ประกอบการ{% endif %}</h2>
 				<div class="review-score">

@@ -20,14 +20,47 @@
             {% endif %}
 
             <div class="store-info-section">
-                <img src="{% static 'images/ร้าน.png' %}" alt="Store Logo" class="store-logo">
-                <div class="store-details">
-                    <div class="store-name">Happy Dog</div>
-                    <div class="store-buttons">
-                        <a href="#" class="store-btn chat-btn">แชทเลย</a>
-                        <a href="#" class="store-btn view-store-btn">ดูร้านค้า</a>
+                {% if product.owner %}
+                    {% if product.owner.profile_image %}
+                        {% if user.is_authenticated and user == product.owner.user %}
+                            <a href="{% url 'petjoy:entrepreneur-home' %}"><img src="{{ product.owner.profile_image.url }}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                        {% else %}
+                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}"><img src="{{ product.owner.profile_image.url }}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                        {% endif %}
+                        {% else %}
+                            {% if user.is_authenticated and user == product.owner.user %}
+                            <a href="{% url 'petjoy:entrepreneur-home' %}"><img src="{% static 'images/ร้าน.png' %}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                        {% else %}
+                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}"><img src="{% static 'images/ร้าน.png' %}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                        {% endif %}
+                    {% endif %}
+                    <div class="store-details">
+                        <div class="store-name">
+                            {% if user.is_authenticated and user == product.owner.user %}
+                                <a href="{% url 'petjoy:entrepreneur-home' %}">{{ product.owner.store_name|cut:"-" }}</a>
+                            {% else %}
+                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}">{{ product.owner.store_name|cut:"-" }}</a>
+                            {% endif %}
+                        </div>
+                        <div class="store-buttons">
+                            <a href="#" class="store-btn chat-btn">แชทเลย</a>
+                            {% if user.is_authenticated and user == product.owner.user %}
+                                <a href="{% url 'petjoy:entrepreneur-home' %}" class="store-btn view-store-btn">ดูร้านค้า</a>
+                            {% else %}
+                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}" class="store-btn view-store-btn">ดูร้านค้า</a>
+                            {% endif %}
+                        </div>
                     </div>
-                </div>
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" alt="Store Logo" class="store-logo">
+                    <div class="store-details">
+                        <div class="store-name">ร้านผู้ขาย</div>
+                        <div class="store-buttons">
+                            <a href="#" class="store-btn chat-btn">แชทเลย</a>
+                            <a href="#" class="store-btn view-store-btn">ดูร้านค้า</a>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
 
             <div class="reviews-section">

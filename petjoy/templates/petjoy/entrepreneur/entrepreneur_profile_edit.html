@@ -1,71 +1,102 @@
-{% extends "petjoy/base.html" %}
 {% load static %}
-<link rel="stylesheet" href="{% static 'decorate.css' %}">
-<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>แก้ไขโปรไฟล์ร้านค้า - PetJoy</title>
+    <link rel="stylesheet" href="{% static 'decorate.css' %}">
+    <link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+    <style>
+        :root{ --brand:#fb923c; --muted:#6b7280; --bg:#fff9f5; --card:#ffffff }
+        body{ background:linear-gradient(180deg,#fffaf7 0%, #fff9f5 100%); font-family: Inter, system-ui, Arial, sans-serif; color:#111 }
+        .entrepreneur-container{ max-width:1100px; margin:36px auto; display:flex; gap:24px }
+        .sidebar{ width:260px }
+        .sidebar .sidebar-menu{ background:transparent; padding:8px }
+        .sidebar .sidebar-menu a{ display:block; padding:10px 12px; color:var(--muted); text-decoration:none; border-radius:8px }
+        .sidebar .sidebar-menu a.active{ background:var(--brand); color:#fff; font-weight:600; padding-left:14px }
+        .logout-btn{ margin-top:12px; width:100%; padding:10px; border-radius:8px; background:#ff6b3d; color:#fff; border:none }
+        .main-content{ flex:1 }
+        .profile-section form{ background:var(--card); padding:26px; border-radius:12px; box-shadow:0 6px 20px rgba(15,23,42,0.06); }
+        .profile-preview{ width:120px; height:120px; border-radius:999px; object-fit:cover; border:6px solid #fff }
+        .upload-placeholder{ display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; border:1px dashed #fde6d6; background:#fff }
+        .edit-input{ width:100%; padding:10px 12px; border-radius:10px; border:1px solid #f3e6dd }
+        .btn-primary{ background:var(--brand); color:#fff; padding:10px 14px; border-radius:10px; border:none }
+        .btn-outline{ background:transparent; border:1px solid #f3e6dd; padding:10px 12px; border-radius:10px }
+        @media (max-width:880px){ .entrepreneur-container{ flex-direction:column; padding:12px } .sidebar{ width:100% } }
+    </style>
+</head>
+<body>
+        <div class="entrepreneur-container">
+	<aside class="sidebar">
+		<nav class="sidebar-menu">
+			<a href="{% url 'petjoy:entrepreneur-home' %}" class="active">โปรไฟล์</a>
+			<a href="#">รายละเอียดคำสั่งซื้อ</a>
+			<a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
+			<a href="#">ข้อความ</a>
+			<a href="#">แก้ไขรายละเอียด</a>
+			<a href="#">รายได้</a>
+		</nav>
+		<form method="post" action="{% url 'petjoy:logout' %}">
+			{% csrf_token %}
+			<button type="submit" class="logout-btn">ออกจากระบบ</button>
+		</form>
+	</aside>
 
-{% block content %}
-<div class="entrepreneur-container">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="{% url 'petjoy:entrepreneur-home' %}" class="active">โปรไฟล์</a>
-            <a href="#">รายละเอียดคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-            <a href="#">ข้อความ</a>
-            <a href="#">แก้ไขรายละเอียด</a>
-            <a href="#">รายได้</a>
-        </nav>
-        <form method="post" action="{% url 'petjoy:logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn">ออกจากระบบ</button>
-        </form>
-    </aside>
-    <main class="main-content">
-        <section class="profile-section">
-            <form method="POST" enctype="multipart/form-data" style="max-width: 500px; margin: 0 auto; background: #fff; padding: 32px 28px; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08);">
-                {% csrf_token %}
-                <h2 style="text-align:center; font-size:1.2rem; font-weight:600; color:#fb923c; margin-bottom:18px;">แก้ไขโปรไฟล์ผู้ประกอบการ</h2>
-                <div style="display:flex; flex-direction:column; align-items:center; margin-bottom:22px;">
-                    <img id="profilePreview" src="{% if entrepreneur.profile_image %}{{ entrepreneur.profile_image.url }}{% else %}{% static 'images/ร้าน.png' %}{% endif %}" alt="โปรไฟล์ผู้ขาย" style="width:120px; height:120px; object-fit:cover; border-radius:50%; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:10px;">
-                    <input type="file" id="id_profile_image" name="profile_image" class="edit-input" style="width:220px;" onchange="previewProfileImage(event)">
-                </div>
-                <div class="edit-field">
-                    <label for="id_store_name">ชื่อร้าน</label>
-                    <input type="text" id="id_store_name" name="store_name" class="edit-input" value="{{ entrepreneur.store_name }}">
-                    <span class="edit-pencil" onclick="editField('id_store_name')">&#9998;</span>
-                </div>
-                <div class="edit-field">
-                    <label for="id_phone">หมายเลขเบอร์โทรศัพท์</label>
-                    <input type="text" id="id_phone" name="phone" class="edit-input" value="{{ entrepreneur.phone }}">
-                    <span class="edit-pencil" onclick="editField('id_phone')">&#9998;</span>
-                </div>
-                <div class="edit-field">
-                    <label for="id_email">อีเมล</label>
-                    <input type="email" id="id_email" name="email" class="edit-input" value="{{ entrepreneur.email }}">
-                    <span class="edit-pencil" onclick="editField('id_email')">&#9998;</span>
-                </div>
-                <div class="edit-field">
-                    <label for="id_password">รหัสผ่าน</label>
-                    <input type="password" id="id_password" name="password" class="edit-input" value="">
-                    <span class="edit-pencil" onclick="editField('id_password')">&#9998;</span>
-                </div>
-                <button type="submit" class="edit-btn-save" style="background:#fb923c; color:#fff;">บันทึกการเปลี่ยนแปลง</button>
-            </form>
-        </section>
-    </main>
-</div>
-<script>
-    function editField(id) {
-        var input = document.getElementById(id);
-        input.focus();
-        input.select && input.select();
-    }
-    function previewProfileImage(event) {
-        var reader = new FileReader();
-        reader.onload = function(){
-            var output = document.getElementById('profilePreview');
-            output.src = reader.result;
-        };
-        reader.readAsDataURL(event.target.files[0]);
-    }
-</script>
-{% endblock %}
+        <main class="main-content">
+            <section class="profile-section">
+                <form method="POST" enctype="multipart/form-data" style="max-width:680px;">
+                    {% csrf_token %}
+                    <div style="display:flex; gap:20px; align-items:center; margin-bottom:18px;">
+                        <div style="text-align:center; min-width:140px;">
+                            <img id="profilePreview" src="{% if entrepreneur.profile_image %}{{ entrepreneur.profile_image.url }}{% else %}{% static 'images/ร้าน.png' %}{% endif %}" alt="โปรไฟล์ผู้ขาย" class="profile-preview">
+                            <div style="margin-top:8px;">
+                                <label for="id_profile_image" class="upload-placeholder">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v10" stroke="#fb923c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 12l7-7 7 7" stroke="#fb923c" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                    <span class="small">เปลี่ยนรูปโปรไฟล์</span>
+                                </label>
+                                <input type="file" id="id_profile_image" name="profile_image" onchange="previewProfileImage(event)">
+                            </div>
+                        </div>
+
+                        <div style="flex:1">
+                            <div class="form-row">
+                                <label for="id_store_name">ชื่อร้าน</label>
+                                <input type="text" id="id_store_name" name="store_name" class="edit-input" value="{{ entrepreneur.store_name }}">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_owner_name">ชื่อผู้ดูแล</label>
+                                <input type="text" id="id_owner_name" name="owner_name" class="edit-input" value="{{ entrepreneur.owner_name }}">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_phone">หมายเลขโทรศัพท์</label>
+                                <input type="text" id="id_phone" name="phone" class="edit-input" value="{{ entrepreneur.phone }}">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_email">อีเมลติดต่อ</label>
+                                <input type="email" id="id_email" name="email" class="edit-input" value="{{ entrepreneur.email }}">
+                            </div>
+                            <div class="form-row">
+                                <label for="id_password">เปลี่ยนรหัสผ่าน (ถ้าต้องการ)</label>
+                                <input type="password" id="id_password" name="password" class="edit-input">
+                            </div>
+                            <div style="text-align:right; margin-top:8px;">
+                                <a href="{% url 'petjoy:entrepreneur-home' %}" class="btn btn-outline">ยกเลิก</a>
+                                <button type="submit" class="btn btn-primary">บันทึกการเปลี่ยนแปลง</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function previewProfileImage(event) {
+            var reader = new FileReader();
+            reader.onload = function(){ document.getElementById('profilePreview').src = reader.result; };
+            if (event.target.files && event.target.files[0]) reader.readAsDataURL(event.target.files[0]);
+        }
+    </script>
+</body>
+</html>

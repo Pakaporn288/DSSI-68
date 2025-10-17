@@ -59,29 +59,11 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            user = form.save()
-            # Auto-login the newly registered user
+            # Keep register flow user-only: save and redirect to login with registered flag
+            form.save()
             username = form.cleaned_data.get('username')
-            raw_password = form.cleaned_data.get('password1')
-            auth_user = authenticate(username=username, password=raw_password)
-            if auth_user is not None:
-                login(request, auth_user)
-
-            # If the registrant checked 'as_entrepreneur', create Entrepreneur and redirect to entrepreneur_home
-            if request.POST.get('as_entrepreneur'):
-                from .models import Entrepreneur
-                # Prevent creating duplicate shop for the same email
-                existing_shop = Entrepreneur.objects.filter(email__iexact=(user.email or '')).first()
-                if existing_shop:
-                    messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้วในระบบ')
-                else:
-                    # Create Entrepreneur tied to this user (basic fields can be filled later)
-                    Entrepreneur.objects.create(user=user, store_name=f"{username}'s store", owner_name=username, email=user.email or '')
-                messages.success(request, "สมัครสมาชิกและสมัครเป็นผู้ประกอบการเรียบร้อยแล้ว")
-                return redirect('petjoy:entrepreneur-home')
-
-            messages.success(request, "สมัครสมาชิกสำเร็จและเข้าสู่ระบบแล้ว")
-            return redirect('petjoy:homepage')
+            messages.success(request, "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ")
+            return redirect(f"{reverse_lazy('petjoy:login')}?registered=1&username={username}")
         else:
             return render(request, "petjoy/register.html", {'form': form, 'auth_page': True})
 
@@ -99,11 +81,15 @@ def product_detail_view(request, product_id):
     })
 
 def entrepreneur_profile_edit(request):
+    # Only allow logged-in entrepreneurs
     entrepreneur = None
-    if hasattr(request.user, 'entrepreneur'):
-        entrepreneur = request.user.entrepreneur
+    if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
+        messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินเพื่อแก้ไขโปรไฟล์')
+        return redirect('petjoy:login')
 
-    if request.method == "POST" and entrepreneur:
+    entrepreneur = request.user.entrepreneur
+
+    if request.method == "POST":
         # รับค่าจากฟอร์ม
         store_name = request.POST.get('store_name')
         phone = request.POST.get('phone')
@@ -111,60 +97,108 @@ def entrepreneur_profile_edit(request):
         password = request.POST.get('password')
         profile_image = request.FILES.get('profile_image')
 
-        # อัปเดตข้อมูล
+        # อัปเดตข้อมูล entrepreneur
         entrepreneur.store_name = store_name
         entrepreneur.phone = phone
+        entrepreneur.email = email
         if profile_image:
             entrepreneur.profile_image = profile_image
         entrepreneur.save()
 
-        # อัปเดตข้อมูล user
+        # อัปเดตข้อมูล user (เช่น password)
         user = request.user
-        user.email = email
+        if email:
+            user.email = email
         if password:
             user.set_password(password)
-        user.save()
+            user.save()
+            try:
+                update_session_auth_hash(request, user)
+            except Exception:
+                pass
+        else:
+            user.save()
 
         messages.success(request, "บันทึกการเปลี่ยนแปลงสำเร็จ!")
-        # render หน้าเดิมพร้อมข้อมูลใหม่
+
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
-@login_required
 def entrepreneur_register(request):
-    # Allow logged-in users to register their store (one Entrepreneur per user)
-    if hasattr(request.user, 'entrepreneur'):
-        messages.info(request, 'คุณมีโปรไฟล์ผู้ประกอบการแล้ว')
-        return redirect('petjoy:entrepreneur-home')
+    # Two modes:
+    # - If user is authenticated: attach Entrepreneur to request.user
+    # - If anonymous: allow creating user+entrepreneur in one flow
+    from .models import Entrepreneur
+    from django.contrib.auth.forms import UserCreationForm
 
+    if request.user.is_authenticated:
+        if hasattr(request.user, 'entrepreneur'):
+            messages.info(request, 'คุณมีโปรไฟล์ผู้ประกอบการแล้ว')
+            return redirect('petjoy:entrepreneur-home')
+
+        if request.method == 'POST':
+            store_name = request.POST.get('store_name')
+            owner_name = request.POST.get('owner_name')
+            email = request.POST.get('email') or request.user.email
+            phone = request.POST.get('phone')
+
+            if not store_name or not owner_name or not email:
+                messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
+                return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+            # Prevent duplicate shop by email
+            if Entrepreneur.objects.filter(email__iexact=email).exists():
+                messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้ว')
+                return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+            Entrepreneur.objects.create(
+                user=request.user,
+                store_name=store_name,
+                owner_name=owner_name,
+                email=email,
+                phone=phone or ''
+            )
+            messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว')
+            return redirect('petjoy:entrepreneur-home')
+
+        return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+    # Anonymous flow: create User and Entrepreneur in one form
     if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        email = request.POST.get('email')
         store_name = request.POST.get('store_name')
         owner_name = request.POST.get('owner_name')
-        email = request.POST.get('email') or request.user.email
         phone = request.POST.get('phone')
 
         # Basic validation
-        if not store_name or not owner_name or not email:
+        if not username or not password or not email or not store_name or not owner_name:
             messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-        # Prevent duplicate shop by email
-        from .models import Entrepreneur
+        # Check duplicate entrepreneur email
         if Entrepreneur.objects.filter(email__iexact=email).exists():
             messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้ว')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-        from .models import Entrepreneur
+        # Create user
+        User = get_user_model()
+        if User.objects.filter(username__iexact=username).exists():
+            messages.error(request, 'มีชื่อผู้ใช้นี้ในระบบแล้ว')
+            return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+        new_user = User.objects.create_user(username=username, email=email, password=password)
+        # Create entrepreneur tied to new_user
         Entrepreneur.objects.create(
-            user=request.user,
+            user=new_user,
             store_name=store_name,
             owner_name=owner_name,
             email=email,
             phone=phone or ''
         )
-        messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว')
-        return redirect('petjoy:entrepreneur-home')
+        messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ')
+        return redirect('petjoy:login')
 
-    # GET
     return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
 
@@ -172,6 +206,24 @@ class ProductListView(ListView):
     model = Product
     template_name = 'petjoy/products/product_list.html'
     context_object_name = 'products'
+
+    def get_queryset(self):
+        qs = super().get_queryset()
+        # If the request asks for owner's products (mine=1) and user is an entrepreneur, filter
+        req = getattr(self, 'request', None)
+        # If user is an entrepreneur, show only their products by default. Provide ?all=1 to see all.
+        if req and req.user.is_authenticated and hasattr(req.user, 'entrepreneur'):
+            if req.GET.get('all') == '1':
+                return qs
+            return qs.filter(owner=req.user.entrepreneur)
+        # For non-entrepreneurs show all products
+        return qs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        user = getattr(self.request, 'user', None)
+        ctx['is_entrepreneur'] = bool(user and getattr(user, 'entrepreneur', None))
+        return ctx
 
 class ProductDetailView(DetailView):
     model = Product
@@ -183,6 +235,20 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     template_name = 'petjoy/products/product_form.html'
     success_url = reverse_lazy('petjoy:product-list')
+    
+    def dispatch(self, request, *args, **kwargs):
+        # Only entrepreneurs can create products
+        if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
+            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนสร้างสินค้า')
+            return redirect('petjoy:entrepreneur-register')
+        return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        obj = form.save(commit=False)
+        # assign owner to the entrepreneur profile
+        obj.owner = self.request.user.entrepreneur
+        obj.save()
+        return super().form_valid(form)
 
 class ProductUpdateView(UpdateView):
     model = Product
@@ -190,10 +256,32 @@ class ProductUpdateView(UpdateView):
     template_name = 'petjoy/products/product_update_form.html'
     success_url = reverse_lazy('petjoy:product-list')
 
+    def dispatch(self, request, *args, **kwargs):
+        # Ensure only the owning entrepreneur can update
+        if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
+            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนแก้ไขสินค้า')
+            return redirect('petjoy:login')
+        obj = self.get_object()
+        if obj.owner is None or obj.owner.user_id != request.user.id:
+            messages.error(request, 'คุณไม่มีสิทธิ์แก้ไขสินค้านี้')
+            return redirect('petjoy:product-list')
+        return super().dispatch(request, *args, **kwargs)
+
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = 'petjoy/products/product_confirm_delete.html'
     success_url = reverse_lazy('petjoy:product-list')
+
+    def dispatch(self, request, *args, **kwargs):
+        # Only owner entrepreneur may delete
+        if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
+            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนลบสินค้า')
+            return redirect('petjoy:login')
+        obj = self.get_object()
+        if obj.owner is None or obj.owner.user_id != request.user.id:
+            messages.error(request, 'คุณไม่มีสิทธิ์ลบสินค้านี้')
+            return redirect('petjoy:product-list')
+        return super().dispatch(request, *args, **kwargs)
 
 
 
@@ -279,6 +367,24 @@ def login_view(request):
         form = AuthenticationForm(request)
 
     return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True, 'next': next_url})
+
+
+def entrepreneur_public(request, pk):
+    from .models import Entrepreneur, Product, Review
+    entrepreneur = get_object_or_404(Entrepreneur, pk=pk)
+    products = Product.objects.filter(owner=entrepreneur)
+    product_count = products.count()
+    all_reviews = Review.objects.filter(product__in=products)
+    if all_reviews.exists():
+        avg_score = round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
+    else:
+        avg_score = None
+    return render(request, 'petjoy/entrepreneur/entrepreneur_public.html', {
+        'entrepreneur': entrepreneur,
+        'products': products,
+        'product_count': product_count,
+        'avg_score': avg_score,
+    })
 
 
 @login_required
