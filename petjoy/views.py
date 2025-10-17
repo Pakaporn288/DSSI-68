@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 import json
 from .ai_service import get_ai_response
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -79,6 +80,33 @@ def product_detail_view(request, product_id):
         'product': product,
         'reviews': reviews
     })
+
+
+@require_POST
+def add_to_cart(request):
+    """Simple session-based cart: store {product_id: quantity} in session.
+    Expects POST with 'product_id' and optional 'quantity'.
+    """
+    product_id = request.POST.get('product_id')
+    try:
+        quantity = int(request.POST.get('quantity') or 1)
+    except (TypeError, ValueError):
+        quantity = 1
+
+    product = get_object_or_404(Product, id=product_id)
+
+    cart = request.session.get('cart', {})
+    key = str(product.id)
+    cart[key] = cart.get(key, 0) + quantity
+    request.session['cart'] = cart
+
+    messages.success(request, f'เพิ่ม "{product.name}" ลงในตะกร้า')
+
+    # Redirect back to referring page or homepage
+    referer = request.META.get('HTTP_REFERER')
+    if referer:
+        return redirect(referer)
+    return redirect('petjoy:homepage')
 
 def entrepreneur_profile_edit(request):
     # Only allow logged-in entrepreneurs

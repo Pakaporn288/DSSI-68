@@ -19,6 +19,7 @@ urlpatterns = [
     path('entrepreneur/profile/edit/', views.entrepreneur_profile_edit, name='entrepreneur-profile-edit'),
     path('ask-ai/', views.ask_ai_view, name='ask-ai'),
     path('search/', views.search_view, name='search'),
+    path('cart/add/', views.add_to_cart, name='cart-add'),
     path('favorites/', views.favorites_list, name='favorites-list'),
     # alias with underscore because some templates use 'favorites_list'
     path('favorites/', views.favorites_list, name='favorites_list'),

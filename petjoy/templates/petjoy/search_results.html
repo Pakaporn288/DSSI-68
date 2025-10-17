@@ -31,14 +31,16 @@
                                 </div>
                                 <div style="padding:10px;">
                                     <h3 style="margin:0 0 6px 0; font-size:1rem;">{{ product.name }}</h3>
-                                    {% if product.features %}
-                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem;">{{ product.features|truncatechars:120 }}</p>
-                                    {% elif product.description %}
-                                        <p style="margin:0 0 8px 0; color:#6b7280; font-size:0.9rem;">{{ product.description|truncatechars:120 }}</p>
-                                    {% endif %}
+                                    {# recommendation snippet removed as requested #}
                                     {% if product.price %}
                                         <div style="font-weight:600; color:#111827;">฿{{ product.price }}</div>
                                     {% endif %}
+                                    <form method="post" action="{% url 'petjoy:cart-add' %}" style="margin-top:8px;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                                        <input type="hidden" name="quantity" value="1">
+                                        <button type="submit" class="add-to-cart-btn" style="background:#10B981;color:#fff;padding:8px 10px;border-radius:6px;border:none;font-weight:600;cursor:pointer;">เพิ่มลงตะกร้า</button>
+                                    </form>
                                 </div>
                             </a>
                         </article>
