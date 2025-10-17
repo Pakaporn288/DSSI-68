@@ -41,6 +41,11 @@
                         <small class="error-text">{{ form.password2.errors.0 }}</small>
                     {% endif %}
                 </div>
+                <div class="form-field">
+                    <label>
+                        <input type="checkbox" name="as_entrepreneur" value="1" {% if request.GET.as_entrepreneur %}checked{% endif %}> สมัครเป็นผู้ประกอบการ (สร้างร้านผูกกับบัญชีนี้)
+                    </label>
+                </div>
                 <button class="auth-button" type="submit">สมัครสมาชิก</button>
             </form>
         

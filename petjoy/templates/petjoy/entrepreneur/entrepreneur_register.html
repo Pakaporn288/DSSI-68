@@ -17,10 +17,6 @@
             <form method="POST">
                 {% csrf_token %}
                 <div class="form-field">
-                    <label for="id_username">ชื่อผู้ใช้</label>
-                    <input type="text" name="username" id="id_username" required>
-                </div>
-                <div class="form-field">
                     <label for="id_name">ชื่อร้าน/บริษัท</label>
                     <input type="text" name="store_name" id="id_name" required>
                 </div>
@@ -29,17 +25,14 @@
                     <input type="text" name="owner_name" id="id_owner" required>
                 </div>
                 <div class="form-field">
-                    <label for="id_email">อีเมล</label>
-                    <input type="email" name="email" id="id_email" required>
+                    <label for="id_email">อีเมล (จะใช้จากบัญชีของคุณถ้าว่าง)</label>
+                    <input type="email" name="email" id="id_email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
                 </div>
                 <div class="form-field">
                     <label for="id_phone">เบอร์โทรศัพท์</label>
                     <input type="text" name="phone" id="id_phone" required>
                 </div>
-                <div class="form-field">
-                    <label for="id_password">รหัสผ่าน</label>
-                    <input type="password" name="password" id="id_password" required>
-                </div>
+                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">โปรดล็อกอินเข้าสู่ระบบด้วยบัญชีของคุณก่อน — การสมัครร้านจะผูกกับบัญชีนี้</div>
                 <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
             </form>
             <div class="auth-links">

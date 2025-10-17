@@ -20,6 +20,8 @@ class Product(models.Model):
     features = models.TextField(blank=True, null=True, help_text='คุณสมบัติสินค้า')# คุณสมบัติเด่นของสินค้า เช่น วัสดุ ขนาด สี เป็นต้น
     total_stock = models.PositiveIntegerField(default=0, help_text='จำนวนสินค้าทั้งหมด')# จำนวนสินค้าทั้งหมดที่มีในสต็อก
     stock = models.PositiveIntegerField(default=0, help_text='จำนวนสินค้าคงเหลือ') #จำนวนสินค้าคงเหลือที่สามารถขายได้
+    # Owner of the product (the entrepreneur who owns this product). Nullable for existing rows.
+    owner = models.ForeignKey('Entrepreneur', null=True, blank=True, on_delete=models.SET_NULL, related_name='products')
 
     def __str__(self):
         return self.name

@@ -31,13 +31,14 @@
 		<section class="profile-section">
 			<img src="{% static 'images/ร้าน.png' %}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
 			<div class="profile-info">
-				<h2>Happy Dog</h2>
+				<h2>{% if entrepreneur %}{{ entrepreneur.store_name }}{% else %}ร้านผู้ประกอบการ{% endif %}</h2>
 				<div class="review-score">
 					⭐ {% if avg_score %}{{ avg_score }}{% else %}-{% endif %} คะแนนรีวิว
 				</div>
 				<a href="{% url 'petjoy:entrepreneur-profile-edit' %}" class="edit-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;background:#fb923c;color:#fff;padding:8px 18px;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
 					แก้ไขโปรไฟล์ <span style="font-size:1.1em;color:#fff;">&#9998;</span>
 				</a>
+				<div class="profile-owner">ผู้ดูแล: {% if entrepreneur %}{{ entrepreneur.owner_name }}{% else %}-{% endif %}</div>
 				<div class="profile-stats">
 					<div class="profile-stat">จำนวนสินค้า<br>{{ product_count }}</div>
 					<div class="profile-stat">คะแนนรีวิว<br>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</div>

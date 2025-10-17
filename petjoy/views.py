@@ -59,11 +59,29 @@ def register_view(request):
     if request.method == "POST":
         form = RegisterForm(request.POST)
         if form.is_valid():
-            form.save()
-            # Redirect to login and include a flag + username so the login page can show a message and prefill
+            user = form.save()
+            # Auto-login the newly registered user
             username = form.cleaned_data.get('username')
-            messages.success(request, "สมัครสมาชิกสำเร็จ! กรุณาเข้าสู่ระบบ")
-            return redirect(f"{reverse_lazy('petjoy:login')}?registered=1&username={username}")
+            raw_password = form.cleaned_data.get('password1')
+            auth_user = authenticate(username=username, password=raw_password)
+            if auth_user is not None:
+                login(request, auth_user)
+
+            # If the registrant checked 'as_entrepreneur', create Entrepreneur and redirect to entrepreneur_home
+            if request.POST.get('as_entrepreneur'):
+                from .models import Entrepreneur
+                # Prevent creating duplicate shop for the same email
+                existing_shop = Entrepreneur.objects.filter(email__iexact=(user.email or '')).first()
+                if existing_shop:
+                    messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้วในระบบ')
+                else:
+                    # Create Entrepreneur tied to this user (basic fields can be filled later)
+                    Entrepreneur.objects.create(user=user, store_name=f"{username}'s store", owner_name=username, email=user.email or '')
+                messages.success(request, "สมัครสมาชิกและสมัครเป็นผู้ประกอบการเรียบร้อยแล้ว")
+                return redirect('petjoy:entrepreneur-home')
+
+            messages.success(request, "สมัครสมาชิกสำเร็จและเข้าสู่ระบบแล้ว")
+            return redirect('petjoy:homepage')
         else:
             return render(request, "petjoy/register.html", {'form': form, 'auth_page': True})
 
@@ -111,7 +129,42 @@ def entrepreneur_profile_edit(request):
         # render หน้าเดิมพร้อมข้อมูลใหม่
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
+@login_required
 def entrepreneur_register(request):
+    # Allow logged-in users to register their store (one Entrepreneur per user)
+    if hasattr(request.user, 'entrepreneur'):
+        messages.info(request, 'คุณมีโปรไฟล์ผู้ประกอบการแล้ว')
+        return redirect('petjoy:entrepreneur-home')
+
+    if request.method == 'POST':
+        store_name = request.POST.get('store_name')
+        owner_name = request.POST.get('owner_name')
+        email = request.POST.get('email') or request.user.email
+        phone = request.POST.get('phone')
+
+        # Basic validation
+        if not store_name or not owner_name or not email:
+            messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
+            return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+        # Prevent duplicate shop by email
+        from .models import Entrepreneur
+        if Entrepreneur.objects.filter(email__iexact=email).exists():
+            messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้ว')
+            return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+        from .models import Entrepreneur
+        Entrepreneur.objects.create(
+            user=request.user,
+            store_name=store_name,
+            owner_name=owner_name,
+            email=email,
+            phone=phone or ''
+        )
+        messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว')
+        return redirect('petjoy:entrepreneur-home')
+
+    # GET
     return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
 
@@ -147,9 +200,16 @@ class ProductDeleteView(DeleteView):
 
 @login_required
 def entrepreneur_home(request):
-    # (ลบการเช็คว่า user ต้องเป็น entrepreneur)
-    from .models import Product, Review
-    products = Product.objects.all()
+    from .models import Product, Review, Entrepreneur
+    # Ensure this user has an Entrepreneur profile
+    try:
+        entrepreneur = request.user.entrepreneur
+    except Exception:
+        messages.info(request, 'กรุณาสมัครเป็นผู้ประกอบการก่อนเข้าหน้านี้')
+        return redirect('petjoy:entrepreneur-register')
+
+    # Only show products that belong to this entrepreneur
+    products = Product.objects.filter(owner=entrepreneur)
     product_count = products.count()
     all_reviews = Review.objects.filter(product__in=products)
     if all_reviews.exists():
@@ -159,11 +219,11 @@ def entrepreneur_home(request):
     return render(request, 'petjoy/entrepreneur/entrepreneur_home.html', {
         'product_count': product_count,
         'products': products,
-        'avg_score': avg_score
+        'avg_score': avg_score,
+        'entrepreneur': entrepreneur,
     })
 
 def login_view(request):
-    # Support redirecting to a `next` URL after login (from ?next=...)
     next_url = request.GET.get('next') or request.POST.get('next')
 
     if request.method == "POST":
