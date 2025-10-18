@@ -19,6 +19,16 @@
   .sidebar{ width:100%; }
 }
 
+/* Transparent sidebar variant for public pages where only a back arrow is desired */
+.no-sidebar-bg {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+}
+.no-sidebar-bg .sidebar-menu { display: none !important; }
+.no-sidebar-bg .logout-btn { display: none !important; }
+
 /* Styles moved from entrepreneur_profile_edit.html */
 :root{ --bg:#f7f7fb; --muted:#6b7280; --accent:#fb923c; --card:#ffffff; --glass:rgba(255,255,255,0.6)}
 html,body{height:100%}
@@ -29,7 +39,8 @@ body { background: linear-gradient(180deg,#f8fafc 0%,var(--bg) 100%); color:#111
 h2{margin:0 0 12px 0; font-size:1.25rem; color:#111827}
 .sidebar h3{margin:0 0 8px 0; font-size:1rem}
 nav a{display:block; padding:8px 10px; color:var(--muted); text-decoration:none; border-radius:8px}
-nav a:hover{background:#fbf3ec; color:#111827}
+/* keep sidebar/menu hover neutral to avoid orange tint on public pages */
+nav a:hover{background:transparent; color:#111827}
 .profile-form { max-width:720px; margin:0 }
 .profile-grid{display:grid; grid-template-columns:140px 1fr; gap:18px; align-items:center}
 .profile-preview { width:120px; height:120px; object-fit:cover; border-radius:999px; border:6px solid #fff; box-shadow:0 8px 24px rgba(15,23,42,0.08); }

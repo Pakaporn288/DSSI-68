@@ -3,11 +3,10 @@
 
 {% block content %}
 <div class="entrepreneur-container">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="#">โปรไฟล์ร้าน</a>
-            <a href="#">สินค้า</a>
-        </nav>
+    <aside class="sidebar no-sidebar-bg">
+        <div style="padding:12px;">
+            <button type="button" onclick="history.back();" aria-label="ย้อนกลับ" style="background:none;border:none;font-size:1.5rem;cursor:pointer;">&lt;</button>
+        </div>
     </aside>
     <main class="main-content">
         <section class="profile-section">
@@ -18,7 +17,6 @@
             {% endif %}
             <div class="profile-info">
                 <h2>{{ entrepreneur.store_name }}</h2>
-                <div class="profile-owner">ผู้ดูแล: {{ entrepreneur.owner_name }}</div>
                 <div class="profile-stats">
                     <div class="profile-stat">จำนวนสินค้า<br>{{ product_count }}</div>
                     <div class="profile-stat">คะแนนรีวิว<br>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</div>

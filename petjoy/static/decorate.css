@@ -398,6 +398,128 @@ body {
     text-decoration: none;
 }
 
+/* Food page selector */
+.food-type-selector {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+}
+.food-type-selector .type-button {
+    padding: 10px 20px;
+    border-radius: 999px; /* pill */
+    background: white;
+    color: #444;
+    border: 1px solid #F0E7E0;
+    text-decoration: none;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 6px 18px rgba(17,24,39,0.04);
+    transition: transform 160ms cubic-bezier(.2,.9,.2,1), box-shadow 160ms, background 160ms, color 160ms;
+}
+.food-type-selector .type-button:hover {
+    background: linear-gradient(180deg,#FFF9F3,#FFF3E6);
+    color: #E65100;
+    transform: translateY(-4px) scale(1.02);
+}
+.food-type-selector .type-button.active {
+    background: linear-gradient(180deg,#FF8B5E,#FF7043);
+    color: #fff;
+    border-color: rgba(255,112,67,0.95);
+    box-shadow: 0 10px 30px rgba(255,112,67,0.12);
+}
+
+/* Keyboard focus accessibility */
+.food-type-selector .type-button:focus {
+    outline: 3px solid rgba(255,112,67,0.16);
+    outline-offset: 3px;
+}
+
+/* Small decorative icon using pseudo-element (keeps markup clean) */
+.food-type-selector .type-button::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: transparent;
+    display: inline-block;
+}
+.food-type-selector .type-button.active::before {
+    background: #fff; /* white dot on active orange */
+    box-shadow: 0 1px 0 rgba(0,0,0,0.06) inset;
+}
+
+.food-type-selector .type-button .btn-icon {
+    font-size: 1.05rem;
+    display: inline-block;
+    line-height: 1;
+}
+.food-type-selector .type-button .btn-label {
+    display: inline-block;
+    font-size: 0.98rem;
+}
+.food-type-selector .type-button .btn-icon, .food-type-selector .type-button .btn-label {
+    vertical-align: middle;
+}
+
+/* Make the selector horizontally scrollable on small screens */
+@media (max-width: 560px) {
+    .food-type-selector {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 6px;
+    }
+    .food-type-selector .type-button { flex: 0 0 auto; }
+}
+
+/* Product action button improvements */
+.view-more-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 14px;
+    background: linear-gradient(180deg,#FF7043,#FF6038);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 700;
+    box-shadow: 0 6px 18px rgba(255,112,67,0.12);
+    transition: transform 140ms ease, box-shadow 140ms ease, filter 140ms ease;
+}
+.view-more-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 28px rgba(255,112,67,0.16);
+    filter: brightness(1.03);
+}
+
+/* Optionally add a chevron after the label for clarity */
+.view-more-button::after {
+    content: '\203A'; /* single chevron */
+    margin-left: 6px;
+    opacity: 0.95;
+    font-size: 1.1rem;
+}
+
+/* Slightly tighter product cards for the food page */
+.product-item {
+    padding: 12px;
+}
+.product-price {
+    color: #E65100;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+@media (max-width: 600px) {
+    .pet-options { gap: 18px; }
+    .products-grid { gap: 18px; }
+    .welcome-banner { padding: 28px 18px; }
+    .welcome-banner p { font-size: 1.6rem; }
+}
+
 .view-more-button:hover {
     background-color: #E65100; /* สีส้มเข้มขึ้น */
 }

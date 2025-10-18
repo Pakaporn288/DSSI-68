@@ -468,6 +468,38 @@ def dog_products_view(request):
     return render(request, 'petjoy/dog_products.html', {'products': products})
 
 
+def food_products_view(request):
+    """Show food products. Accept optional ?type=dog|cat to filter by animal type.
+    The Category model should contain categories for 'food-dog' and 'food-cat' or
+    use a Category.name like 'food' with a sub-type stored in Product.features or
+    another field. We'll look up Category by convention: try 'food' + '-' + type
+    or fallback to category named 'food'.
+    """
+    typ = request.GET.get('type', '').strip().lower()
+    products = Product.objects.none()
+
+    # Try direct category matches first
+    if typ in ('dog', 'cat'):
+        # look for category names like 'food-dog' or 'food-cat'
+        cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
+        if cat:
+            products = Product.objects.filter(category=cat)
+        else:
+            # fallback: category named 'food' and filter by features or name containing typ
+            food_cat = Category.objects.filter(name__iexact='food').first()
+            if food_cat:
+                products = Product.objects.filter(category=food_cat).filter(
+                    Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
+                )
+    else:
+        # No type specified: try category named 'food'
+        food_cat = Category.objects.filter(name__iexact='food').first()
+        if food_cat:
+            products = Product.objects.filter(category=food_cat)
+
+    return render(request, 'petjoy/food_products.html', {'products': products, 'selected_type': typ})
+
+
 
 def search_view(request):
     q = request.GET.get('q', '').strip()

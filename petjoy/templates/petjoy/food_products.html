@@ -1,0 +1,43 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}อาหารสัตว์{% endblock %}
+
+{% block content %}
+<h2 style="margin-top: 2rem;"> 
+    <a href="#" onclick="window.history.back(); return false;" style="text-decoration:none; color:inherit; font-size:1.5em; vertical-align:middle; margin-right:10px;">&lt;</a>
+    อาหารสัตว์
+</h2>
+
+<div class="food-type-selector" style="margin-bottom:1rem;">
+    <a class="type-button {% if selected_type == 'dog' %}active{% endif %}" href="?type=dog" role="button" aria-pressed="{% if selected_type == 'dog' %}true{% else %}false{% endif %}" title="อาหารสำหรับสุนัข">
+        <span class="btn-icon">🐶</span><span class="btn-label">สุนัข</span>
+    </a>
+    <a class="type-button {% if selected_type == 'cat' %}active{% endif %}" href="?type=cat" role="button" aria-pressed="{% if selected_type == 'cat' %}true{% else %}false{% endif %}" title="อาหารสำหรับแมว">
+        <span class="btn-icon">🐱</span><span class="btn-label">แมว</span>
+    </a>
+    <a class="type-button {% if not selected_type %}active{% endif %}" href="{% url 'petjoy:food-products' %}" role="button" aria-pressed="{% if not selected_type %}true{% else %}false{% endif %}" title="แสดงสินค้าทั้งหมด">
+        <span class="btn-icon">🍽️</span><span class="btn-label">ทั้งหมด</span>
+    </a>
+</div>
+
+<div class="products-grid">
+    {% for product in products %}
+        <div class="product-item">
+            <div class="product-image-placeholder">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+                {% else %}
+                    <img src="{% static 'images/food.png' %}" alt="อาหารสัตว์" class="product-image">
+                {% endif %}
+            </div>
+            <div class="product-name">{{ product.name }}</div>
+            <div class="product-price">{{ product.price }} บาท</div>
+            <a href="{% url 'petjoy:product-detail' product.pk %}" class="view-more-button">ดูรายละเอียด</a>
+        </div>
+    {% empty %}
+        <div>ไม่มีสินค้าประเภทนี้ในขณะนี้</div>
+    {% endfor %}
+</div>
+
+{% endblock %}

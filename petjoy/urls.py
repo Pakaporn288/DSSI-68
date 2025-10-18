@@ -26,6 +26,7 @@ urlpatterns = [
     path('favorites/toggle/', views.toggle_favorite, name='favorites-toggle'),
     path('dog-products/', views.dog_products_view, name='dog-products'),
     path('cat-products/', views.cat_products_view, name='cat-products'),
+    path('food-products/', views.food_products_view, name='food-products'),
     path('profile/', views.profile_view, name='profile'),
     # โค้ดสำหรับอนาคต (CRUD) สามารถเก็บไว้ได้
     path('products/create/', views.ProductCreateView.as_view(), name='product-create'),
