@@ -61,11 +61,7 @@
             <!-- food-specific type selector (shown only when category is food) -->
             <div class="form-group" id="food-type-group" style="display:none;">
                 <label for="id_food_type">ประเภทสัตว์</label>
-                <select name="food_type" id="id_food_type">
-                    <option value="">-- เลือกประเภท --</option>
-                    <option value="dog">สุนัข</option>
-                    <option value="cat">แมว</option>
-                </select>
+                {{ form.food_type }}
             </div>
             <div class="form-group">
                 <label for="id_image">รูปภาพสินค้า</label>

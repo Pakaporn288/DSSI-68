@@ -62,3 +62,14 @@ class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
         fields = ['name', 'description', 'features', 'price', 'category', 'image', 'total_stock', 'stock', 'food_type']
+
+    def clean(self):
+        cleaned = super().clean()
+        category = cleaned.get('category')
+        food_type = cleaned.get('food_type')
+        cat_name = category.display_name.lower() if category and category.display_name else ''
+        if 'อาหาร' in cat_name or 'food' in cat_name:
+            # If category is food, require food_type to be selected
+            if not food_type:
+                raise forms.ValidationError('กรุณาเลือกประเภทสัตว์ (สุนัข/แมว) สำหรับหมวดอาหาร')
+        return cleaned

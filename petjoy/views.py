@@ -468,35 +468,44 @@ def dog_products_view(request):
 
 
 def food_products_view(request):
-    """Show food products. Accept optional ?type=dog|cat to filter by animal type.
-    The Category model should contain categories for 'food-dog' and 'food-cat' or
-    use a Category.name like 'food' with a sub-type stored in Product.features or
-    another field. We'll look up Category by convention: try 'food' + '-' + type
-    or fallback to category named 'food'.
-    """
-    typ = request.GET.get('type', '').strip().lower()
+    typ_raw = request.GET.get('type', '').strip()
+    typ = typ_raw.lower()
     products = Product.objects.none()
 
-    # Try direct category matches first
+    
+    map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'สุนัข': 'dog', 'แมว': 'cat'}
+    if typ in map_th:
+        typ = map_th[typ]
+
+    # Primary: if a subtype is requested, prefer filtering by Product.food_type
     if typ in ('dog', 'cat'):
-        # look for category names like 'food-dog' or 'food-cat'
-        cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
-        if cat:
-            products = Product.objects.filter(category=cat)
-        else:
-            # fallback: category named 'food' and filter by features or name containing typ
-            food_cat = Category.objects.filter(name__iexact='food').first()
-            if food_cat:
-                products = Product.objects.filter(category=food_cat).filter(
-                    Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
-                )
+        products = Product.objects.filter(food_type=typ)
+
+        # If none found, try category names like 'food-dog' or fallback to 'food' category
+        if not products.exists():
+            cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
+            if cat:
+                products = Product.objects.filter(category=cat)
+            else:
+                food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
+                if food_cat:
+                    products = Product.objects.filter(category=food_cat).filter(
+                        Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
+                    )
     else:
-        # No type specified: try category named 'food'
-        food_cat = Category.objects.filter(name__iexact='food').first()
+        # No subtype: return products in 'food' category (try english name or thai display)
+        food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
         if food_cat:
             products = Product.objects.filter(category=food_cat)
 
-    return render(request, 'petjoy/food_products.html', {'products': products, 'selected_type': typ})
+    # If partial requested (AJAX), return only the grid fragment
+    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.template.loader import render_to_string
+        html = render_to_string('petjoy/partials/food_products_grid.html', {'products': products})
+        from django.http import HttpResponse
+        return HttpResponse(html)
+
+    return render(request, 'petjoy/food_products.html', {'products': products, 'selected_type': typ_raw})
 
 
 
