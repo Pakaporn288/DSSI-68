@@ -35,7 +35,6 @@
                 <tr style="background: #f8f8f8;">
                     <th style="width: 120px; text-align: center;">รูปภาพ</th>
                     <th>ชื่อสินค้า</th>
-                    <th>รายละเอียด</th>
                     <th style="width: 100px; text-align: right;">ราคา</th>
                     <th style="width: 120px;">หมวดหมู่</th>
                     <th style="width: 120px; text-align: center;">จำนวน (ทั้งหมด/คงเหลือ)</th>
@@ -52,8 +51,7 @@
                             <span class="no-products">ไม่มีรูป</span>
                         {% endif %}
                     </td>
-                    <td style="font-weight: bold; color: #FF7043;">{{ product.name }}<br><small style="color:#666;">ร้าน: {% if product.owner %}{{ product.owner.store_name }}{% endif %}</small></td>
-                    <td style="color: #555;">{{ product.description }}</td>
+                    <td style="font-weight: bold; color: #FF7043;">{{ product.name }}<br><small style="color:#666;"></small></td>
                     <td style="text-align: right; color: #E65100; font-weight: 500;">{{ product.price }} บาท</td>
                     <td>{{ product.category.display_name }}</td>
                     <td style="text-align: center;">{{ product.total_stock }}/{{ product.stock }}</td>
