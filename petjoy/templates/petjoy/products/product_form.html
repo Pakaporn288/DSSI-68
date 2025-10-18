@@ -58,6 +58,15 @@
                 <label for="id_category">หมวดหมู่</label>
                 {{ form.category }}
             </div>
+            <!-- food-specific type selector (shown only when category is food) -->
+            <div class="form-group" id="food-type-group" style="display:none;">
+                <label for="id_food_type">ประเภทสัตว์</label>
+                <select name="food_type" id="id_food_type">
+                    <option value="">-- เลือกประเภท --</option>
+                    <option value="dog">สุนัข</option>
+                    <option value="cat">แมว</option>
+                </select>
+            </div>
             <div class="form-group">
                 <label for="id_image">รูปภาพสินค้า</label>
                 {{ form.image }}
@@ -78,7 +87,81 @@
                 font-family: inherit;
             }
             .simple-product-form textarea { min-height: 70px; }
+            /* helper for hiding features when category is food */
+            .simple-product-form .hidden-feature { display: none !important; }
         </style>
+        <script>
+            (function(){
+                function isFoodOption(text){
+                    if(!text) return false;
+                    return /อาหาร|food/i.test(text);
+                }
+
+                function findFeaturesGroup(){
+                    var marked = document.querySelector('[data-features-group]');
+                    if(marked) return marked;
+                    var label = document.querySelector('label[for="id_features"]');
+                    if(label) return label.closest('.form-group');
+                    var feat = document.getElementById('id_features');
+                    if(feat) return feat.closest('.form-group');
+                    return null;
+                }
+
+                function updateFormBasedOnCategory(){
+                    var category = document.getElementById('id_category');
+                    var featuresGroup = findFeaturesGroup();
+                    var featuresInput = document.getElementById('id_features');
+                    var foodTypeGroup = document.getElementById('food-type-group');
+                    var foodTypeInput = document.getElementById('id_food_type');
+                    if(!category) return;
+                    var selected = category.options[category.selectedIndex];
+                    var text = selected ? (selected.text || selected.innerText || '') : '';
+                    var isFood = isFoodOption(text);
+
+                    // Toggle features
+                    if(featuresGroup && featuresInput){
+                        if(isFood){
+                            featuresGroup.classList.add('hidden-feature');
+                            featuresInput.disabled = true;
+                        } else {
+                            featuresGroup.classList.remove('hidden-feature');
+                            featuresInput.disabled = false;
+                        }
+                    }
+
+                    // Toggle food-type selector
+                    if(foodTypeGroup && foodTypeInput){
+                        if(isFood){
+                            foodTypeGroup.style.display = '';
+                            foodTypeInput.disabled = false;
+                        } else {
+                            foodTypeGroup.style.display = 'none';
+                            // clear selection to avoid accidental submission
+                            foodTypeInput.selectedIndex = 0;
+                            foodTypeInput.disabled = true;
+                        }
+                    }
+                }
+
+                document.addEventListener('DOMContentLoaded', function(){
+                    var category = document.getElementById('id_category');
+                    if(!category) return;
+                    // mark the features group for reliability
+                    var label = document.querySelector('label[for="id_features"]');
+                    if(label){
+                        var fg = label.closest('.form-group');
+                        if(fg) fg.setAttribute('data-features-group','1');
+                    }
+                    // ensure food-type exists and is disabled by default
+                    var foodTypeInput = document.getElementById('id_food_type');
+                    if(foodTypeInput) foodTypeInput.disabled = true;
+
+                    category.addEventListener('change', updateFormBasedOnCategory);
+                    // initialize state
+                    updateFormBasedOnCategory();
+                });
+            })();
+        </script>
     </div>
 </div>
 {% endblock %}

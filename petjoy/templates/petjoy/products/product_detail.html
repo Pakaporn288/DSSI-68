@@ -111,6 +111,10 @@
                 {% endif %}
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
             <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
+            {# Display the seller-selected food type when available (dog/cat) #}
+            {% if product.food_type %}
+                <p class="detail-product-foodtype">ประเภทสัตว์: {% if product.food_type == 'dog' %}สุนัข{% elif product.food_type == 'cat' %}แมว{% else %}—{% endif %}</p>
+            {% endif %}
             
             <div class="quantity-selector" style="margin-bottom: 18px;">
                 <span>จำนวน</span>
@@ -155,8 +159,17 @@
                 <h3>คำอธิบาย</h3>
                 <p>{{ product.description|linebreaks }}</p>
             </div>
-                <h3>คุณสมบัติ</h3>
-                <p>{{ product.features|linebreaks }}</p>
+                {% comment %} Hide features if seller set a food_type OR if category name suggests food (contains 'อาหาร'/'food') {% endcomment %}
+                {% if product.food_type %}
+                    {# seller chose a food type — do not show features #}
+                {% else %}
+                    {% with cat_name=product.category.display_name|default_if_none:""|lower %}
+                        {% if not "อาหาร" in cat_name and not "food" in cat_name %}
+                            <h3>คุณสมบัติ</h3>
+                            <p>{{ product.features|linebreaks }}</p>
+                        {% endif %}
+                    {% endwith %}
+                {% endif %}
             </div>
 
         </div>
