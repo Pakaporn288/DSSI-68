@@ -3,6 +3,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
+from django.urls import reverse_lazy
 import json
 from .ai_service import get_ai_response
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -45,8 +46,6 @@ def ask_ai_view(request):
         return JsonResponse({'reply': ai_reply})
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
-
-
 
 
 def logout_view(request):
@@ -314,7 +313,7 @@ class ProductDeleteView(DeleteView):
 
 
 
-@login_required
+@login_required(login_url=reverse_lazy('petjoy:login'))
 def entrepreneur_home(request):
     from .models import Product, Review, Entrepreneur
     # Ensure this user has an Entrepreneur profile
