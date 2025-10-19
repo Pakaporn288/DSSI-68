@@ -16,6 +16,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 from django.urls import reverse_lazy
 from .models import Product, Review, Category, Profile
 from django.db.models import Avg, Q
+from django.core.paginator import Paginator
 from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -517,14 +518,30 @@ def food_products_view(request):
         if food_cat:
             products = Product.objects.filter(category=food_cat)
 
+    # Paginate results: show ~3 rows worth of items per page (assume 4 columns per row)
+    per_page = 15
+    paginator = Paginator(products, per_page)
+    page_number = request.GET.get('page') or 1
+    page_obj = paginator.get_page(page_number)
+
     # If partial requested (AJAX), return only the grid fragment
     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         from django.template.loader import render_to_string
-        html = render_to_string('petjoy/partials/food_products_grid.html', {'products': products})
+        html = render_to_string('petjoy/partials/food_products_grid.html', {
+            'products': page_obj,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'selected_type': typ_raw,
+        })
         from django.http import HttpResponse
         return HttpResponse(html)
 
-    return render(request, 'petjoy/food_products.html', {'products': products, 'selected_type': typ_raw})
+    return render(request, 'petjoy/food_products.html', {
+        'products': page_obj,
+        'selected_type': typ_raw,
+        'page_obj': page_obj,
+        'paginator': paginator,
+    })
 
 
 
