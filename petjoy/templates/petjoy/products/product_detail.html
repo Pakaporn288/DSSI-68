@@ -4,6 +4,7 @@
 {% block title %}{{ product.name }} - PetJoy{% endblock %}
 
 {% block content %}
+
 <div class="simple-detail-container">
 
     <div class="detail-header">
@@ -47,7 +48,7 @@
                             {% if user.is_authenticated and user == product.owner.user %}
                                 <a href="{% url 'petjoy:entrepreneur-home' %}" class="store-btn view-store-btn">ดูร้านค้า</a>
                             {% else %}
-                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}" class="store-btn view-store-btn">ดูร้านค้า</a>
+                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}" class="store-btn view-store-btn">ดูร้านค้า </a>
                             {% endif %}
                         </div>
                     </div>

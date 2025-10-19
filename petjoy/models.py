@@ -73,7 +73,8 @@ class ChatHistory(models.Model):
 #         return self.store_name
     
 class Entrepreneur(models.Model):
-    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    # Allow entrepreneur records to exist without a linked User account.
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL)
     store_name = models.CharField(max_length=100)
     owner_name = models.CharField(max_length=100)
     email = models.EmailField()

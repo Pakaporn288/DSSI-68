@@ -30,6 +30,18 @@
                     <a href="{% url 'petjoy:product-create' %}" class="btn-add-product white-btn">เพิ่มสินค้าใหม่</a>
                 {% endif %}
         </div>
+        <div style="margin: 12px 0; display:flex; gap:12px; align-items:center;">
+            <form method="get" style="display:inline-flex; gap:8px; align-items:center;">
+                <label for="categorySelect">กรองหมวดหมู่:</label>
+                <select id="categorySelect" name="category">
+                    <option value="">ทั้งหมด</option>
+                    {% for c in categories %}
+                        <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.display_name }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="white-btn">แสดง</button>
+            </form>
+        </div>
         <table class="product-table" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff;">
             <thead>
                 <tr style="background: #f8f8f8;">
