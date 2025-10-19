@@ -32,7 +32,23 @@
                     <label for="id_phone">เบอร์โทรศัพท์</label>
                     <input type="text" name="phone" id="id_phone" required>
                 </div>
-                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">โปรดล็อกอินเข้าสู่ระบบด้วยบัญชีของคุณก่อน — การสมัครร้านจะผูกกับบัญชีนี้</div>
+                {% if not user.is_authenticated %}
+                <div class="form-field">
+                    <label for="id_username">ชื่อผู้ใช้ (จะใช้เข้าสู่ระบบ)</label>
+                    <input type="text" name="username" id="id_username" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_password">รหัสผ่าน</label>
+                    <input type="password" name="password" id="id_password" required>
+                </div>
+                <div class="form-field">
+                    <label for="id_password2">ยืนยันรหัสผ่าน</label>
+                    <input type="password" name="password2" id="id_password2" required>
+                </div>
+                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">ยังไม่มีบัญชี? กรอกข้อมูลชื่อผู้ใช้และรหัสผ่านที่ต้องการ ระบบจะสร้างบัญชีให้และผูกกับร้านของคุณ</div>
+                {% else %}
+                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">คุณล็อกอินอยู่แล้ว ร้านจะถูกผูกกับบัญชีนี้</div>
+                {% endif %}
                 <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
             </form>
             <div class="auth-links">

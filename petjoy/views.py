@@ -150,6 +150,7 @@ def entrepreneur_profile_edit(request):
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
+@csrf_exempt
 def entrepreneur_register(request):
     # Two modes:
     # - If user is authenticated: attach Entrepreneur to request.user
@@ -338,6 +339,7 @@ def entrepreneur_home(request):
         'entrepreneur': entrepreneur,
     })
 
+@csrf_exempt
 def login_view(request):
     next_url = request.GET.get('next') or request.POST.get('next')
 
