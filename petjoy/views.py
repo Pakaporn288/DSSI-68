@@ -150,7 +150,6 @@ def entrepreneur_profile_edit(request):
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
 
-@csrf_exempt
 def entrepreneur_register(request):
     # Two modes:
     # - If user is authenticated: attach Entrepreneur to request.user
@@ -194,6 +193,7 @@ def entrepreneur_register(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
+        password2 = request.POST.get('password2')
         email = request.POST.get('email')
         store_name = request.POST.get('store_name')
         owner_name = request.POST.get('owner_name')
@@ -203,6 +203,16 @@ def entrepreneur_register(request):
         if not username or not password or not email or not store_name or not owner_name:
             messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+        # confirm password
+        if password2 is None or password != password2:
+            messages.error(request, 'รหัสผ่านทั้งสองช่องต้องตรงกัน')
+            return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
+
+        # strip whitespace from username/email to avoid accidental spaces
+        username = username.strip()
+        if email:
+            email = email.strip()
 
         # Check duplicate entrepreneur email
         if Entrepreneur.objects.filter(email__iexact=email).exists():
@@ -224,8 +234,16 @@ def entrepreneur_register(request):
             email=email,
             phone=phone or ''
         )
-        messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ')
-        return redirect('petjoy:login')
+
+        # Log the user in immediately so they can manage their shop
+        try:
+            login(request, new_user)
+            messages.success(request, 'สมัครและเข้าสู่ระบบเรียบร้อยแล้ว')
+            return redirect('petjoy:entrepreneur-home')
+        except Exception:
+            # If automatic login fails for any reason, ask user to login manually
+            messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ')
+            return redirect('petjoy:login')
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
@@ -339,7 +357,6 @@ def entrepreneur_home(request):
         'entrepreneur': entrepreneur,
     })
 
-@csrf_exempt
 def login_view(request):
     next_url = request.GET.get('next') or request.POST.get('next')
 
