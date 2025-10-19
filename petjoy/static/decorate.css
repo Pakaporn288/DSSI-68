@@ -522,6 +522,37 @@ body {
     margin-bottom: 10px;
 }
 
+/* Pagination and special button styles */
+.pagination .type-button {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #fff;
+    color: #333;
+    border: 1px solid #eee;
+    text-decoration: none;
+    font-weight: 700;
+}
+.pagination .type-button:hover {
+    background: #f8f8fb;
+    transform: translateY(-2px);
+}
+.pagination .type-button.active {
+    background: linear-gradient(180deg,#FF8B5E,#FF7043);
+    color: #fff;
+    border-color: rgba(255,112,67,0.9);
+}
+.pagination .type-button.next-button {
+    background: linear-gradient(180deg,#2B8AE6,#1F6FD8);
+    color: #fff;
+    border: none;
+    box-shadow: 0 8px 24px rgba(45,118,255,0.12);
+}
+.type-button.primary {
+    background: #0066cc !important;
+    color: #fff !important;
+}
+
+
 @media (max-width: 600px) {
     .pet-options { gap: 18px; }
     .products-grid { gap: 18px; }
@@ -784,6 +815,7 @@ body {
     margin: 0;
     font-size: 1.8rem;
 }
+
 
 .favorite-icon {
     position: absolute;

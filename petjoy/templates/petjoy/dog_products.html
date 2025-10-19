@@ -8,22 +8,20 @@
     <a href="#" onclick="window.history.back(); return false;" style="text-decoration:none; color:inherit; font-size:1.5em; vertical-align:middle; margin-right:10px;">&lt;</a>
     สินค้าแก๊งสุนัข
 </h2>
-<div class="products-grid">
-    {% for product in products %}
-        <div class="product-item">
-            <div class="product-image-placeholder">
-                {% if product.image %}
-                    <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
-                {% else %}
-                    <img src="{% static 'images/DOG.jpg' %}" alt="Dog" class="product-image">
-                {% endif %}
-            </div>
-            <div class="product-name">{{ product.name }}</div>
-            <div class="product-price">{{ product.price }} บาท</div>
-            <a href="{% url 'petjoy:product-detail' product.pk %}" class="view-more-button">ดูรายละเอียด</a>
-        </div>
-    {% empty %}
-        <div>ไม่มีสินค้าสุนัขในขณะนี้</div>
-    {% endfor %}
+<div id="products-container">
+    {% include 'petjoy/partials/food_products_grid.html' with products=products page_obj=page_obj paginator=paginator selected_type='dog' %}
 </div>
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+
+    {% for num in page_obj.paginator.page_range %}
+        {% if num == page_obj.number %}
+            <span class="type-button active">{{ num }}</span>
+        {% else %}
+            <a class="type-button" href="?page={{ num }}{% if selected_type %}&type={{ selected_type }}{% endif %}">{{ num }}</a>
+        {% endif %}
+    {% endfor %}
+
+
+</nav>
+{% endif %}
 {% endblock %}

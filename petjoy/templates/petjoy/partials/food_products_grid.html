@@ -20,10 +20,6 @@
 </div>
 {% if page_obj and page_obj.paginator.num_pages > 1 %}
 <nav class="pagination" aria-label="Products pagination" style="margin-top:16px; display:flex; gap:8px; align-items:center; justify-content:center;">
-    {% if page_obj.has_previous %}
-        <a class="type-button" href="?page={{ page_obj.previous_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">ก่อนหน้า</a>
-    {% endif %}
-
     {% for num in page_obj.paginator.page_range %}
         {% if num == page_obj.number %}
             <span class="type-button active">{{ num }}</span>
@@ -32,8 +28,5 @@
         {% endif %}
     {% endfor %}
 
-    {% if page_obj.has_next %}
-        <a class="type-button" href="?page={{ page_obj.next_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">หน้าต่อไป</a>
-    {% endif %}
 </nav>
 {% endif %}

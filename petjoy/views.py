@@ -479,12 +479,46 @@ def profile_view(request):
 def cat_products_view(request):
     cat_category = Category.objects.filter(name__iexact='cat').first()
     products = Product.objects.filter(category=cat_category) if cat_category else Product.objects.none()
-    return render(request, 'petjoy/cat_products.html', {'products': products})
+    # paginate 15 per page
+    per_page = 15
+    paginator = Paginator(products, per_page)
+    page_number = request.GET.get('page') or 1
+    page_obj = paginator.get_page(page_number)
+    # If partial requested (AJAX), return only the grid fragment so JS can update
+    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.template.loader import render_to_string
+        html = render_to_string('petjoy/partials/food_products_grid.html', {
+            'products': page_obj,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'selected_type': 'cat',
+        })
+        from django.http import HttpResponse
+        return HttpResponse(html)
+
+    return render(request, 'petjoy/cat_products.html', {'products': page_obj, 'page_obj': page_obj, 'paginator': paginator})
 # สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
 def dog_products_view(request):
     dog_category = Category.objects.filter(name__iexact='dog').first()
     products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
-    return render(request, 'petjoy/dog_products.html', {'products': products})
+    # paginate 15 per page
+    per_page = 15
+    paginator = Paginator(products, per_page)
+    page_number = request.GET.get('page') or 1
+    page_obj = paginator.get_page(page_number)
+    # If partial requested (AJAX), return only the grid fragment so JS can update
+    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        from django.template.loader import render_to_string
+        html = render_to_string('petjoy/partials/food_products_grid.html', {
+            'products': page_obj,
+            'page_obj': page_obj,
+            'paginator': paginator,
+            'selected_type': 'dog',
+        })
+        from django.http import HttpResponse
+        return HttpResponse(html)
+
+    return render(request, 'petjoy/dog_products.html', {'products': page_obj, 'page_obj': page_obj, 'paginator': paginator})
 
 
 def food_products_view(request):
