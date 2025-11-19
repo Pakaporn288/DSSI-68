@@ -5,7 +5,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# ✅ 1. ตั้งค่า API Key ที่นี่
+#  1. ตั้งค่า API Key ที่นี่
 # ดึง API Key จากตัวแปรแวดล้อม (ไฟล์ .env)
 api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
