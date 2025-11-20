@@ -150,6 +150,22 @@
                 .action-btn:active {
                     opacity: 0.9;
                 }
+                .favorite-toggle {
+                    background-color: transparent;
+                    border: none;
+                    font-size: 1.5rem;
+                    color: #888;
+                    cursor: pointer;
+                    transition: color 0.3s ease;
+                }
+
+                .favorite-toggle:hover {
+                    color: #f44336;
+                }
+
+                .favorite-toggle[aria-pressed="true"] {
+                    color: #f44336;
+                }
             </style>
             <script>
                 function changeQuantity(delta) {
