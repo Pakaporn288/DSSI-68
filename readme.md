@@ -41,9 +41,9 @@ To run this project on another machine, you need to install the following depend
    - Apply migrations:
      ```bash
     CREATE DATABASE Petjoy_db;
-        <!-- CREATE USER petjoy_user WITH PASSWORD '12345';
-        GRANT ALL PRIVILEGES ON DATABASE Petjoy_db TO petjoy_user; -->
-        python manage.py migrate
+    <!-- CREATE USER petjoy_user WITH PASSWORD '12345';
+    GRANT ALL PRIVILEGES ON DATABASE Petjoy_db TO petjoy_user; -->
+    python manage.py migrate
      ```
 
 6. Run the development server:
@@ -52,8 +52,6 @@ To run this project on another machine, you need to install the following depend
    ```
 
    
-
-
 
 python manage.py loaddata data.yaml โหลดไฟล์ data.yaml
 python manage.py loaddata db.json โหลดไฟล์ db.json
@@ -67,7 +65,7 @@ python manage.py loaddata db.json โหลดไฟล์ db.json
 - Make sure to update the `ALLOWED_HOSTS` in `settings.py` for production.
 - Use a secure method to store sensitive information like database credentials and API keys.
 
-$env:PYTHONIOENCODING="utf-8"
- python manage.py dumpdata --indent 2 > db.json   แปลงไฟล์
+-$env:PYTHONIOENCODING="utf-8"
+-python manage.py dumpdata --indent 2 > db.json   แปลงไฟล์
 
-python -Xutf8 manage.py dumpdata --indent 2 -o db.json แก้ endcodring (ภาษาที่เพี้ยน)
+-python -Xutf8 manage.py dumpdata --indent 2 -o db.json แก้ endcodring (ภาษาที่เพี้ยน)
