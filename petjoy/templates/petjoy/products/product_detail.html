@@ -97,18 +97,6 @@
                 </button>
                 {% else %}
                 <button type="button" class="detail-fav anonymous-fav" title="กรุณาเข้าสู่ระบบเพื่อบันทึก">♡</button>
-                <script>
-                    (function(){
-                        var btn = document.querySelector('.anonymous-fav');
-                        if (!btn) return;
-                        btn.addEventListener('click', function(){
-                            var ok = confirm('กรุณาเข้าสู่ระบบเพื่อบันทึกรายการโปรด\n\nคลิก ตกลง เพื่อไปยังหน้าล็อกอิน');
-                            if (ok) {
-                                window.location.href = "{% url 'petjoy:login' %}?next={% url 'petjoy:product-detail' product.id %}";
-                            }
-                        });
-                    })();
-                </script>
                 {% endif %}
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
             <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
@@ -166,6 +154,19 @@
                 .favorite-toggle[aria-pressed="true"] {
                     color: #f44336;
                 }
+
+                .anonymous-fav {
+                    background-color: transparent;
+                    border: none;
+                    font-size: 1.5rem;
+                    color: #888;
+                    cursor: pointer;
+                    transition: color 0.3s ease;
+                }
+
+                .anonymous-fav:hover {
+                    color: #f44336;
+                }
             </style>
             <script>
                 function changeQuantity(delta) {
@@ -175,6 +176,17 @@
                     if (value < 1) value = 1;
                     input.value = value;
                 }
+
+                (function(){
+                    var btn = document.querySelector('.anonymous-fav');
+                    if (!btn) return;
+                    btn.addEventListener('click', function(){
+                        var ok = confirm('กรุณาเข้าสู่ระบบเพื่อบันทึกรายการโปรด\n\nคลิก ตกลง เพื่อไปยังหน้าล็อกอิน');
+                        if (ok) {
+                            window.location.href = "{% url 'petjoy:login' %}?next={% url 'petjoy:product-detail' product.id %}";
+                        }
+                    });
+                })();
             </script>
 
             <div class="detail-product-description">

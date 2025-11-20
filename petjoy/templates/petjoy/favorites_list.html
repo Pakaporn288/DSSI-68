@@ -10,6 +10,7 @@
         <nav class="profile-menu">
             <a href="{% url 'petjoy:profile' %}" class="profile-menu-item">ข้อมูลส่วนตัว</a>
             <a href="#" class="profile-menu-item">ที่อยู่</a>
+            <a href="#" class="profile-menu-item">ข้อความ</a>
             <a href="#" class="profile-menu-item">ประวัติการสั่งซื้อ</a>
             <a href="{% url 'petjoy:favorites_list' %}" class="profile-menu-item active">รายการโปรด</a>
             <form method="post" action="{% url 'petjoy:logout' %}" class="logout-form">
@@ -43,3 +44,22 @@
 </div>
 <script src="{% static 'js/favorites.js' %}"></script>
 {% endblock %}
+
+<style>
+    .favorite-toggle {
+        background-color: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: #888;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
+
+    .favorite-toggle:hover {
+        color: #f44336;
+    }
+
+    .favorite-toggle[aria-pressed="true"] {
+        color: #f44336;
+    }
+</style>
