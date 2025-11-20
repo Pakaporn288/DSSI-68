@@ -1,23 +1,23 @@
 # PetJoy Project
 
-## Overview
-PetJoy is a Django-based project designed to manage and showcase pet-related products. This guide provides all the necessary steps to set up and run the project on another machine.
+## ภาพรวม
+PetJoy เป็นโครงการที่ใช้ Django ออกแบบมาเพื่อจัดการและจัดแสดงผลิตภัณฑ์ที่เกี่ยวข้องกับสัตว์เลี้ยง คู่มือนี้อธิบายขั้นตอนที่จำเป็นทั้งหมดในการตั้งค่าและรันโครงการบนเครื่องอื่น
 
 ---
 
-## Requirements
-To run this project, ensure the following dependencies are installed:
+## ความต้องการ
+ในการรันโครงการนี้ โปรดตรวจสอบให้แน่ใจว่ามีการติดตั้งส่วนที่ต้องมีต่อไปนี้:
 
 ### Python Packages
-- **Django==5.2.4**: Web framework for the project.
-- **psycopg2**: PostgreSQL database adapter.
-- **python-dotenv**: For managing environment variables.
-- **PyYAML**: For YAML serialization (optional).
-- **google-generativeai**: Used in `ai_service.py`.
+- **Django==5.2.4**: เฟรมเวิร์กเว็บสำหรับโครงการ
+- **psycopg2**: อะแดปเตอร์ฐานข้อมูล PostgreSQL
+- **python-dotenv**: สำหรับการจัดการตัวแปรสภาพแวดล้อม
+- **PyYAML**: สำหรับการทำ serialization ของ YAML (ไม่บังคับ)
+- **google-generativeai**: ใช้ใน `ai_service.py`
 
 ---
 
-## Installation Steps
+## ขั้นตอนการติดตั้ง
 
 ### 1. Clone the Repository
 ```bash
@@ -37,15 +37,15 @@ pip install -r requirements.txt
 ```
 
 ### 4. Set Up the `.env` File
-- Create a `.env` file in the root directory.
-- Add the following variables:
+- สร้างไฟล์ `.env` ในไดเร็กทอรีรูท
+- เพิ่มตัวแปรต่อไปนี้:
   ```env
   GOOGLE_API_KEY=<your-google-api-key>
   ```
 
 ### 5. Set Up the Database
-- Ensure PostgreSQL is installed and running.
-- Create a database and user matching the settings in `settings.py`:
+- ตรวจสอบให้แน่ใจว่าติดตั้งและใช้งาน PostgreSQL เรียบร้อยแล้ว
+- สร้างฐานข้อมูลและผู้ใช้ที่ตรงกับการตั้งค่าใน `settings.py`:
   ```sql
   CREATE DATABASE Petjoy_db;
   CREATE USER petjoy_user WITH PASSWORD '12345';
@@ -74,25 +74,25 @@ python manage.py runserver
 ---
 
 ## Notes
-- **Static Files**: Located in the `petjoy/static/` directory.
-- **Media Files**: Stored in the `media/` directory.
-- **Default Login URL**: `/login/`.
+- **ไฟล์คงที่**: อยู่ในไดเร็กทอรี `petjoy/static/`
+- **ไฟล์สื่อ**: เก็บไว้ในไดเร็กทอรี `media/`
+- **URL ล็อกอินเริ่มต้น**: `/login/`
 
 ---
 
-## Additional Information
-- Update the `ALLOWED_HOSTS` in `settings.py` for production.
-- Use a secure method to store sensitive information like database credentials and API keys.
+## ข้อมูลเพิ่มเติม
+- อัปเดต `ALLOWED_HOSTS` ใน `settings.py` สำหรับการผลิต
+- ใช้วิธีการที่ปลอดภัยในการจัดเก็บข้อมูลสำคัญ เช่น ข้อมูลรับรองฐานข้อมูลและคีย์ API
 
 ---
 
 ## Encoding and Data Dump Tips
-- To avoid encoding issues, use the following commands:
+- เพื่อหลีกเลี่ยงปัญหาการเข้ารหัส ให้ใช้คำสั่งต่อไปนี้:
   ```bash
   $env:PYTHONIOENCODING="utf-8"
   python manage.py dumpdata --indent 2 > db.json
   ```
-- Alternatively, use:
+- หรือใช้อีกอย่าง:
   ```bash
   python -Xutf8 manage.py dumpdata --indent 2 -o db.json
   ```
