@@ -1,0 +1,70 @@
+- model: admin.logentry
+  pk: 1
+  fields:
+    action_time: "2025-09-14T05:42:58.343Z"
+    user: 1
+    content_type: 7
+    object_id: "1"
+    object_repr: "สุนัข"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 2
+  fields:
+    action_time: "2025-09-14T05:43:11.810Z"
+    user: 1
+    content_type: 7
+    object_id: "2"
+    object_repr: "แมว"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 3
+  fields:
+    action_time: "2025-09-14T05:43:30.084Z"
+    user: 1
+    content_type: 8
+    object_id: "1"
+    object_repr: "ไม่ล่อแมว"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 4
+  fields:
+    action_time: "2025-09-14T06:53:33.901Z"
+    user: 1
+    content_type: 4
+    object_id: "2"
+    object_repr: "testuser"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 5
+  fields:
+    action_time: "2025-09-14T06:56:44.235Z"
+    user: 1
+    content_type: 4
+    object_id: "3"
+    object_repr: "shop_owner"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 6
+  fields:
+    action_time: "2025-09-14T07:49:35.688Z"
+    user: 1
+    content_type: 10
+    object_id: "1"
+    object_repr: "Review for ไม่ล่อแมว by pp"
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 7
+  fields:
+    action_time: "2025-09-14T13:09:00.140Z"
+    user: 1
+    content_type: 4
+    object_id: "1"
+    object_repr: "pp"
+    action_flag: 2
+    change_message: "[]"
