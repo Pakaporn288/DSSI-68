@@ -40,13 +40,23 @@ To run this project on another machine, you need to install the following depend
    - Create a database and user matching the settings in `settings.py`.
    - Apply migrations:
      ```bash
-     python manage.py migrate
+    CREATE DATABASE Petjoy_db;
+        <!-- CREATE USER petjoy_user WITH PASSWORD '12345';
+        GRANT ALL PRIVILEGES ON DATABASE Petjoy_db TO petjoy_user; -->
+        python manage.py migrate
      ```
 
 6. Run the development server:
    ```bash
    python manage.py runserver
    ```
+
+   
+
+
+
+python manage.py loaddata data.yaml โหลดไฟล์ data.yaml
+python manage.py loaddata db.json โหลดไฟล์ db.json
 
 ### Notes
 - Static files are located in the `petjoy/static/` directory.
@@ -57,4 +67,7 @@ To run this project on another machine, you need to install the following depend
 - Make sure to update the `ALLOWED_HOSTS` in `settings.py` for production.
 - Use a secure method to store sensitive information like database credentials and API keys.
 
-python manage.py dumpdata --format=yaml > data.yaml
+$env:PYTHONIOENCODING="utf-8"
+ python manage.py dumpdata --indent 2 > db.json   แปลงไฟล์
+
+python -Xutf8 manage.py dumpdata --indent 2 -o db.json แก้ endcodring (ภาษาที่เพี้ยน)
