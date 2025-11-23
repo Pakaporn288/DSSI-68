@@ -25,7 +25,7 @@
                     <input type="text" name="owner_name" id="id_owner" required>
                 </div>
                 <div class="form-field">
-                    <label for="id_email">อีเมล (จะใช้จากบัญชีของคุณถ้าว่าง)</label>
+                    <label for="id_email">อีเมล</label>
                     <input type="email" name="email" id="id_email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
                 </div>
                 <div class="form-field">
