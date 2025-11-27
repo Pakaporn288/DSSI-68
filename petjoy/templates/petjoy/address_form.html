@@ -1,0 +1,109 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}
+{% if address %}แก้ไขที่อยู่{% else %}เพิ่มที่อยู่{% endif %}
+{% endblock %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'profile_new.css' %}">
+
+<div class="profile-container">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="profile-sidebar-card">
+        <div class="sidebar-user-box">
+            {% if user.profile.image %}
+                <img src="{{ user.profile.image.url }}" class="sidebar-profile-image">
+            {% else %}
+                <img src="{% static 'images/อินแล้ว.jpg' %}" class="sidebar-profile-image">
+            {% endif %}
+            <h3>{{ user.get_full_name|default:user.username }}</h3>
+            <p class="sidebar-email">{{ user.email }}</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{% url 'petjoy:profile' %}" class="menu-item">ข้อมูลส่วนตัว</a>
+            <a href="{% url 'petjoy:address_list' %}" class="menu-item active">ที่อยู่</a>
+            <a href="#" class="menu-item">ข้อความ</a>
+            <a href="#" class="menu-item">ประวัติการสั่งซื้อ</a>
+            <a href="{% url 'petjoy:favorites_list' %}" class="menu-item">รายการโปรด</a>
+
+            <form action="{% url 'petjoy:logout' %}" method="post">
+                {% csrf_token %}
+                <button class="logout-btn">ออกจากระบบ</button>
+            </form>
+        </nav>
+    </aside>
+
+    <!-- ===== Main Form ===== -->
+    <section class="profile-main-card">
+
+        <h2 class="section-title">
+            {% if address %}แก้ไขที่อยู่{% else %}เพิ่มที่อยู่ใหม่{% endif %}
+        </h2>
+
+        <form method="POST" class="address-form">
+            {% csrf_token %}
+
+            <div class="input-box">
+                <label>ชื่อ - นามสกุล</label>
+                <input type="text" name="full_name" required
+                       value="{{ address.full_name|default:'' }}">
+            </div>
+
+            <div class="input-box">
+                <label>เบอร์โทร</label>
+                <input type="text" name="phone" required
+                       value="{{ address.phone|default:'' }}">
+            </div>
+
+            <div class="input-box">
+                <label>ที่อยู่ (บ้านเลขที่ / หมู่ / ถนน)</label>
+                <textarea name="address_line" rows="3" required>{{ address.address_line|default:'' }}</textarea>
+            </div>
+
+            <div class="input-row">
+                <div class="input-box">
+                    <label>ตำบล</label>
+                    <input type="text" name="subdistrict" required
+                        value="{{ address.subdistrict|default:'' }}">
+                </div>
+
+                <div class="input-box">
+                    <label>อำเภอ</label>
+                    <input type="text" name="district" required
+                        value="{{ address.district|default:'' }}">
+                </div>
+            </div>
+
+            <div class="input-row">
+                <div class="input-box">
+                    <label>จังหวัด</label>
+                    <input type="text" name="province" required
+                        value="{{ address.province|default:'' }}">
+                </div>
+
+                <div class="input-box">
+                    <label>รหัสไปรษณีย์</label>
+                    <input type="text" name="zipcode" required
+                        value="{{ address.zipcode|default:'' }}">
+                </div>
+            </div>
+
+            <div class="profile-form-buttons">
+                <button type="submit" class="save-btn">
+                    บันทึกที่อยู่
+                </button>
+
+                <a href="{% url 'petjoy:address_list' %}" class="cancel-btn">
+                    ยกเลิก
+                </a>
+            </div>
+
+        </form>
+    </section>
+</div>
+
+{% endblock %}

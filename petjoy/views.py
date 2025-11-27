@@ -18,6 +18,7 @@ from django.db.models import Avg, Q
 from django.core.paginator import Paginator
 from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
+from .models import Address
 
 
 logger = logging.getLogger(__name__)
@@ -296,6 +297,70 @@ def entrepreneur_register(request):
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
+def address_list(request):
+    addresses = Address.objects.filter(user=request.user)
+    return render(request, 'petjoy/address_list.html', {'addresses': addresses})
+
+
+def address_add(request):
+    if request.method == "POST":
+        Address.objects.create(
+            user=request.user,
+            full_name=request.POST['full_name'],
+            phone=request.POST['phone'],
+            address_line=request.POST['address_line'],
+            subdistrict=request.POST['subdistrict'],
+            district=request.POST['district'],
+            province=request.POST['province'],
+            zipcode=request.POST['zipcode'],
+        )
+        return redirect('petjoy:address_list')
+
+    return render(request, 'petjoy/address_form.html')
+
+
+def address_edit(request, id):
+    address = Address.objects.get(id=id, user=request.user)
+
+    if request.method == "POST":
+        address.full_name = request.POST['full_name']
+        address.phone = request.POST['phone']
+        address.address_line = request.POST['address_line']
+        address.subdistrict = request.POST['subdistrict']
+        address.district = request.POST['district']
+        address.province = request.POST['province']
+        address.zipcode = request.POST['zipcode']
+        address.save()
+        return redirect('petjoy:address_list')
+
+    return render(request, 'petjoy/address_form.html', {"address": address})
+
+
+def address_delete(request, id):
+    Address.objects.get(id=id, user=request.user).delete()
+    return redirect('petjoy:address_list')
+
+
+def address_set_default(request, id):
+    Address.objects.filter(user=request.user).update(is_default=False)
+    Address.objects.filter(id=id, user=request.user).update(is_default=True)
+    return redirect('petjoy:address_list')
+
+def address_edit(request, id):
+    address = Address.objects.get(id=id, user=request.user)
+
+    if request.method == "POST":
+        address.full_name = request.POST["full_name"]
+        address.phone = request.POST["phone"]
+        address.address_line = request.POST["address_line"]
+        address.subdistrict = request.POST["subdistrict"]
+        address.district = request.POST["district"]
+        address.province = request.POST["province"]
+        address.zipcode = request.POST["zipcode"]
+        address.save()
+        return redirect("petjoy:address_list")
+
+    return render(request, "petjoy/address_form.html", {"address": address})
 
 class ProductListView(ListView):
     model = Product

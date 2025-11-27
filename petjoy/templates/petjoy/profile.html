@@ -4,77 +4,143 @@
 {% block title %}โปรไฟล์ของฉัน{% endblock %}
 
 {% block content %}
-<div class="profile-page-wrapper">
-    <aside class="profile-sidebar">
-        <h3 class="profile-sidebar-title">ข้อมูลส่วนตัว</h3>
-        <nav class="profile-menu">
-            <a href="#" class="profile-menu-item active">ข้อมูลส่วนตัว</a>
-            <a href="#" class="profile-menu-item">ที่อยู่</a>
-            <a href="#" class="profile-menu-item">ข้อความ</a>
-            <a href="#" class="profile-menu-item">ประวัติการสั่งซื้อ</a>
-            <a href="{% url 'petjoy:favorites_list' %}" class="profile-menu-item">รายการโปรด</a>
-            <form method="post" action="{% url 'petjoy:logout' %}" class="logout-form">
+
+<link rel="stylesheet" href="{% static 'profile_new.css' %}">
+
+<div class="profile-container">
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="profile-sidebar-card">
+        <div class="sidebar-user-box">
+            {% if user.profile.image %}
+                <img src="{{ user.profile.image.url }}" class="sidebar-profile-image">
+            {% else %}
+                <img src="{% static 'images/อินแล้ว.jpg' %}" class="sidebar-profile-image">
+            {% endif %}
+            <h3>{{ user.get_full_name|default:user.username }}</h3>
+            <p class="sidebar-email">{{ user.email }}</p>
+        </div>
+
+        <nav class="sidebar-menu">
+
+            <!-- รายการเมนู -->
+            <a href="{% url 'petjoy:profile' %}" class="menu-item {% if not editing %}active{% endif %}">
+                ข้อมูลส่วนตัว
+            </a>
+
+            <a href="{% url 'petjoy:address_list' %}" class="menu-item">
+                ที่อยู่
+            </a>
+
+            <a href="#" class="menu-item">
+                ข้อความ
+            </a>
+
+            <a href="#" class="menu-item">
+                ประวัติการสั่งซื้อ
+            </a>
+
+            <a href="{% url 'petjoy:favorites_list' %}" class="menu-item">
+                รายการโปรด
+            </a>
+
+            <form action="{% url 'petjoy:logout' %}" method="post" class="logout-form">
                 {% csrf_token %}
-                <button type="submit" class="profile-menu-item logout-button">ออกจากระบบ</button>
+                <button class="logout-btn">ออกจากระบบ</button>
             </form>
+
         </nav>
     </aside>
-    <div class="profile-card">
-        <div class="profile-image-section">
-            {% if user.profile.image %}
-            <img src="{{ user.profile.image.url }}" alt="{{ user.username }}" class="profile-image-large">
-            {% else %}
-            <img src="{% static 'images/อินแล้ว.jpg' %}" alt="{{ user.username }}" class="profile-image-large">
-            {% endif %}
-        </div>
-        <div class="profile-info-section">
-            {% if editing %}
-            <form method="post" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="form-row">
+
+    <!-- ===== Main Content ===== -->
+    <section class="profile-main-card">
+
+        {% if editing %}
+        <!-- ===========================
+             EDIT MODE
+        ============================ -->
+        
+        <h2 class="section-title">แก้ไขข้อมูลส่วนตัว</h2>
+
+        <form method="post" enctype="multipart/form-data" class="profile-form">
+            {% csrf_token %}
+
+            <div class="input-row">
+                <div class="input-box">
                     {{ user_form.first_name.label_tag }}
                     {{ user_form.first_name }}
                 </div>
-                <div class="form-row">
+
+                <div class="input-box">
                     {{ user_form.last_name.label_tag }}
                     {{ user_form.last_name }}
                 </div>
-                <div class="form-row">
-                    {{ user_form.email.label_tag }}
-                    {{ user_form.email }}
-                </div>
-                <div class="form-row">
-                    <label for="id_image">รูปโปรไฟล์</label>
-                    {{ profile_form.image }}
-                </div>
-                <div class="form-row">
-                    {{ user_form.password.label_tag }}
-                    {{ user_form.password }}
-                    <small>เว้นว่างไว้หากไม่ต้องการเปลี่ยนรหัสผ่าน</small>
-                </div>
-                <div style="margin-top:16px;"></div>
-                    <button type="submit" class="profile-edit-btn">บันทึกการเปลี่ยนแปลง</button>
-                    <a href="{% url 'petjoy:profile' %}" class="white-btn" style="margin-left:8px;">ยกเลิก</a>
-                </div>
-            </form>
-            {% else %}
-            <h2 class="profile-name">{{ user.get_full_name|default:user.username }}</h2>
-            <div class="profile-email">{{ user.email }}</div>
-            <div class="profile-detail-row">
-                <b>ชื่อ-นามสกุล</b>
-                <span class="profile-detail-value">{{ user.get_full_name|default:user.username }}</span>
             </div>
-            <div class="profile-detail-row">
-                <b>อีเมล์</b>
-                <span class="profile-detail-value">{{ user.email }}</span>
+
+            <div class="input-box">
+                {{ user_form.email.label_tag }}
+                {{ user_form.email }}
             </div>
-            <div class="profile-detail-row">
-                <b>รหัสผ่าน</b>
-                <span class="profile-detail-value">******</span>
+
+            <div class="input-box">
+                <label>รูปโปรไฟล์</label>
+                {{ profile_form.image }}
             </div>
-            <a href="?edit=1" class="profile-edit-btn">แก้ไข</a>
-            {% endif %}
+
+            <div class="input-box">
+                {{ user_form.password.label_tag }}
+                {{ user_form.password }}
+                <small class="text-muted">เว้นว่างหากไม่ต้องการเปลี่ยนรหัสผ่าน</small>
+            </div>
+
+            <div class="profile-form-buttons">
+                <button type="submit" class="save-btn">บันทึกข้อมูล</button>
+                <a href="{% url 'petjoy:profile' %}" class="cancel-btn">ยกเลิก</a>
+            </div>
+        </form>
+
+        {% else %}
+        <!-- ===========================
+             VIEW MODE
+        ============================ -->
+
+        <div class="profile-header">
+            <div class="profile-img-wrapper">
+                {% if user.profile.image %}
+                    <img src="{{ user.profile.image.url }}" class="profile-main-image">
+                {% else %}
+                    <img src="{% static 'images/อินแล้ว.jpg' %}" class="profile-main-image">
+                {% endif %}
+            </div>
+
+            <div>
+                <h2 class="profile-title">{{ user.get_full_name|default:user.username }}</h2>
+                <p class="profile-subtitle">{{ user.email }}</p>
+            </div>
         </div>
-    </div>
+
+        <div class="profile-info-list">
+            <div class="info-row">
+                <span>ชื่อ - นามสกุล</span>
+                <p>{{ user.get_full_name|default:user.username }}</p>
+            </div>
+
+            <div class="info-row">
+                <span>อีเมล</span>
+                <p>{{ user.email }}</p>
+            </div>
+
+            <div class="info-row">
+                <span>รหัสผ่าน</span>
+                <p>********</p>
+            </div>
+        </div>
+
+        <a href="?edit=1" class="edit-profile-btn">แก้ไขข้อมูล</a>
+
+        {% endif %}
+    </section>
+
 </div>
+
 {% endblock %}

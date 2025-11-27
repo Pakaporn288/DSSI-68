@@ -1,7 +1,10 @@
 {% extends 'petjoy/base.html' %}
 {% load static %}
+{% load humanize %}
 {% block title %}ตะกร้าสินค้า | PetJoy{% endblock %}
+
 {% block content %}
+
 <div class="cart-container">
 
     <h1 class="cart-title">
@@ -32,8 +35,18 @@
                         </a>
                     </h2>
 
+                    <!-- ⭐ เพิ่มชื่อร้าน -->
+                    <p class="cart-item-shop">
+                        ร้านค้า:
+                        {% if item.product.owner %}
+                            {{ item.product.owner.store_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </p>
+
                     <p class="cart-item-price">
-                        ราคา: {{ item.product.price }} บาท
+                        ราคา: {{ item.product.price|floatformat:0|intcomma }} บาท
                     </p>
 
                     <div class="qty-controls">
@@ -44,7 +57,7 @@
                             <button type="submit" class="qty-btn">-</button>
                         </form>
 
-                        <span class="qty-number">{{ item.quantity }}</span>
+                        <span class="qty-number">{{ item.quantity|intcomma }}</span>
 
                         <form method="POST" action="{% url 'petjoy:update-cart' %}">
                             {% csrf_token %}
@@ -55,7 +68,7 @@
                     </div>
 
                     <p class="cart-item-total">
-                        รวม: <span>{{ item.total_price }}</span> บาท
+                        รวม: <span>{{ item.total_price|floatformat:0|intcomma }}</span> บาท
                     </p>
 
                     <div class="cart-item-actions">
@@ -73,12 +86,17 @@
             {% endfor %}
         </div>
 
-        <div class="cart-summary smaller-summary">
-            <h2>ยอดรวมทั้งหมด</h2>
-            <p class="total-items">จำนวนสินค้า: {{ total_items }} ชิ้น</p>
-            <p class="total-price small-price">{{ total_price }} บาท</p>
+        <!-- ⭐ Summary แบบใหม่ ไม่ใช้กล่อง -->
+        <div class="cart-summary-new">
+            <p class="summary-line">
+                <strong>ยอดรวมทั้งหมด:</strong> {{ total_price|floatformat:0|intcomma }} บาท
+            </p>
 
-            <button class="btn-checkout small-checkout" id="openCheckoutPopup">
+            <p class="summary-line">
+                <strong>จำนวนสินค้า:</strong> {{ total_items|intcomma }} ชิ้น
+            </p>
+
+            <button class="btn-checkout-orange" id="openCheckoutPopup">
                 ดำเนินการสั่งซื้อ
             </button>
         </div>
@@ -90,9 +108,10 @@
 </div>
 
 
-<!-- ==========================================
+<!-- =======================
      CHECKOUT POPUP
-=========================================== -->
+======================= -->
+
 <div id="checkoutPopup" class="popup-overlay">
     <div class="popup-box">
 
@@ -109,11 +128,16 @@
 
                     <div class="popup-info">
                         <p class="popup-name">{{ item.product.name }}</p>
-                        <p class="popup-price">{{ item.product.price }} บาท × {{ item.quantity }}</p>
+
+                        <!-- ⭐ ราคาแบบมีคอมมา -->
+                        <p class="popup-price">
+                            {{ item.product.price|floatformat:0|intcomma }} บาท × {{ item.quantity|intcomma }}
+                        </p>
                     </div>
                 </label>
                 {% endfor %}
             </div>
+
 
             <div class="popup-actions">
                 <button type="button" id="cancelPopup" class="popup-cancel">ยกเลิก</button>
@@ -126,9 +150,7 @@
 </div>
 
 
-<!-- ==========================================
-     JAVASCRIPT
-=========================================== -->
+<!-- POPUP SCRIPT -->
 <script>
 document.getElementById("openCheckoutPopup").addEventListener("click", () => {
     document.getElementById("checkoutPopup").style.display = "flex";
@@ -151,7 +173,7 @@ document.getElementById("checkoutForm").addEventListener("submit", function(e) {
 
     console.log("สินค้าที่เลือก:", selected);
 
-    alert("เลือกสินค้าเรียบร้อย! (สามารถส่งไป backend ต่อได้)");
+    alert("เลือกสินค้าเรียบร้อย!");
 });
 </script>
 

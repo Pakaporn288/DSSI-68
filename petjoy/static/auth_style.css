@@ -390,3 +390,39 @@ body.cart-body {
 .popup-confirm:hover {
     background: #345fe0;
 }
+/* ===== New Summary Section (ไม่เป็นกล่อง) ===== */
+.cart-summary-new {
+    margin-top: 25px;
+    padding: 5px 2px;
+}
+
+.summary-line {
+    font-size: 18px;
+    margin: 6px 0;
+    color: #333;
+}
+
+/* ปุ่มสั่งซื้อแบบใหม่สีส้ม */
+.btn-checkout-orange {
+    margin-top: 14px;
+    display: inline-block;
+    background: #FF7043;
+    color: white;
+    padding: 12px 22px;
+    border-radius: 12px;
+    border: none;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn-checkout-orange:hover {
+    background: #E65100;
+}
+
+/* ชื่อร้านค้าใต้สินค้า */
+.cart-item-shop {
+    font-size: 15px;
+    color: #555;
+    margin: -2px 0 8px 0;
+}

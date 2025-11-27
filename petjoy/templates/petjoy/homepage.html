@@ -4,82 +4,105 @@
 {% block title %}PetJoy{% endblock %}
 
 {% block content %}
-    <main class="content">
-        <div class="welcome-banner">
-            <p>Have a good Day!</p>
-            <img src="{% static 'images/ลบพื้นหลัง.png' %}" alt="Smile" class="banner-smile">
-        </div>
-        <section class="pet-selection">
-            <h3>เลือกแก๊งของคุณ</h3>
-            <div class="pet-options">
-                <a href="{% url 'petjoy:dog-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
-                    <div class="pet-image-container">
-                        <img src="{% static 'images/DOG.jpg' %}" alt="สุนัข">
-                    </div>
-                    <span>สุนัข</span>
-                </a>
-                <a href="{% url 'petjoy:cat-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
-                    <div class="pet-image-container">
-                        <img src="{% static 'images/CAT.jpg' %}" alt="แมว">
-                    </div>
-                    <span>แมว</span>
-                </a>
-                    <a href="{% url 'petjoy:food-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
-                    <div class="pet-image-container">
-                        <img src="{% static 'images/food.png' %}" alt="อาหารสัตว์">
-                    </div>
-                    <span>อาหารสัตว์</span>
-                </a>
-            </div>
-        </section>
-        <section class="recommend-products">
-            <h3 class="recommend-title">สินค้าแนะนำ</h3>
-            <div class="products-grid">
-                <div class="product-item">
-                    <div class="product-image-placeholder">
-                        <img src="{% static 'images/Cat teaser.jpg' %}" alt="ไม้ล่อแมว" class="product-image">
-                    </div>
-                    <div class="product-name">ไม้ล่อแมว</div>
-                    <a href="{% url 'petjoy:product-detail' 1 %}" class="view-more-button">เลือกดูเพิ่มเติม</a>
-                </div>
-                <div class="product-item">
-                    <div class="product-image-placeholder">
-                        <img src="{% static 'images/Cat Ball.jpg' %}" alt="ลูกบอลแมว" class="product-image">
-                    </div>
-                    <div class="product-name">ลูกบอลแมว</div>
-                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
-                </div>
-                <div class="product-item">
-                    <div class="product-image-placeholder">
-                        <img src="{% static 'images/Dog Ball.jpg' %}" alt="ลูกบอลสุนัข" class="product-image">
-                    </div>
-                    <div class="product-name">ลูกบอลสุนัข</div>
-                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
-                </div>
-                <div class="product-item">
-                    <div class="product-image-placeholder">
-                        <img src="{% static 'images/Dog rubber teether toy.jpg' %}" alt="ของเล่นยางกันสุนัข" class="product-image">
-                    </div>
-                    <div class="product-name">ของเล่นกันแทะ</div>
-                    <button class="view-more-button">เลือกดูเพิ่มเติม</button>
-                </div>
-            </div>
-        </section>
-    </main>
+<main class="content">
 
-    <div id="chatbot-container" class="chatbot-popup hidden">
-        <div class="chatbot-header">
-            <span class="chatbot-header-title">🐾 PetJoy</span>
+    <!-- ============================
+         NEW PERSONAL GREETING BANNER
+    ================================ -->
+    <div class="hello-banner">
+        <div class="hello-left">
+            <h1>สวัสดี {{ request.user.first_name|default:"เพื่อนรัก" }} </h1>
+            <p>ขอให้วันนี้เป็นวันที่ดีสำหรับคุณและเจ้าตัวน้อยนะคะ ❤️</p>
         </div>
-        <div class="chatbot-body" id="chat-response">
-            <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำของเล่นไหมคะ?</div>
-        </div>
-        <div class="chatbot-input-area">
-            <input type="text" id="chatbot-input" placeholder="พิมพ์ข้อความ..." />
-            <button id="chatbot-send">ส่ง</button>
-        </div>
+
+        <img src="{% static 'images/ลบพื้นหลัง.png' %}" class="hello-img" alt="pet">
     </div>
-    <button class="chatbot-toggle-button">💬</button>
 
-    {# scripts are included in base.html to avoid duplicates #}
+    <!-- ============================
+         CATEGORY SECTION
+    ================================ -->
+    <section class="pet-selection">
+        <h3>เลือกแก๊งของคุณ</h3>
+        <div class="pet-options">
+            <a href="{% url 'petjoy:dog-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+                <div class="pet-image-container">
+                    <img src="{% static 'images/DOG.jpg' %}" alt="สุนัข">
+                </div>
+                <span>สุนัข</span>
+            </a>
+
+            <a href="{% url 'petjoy:cat-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+                <div class="pet-image-container">
+                    <img src="{% static 'images/CAT.jpg' %}" alt="แมว">
+                </div>
+                <span>แมว</span>
+            </a>
+
+            <a href="{% url 'petjoy:food-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+                <div class="pet-image-container">
+                    <img src="{% static 'images/food.png' %}" alt="อาหารสัตว์">
+                </div>
+                <span>อาหารสัตว์</span>
+            </a>
+        </div>
+    </section>
+
+    <!-- ============================
+         RECOMMENDED PRODUCTS SECTION
+    ================================ -->
+    <section class="recommend-products">
+        <h3 class="recommend-title">สินค้าแนะนำ</h3>
+
+        <div class="products-grid">
+            <div class="product-item">
+                <div class="product-image-placeholder">
+                    <img src="{% static 'images/Cat teaser.jpg' %}" alt="ไม้ล่อแมว" class="product-image">
+                </div>
+                <div class="product-name">ไม้ล่อแมว</div>
+                <a href="{% url 'petjoy:product-detail' 1 %}" class="view-more-button">เลือกดูเพิ่มเติม</a>
+            </div>
+
+            <div class="product-item">
+                <div class="product-image-placeholder">
+                    <img src="{% static 'images/Cat Ball.jpg' %}" alt="ลูกบอลแมว" class="product-image">
+                </div>
+                <div class="product-name">ลูกบอลแมว</div>
+                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+            </div>
+
+            <div class="product-item">
+                <div class="product-image-placeholder">
+                    <img src="{% static 'images/Dog Ball.jpg' %}" alt="ลูกบอลสุนัข" class="product-image">
+                </div>
+                <div class="product-name">ลูกบอลสุนัข</div>
+                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+            </div>
+
+            <div class="product-item">
+                <div class="product-image-placeholder">
+                    <img src="{% static 'images/Dog rubber teether toy.jpg' %}" alt="ของเล่นกันแทะ" class="product-image">
+                </div>
+                <div class="product-name">ของเล่นกันแทะ</div>
+                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- Chatbot -->
+<div id="chatbot-container" class="chatbot-popup hidden">
+    <div class="chatbot-header">
+        <span class="chatbot-header-title">🐾 PetJoy</span>
+    </div>
+    <div class="chatbot-body" id="chat-response">
+        <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำของเล่นไหมคะ?</div>
+    </div>
+    <div class="chatbot-input-area">
+        <input type="text" id="chatbot-input" placeholder="พิมพ์ข้อความ..." />
+        <button id="chatbot-send">ส่ง</button>
+    </div>
+</div>
+<button class="chatbot-toggle-button">💬</button>
+
 {% endblock %}
