@@ -19,7 +19,7 @@ def get_ai_response(user_message):
         return "ขออภัยค่ะ ขณะนี้ระบบ AI ไม่พร้อมใช้งาน (API Key not configured)"
 
     try:
-        model = genai.GenerativeModel('models/gemini-pro-latest')
+        model = genai.GenerativeModel('models/gemini-2.5-flash')
 
         products = Product.objects.all()
         if products:

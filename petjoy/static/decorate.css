@@ -233,6 +233,7 @@ body {
     text-decoration: none;
 }
 
+
 /* Main Content Area */
 .content {
     padding: 20px 40px;
@@ -1631,4 +1632,35 @@ body {
     font-size: 1.2rem;    /* ขนาดตัวอักษร */
     font-weight: bold;
     text-decoration: none; /* ลบเส้นใต้ */
+}
+
+
+/* ลบเส้นใต้ของรถเข็น */
+.nav-cart-wrapper .cart-icon {
+    position: relative;
+    text-decoration: none !important;
+    color: inherit;
+}
+
+.nav-cart-wrapper .cart-icon:hover {
+    text-decoration: none !important;
+}
+
+/* Badge แสดงจำนวนสินค้า */
+.cart-badge {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: #ff3b30;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 50%;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.25);
+    min-width: 20px;
+    min-height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

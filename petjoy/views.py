@@ -13,12 +13,12 @@ from django.contrib.auth import update_session_auth_hash
 import logging
 from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from django.urls import reverse_lazy
-from .models import Product, Review, Category, Profile
+from .models import Product, Review, Category, Profile, CartItem   
 from django.db.models import Avg, Q
 from django.core.paginator import Paginator
 from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
+
 
 logger = logging.getLogger(__name__)
 
@@ -82,31 +82,79 @@ def product_detail_view(request, product_id):
     })
 
 
+@login_required(login_url='petjoy:login')
 @require_POST
 def add_to_cart(request):
-    """Simple session-based cart: store {product_id: quantity} in session.
-    Expects POST with 'product_id' and optional 'quantity'.
-    """
-    product_id = request.POST.get('product_id')
-    try:
-        quantity = int(request.POST.get('quantity') or 1)
-    except (TypeError, ValueError):
-        quantity = 1
+    """เพิ่มสินค้าเข้าตะกร้าของ user"""
+    product_id = request.POST.get("product_id")
+    quantity = int(request.POST.get("quantity") or 1)
 
     product = get_object_or_404(Product, id=product_id)
 
-    cart = request.session.get('cart', {})
-    key = str(product.id)
-    cart[key] = cart.get(key, 0) + quantity
-    request.session['cart'] = cart
+    cart_item, created = CartItem.objects.get_or_create(
+        user=request.user,
+        product=product
+    )
 
-    messages.success(request, f'เพิ่ม "{product.name}" ลงในตะกร้า')
+    if not created:
+        cart_item.quantity += quantity
 
-    # Redirect back to referring page or homepage
-    referer = request.META.get('HTTP_REFERER')
-    if referer:
-        return redirect(referer)
-    return redirect('petjoy:homepage')
+    cart_item.save()
+
+    messages.success(request, f"เพิ่ม {product.name} x{quantity} ลงตะกร้าแล้ว!")
+
+    return redirect(request.META.get("HTTP_REFERER", "petjoy:homepage"))
+
+@login_required(login_url='petjoy:login')
+def remove_from_cart(request, item_id):
+    """ลบรายการสินค้าออกจากตะกร้าของ user"""
+    # ใช้ item_id ซึ่งคือ CartItem.id
+    cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
+    
+    # ลบรายการนั้น
+    product_name = cart_item.product.name
+    cart_item.delete()
+
+    messages.success(request, f"ลบ {product_name} ออกจากตะกร้าแล้ว")
+
+    # นำกลับไปยังหน้าตะกร้าสินค้า
+    return redirect("petjoy:cart-detail")
+
+@login_required(login_url='petjoy:login')
+@require_POST
+def update_cart(request):
+    """อัปเดตจำนวนสินค้าในตะกร้า (ใช้กับปุ่ม + / -)"""
+    item_id = request.POST.get("item_id")
+    new_qty = int(request.POST.get("quantity") or 0)
+
+    cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
+
+    if new_qty <= 0:
+        product_name = cart_item.product.name
+        cart_item.delete()
+        messages.info(request, f"ลบ {product_name} ออกจากตะกร้าแล้ว")
+    else:
+        cart_item.quantity = new_qty
+        cart_item.save()
+        messages.success(request, f"อัปเดต {cart_item.product.name} เป็น {new_qty} ชิ้นแล้ว")
+
+    return redirect("petjoy:cart-detail")
+
+
+@login_required(login_url='petjoy:login')
+def cart_detail(request):
+    cart_items = CartItem.objects.filter(user=request.user)
+
+    total_price = sum(item.total_price for item in cart_items)
+
+    # NEW: จำนวนสินค้าทั้งหมดในตะกร้า (รวมจำนวน ไม่ใช่จำนวนรายการ)
+    total_items = sum(item.quantity for item in cart_items)
+
+    return render(request, "petjoy/cart_detail.html", {
+        "cart_items": cart_items,
+        "total_price": total_price,
+        "total_items": total_items  # NEW
+    })
 
 def entrepreneur_profile_edit(request):
     # Only allow logged-in entrepreneurs

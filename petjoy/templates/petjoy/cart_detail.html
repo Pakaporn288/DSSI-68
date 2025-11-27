@@ -1,0 +1,158 @@
+{% extends 'petjoy/base.html' %}
+{% load static %}
+{% block title %}ตะกร้าสินค้า | PetJoy{% endblock %}
+{% block content %}
+<div class="cart-container">
+
+    <h1 class="cart-title">
+        🛒 ตะกร้าสินค้าของคุณ
+    </h1>
+
+    {% if cart_items %}
+        <div class="cart-items-list">
+
+            {% for item in cart_items %}
+            <div class="cart-item-card">
+
+                <div class="cart-item-left">
+                    <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-img-link">
+                        {% if item.product.image %}
+                            <img src="{{ item.product.image.url }}" class="cart-img" alt="{{ item.product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/no-image.png' %}" class="cart-img" alt="{{ item.product.name }}">
+                        {% endif %}
+                    </a>
+                </div>
+
+                <div class="cart-item-right">
+
+                    <h2 class="cart-item-name">
+                        <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-item-name-link">
+                            {{ item.product.name }}
+                        </a>
+                    </h2>
+
+                    <p class="cart-item-price">
+                        ราคา: {{ item.product.price }} บาท
+                    </p>
+
+                    <div class="qty-controls">
+                        <form method="POST" action="{% url 'petjoy:update-cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="quantity" value="{{ item.quantity|add:'-1' }}">
+                            <button type="submit" class="qty-btn">-</button>
+                        </form>
+
+                        <span class="qty-number">{{ item.quantity }}</span>
+
+                        <form method="POST" action="{% url 'petjoy:update-cart' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="item_id" value="{{ item.id }}">
+                            <input type="hidden" name="quantity" value="{{ item.quantity|add:'1' }}">
+                            <button type="submit" class="qty-btn">+</button>
+                        </form>
+                    </div>
+
+                    <p class="cart-item-total">
+                        รวม: <span>{{ item.total_price }}</span> บาท
+                    </p>
+
+                    <div class="cart-item-actions">
+                        <a href="{% url 'petjoy:product-detail' item.product.id %}" class="btn-order-single">
+                            สั่งซื้อสินค้านี้
+                        </a>
+
+                        <a href="{% url 'petjoy:remove-from-cart' item.id %}" class="btn-remove">
+                            ลบออกจากตะกร้า
+                        </a>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="cart-summary smaller-summary">
+            <h2>ยอดรวมทั้งหมด</h2>
+            <p class="total-items">จำนวนสินค้า: {{ total_items }} ชิ้น</p>
+            <p class="total-price small-price">{{ total_price }} บาท</p>
+
+            <button class="btn-checkout small-checkout" id="openCheckoutPopup">
+                ดำเนินการสั่งซื้อ
+            </button>
+        </div>
+
+    {% else %}
+        <p class="cart-empty">ยังไม่มีสินค้าในตะกร้า</p>
+    {% endif %}
+
+</div>
+
+
+<!-- ==========================================
+     CHECKOUT POPUP
+=========================================== -->
+<div id="checkoutPopup" class="popup-overlay">
+    <div class="popup-box">
+
+        <h2 class="popup-title">เลือกสินค้าที่ต้องการสั่งซื้อ</h2>
+
+        <form id="checkoutForm">
+
+            <div class="popup-items">
+                {% for item in cart_items %}
+                <label class="popup-item">
+                    <input type="checkbox" name="selected_items" value="{{ item.id }}" class="popup-checkbox">
+
+                    <img src="{{ item.product.image.url }}" class="popup-img">
+
+                    <div class="popup-info">
+                        <p class="popup-name">{{ item.product.name }}</p>
+                        <p class="popup-price">{{ item.product.price }} บาท × {{ item.quantity }}</p>
+                    </div>
+                </label>
+                {% endfor %}
+            </div>
+
+            <div class="popup-actions">
+                <button type="button" id="cancelPopup" class="popup-cancel">ยกเลิก</button>
+                <button type="submit" class="popup-confirm">ยืนยันสั่งซื้อ</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+<!-- ==========================================
+     JAVASCRIPT
+=========================================== -->
+<script>
+document.getElementById("openCheckoutPopup").addEventListener("click", () => {
+    document.getElementById("checkoutPopup").style.display = "flex";
+});
+
+document.getElementById("cancelPopup").addEventListener("click", () => {
+    document.getElementById("checkoutPopup").style.display = "none";
+});
+
+document.getElementById("checkoutForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const selected = [...document.querySelectorAll("input[name='selected_items']:checked")]
+        .map(el => el.value);
+
+    if (selected.length === 0) {
+        alert("กรุณาเลือกสินค้าอย่างน้อย 1 รายการ");
+        return;
+    }
+
+    console.log("สินค้าที่เลือก:", selected);
+
+    alert("เลือกสินค้าเรียบร้อย! (สามารถส่งไป backend ต่อได้)");
+});
+</script>
+
+{% endblock %}

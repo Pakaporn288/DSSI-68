@@ -21,6 +21,10 @@ urlpatterns = [
     path('search/', views.search_view, name='search'),
     path('cart/add/', views.add_to_cart, name='cart-add'),
     path('favorites/', views.favorites_list, name='favorites-list'),
+    path('cart/', views.cart_detail, name='cart-detail'),     
+    path('cart/add/', views.add_to_cart, name='cart-add'), 
+    path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove-from-cart'),
+    path('cart/update/', views.update_cart, name='update-cart'),
     # alias with underscore because some templates use 'favorites_list'
     path('favorites/', views.favorites_list, name='favorites_list'),
     path('favorites/toggle/', views.toggle_favorite, name='favorites-toggle'),

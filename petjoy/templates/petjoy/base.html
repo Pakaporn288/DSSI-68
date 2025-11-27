@@ -5,41 +5,70 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PetJoy{% endblock %}</title>
+
+    <!-- CSS หลักของเว็บ -->
     <link rel="stylesheet" href="{% static 'decorate.css' %}">
     <link rel="stylesheet" href="{% static 'search_form.css' %}">
+
+    <!-- CSS สำหรับหน้า auth + cart -->
+    <link rel="stylesheet" href="{% static 'auth_style.css' %}">
+
+    <!-- icon -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+
+    {% block extra_head %}{% endblock %}
 </head>
-<body>
+
+<body class="{% block body_class %}{% endblock %}">
 
     {% if not auth_page %}
     <header class="navbar">
         <div class="navbar-left">
-            {% comment %}Show clickable logo on all pages except profile; use request.path to detect profile route{% endcomment %}
             <a href="{% url 'petjoy:homepage' %}" class="logo">🐾 PetJoy</a>
         </div>
+
         <div class="navbar-center">
             <div class="search-bar">
                 {% include 'petjoy/partials/search_form.html' %}
             </div>
         </div>
+
         <div class="navbar-right">
-            <span class="cart-icon">🛒</span>
+
+            <!-- ⭐ UPDATED — รถเข็นมี Badge + ไม่มีเส้นใต้ -->
+            <div class="nav-cart-wrapper">
+                <a href="{% url 'petjoy:cart-detail' %}" class="cart-icon">
+                    🛒
+                    {% if cart_count > 0 %}
+                    <span class="cart-badge">{{ cart_count }}</span>
+                    {% endif %}
+                </a>
+            </div>
+
             {% if user.is_authenticated %}
                 <a href="{% url 'petjoy:profile' %}" class="profile-link">
                     {% if user.profile.image %}
-                        <img src="{{ user.profile.image.url }}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <img src="{{ user.profile.image.url }}" 
+                             alt="Profile Picture" 
+                             class="profile-icon"
+                             style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                     {% else %}
-                        <img src="{% static 'images/อินแล้ว.jpg' %}" alt="Profile Picture" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <img src="{% static 'images/อินแล้ว.jpg' %}" 
+                             alt="Profile Picture" 
+                             class="profile-icon"
+                             style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
                     {% endif %}
                 </a>
+
             {% else %}
                 <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
             {% endif %}
+
         </div>
     </header>
     {% endif %}
 
     <main class="content">
-        {# แสดง messages เฉพาะเมื่อไม่ได้อยู่ในหน้า auth_page #}
         {% if messages and not auth_page %}
             <ul class="messages">
                 {% for message in messages %}
@@ -51,7 +80,9 @@
         {% block content %}
         {% endblock %}
     </main>
+
     <form id="csrf-form" style="display:none;">{% csrf_token %}</form>
+
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/chatbot.js' %}"></script>
     {% block extra_scripts %}{% endblock %}

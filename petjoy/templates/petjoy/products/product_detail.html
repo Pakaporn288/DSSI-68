@@ -1,9 +1,11 @@
 {% extends "petjoy/base.html" %}
 {% load static %}
-<!-- สินค้าชิ้นแรก ไม้ล่อแมว -->
 {% block title %}{{ product.name }} - PetJoy{% endblock %}
 
 {% block content %}
+
+<!-- CSS เฉพาะหน้า -->
+<link rel="stylesheet" href="{% static 'product_detail.css' %}">
 
 <div class="simple-detail-container">
 
@@ -14,27 +16,41 @@
 
     <div class="detail-content-wrapper">
 
+        <!-- ================================
+             LEFT SIDE — IMAGE + STORE INFO + REVIEWS
+        ================================= -->
         <div class="detail-image-section">
 
+            <!-- IMAGE -->
             {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="detail-product-image">
             {% endif %}
 
+            <!-- STORE INFO -->
             <div class="store-info-section">
                 {% if product.owner %}
                     {% if product.owner.profile_image %}
                         {% if user.is_authenticated and user == product.owner.user %}
-                            <a href="{% url 'petjoy:entrepreneur-home' %}"><img src="{{ product.owner.profile_image.url }}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                            <a href="{% url 'petjoy:entrepreneur-home' %}">
+                                <img src="{{ product.owner.profile_image.url }}" class="store-logo">
+                            </a>
                         {% else %}
-                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}"><img src="{{ product.owner.profile_image.url }}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}">
+                                <img src="{{ product.owner.profile_image.url }}" class="store-logo">
+                            </a>
                         {% endif %}
+                    {% else %}
+                        {% if user.is_authenticated and user == product.owner.user %}
+                            <a href="{% url 'petjoy:entrepreneur-home' %}">
+                                <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                            </a>
                         {% else %}
-                            {% if user.is_authenticated and user == product.owner.user %}
-                            <a href="{% url 'petjoy:entrepreneur-home' %}"><img src="{% static 'images/ร้าน.png' %}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
-                        {% else %}
-                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}"><img src="{% static 'images/ร้าน.png' %}" alt="{{ product.owner.store_name|cut:"-" }}" class="store-logo"></a>
+                            <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}">
+                                <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                            </a>
                         {% endif %}
                     {% endif %}
+
                     <div class="store-details">
                         <div class="store-name">
                             {% if user.is_authenticated and user == product.owner.user %}
@@ -48,12 +64,13 @@
                             {% if user.is_authenticated and user == product.owner.user %}
                                 <a href="{% url 'petjoy:entrepreneur-home' %}" class="store-btn view-store-btn">ดูร้านค้า</a>
                             {% else %}
-                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}" class="store-btn view-store-btn">ดูร้านค้า </a>
+                                <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}" class="store-btn view-store-btn">ดูร้านค้า</a>
                             {% endif %}
                         </div>
                     </div>
+
                 {% else %}
-                    <img src="{% static 'images/ร้าน.png' %}" alt="Store Logo" class="store-logo">
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
                     <div class="store-details">
                         <div class="store-name">ร้านผู้ขาย</div>
                         <div class="store-buttons">
@@ -64,154 +81,125 @@
                 {% endif %}
             </div>
 
+            <!-- REVIEWS -->
             <div class="reviews-section">
                 <h3>รีวิวจากลูกค้า ({{ reviews.count }})</h3>
+
                 {% for review in reviews %}
-                <div class="review-item">
-                    <div class="review-header">
-                        <span class="review-user">{{ review.user.username }}</span>
-                        <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+                    <div class="review-item">
+                        <div class="review-header">
+                            <span class="review-user">{{ review.user.username }}</span>
+                            <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
+                        </div>
+
+                        <div class="star-rating">
+                            {% if review.rating == 5 %}★★★★★{% endif %}
+                            {% if review.rating == 4 %}★★★★<span class="empty-star">★</span>{% endif %}
+                            {% if review.rating == 3 %}★★★<span class="empty-star">★★</span>{% endif %}
+                            {% if review.rating == 2 %}★★<span class="empty-star">★★★</span>{% endif %}
+                            {% if review.rating == 1 %}★<span class="empty-star">★★★★</span>{% endif %}
+                        </div>
+
+                        <p class="review-comment">{{ review.comment }}</p>
                     </div>
-                    <div class="star-rating">
-                        {% if review.rating == 5 %}★★★★★{% endif %}
-                        {% if review.rating == 4 %}★★★★<span class="empty-star">★</span>{% endif %}
-                        {% if review.rating == 3 %}★★★<span class="empty-star">★★</span>{% endif %}
-                        {% if review.rating == 2 %}★★<span class="empty-star">★★★</span>{% endif %}
-                        {% if review.rating == 1 %}★<span class="empty-star">★★★★</span>{% endif %}
-                    </div>
-                    <p class="review-comment">{{ review.comment }}</p>
-                </div>
                 {% empty %}
-                <p>ยังไม่มีรีวิวสำหรับสินค้าชิ้นนี้</p>
+                    <p>ยังไม่มีรีวิวสำหรับสินค้าชิ้นนี้</p>
                 {% endfor %}
             </div>
 
         </div>
 
+
+
+
+        <!-- ================================
+             RIGHT SIDE — PRODUCT INFO
+        ================================= -->
         <div class="detail-info-section">
 
             <h2 class="detail-product-name">{{ product.name }}</h2>
-                {% if user.is_authenticated %}
-                <button id="favoriteBtn" class="favorite-toggle detail-fav" data-product-id="{{ product.pk }}" aria-pressed="{% if product in user.profile.favorites.all %}true{% else %}false{% endif %}">
+            <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
+
+            <!-- ❤️ FAVORITE BUTTON -->
+            {% if user.is_authenticated %}
+                <button id="favoriteBtn"
+                        class="favorite-toggle favorite-heart {% if product in user.profile.favorites.all %}fav-active{% endif %}"
+                        data-product-id="{{ product.pk }}"
+                        aria-pressed="{% if product in user.profile.favorites.all %}true{% else %}false{% endif %}">
                     {% if product in user.profile.favorites.all %}❤️{% else %}♡{% endif %}
                 </button>
-                {% else %}
-                <button type="button" class="detail-fav anonymous-fav" title="กรุณาเข้าสู่ระบบเพื่อบันทึก">♡</button>
-                {% endif %}
+            {% else %}
+                <button type="button" class="favorite-heart anonymous-fav">♡</button>
+            {% endif %}
+
+
+            <!-- PRICE -->
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
-            <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
-            {% with cat_name=product.category.display_name|default_if_none:""|lower %}
-                {% if "อาหาร" in cat_name or "food" in cat_name %}
-                    <p class="detail-product-foodtype">ประเภทสัตว์: {% if product.food_type == 'dog' %}สุนัข{% elif product.food_type == 'cat' %}แมว{% else %}ไม่ได้ระบุ{% endif %}</p>
-                {% else %}
-                    {% if product.food_type %}
-                        <p class="detail-product-foodtype">ประเภทสัตว์: {% if product.food_type == 'dog' %}สุนัข{% elif product.food_type == 'cat' %}แมว{% else %}—{% endif %}</p>
-                    {% endif %}
-                {% endif %}
-            {% endwith %}
-            
-            <div class="quantity-selector" style="margin-bottom: 18px;">
-                <span>จำนวน</span>
-                <div class="quantity-controls" style="display: flex; align-items: center; gap: 8px;">
-                    <button class="quantity-btn minus" type="button" onclick="changeQuantity(-1)">-</button>
-                    <input type="text" class="quantity-input" id="quantityInput" value="1" style="width: 48px; text-align: center; font-size: 1.1rem;">
-                    <button class="quantity-btn plus" type="button" onclick="changeQuantity(1)">+</button>
+
+            <!-- BUTTONS -->
+            <div class="action-buttons" style="display:flex; gap:12px; margin-top:20px;">
+                <button type="button"
+                        class="btn-add-cart"
+                        id="addToCartBtn"
+                        data-product-id="{{ product.id }}"
+                        data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+                    🛒 เพิ่มลงตะกร้า
+                </button>
+
+                <button type="button" class="btn-buy-now">⚡ สั่งซื้อสินค้า</button>
+            </div>
+
+
+            <!-- QUANTITY MODAL -->
+            <div id="quantityModal" class="modal-overlay" style="display:none;">
+                <div class="modal-box">
+
+                    <h3>เลือกจำนวนสินค้า</h3>
+
+                    <div class="modal-qty-selector">
+                        <button type="button" id="qtyMinus">-</button>
+                        <input type="text" id="modalQtyInput" value="1">
+                        <button type="button" id="qtyPlus">+</button>
+                    </div>
+
+                    <form method="post" action="{% url 'petjoy:cart-add' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" id="modalQtyHidden" name="quantity" value="1">
+
+                        <button type="submit" class="modal-confirm-btn">ยืนยัน</button>
+                        <button type="button" class="modal-cancel-btn" id="closeModalBtn">ยกเลิก</button>
+                    </form>
+
                 </div>
             </div>
 
-            <div class="action-buttons" style="display: flex; gap: 12px;">
-                <button type="button" class="action-btn" style="flex:1; background: #F3F4F6; color: #ce4d2d;">เพิ่มลงตะกร้า</button>
-                <button type="button" class="action-btn" style="flex:1; background: #ce4d2d; color: #fff;">สั่งซื้อสินค้า</button>
-            </div>
-            <style>
-                .action-btn {
-                    border-radius: 8px;
-                    border: none;
-                    padding: 10px 0;
-                    font-weight: 500;
-                    font-size: 1rem;
-                    width: 100%;
-                    min-width: 0;
-                    box-sizing: border-box;
-                    transition: background 0.2s;
-                }
-                .action-btn:active {
-                    opacity: 0.9;
-                }
-                .favorite-toggle {
-                    background-color: transparent;
-                    border: none;
-                    font-size: 1.5rem;
-                    color: #888;
-                    cursor: pointer;
-                    transition: color 0.3s ease;
-                }
 
-                .favorite-toggle:hover {
-                    color: #f44336;
-                }
-
-                .favorite-toggle[aria-pressed="true"] {
-                    color: #f44336;
-                }
-
-                .anonymous-fav {
-                    background-color: transparent;
-                    border: none;
-                    font-size: 1.5rem;
-                    color: #888;
-                    cursor: pointer;
-                    transition: color 0.3s ease;
-                }
-
-                .anonymous-fav:hover {
-                    color: #f44336;
-                }
-            </style>
-            <script>
-                function changeQuantity(delta) {
-                    var input = document.getElementById('quantityInput');
-                    var value = parseInt(input.value) || 1;
-                    value += delta;
-                    if (value < 1) value = 1;
-                    input.value = value;
-                }
-
-                (function(){
-                    var btn = document.querySelector('.anonymous-fav');
-                    if (!btn) return;
-                    btn.addEventListener('click', function(){
-                        var ok = confirm('กรุณาเข้าสู่ระบบเพื่อบันทึกรายการโปรด\n\nคลิก ตกลง เพื่อไปยังหน้าล็อกอิน');
-                        if (ok) {
-                            window.location.href = "{% url 'petjoy:login' %}?next={% url 'petjoy:product-detail' product.id %}";
-                        }
-                    });
-                })();
-            </script>
+            {% if product.features %}
+                <h3>คุณสมบัติสินค้า</h3>
+                <p>{{ product.features|linebreaks }}</p>
+            {% endif %}
 
             <div class="detail-product-description">
                 <h3>คำอธิบาย</h3>
                 <p>{{ product.description|linebreaks }}</p>
-            </div>
-                {% comment %} Hide features if seller set a food_type OR if category name suggests food (contains 'อาหาร'/'food') {% endcomment %}
-                {% if product.food_type %}
-                    {# seller chose a food type — do not show features #}
-                {% else %}
-                    {% with cat_name=product.category.display_name|default_if_none:""|lower %}
-                        {% if not "อาหาร" in cat_name and not "food" in cat_name %}
-                            <h3>คุณสมบัติ</h3>
-                            <p>{{ product.features|linebreaks }}</p>
-                        {% endif %}
-                    {% endwith %}
-                {% endif %}
             </div>
 
         </div>
 
     </div>
 </div>
+
 {% endblock %}
 
+
 {% block extra_scripts %}
+
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<!-- JS ภายนอกที่คุณใช้งาน -->
+<script src="{% static 'js/product_detail.js' %}"></script>
 <script src="{% static 'js/favorites.js' %}"></script>
+
 {% endblock %}

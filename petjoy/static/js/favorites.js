@@ -5,58 +5,52 @@
         if (parts.length === 2) return parts.pop().split(';').shift();
     }
 
-    function getCSRF() {
-        // try cookie first
-        const csrftoken = getCookie('csrftoken');
-        if (csrftoken) return csrftoken;
-        // fallback to hidden form
-        const form = document.getElementById('csrf-form');
-        if (!form) return null;
-        const input = form.querySelector('input[name=csrfmiddlewaretoken]');
-        return input ? input.value : null;
-    }
-
     async function toggleFavorite(productId, el) {
-        const url = '/favorites/toggle/';
-        const csrftoken = getCSRF();
-        const body = JSON.stringify({ product_id: productId });
+        const csrftoken = getCookie("csrftoken");
+        const url = "/favorites/toggle/";
+
         try {
             const res = await fetch(url, {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken || ''
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken,
                 },
-                body
+                body: JSON.stringify({ product_id: productId })
             });
-            if (!res.ok) {
-                if (res.status === 403) {
-                    // Not authenticated or CSRF failure
-                    window.location.href = '/login/?next=' + window.location.pathname;
-                    return;
-                }
-                console.error('Favorite toggle failed', res.status);
+
+            if (res.status === 403) {
+                Swal.fire({
+                    icon: "warning",
+                    title: "กรุณาเข้าสู่ระบบ",
+                    text: "คุณต้องเข้าสู่ระบบเพื่อเพิ่มรายการโปรด",
+                }).then(() => {
+                    window.location.href = "/login/?next=" + window.location.pathname;
+                });
                 return;
             }
+
             const data = await res.json();
-            if (data.status === 'added') {
-                if (el) el.textContent = '❤️';
-                el && el.setAttribute('aria-pressed', 'true');
+
+            // เปลี่ยนหัวใจ + animation
+            if (data.status === "added") {
+                el.classList.add("fav-active");
+                el.innerHTML = "❤️";
             } else {
-                if (el) el.textContent = '♡';
-                el && el.setAttribute('aria-pressed', 'false');
+                el.classList.remove("fav-active");
+                el.innerHTML = "♡";
             }
+
         } catch (err) {
-            console.error('Error toggling favorite', err);
+            console.error("Favorite toggle failed:", err);
         }
     }
 
-    document.addEventListener('click', function(e){
-        const btn = e.target.closest && e.target.closest('.favorite-toggle');
+    document.addEventListener("click", function(e){
+        const btn = e.target.closest(".favorite-toggle");
         if (!btn) return;
-        e.preventDefault();
-        const productId = btn.getAttribute('data-product-id');
-        if (!productId) return;
+
+        const productId = btn.getAttribute("data-product-id");
         toggleFavorite(productId, btn);
     });
 })();
