@@ -1,0 +1,244 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    .stat-box {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        text-align: center;
+        flex: 1;
+        min-width: 160px;
+    }
+    .stat-title {
+        color: #E65100;
+        font-weight: 700;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    .stat-number {
+        font-size: 26px;
+        font-weight: 800;
+        color: #FF6A2E;
+    }
+
+    .orders-section-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 25px 0 15px 0;
+        color: #E65100;
+    }
+
+    .recent-orders-box {
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        margin-bottom: 25px;
+    }
+
+    .recent-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 8px 0;
+        border-bottom: 1px solid #f2f2f2;
+    }
+
+    .recent-item:last-child {
+        border-bottom: none;
+    }
+
+    .orders-table {
+        width: 100%;
+        background: white;
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+
+    th {
+        background: #FFEDE2;
+        color: #E65100;
+        padding: 12px;
+        font-weight: 700;
+        text-align: center;
+    }
+
+    td {
+        padding: 12px;
+        border-bottom: 1px solid #f2f2f2;
+        text-align: center;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        display: inline-block;
+    }
+
+    .status-wait { background: #FFF3CD; color: #856404; }
+    .status-paid { background: #D4EDDA; color: #155724; }
+    .status-preparing { background: #D1ECF1; color: #0C5460; }
+    .status-delivering { background: #CCE5FF; color: #004085; }
+    .status-success { background: #C3E6CB; color: #155724; }
+
+    .btn-view {
+        padding: 6px 14px;
+        background: #FF8A50;
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 600;
+    }
+</style>
+
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+
+        <div class="seller-profile">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+            {% endif %}
+            <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+            <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+        </div>
+
+        <nav class="seller-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+            <a class="active" href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
+            <a href="#">💬 ข้อความ</a>
+            <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+            <a href="#">💰 รายได้</a>
+        </nav>
+
+        <form method="post" action="{% url 'petjoy:logout' %}">
+            {% csrf_token %}
+            <button class="seller-logout">ออกจากระบบ</button>
+        </form>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="seller-main">
+
+        <!-- MESSAGES -->
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for message in messages %}
+                <div class="dashboard-message-item">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <h2 class="section-title">📦 รายการคำสั่งซื้อ</h2>
+
+        <!-- ▶ สรุปสถิติคำสั่งซื้อ -->
+        <div style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
+
+            <div class="stat-box">
+                <div class="stat-title">ออเดอร์ล่าสุด</div>
+                <div class="stat-number">{{ orders.count }}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">ต้องจัดส่ง</div>
+                <div class="stat-number">{{ shipping_count }}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">จัดส่งสำเร็จ</div>
+                <div class="stat-number">{{ success_count }}</div>
+            </div>
+
+            <div class="stat-box">
+                <div class="stat-title">ยกเลิกแล้ว</div>
+                <div class="stat-number">{{ canceled_count }}</div>
+            </div>
+
+        </div>
+
+        <!-- ▶ ออเดอร์ 5 รายการล่าสุด -->
+        <h3 class="orders-section-title">🆕 คำสั่งซื้อ 5 รายการล่าสุด</h3>
+
+        <div class="recent-orders-box">
+            {% if recent_orders %}
+                {% for o in recent_orders %}
+                <div class="recent-item">
+                    <span>คำสั่งซื้อ #{{ o.id }} - {{ o.customer_name }}</span>
+                    <a href="{% url 'petjoy:orders-detail' o.id %}" class="btn-view">ดู</a>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p style="text-align:center; color:#888;">ยังไม่มีคำสั่งซื้อเข้ามา</p>
+            {% endif %}
+        </div>
+
+        <!-- ▶ ตารางทั้งหมด -->
+        <div class="orders-table">
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>รหัส</th>
+                        <th>ลูกค้า</th>
+                        <th>ยอดรวม</th>
+                        <th>สถานะ</th>
+                        <th>วันที่สั่งซื้อ</th>
+                        <th>จัดการ</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                    <tr>
+                        <td>#{{ order.id }}</td>
+                        <td>{{ order.customer_name }}</td>
+                        <td>{{ order.total_price }} บาท</td>
+
+                        <td>
+                            {% if order.status == "waiting" %}
+                                <span class="status-badge status-wait">รอชำระเงิน</span>
+                            {% elif order.status == "paid" %}
+                                <span class="status-badge status-paid">ชำระเงินแล้ว</span>
+                            {% elif order.status == "preparing" %}
+                                <span class="status-badge status-preparing">กำลังเตรียมของ</span>
+                            {% elif order.status == "delivering" %}
+                                <span class="status-badge status-delivering">กำลังจัดส่ง</span>
+                            {% elif order.status == "success" %}
+                                <span class="status-badge status-success">สำเร็จ</span>
+                            {% endif %}
+                        </td>
+
+                        <td>{{ order.created_at|date:"d/m/Y" }}</td>
+
+                        <td>
+                            <a href="{% url 'petjoy:orders-detail' order.id %}" class="btn-view">ดูรายละเอียด</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+
+    </main>
+
+</div>

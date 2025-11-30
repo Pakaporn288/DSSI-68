@@ -1,88 +1,218 @@
-{% extends "petjoy/base.html" %}
 {% load static %}
 
-{% block title %}รายการสินค้า{% endblock %}
-
 {% block content %}
+
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+
 <style>
     .navbar { display: none !important; }
 </style>
-<!-- #หน้ารายการสินค้า -->
-<div style="display: flex; gap: 2rem; max-width: 1200px; margin: 40px auto;">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
-            <a href="#">รายละเอียดคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-            <a href="#">ข้อความ</a>
-            <a href="#">แก้ไขรายละเอียด</a>
-            <a href="#">รายได้</a>
-        </nav>
-        <form method="post" action="{% url 'petjoy:logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn">ออกจากระบบ</button>
-        </form>
-    </aside>
-    <div class="product-list-container" style="flex:1;">
-        <div class="product-list-header">
-            <h1>รายการสินค้า</h1>
-                {% if is_entrepreneur %}
-                    <a href="{% url 'petjoy:product-create' %}" class="btn-add-product white-btn">เพิ่มสินค้าใหม่</a>
+
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+
+        <div>
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
                 {% endif %}
-        </div>
-        <div style="margin: 12px 0; display:flex; gap:12px; align-items:center;">
-            <form method="get" style="display:inline-flex; gap:8px; align-items:center;">
-                <label for="categorySelect">กรองหมวดหมู่:</label>
-                <select id="categorySelect" name="category">
-                    <option value="">ทั้งหมด</option>
-                    {% for c in categories %}
-                        <option value="{{ c.id }}" {% if request.GET.category == c.id|stringformat:"s" %}selected{% endif %}>{{ c.display_name }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="white-btn">แสดง</button>
+
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+                <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}" class="active">🛍️ รายการสินค้า</a>
+                <a href="#">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="#">💰 รายได้</a>
+            </nav>
+
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
             </form>
         </div>
-        <table class="product-table" style="border-radius: 12px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); background: #fff;">
-            <thead>
-                <tr style="background: #f8f8f8;">
-                    <th style="width: 120px; text-align: center;">รูปภาพ</th>
-                    <th>ชื่อสินค้า</th>
-                    <th style="width: 100px; text-align: right;">ราคา</th>
-                    <th style="width: 120px;">หมวดหมู่</th>
-                    <th style="width: 120px; text-align: center;">จำนวน (ทั้งหมด/คงเหลือ)</th>
-                    <th style="width: 180px; text-align: center;">จัดการ</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for product in products %}
-                <tr style="border-bottom: 1px solid #eee;">
-                    <td style="text-align: center;">
-                        {% if product.image %}
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-table-image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.07);">
-                        {% else %}
-                            <span class="no-products">ไม่มีรูป</span>
-                        {% endif %}
-                    </td>
-                    <td style="font-weight: bold; color: #FF7043;">{{ product.name }}<br><small style="color:#666;"></small></td>
-                    <td style="text-align: right; color: #E65100; font-weight: 500;">{{ product.price }} บาท</td>
-                    <td>{{ product.category.display_name }}</td>
-                    <td style="text-align: center;">{{ product.total_stock }}/{{ product.stock }}</td>
-                    <td style="text-align: center;">
-                        <div class="btn-group" style="display:inline-flex;gap:8px;">
-                            <a href="{% url 'petjoy:product-detail' product.pk %}" class="white-btn" style="background:#f3f4f6;color:#2563eb;">ดู</a>
-                            <a href="{% url 'petjoy:product-update' product.pk %}" class="white-btn" style="background:#fbbf24;color:#fff;">แก้ไข</a>
-                            <a href="{% url 'petjoy:product-delete' product.pk %}" class="white-btn" style="background:#ef4444;color:#fff;">ลบ</a>
-                        </div>
-                    </td>
-                </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="6" class="no-products">ไม่มีสินค้า</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    </aside>
+
+
+    <!-- MAIN CONTENT -->
+    <main class="seller-main">
+
+        <!-- HEADER BOX -->
+        <section class="seller-header-box">
+
+            <div class="header-left">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                {% endif %}
+
+                <div>
+                    <h2 class="store-title">รายการสินค้าของร้าน {{ entrepreneur.store_name }}</h2>
+                    <p class="store-subtitle">จัดการ เพิ่ม ลบ แก้ไขสินค้าได้ที่นี่</p>
+                </div>
+            </div>
+
+            <a href="{% url 'petjoy:product-create' %}" class="store-edit-btn">
+                ➕ เพิ่มสินค้าใหม่
+            </a>
+        </section>
+
+
+        <!-- FILTER BAR -->
+        <div style="margin-bottom: 1.5rem; display:flex; gap: 12px; align-items:center;">
+
+            <form method="get" style="display:flex; gap:10px; width:100%;">
+
+                <!-- Search -->
+                <input type="text"
+                       name="search"
+                       placeholder="🔍 ค้นหาชื่อสินค้า..."
+                       value="{{ request.GET.search }}"
+                       style="
+                           flex:1;
+                           padding:10px 14px;
+                           border-radius:10px;
+                           border:1px solid #ccc;
+                           font-size:15px;
+                       ">
+
+                <!-- Category -->
+                <select name="category"
+                        style="padding:10px 14px; border-radius:10px; border:1px solid #ccc; font-size:15px;">
+                    <option value="">หมวดหมู่ทั้งหมด</option>
+                    {% for c in categories %}
+                        <option value="{{ c.id }}"
+                                {% if request.GET.category == c.id|stringformat:'s' %}selected{% endif %}>
+                            {{ c.display_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit"
+                        style="
+                            background:#FF7043;
+                            color:white;
+                            padding:10px 18px;
+                            border:none;
+                            border-radius:10px;
+                            font-size:15px;
+                            cursor:pointer;
+                        ">
+                    🔎 ค้นหา
+                </button>
+
+            </form>
+
+        </div>
+
+
+        <!-- PRODUCT LIST AREA -->
+        <section class="product-area">
+
+            <h2 class="section-title">📦 รายการสินค้าทั้งหมด</h2>
+
+            <div style="overflow-x:auto;">
+                <table class="product-table"
+                       style="width:100%; background:white; border-radius:12px; overflow:hidden; 
+                              box-shadow:0 4px 12px rgba(0,0,0,0.07);">
+
+                    <thead style="background:#FFF3E0; font-weight:700;">
+                        <tr>
+                            <th style="width:100px; text-align:center;">รูปภาพ</th>
+                            <th>ชื่อสินค้า</th>
+                            <th style="width:120px; text-align:right;">ราคา</th>
+                            <th style="width:150px; text-align:center;">หมวดหมู่</th>
+                            <th style="width:150px; text-align:center;">จำนวน (ทั้งหมด/คงเหลือ)</th>
+                            <th style="width:200px; text-align:center;">จัดการ</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    {% for product in products %}
+                        <tr style="border-bottom:1px solid #eee;">
+                            
+                            <!-- IMAGE -->
+                            <td style="text-align:center;">
+                                {% if product.image %}
+                                    <img src="{{ product.image.url }}"
+                                         style="width:60px; height:60px; border-radius:10px; object-fit:cover;">
+                                {% else %}
+                                    <span style="color:#888;">ไม่มีรูป</span>
+                                {% endif %}
+                            </td>
+
+                            <!-- NAME -->
+                            <td style="font-weight:bold; color:#E65100;">
+                                {{ product.name }}
+                            </td>
+
+                            <!-- PRICE -->
+                            <td style="text-align:right; font-weight:600; color:#FF7043;">
+                                {{ product.price }} บาท
+                            </td>
+
+                            <!-- CATEGORY → ★ Center -->
+                            <td style="text-align:center;">
+                                {{ product.category.display_name }}
+                            </td>
+
+                            <!-- TOTAL / STOCK -->
+                            <td style="text-align:center;">
+                                {{ product.total_stock }}/{{ product.stock }}
+                            </td>
+
+                            <!-- ACTION BUTTONS -->
+                            <td style="text-align:center;">
+                                <div style="display:flex; gap:8px; justify-content:center;">
+
+                                    <a href="{% url 'petjoy:product-detail' product.pk %}"
+                                       style="background:#e3f2fd; padding:6px 12px; border-radius:8px; color:#1e88e5;">
+                                        ดู
+                                    </a>
+
+                                    <a href="{% url 'petjoy:product-update' product.pk %}"
+                                       style="background:#fdd835; padding:6px 12px; border-radius:8px; color:#fff;">
+                                        แก้ไข
+                                    </a>
+
+                                    <a href="{% url 'petjoy:product-delete' product.pk %}"
+                                       style="background:#e53935; padding:6px 12px; border-radius:8px; color:#fff;">
+                                        ลบ
+                                    </a>
+
+                                </div>
+                            </td>
+
+                        </tr>
+
+                    {% empty %}
+                        <tr>
+                            <td colspan="6" style="padding:2rem; text-align:center; opacity:0.6;">
+                                ไม่มีสินค้าในระบบ
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+
+                </table>
+            </div>
+
+        </section>
+
+    </main>
 </div>
-<script src="{% static 'js/favorites.js' %}"></script>
+
 {% endblock %}

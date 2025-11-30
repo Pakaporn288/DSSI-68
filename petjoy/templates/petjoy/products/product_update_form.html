@@ -1,113 +1,276 @@
-{% extends "petjoy/base.html" %}
 {% load static %}
 
-{% block title %}แก้ไขสินค้า - PetJoy{% endblock %}
-
 {% block content %}
+
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+
 <style>
     .navbar { display: none !important; }
+    .form-card {
+        background: #FFF8F0;
+        padding: 2rem;
+        border-radius: 18px;
+        box-shadow: 0 3px 14px rgba(0,0,0,0.08);
+        max-width: 800px;
+        margin: auto;
+    }
+    .form-card h2 {
+        color: #FF7043;
+        font-weight: 800;
+        font-size: 1.7rem;
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    .form-group { margin-bottom: 1.2rem; }
+    label {
+        display: block;
+        font-weight: 600;
+        margin-bottom: 6px;
+        color: #E65100;
+    }
+    input, select, textarea {
+        width: 100%;
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #d6d6d6;
+        font-size: 15px;
+        font-family: "Kanit";
+    }
+    .form-image-preview {
+        width: 150px;
+        height: 150px;
+        border-radius: 16px;
+        object-fit: cover;
+        margin-bottom: 10px;
+        background: #eee;
+    }
+    .submit-btn {
+        background: #FF7043;
+        color: white;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 10px;
+        width: 100%;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+        margin-top: 1rem;
+    }
+    .submit-btn:hover {
+        background: #E65100;
+    }
+
+    /* message block style */
+    .dashboard-messages {
+        margin-bottom: 20px;
+    }
+    .dashboard-message-item {
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+        font-weight: 600;
+        margin-bottom: 10px;
+        font-size: 15px;
+    }
 </style>
-<!-- แก้ไขสินค้า -->
-<div style="display: flex; gap: 2rem; max-width: 1200px; margin: 40px auto;">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
-            <a href="#">รายละเอียดคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-            <a href="#">ข้อความ</a>
-            <a href="#">แก้ไขรายละเอียด</a>
-            <a href="#">รายได้</a>
-        </nav>
-        <form method="post" action="{% url 'petjoy:logout' %}">
-            {% csrf_token %}
-            <button type="submit" class="logout-btn">ออกจากระบบ</button>
-        </form>
-    </aside>
-    <div class="product-list-container" style="flex:1;">
-        <div class="product-list-header">
-            <h1>แก้ไขสินค้า</h1>
+
+
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+        <div>
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+                {% endif %}
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+                <a href="#">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
+                <a href="#">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur-profile-edit' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="#">💰 รายได้</a>
+            </nav>
+
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
+            </form>
         </div>
-        <form method="POST" enctype="multipart/form-data" class="simple-product-form" style="max-width: 420px; margin: 0 auto; background: #fff; padding: 28px 22px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);">
-            {% csrf_token %}
-            <h2 style="text-align:center; font-size:1.15rem; font-weight:600; color:#2563eb; margin-bottom:18px;">🛠️ แก้ไขข้อมูลสินค้า</h2>
-            <div class="form-group">
-                <label for="id_name">ชื่อสินค้า</label>
-                {{ form.name }}
+    </aside>
+
+
+
+    <!-- MAIN CONTENT -->
+    <main class="seller-main">
+
+        <!-- ⭐ MESSAGE BLOCK -->
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for message in messages %}
+                <div class="dashboard-message-item">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- END MESSAGE BLOCK -->
+
+
+        <section class="seller-header-box">
+            <div class="header-left">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                {% endif %}
+
+                <div>
+                    <h2 class="store-title">แก้ไขสินค้า: {{ product.name }}</h2>
+                    <p class="store-subtitle">อัปเดตรายละเอียดสินค้าให้ถูกต้องและครบถ้วน</p>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="id_total_stock">จำนวนสินค้าทั้งหมด</label>
-                {{ form.total_stock }}
-            </div>
-            <div class="form-group">
-                <label for="id_stock">จำนวนคงเหลือ</label>
-                {{ form.stock }}
-            </div>
-            <div class="form-group">
-                <label for="id_description">รายละเอียดสินค้า</label>
-                {{ form.description }}
-            </div>
-            <div class="form-group">
-                <label for="id_features">คุณสมบัติสินค้า</label>
-                {{ form.features }}
-            </div>
-            <div class="form-group">
-                <label for="id_price">ราคา (บาท)</label>
-                {{ form.price }}
-            </div>
-            <div class="form-group">
-                <label for="id_category">หมวดหมู่</label>
-                {{ form.category }}
-            </div>
-            <!-- food-specific type selector (shown only when category is food) -->
-            <div class="form-group" id="food-type-group" style="display:none;">
-                <label for="id_food_type">ประเภทสัตว์</label>
-                {{ form.food_type }}
-            </div>
-            <div class="form-group">
-                <label for="id_image">รูปภาพสินค้า</label>
-                {{ form.image }}
-            </div>
-            <button type="submit" class="btn-add-product white-btn" style="margin-top: 18px; padding: 10px 28px; border-radius: 8px; font-size: 1rem; font-weight: 500; background: #2563eb; color: #fff; border: none;">บันทึกการแก้ไข</button>
-        </form>
-        <style>
-            .simple-product-form .form-group { margin-bottom: 16px; }
-            .simple-product-form label { font-weight: 500; margin-bottom: 5px; display: block; color: #333; font-size: 1rem; }
-            .simple-product-form input, .simple-product-form select, .simple-product-form textarea {
-                width: 100%;
-                padding: 9px 10px;
-                border-radius: 7px;
-                border: 1px solid #d1d5db;
-                font-size: 1rem;
-                background: #f9fafb;
-                margin-top: 2px;
-                font-family: inherit;
-            }
-            .simple-product-form textarea { min-height: 70px; }
-        </style>
+        </section>
+
+
+        <!-- FORM -->
+        <div class="form-card">
+
+            <h2>แก้ไขข้อมูลสินค้า</h2>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>ชื่อสินค้า</label>
+                    <input type="text" name="name" value="{{ product.name }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>จำนวนสินค้าทั้งหมด</label>
+                    <input type="number" name="total_stock" value="{{ product.total_stock }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>จำนวนคงเหลือ</label>
+                    <input type="number" name="stock" value="{{ product.stock }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>ราคา (บาท)</label>
+                    <input type="number" step="0.01" name="price" value="{{ product.price }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label>หมวดหมู่</label>
+                    <select name="category" id="id_category">
+                        {% for c in categories %}
+                            <option value="{{ c.id }}" {% if c.id == product.category.id %}selected{% endif %}>{{ c.display_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <!-- FOOD CATEGORY → description + food_type -->
+                <div class="form-group" id="food-type-group" style="display:none;">
+                    <label>ประเภทสัตว์</label>
+                    <select name="food_type" id="id_food_type">
+                        <option value="">-- เลือกประเภทสัตว์ --</option>
+                        <option value="dog" {% if product.food_type == "dog" %}selected{% endif %}>สุนัข</option>
+                        <option value="cat" {% if product.food_type == "cat" %}selected{% endif %}>แมว</option>
+                    </select>
+                </div>
+
+
+                <!-- FEATURES (for dog / cat categories) -->
+                <div class="form-group" id="feature-group">
+                    <label>คุณสมบัติสินค้า</label>
+                    <textarea name="features" id="id_features" rows="3">{{ product.features }}</textarea>
+                </div>
+
+                <!-- DESCRIPTION -->
+                <div class="form-group">
+                    <label>รายละเอียดสินค้า</label>
+                    <textarea name="description" id="id_description" rows="4">{{ product.description }}</textarea>
+                </div>
+
+
+                <!-- IMAGE -->
+                <div class="form-group">
+                    <label>รูปภาพสินค้า</label><br>
+
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="form-image-preview">
+                    {% endif %}
+
+                    <input type="file" name="image">
+                </div>
+
+
+                <button type="submit" class="submit-btn">บันทึกการแก้ไขสินค้า</button>
+
+            </form>
+
+        </div>
+
+
+        <!-- JS DYNAMIC FORM (เหมือนหน้า product_form.html เดิม) -->
         <script>
             (function(){
-                function isFoodOption(text){ return /อาหาร|food/i.test(text || ''); }
-                function findFeaturesGroup(){ var label = document.querySelector('label[for="id_features"]'); return label ? label.closest('.form-group') : null; }
-                function update(){
-                    var category = document.getElementById('id_category'); if(!category) return;
-                    var selected = category.options[category.selectedIndex]; var text = selected ? (selected.text||selected.innerText||'') : '';
-                    var isFood = isFoodOption(text);
+                function isFoodOption(text){
+                    if(!text) return false;
+                    return /อาหาร|food/i.test(text);
+                }
+
+                function updateForm(){
+                    var category = document.getElementById('id_category');
+                    var featuresGroup = document.getElementById('feature-group');
                     var foodTypeGroup = document.getElementById('food-type-group');
-                    var foodTypeInput = document.getElementById('id_food_type');
                     var featuresInput = document.getElementById('id_features');
-                    var featuresGroup = findFeaturesGroup();
-                    if(foodTypeGroup && foodTypeInput){
-                        if(isFood){ foodTypeGroup.style.display = ''; foodTypeInput.disabled = false; }
-                        else { foodTypeGroup.style.display = 'none'; if(foodTypeInput) { foodTypeInput.selectedIndex = 0; foodTypeInput.disabled = true; } }
-                    }
-                    if(featuresGroup && featuresInput){
-                        if(isFood){ featuresGroup.classList.add('hidden-feature'); featuresInput.disabled = true; }
-                        else { featuresGroup.classList.remove('hidden-feature'); featuresInput.disabled = false; }
+                    var foodTypeInput = document.getElementById('id_food_type');
+
+                    var selected = category.options[category.selectedIndex];
+                    var text = selected ? selected.text : '';
+                    var isFood = isFoodOption(text);
+
+                    if(isFood){
+                        // FOOD → show food_type, hide features
+                        foodTypeGroup.style.display = '';
+                        foodTypeInput.disabled = false;
+
+                        featuresGroup.style.display = 'none';
+                        featuresInput.disabled = true;
+                    } else {
+                        // PET → show features, hide food_type
+                        featuresGroup.style.display = '';
+                        featuresInput.disabled = false;
+
+                        foodTypeGroup.style.display = 'none';
+                        foodTypeInput.disabled = true;
                     }
                 }
-                document.addEventListener('DOMContentLoaded', function(){ var cat=document.getElementById('id_category'); if(!cat) return; cat.addEventListener('change', update); update(); });
+
+                document.addEventListener("DOMContentLoaded", function(){
+                    var category = document.getElementById('id_category');
+                    if(!category) return;
+
+                    updateForm();
+                    category.addEventListener("change", updateForm);
+                });
             })();
         </script>
-    </div>
+
+    </main>
 </div>
+
 {% endblock %}

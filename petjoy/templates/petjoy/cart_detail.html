@@ -7,9 +7,7 @@
 
 <div class="cart-container">
 
-    <h1 class="cart-title">
-        🛒 ตะกร้าสินค้าของคุณ
-    </h1>
+    <h1 class="cart-title">🛒 ตะกร้าสินค้าของคุณ</h1>
 
     {% if cart_items %}
         <div class="cart-items-list">
@@ -20,9 +18,9 @@
                 <div class="cart-item-left">
                     <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-img-link">
                         {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="cart-img" alt="{{ item.product.name }}">
+                            <img src="{{ item.product.image.url }}" class="cart-img">
                         {% else %}
-                            <img src="{% static 'images/no-image.png' %}" class="cart-img" alt="{{ item.product.name }}">
+                            <img src="{% static 'images/no-image.png' %}" class="cart-img">
                         {% endif %}
                     </a>
                 </div>
@@ -35,9 +33,9 @@
                         </a>
                     </h2>
 
-                    <!-- ⭐ เพิ่มชื่อร้าน -->
+                    <!-- ⭐ ชื่อร้าน -->
                     <p class="cart-item-shop">
-                        ร้านค้า:
+                        ร้านค้า: 
                         {% if item.product.owner %}
                             {{ item.product.owner.store_name }}
                         {% else %}
@@ -84,9 +82,10 @@
                 </div>
             </div>
             {% endfor %}
+
         </div>
 
-        <!-- ⭐ Summary แบบใหม่ ไม่ใช้กล่อง -->
+        <!-- SUMMARY -->
         <div class="cart-summary-new">
             <p class="summary-line">
                 <strong>ยอดรวมทั้งหมด:</strong> {{ total_price|floatformat:0|intcomma }} บาท
@@ -109,7 +108,7 @@
 
 
 <!-- =======================
-     CHECKOUT POPUP
+     CHECKOUT POPUP 
 ======================= -->
 
 <div id="checkoutPopup" class="popup-overlay">
@@ -121,8 +120,15 @@
 
             <div class="popup-items">
                 {% for item in cart_items %}
+
                 <label class="popup-item">
-                    <input type="checkbox" name="selected_items" value="{{ item.id }}" class="popup-checkbox">
+
+                    <input type="checkbox"
+                        name="selected_items"
+                        value="{{ item.id }}"
+                        class="popup-checkbox"
+                        data-price="{{ item.product.price }}"
+                        data-qty="{{ item.quantity }}">
 
                     <img src="{{ item.product.image.url }}" class="popup-img">
 
@@ -131,13 +137,21 @@
 
                         <!-- ⭐ ราคาแบบมีคอมมา -->
                         <p class="popup-price">
-                            {{ item.product.price|floatformat:0|intcomma }} บาท × {{ item.quantity|intcomma }}
+                            {{ item.product.price|floatformat:0|intcomma }} บาท × {{ item.quantity }}
+                            = <strong>{{ item.total_price|floatformat:0|intcomma }}</strong> บาท
                         </p>
                     </div>
+
                 </label>
+
                 {% endfor %}
             </div>
 
+            <!-- ⭐ ยอดรวมสินค้าที่เลือก (นอก loop) -->
+            <div class="popup-summary">
+                รวมราคาสินค้าที่เลือก:
+                <span id="popupTotal" style="font-weight:700;color:#E65100;">0</span> บาท
+            </div>
 
             <div class="popup-actions">
                 <button type="button" id="cancelPopup" class="popup-cancel">ยกเลิก</button>
@@ -152,12 +166,29 @@
 
 <!-- POPUP SCRIPT -->
 <script>
+function calculatePopupTotal() {
+    let total = 0;
+
+    document.querySelectorAll("input[name='selected_items']:checked").forEach(chk => {
+        let price = parseFloat(chk.dataset.price);
+        let qty = parseInt(chk.dataset.qty);
+        total += price * qty;
+    });
+
+    document.getElementById("popupTotal").textContent = total.toLocaleString();
+}
+
 document.getElementById("openCheckoutPopup").addEventListener("click", () => {
     document.getElementById("checkoutPopup").style.display = "flex";
+    calculatePopupTotal();
 });
 
 document.getElementById("cancelPopup").addEventListener("click", () => {
     document.getElementById("checkoutPopup").style.display = "none";
+});
+
+document.querySelectorAll("input[name='selected_items']").forEach(el => {
+    el.addEventListener("change", calculatePopupTotal);
 });
 
 document.getElementById("checkoutForm").addEventListener("submit", function(e) {
@@ -170,8 +201,6 @@ document.getElementById("checkoutForm").addEventListener("submit", function(e) {
         alert("กรุณาเลือกสินค้าอย่างน้อย 1 รายการ");
         return;
     }
-
-    console.log("สินค้าที่เลือก:", selected);
 
     alert("เลือกสินค้าเรียบร้อย!");
 });

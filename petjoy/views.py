@@ -19,7 +19,9 @@ from django.core.paginator import Paginator
 from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Address
-
+from django.utils.decorators import method_decorator
+from django.contrib.auth import update_session_auth_hash
+from .models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -157,48 +159,48 @@ def cart_detail(request):
         "total_items": total_items  # NEW
     })
 
-def entrepreneur_profile_edit(request):
-    # Only allow logged-in entrepreneurs
-    entrepreneur = None
-    if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
-        messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินเพื่อแก้ไขโปรไฟล์')
-        return redirect('petjoy:login')
+@login_required
+def entrepreneur_profile_edit_home(request):
+    if not hasattr(request.user, 'entrepreneur'):
+        messages.error(request, "คุณต้องเป็นผู้ประกอบการก่อนแก้ไขโปรไฟล์")
+        return redirect("petjoy:login")
 
     entrepreneur = request.user.entrepreneur
 
     if request.method == "POST":
-        # รับค่าจากฟอร์ม
-        store_name = request.POST.get('store_name')
-        phone = request.POST.get('phone')
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-        profile_image = request.FILES.get('profile_image')
+        store_name = request.POST.get("store_name")
+        owner_name = request.POST.get("owner_name")
+        phone = request.POST.get("phone")
+        email = request.POST.get("email")
+        password = request.POST.get("password")
+        profile_image = request.FILES.get("profile_image")
 
-        # อัปเดตข้อมูล entrepreneur
         entrepreneur.store_name = store_name
+        entrepreneur.owner_name = owner_name
         entrepreneur.phone = phone
         entrepreneur.email = email
+
         if profile_image:
             entrepreneur.profile_image = profile_image
+
         entrepreneur.save()
 
-        # อัปเดตข้อมูล user (เช่น password)
+        # อัปเดต User
         user = request.user
-        if email:
-            user.email = email
+        user.email = email
         if password:
             user.set_password(password)
-            user.save()
-            try:
-                update_session_auth_hash(request, user)
-            except Exception:
-                pass
-        else:
-            user.save()
+        user.save()
 
-        messages.success(request, "บันทึกการเปลี่ยนแปลงสำเร็จ!")
+        update_session_auth_hash(request, user)
 
-    return render(request, 'petjoy/entrepreneur/entrepreneur_profile_edit.html', {'entrepreneur': entrepreneur})
+        messages.success(request, "บันทึกโปรไฟล์เรียบร้อยแล้ว!")
+
+    return render(
+        request,
+        "petjoy/entrepreneur/entrepreneur_profile_edit_home.html",
+        {"entrepreneur": entrepreneur}
+    )
 
 def entrepreneur_register(request):
     # Two modes:
@@ -369,21 +371,42 @@ class ProductListView(ListView):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        # If the request asks for owner's products (mine=1) and user is an entrepreneur, filter
-        req = getattr(self, 'request', None)
-        # If user is an entrepreneur, show only their products by default. Provide ?all=1 to see all.
-        if req and req.user.is_authenticated and hasattr(req.user, 'entrepreneur'):
-            if req.GET.get('all') == '1':
-                return qs
-            return qs.filter(owner=req.user.entrepreneur)
-        # For non-entrepreneurs show all products
+        req = self.request
+
+        # ถ้าเป็นผู้ประกอบการ → ให้เห็นเฉพาะสินค้าของตัวเอง (ยกเว้น ?all=1)
+        if req.user.is_authenticated and hasattr(req.user, 'entrepreneur'):
+            ent = req.user.entrepreneur
+            if req.GET.get('all') != '1':
+                qs = qs.filter(owner=ent)
+
+        # ----- กรองตามชื่อสินค้า (optional) -----
+        search_query = req.GET.get('search', '').strip()
+        if search_query:
+            qs = qs.filter(name__icontains=search_query)
+
+        # ----- กรองตามหมวดหมู่ -----
+        category_id = req.GET.get('category')
+        if category_id:
+            qs = qs.filter(category_id=category_id)
+
         return qs
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        user = getattr(self.request, 'user', None)
-        ctx['is_entrepreneur'] = bool(user and getattr(user, 'entrepreneur', None))
+        user = self.request.user
+
+        # ส่ง entrepreneur เข้า template ให้ sidebar ใช้
+        if user.is_authenticated and hasattr(user, 'entrepreneur'):
+            ctx['entrepreneur'] = user.entrepreneur
+            ctx['is_entrepreneur'] = True
+        else:
+            ctx['entrepreneur'] = None
+            ctx['is_entrepreneur'] = False
+
+        # ส่ง categories ให้ dropdown ใช้
+        ctx['categories'] = Category.objects.all()
         return ctx
+
 
 class ProductDetailView(DetailView):
     model = Product
@@ -410,22 +433,41 @@ class ProductCreateView(CreateView):
         obj.save()
         return super().form_valid(form)
 
+@method_decorator(login_required, name='dispatch')
 class ProductUpdateView(UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'petjoy/products/product_update_form.html'
+    context_object_name = 'product'
     success_url = reverse_lazy('petjoy:product-list')
 
     def dispatch(self, request, *args, **kwargs):
-        # Ensure only the owning entrepreneur can update
-        if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
-            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนแก้ไขสินค้า')
+        if not hasattr(request.user, 'entrepreneur'):
+            messages.error(request, "คุณต้องเป็นผู้ประกอบการเพื่อแก้ไขสินค้า")
             return redirect('petjoy:login')
-        obj = self.get_object()
-        if obj.owner is None or obj.owner.user_id != request.user.id:
-            messages.error(request, 'คุณไม่มีสิทธิ์แก้ไขสินค้านี้')
+
+        product = self.get_object()
+        if product.owner != request.user.entrepreneur:
+            messages.error(request, "คุณไม่มีสิทธิ์แก้ไขสินค้านี้")
             return redirect('petjoy:product-list')
+
         return super().dispatch(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        # ✔ แบบ A: แสดงข้อความบนหน้า edit ทันที ไม่ redirect
+        messages.success(self.request, "✔ แก้ไขสินค้าเรียบร้อยแล้ว")
+
+        self.object = form.save()
+        return self.render_to_response(self.get_context_data(form=form))
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['entrepreneur'] = self.request.user.entrepreneur
+        ctx['categories'] = Category.objects.all()
+        ctx['product'] = self.get_object()
+        return ctx
+
+
 
 class ProductDeleteView(DeleteView):
     model = Product
@@ -746,3 +788,50 @@ def favorites_list(request):
     profile, _ = Profile.objects.get_or_create(user=request.user)
     products = profile.favorites.all()
     return render(request, 'petjoy/favorites_list.html', {'products': products})
+
+@login_required
+def orders_list(request):
+    entrepreneur = request.user.entrepreneur
+
+    orders = Order.objects.filter(
+        entrepreneur=entrepreneur
+    ).order_by('-created_at')
+
+    context = {
+        "entrepreneur": entrepreneur,
+        "orders": orders,
+
+        # ค่าไว้ใช้ในส่วนสรุปบนสุด
+        "shipping_count": orders.filter(status="delivering").count(),
+        "success_count": orders.filter(status="success").count(),
+        "canceled_count": orders.filter(status="canceled").count() if hasattr(Order, 'canceled') else 0,
+
+        # - 5 orders ล่าสุด
+        "recent_orders": orders[:5],
+    }
+
+    return render(request, "petjoy/entrepreneur/orders_list.html", context)
+@login_required
+def orders_detail(request, order_id):
+    entrepreneur = request.user.entrepreneur
+    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
+
+    return render(request, "petjoy/entrepreneur/orders_detail.html", {
+        "entrepreneur": entrepreneur,
+        "order": order
+    })
+
+
+@login_required
+def update_order_status(request, order_id):
+    entrepreneur = request.user.entrepreneur
+    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        order.status = new_status
+        order.save()
+        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
+        return redirect("petjoy:orders-detail", order_id=order_id)
+
+    return redirect("petjoy:orders-list")

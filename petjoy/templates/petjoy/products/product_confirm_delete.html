@@ -1,41 +1,78 @@
-{% extends "petjoy/base.html" %}
 {% load static %}
 
-{% block title %}ลบสินค้า - PetJoy{% endblock %}
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<style>.navbar{display:none!important;}</style>
 
-{% block content %}
-<style>
-    .navbar { display: none !important; }
-</style>
-<!-- #ลบสินค้า -->
-<div style="display: flex; gap: 2rem; max-width: 1200px; margin: 40px auto;">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
-            <a href="#">รายละเอียดคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-            <a href="#">ข้อความ</a>
-            <a href="#">แก้ไขรายละเอียด</a>
-            <a href="#">รายได้</a>
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+        <div class="seller-profile">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+            {% endif %}
+            <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+            <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+        </div>
+
+        <nav class="seller-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+            <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
+            <a href="#">💬 ข้อความ</a>
+            <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+            <a href="#">💰 รายได้</a>
         </nav>
+
         <form method="post" action="{% url 'petjoy:logout' %}">
             {% csrf_token %}
-            <button type="submit" class="logout-btn">ออกจากระบบ</button>
+            <button class="seller-logout">ออกจากระบบ</button>
         </form>
     </aside>
-    <div class="product-list-container" style="flex:1;">
-        <div class="product-list-header">
-            <h1>ลบสินค้า</h1>
+
+    <!-- MAIN -->
+    <main class="seller-main">
+
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for m in messages %}
+                <div class="dashboard-message-item">{{ m }}</div>
+            {% endfor %}
         </div>
-        <form method="POST" class="custom-delete-form" style="max-width: 500px; margin: 0 auto; background: #fff; padding: 32px 28px; border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.08); text-align: center;">
-            {% csrf_token %}
-            <div style="margin-bottom: 18px;">
-                <span style="font-size: 1.1rem; color: #F87171; font-weight: 600;">⚠️ คำเตือน</span>
-                <p style="margin-top: 10px; font-size: 1.05rem;">คุณต้องการลบสินค้า <strong>{{ object.name }}</strong> นี้ใช่หรือไม่?</p>
-            </div>
-            <button type="submit" class="btn-add-product white-btn" style="margin-top: 8px; background: #F87171; color: #fff; padding: 10px 28px; border-radius: 8px; font-weight: 500;">ยืนยันการลบ</button>
-            <a href="{% url 'petjoy:product-list' %}" class="white-btn" style="margin-left: 10px; padding: 10px 28px; border-radius: 8px; font-weight: 500; background: #F3F4F6; color: #333; border: 1px solid #d1d5db;">ยกเลิก</a>
-        </form>
-    </div>
+        {% endif %}
+
+        <div class="product-card" style="
+            max-width:500px;margin:auto;
+            background:white;padding:35px;
+            border-radius:18px;box-shadow:0 4px 16px rgba(0,0,0,.08);
+            text-align:center;">
+            
+            <h2 style="color:#E65100;font-weight:800;margin-bottom:12px;">⚠️ ยืนยันการลบสินค้า</h2>
+
+            <p style="font-size:1.1rem;margin-bottom:20px;">
+                คุณต้องการลบสินค้า  
+                <strong style="color:#FF6A2E;">{{ object.name }}</strong> ใช่หรือไม่?
+            </p>
+
+            <form method="POST">
+                {% csrf_token %}
+                <button type="submit"
+                    style="background:#FF6A2E;color:white;padding:12px 25px;
+                    border-radius:10px;border:none;font-size:1rem;font-weight:700;cursor:pointer;">
+                    ✔ ยืนยันการลบ
+                </button>
+
+                <a href="{% url 'petjoy:product-list' %}"
+                    style="display:inline-block;margin-left:12px;padding:12px 25px;
+                    background:#F3F4F6;color:#333;border-radius:10px;
+                    border:1px solid #d1d5db;font-weight:600;text-decoration:none;">
+                    ✖ ยกเลิก
+                </a>
+            </form>
+        </div>
+
+    </main>
+
 </div>
-{% endblock %}

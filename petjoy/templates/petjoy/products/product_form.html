@@ -1,163 +1,148 @@
-{% extends "petjoy/base.html" %}
 {% load static %}
 
-{% block title %}เพิ่มสินค้าใหม่ - PetJoy{% endblock %}
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<style>.navbar{display:none!important;}</style>
 
-{% block content %}
-<style>
-    .navbar { display: none !important; }
-</style>
-<!-- #เพิ่มสินค้าใหม่ -->
-<div style="display: flex; gap: 2rem; max-width: 1200px; margin: 40px auto;">
-    <aside class="sidebar">
-        <nav class="sidebar-menu">
-            <a href="{% url 'petjoy:entrepreneur-home' %}">โปรไฟล์</a>
-            <a href="#">รายละเอียดคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-            <a href="#">ข้อความ</a>
-            <a href="#">แก้ไขรายละเอียด</a>
-            <a href="#">รายได้</a>
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+
+        <div class="seller-profile">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+            {% endif %}
+            <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+            <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+        </div>
+
+        <nav class="seller-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+            <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+            <a class="active" href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
+            <a href="#">💬 ข้อความ</a>
+            <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+            <a href="#">💰 รายได้</a>
         </nav>
+
         <form method="post" action="{% url 'petjoy:logout' %}">
             {% csrf_token %}
-            <button type="submit" class="logout-btn">ออกจากระบบ</button>
+            <button class="seller-logout">ออกจากระบบ</button>
         </form>
+
     </aside>
-    <div class="product-list-container" style="flex:1;">
-        <div class="product-list-header">
-            <h1>เพิ่มสินค้าใหม่</h1>
+
+    <!-- MAIN -->
+    <main class="seller-main">
+
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for m in messages %}
+                <div class="dashboard-message-item">{{ m }}</div>
+            {% endfor %}
         </div>
-        <form method="POST" enctype="multipart/form-data" class="simple-product-form" style="max-width: 420px; margin: 0 auto; background: #fff; padding: 28px 22px; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);">
-            {% csrf_token %}
-            <h2 style="text-align:center; font-size:1.15rem; font-weight:600; color:#2563eb; margin-bottom:18px;">➕ เพิ่มสินค้าใหม่</h2>
-            <div class="form-group">
-                <label for="id_name">ชื่อสินค้า</label>
-                {{ form.name }}
-            </div>
-            <div class="form-group">
-                <label for="id_total_stock">จำนวนสินค้าทั้งหมด</label>
-                {{ form.total_stock }}
-            </div>
-            <div class="form-group">
-                <label for="id_stock">จำนวนคงเหลือ</label>
-                {{ form.stock }}
-            </div>
-            <div class="form-group">
-                <label for="id_description">รายละเอียดสินค้า</label>
-                {{ form.description }}
-            </div>
-            <div class="form-group">
-                <label for="id_features">คุณสมบัติสินค้า</label>
-                {{ form.features }}
-            </div>
-            <div class="form-group">
-                <label for="id_price">ราคา (บาท)</label>
-                {{ form.price }}
-            </div>
-            <div class="form-group">
-                <label for="id_category">หมวดหมู่</label>
-                {{ form.category }}
-            </div>
-            <!-- food-specific type selector (shown only when category is food) -->
-            <div class="form-group" id="food-type-group" style="display:none;">
-                <label for="id_food_type">ประเภทสัตว์</label>
-                {{ form.food_type }}
-            </div>
-            <div class="form-group">
-                <label for="id_image">รูปภาพสินค้า</label>
-                {{ form.image }}
-            </div>
-            <button type="submit" class="btn-add-product white-btn" style="margin-top: 18px; padding: 10px 28px; border-radius: 8px; font-size: 1rem; font-weight: 500; background: #2563eb; color: #fff; border: none;">บันทึกสินค้า</button>
-        </form>
-        <style>
-            .simple-product-form .form-group { margin-bottom: 16px; }
-            .simple-product-form label { font-weight: 500; margin-bottom: 5px; display: block; color: #333; font-size: 1rem; }
-            .simple-product-form input, .simple-product-form select, .simple-product-form textarea {
-                width: 100%;
-                padding: 9px 10px;
-                border-radius: 7px;
-                border: 1px solid #d1d5db;
-                font-size: 1rem;
-                background: #f9fafb;
-                margin-top: 2px;
-                font-family: inherit;
-            }
-            .simple-product-form textarea { min-height: 70px; }
-            /* helper for hiding features when category is food */
-            .simple-product-form .hidden-feature { display: none !important; }
-        </style>
+        {% endif %}
+
+        <h2 class="section-title">➕ เพิ่มสินค้าใหม่</h2>
+
+        <div class="product-card" style="
+            max-width:650px;margin:auto;
+            background:white;padding:35px;
+            border-radius:18px;box-shadow:0 4px 20px rgba(0,0,0,.08);">
+
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label>ชื่อสินค้า</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label>สินค้าในสต็อกทั้งหมด</label>
+                    {{ form.total_stock }}
+                </div>
+
+                <div class="form-group">
+                    <label>จำนวนคงเหลือ</label>
+                    {{ form.stock }}
+                </div>
+
+                <div class="form-group">
+                    <label>รายละเอียดสินค้า</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="form-group" id="features-group">
+                    <label>คุณสมบัติสินค้า</label>
+                    {{ form.features }}
+                </div>
+
+                <div class="form-group">
+                    <label>ราคา (บาท)</label>
+                    {{ form.price }}
+                </div>
+
+                <div class="form-group">
+                    <label>หมวดหมู่สินค้า</label>
+                    {{ form.category }}
+                </div>
+
+                <!-- food type -->
+                <div class="form-group" id="food-type-group" style="display:none;">
+                    <label>ประเภทสัตว์</label>
+                    {{ form.food_type }}
+                </div>
+
+                <div class="form-group">
+                    <label>รูปภาพสินค้า</label>
+                    {{ form.image }}
+                </div>
+
+                <button type="submit"
+                    style="background:#FF6A2E;color:white;padding:12px 20px;
+                    border:none;border-radius:10px;font-weight:700;font-size:1.1rem;width:100%;cursor:pointer;">
+                    ✔ บันทึกสินค้า
+                </button>
+
+            </form>
+        </div>
+
         <script>
             (function(){
-                function isFoodOption(text){
-                    if(!text) return false;
+                function isFood(text){
                     return /อาหาร|food/i.test(text);
                 }
+                function updateForm(){
+                    let cat = document.getElementById("id_category");
+                    let foodType = document.getElementById("food-type-group");
+                    let features = document.getElementById("features-group");
+                    let featuresInput = document.getElementById("id_features");
+                    let selected = cat.options[cat.selectedIndex];
+                    let isFoodCategory = selected && isFood(selected.text);
 
-                function findFeaturesGroup(){
-                    var marked = document.querySelector('[data-features-group]');
-                    if(marked) return marked;
-                    var label = document.querySelector('label[for="id_features"]');
-                    if(label) return label.closest('.form-group');
-                    var feat = document.getElementById('id_features');
-                    if(feat) return feat.closest('.form-group');
-                    return null;
-                }
-
-                function updateFormBasedOnCategory(){
-                    var category = document.getElementById('id_category');
-                    var featuresGroup = findFeaturesGroup();
-                    var featuresInput = document.getElementById('id_features');
-                    var foodTypeGroup = document.getElementById('food-type-group');
-                    var foodTypeInput = document.getElementById('id_food_type');
-                    if(!category) return;
-                    var selected = category.options[category.selectedIndex];
-                    var text = selected ? (selected.text || selected.innerText || '') : '';
-                    var isFood = isFoodOption(text);
-
-                    // Toggle features
-                    if(featuresGroup && featuresInput){
-                        if(isFood){
-                            featuresGroup.classList.add('hidden-feature');
-                            featuresInput.disabled = true;
-                        } else {
-                            featuresGroup.classList.remove('hidden-feature');
-                            featuresInput.disabled = false;
-                        }
-                    }
-
-                    // Toggle food-type selector
-                    if(foodTypeGroup && foodTypeInput){
-                        if(isFood){
-                            foodTypeGroup.style.display = '';
-                            foodTypeInput.disabled = false;
-                        } else {
-                            foodTypeGroup.style.display = 'none';
-                            // clear selection to avoid accidental submission
-                            foodTypeInput.selectedIndex = 0;
-                            foodTypeInput.disabled = true;
-                        }
+                    if(isFoodCategory){
+                        foodType.style.display = "";
+                        features.style.display = "none";
+                        featuresInput.disabled = true;
+                    } else {
+                        foodType.style.display = "none";
+                        features.style.display = "";
+                        featuresInput.disabled = false;
                     }
                 }
-
-                document.addEventListener('DOMContentLoaded', function(){
-                    var category = document.getElementById('id_category');
-                    if(!category) return;
-                    // mark the features group for reliability
-                    var label = document.querySelector('label[for="id_features"]');
-                    if(label){
-                        var fg = label.closest('.form-group');
-                        if(fg) fg.setAttribute('data-features-group','1');
+                document.addEventListener("DOMContentLoaded", function(){
+                    let cat = document.getElementById("id_category");
+                    if(cat){
+                        cat.addEventListener("change", updateForm);
+                        updateForm();
                     }
-                    // ensure food-type exists and is disabled by default
-                    var foodTypeInput = document.getElementById('id_food_type');
-                    if(foodTypeInput) foodTypeInput.disabled = true;
-
-                    category.addEventListener('change', updateFormBasedOnCategory);
-                    // initialize state
-                    updateFormBasedOnCategory();
                 });
             })();
         </script>
-    </div>
+
+    </main>
+
 </div>
-{% endblock %}

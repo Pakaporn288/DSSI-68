@@ -1,0 +1,203 @@
+{% load static %}
+
+<!doctype html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>แก้ไขโปรไฟล์ร้าน - PetJoy</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;500;600;700&display=swap">
+
+    <style>
+        body {
+            background: #FFF7F0;
+            font-family: "Kanit", sans-serif;
+            padding: 40px 0;
+        }
+
+        .edit-container {
+            max-width: 650px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border-radius: 18px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.06);
+        }
+
+        .edit-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #FF6A2E;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #E65100;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #e6cfc3;
+            font-size: 15px;
+        }
+
+        .profile-preview {
+            width: 140px;
+            height: 140px;
+            border-radius: 100%;
+            object-fit: cover;
+            border: 5px solid #FFE1CF;
+            display: block;
+            margin: 0 auto 10px auto;
+        }
+
+        .file-label {
+            display: inline-block;
+            padding: 8px 14px;
+            border: 1px dashed #FF8A50;
+            border-radius: 10px;
+            cursor: pointer;
+            background: #FFF3E7;
+            margin-top: 6px;
+        }
+
+        .btn-area {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .btn-primary {
+            background: #FF6A2E;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            border: none;
+            font-size: 17px;
+            cursor: pointer;
+            font-weight: 700;
+            width: 180px;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #FF8A50;
+            color: #FF6A2E;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-right: 10px;
+            width: 160px;
+        }
+
+        /* Message Box */
+        .dashboard-messages {
+            margin-bottom: 20px;
+        }
+        .dashboard-message-item {
+            padding: 12px 18px;
+            border-radius: 12px;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="edit-container">
+
+    <!-- ⭐ MESSAGE BLOCK -->
+    {% if messages %}
+    <div class="dashboard-messages">
+        {% for message in messages %}
+            <div class="dashboard-message-item">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <!-- END MESSAGE BLOCK -->
+
+    <h2 class="edit-title">แก้ไขข้อมูลร้านค้า</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <!-- PROFILE IMAGE -->
+        <img id="profilePreview"
+             src="{% if entrepreneur.profile_image %}{{ entrepreneur.profile_image.url }}{% else %}{% static 'images/ร้าน.png' %}{% endif %}"
+             class="profile-preview">
+
+        <label class="file-label" for="id_profile_image">เลือกไฟล์รูปภาพใหม่</label>
+        <input type="file" id="id_profile_image" name="profile_image" onchange="previewImg(event)" hidden>
+
+
+        <!-- STORE NAME -->
+        <div class="form-group">
+            <label>ชื่อร้าน</label>
+            <input type="text" name="store_name" value="{{ entrepreneur.store_name }}" required>
+        </div>
+
+        <!-- OWNER NAME -->
+        <div class="form-group">
+            <label>ชื่อผู้ดูแลร้าน</label>
+            <input type="text" name="owner_name" value="{{ entrepreneur.owner_name }}" required>
+        </div>
+
+        <!-- PHONE -->
+        <div class="form-group">
+            <label>เบอร์โทรศัพท์</label>
+            <input type="text" name="phone" value="{{ entrepreneur.phone }}" required>
+        </div>
+
+        <!-- EMAIL -->
+        <div class="form-group">
+            <label>อีเมลสำหรับติดต่อ</label>
+            <input type="email" name="email" value="{{ entrepreneur.email }}" required>
+        </div>
+
+        <!-- PASSWORD -->
+        <div class="form-group">
+            <label>รหัสผ่านใหม่ (ถ้าไม่ใส่จะไม่เปลี่ยน)</label>
+            <input type="password" name="password">
+        </div>
+
+        <div class="btn-area">
+            <a href="{% url 'petjoy:entrepreneur-home' %}" class="btn-secondary">ยกเลิก</a>
+            <button type="submit" class="btn-primary">บันทึกข้อมูล</button>
+        </div>
+
+    </form>
+
+</div>
+
+
+<script>
+function previewImg(event) {
+    var reader = new FileReader();
+    reader.onload = function(){
+        document.getElementById('profilePreview').src = reader.result;
+    };
+    if (event.target.files && event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+</script>
+
+</body>
+</html>

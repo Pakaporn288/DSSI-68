@@ -1,60 +1,302 @@
-/* Styles for entrepreneur dashboard and profile pages */
-.entrepreneur-container { display:flex; gap:2rem; max-width:1200px; margin:40px auto; }
-.sidebar { width:240px; }
-.sidebar .sidebar-menu { display:flex; flex-direction:column; gap:10px; background:#fff; padding:12px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.04); }
-.sidebar .sidebar-menu a { color:#374151; text-decoration:none; padding:8px 10px; display:block; border-radius:8px; }
-.sidebar .sidebar-menu a.active { background:#2563eb; color:#fff; font-weight:600; }
-.sidebar-menu a.active { font-weight: bold; color: #ffffff !important; border-radius: 8px; padding-left: 12px; }
-.logout-btn { margin-top:12px; width:100%; padding:10px; border-radius:8px; background:#ef4444; color:#fff; border:none; cursor:pointer; }
+/* ===========================
+      DASHBOARD LAYOUT
+=========================== */
 
-.main-content { flex:1; }
-.profile-section form { background:#fff; padding:28px; border-radius:12px; box-shadow:0 2px 12px rgba(0,0,0,0.06); }
-.edit-field { display:flex; align-items:center; gap:8px; margin-bottom:18px; }
-.edit-input { padding:8px 12px; border-radius:8px; border:1px solid #d1d5db; font-size:1rem; background:#f9fafb; width:100%; }
-.edit-btn-save { background:#2563eb; color:#fff; border:none; padding:10px 24px; border-radius:8px; cursor:pointer; }
-
-/* Responsive */
-@media (max-width:900px){
-  .entrepreneur-container{ flex-direction:column; padding:16px; }
-  .sidebar{ width:100%; }
+/* ใช้ Tailwind-like utility classes: bg-white, flex, min-h-screen */
+.seller-layout {
+    display: flex;
+    background: #f7f7f7; /* พื้นหลังสีอ่อนมาก */
+    width: 100%;
+    min-height: 100vh;
+    font-family: 'Kanit', sans-serif; /* เพิ่ม font */
 }
 
-/* Transparent sidebar variant for public pages where only a back arrow is desired */
-.no-sidebar-bg {
-  background: transparent !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  min-width: 0 !important;
+
+/* ===========================
+          SIDEBAR
+=========================== */
+
+.seller-sidebar {
+    width: 250px; /* ลดความกว้างของ Sidebar */
+    background: #FF7043; /* สีส้มหลัก */
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding: 2rem 1.2rem; /* ลด padding */
+    display: flex;
+    flex-direction: column;
+    /* *** ลบ justify-content: space-between; ออก เพื่อให้ปุ่ม logout ไม่ติดด้านล่างสุด *** */
+    box-shadow: 6px 0 16px rgba(0,0,0,0.1); /* ปรับ shadow ให้ดูนุ่มนวล */
 }
-.no-sidebar-bg .sidebar-menu { display: none !important; }
-.no-sidebar-bg .logout-btn { display: none !important; }
 
-/* Styles moved from entrepreneur_profile_edit.html */
-:root{ --bg:#f7f7fb; --muted:#6b7280; --accent:#fb923c; --card:#ffffff; --glass:rgba(255,255,255,0.6)}
-html,body{height:100%}
-body { background: linear-gradient(180deg,#f8fafc 0%,var(--bg) 100%); color:#111827; margin:0 }
-.container { max-width:1100px; margin:32px auto; padding:16px; }
-.layout { display:grid; grid-template-columns: 280px 1fr; gap:24px; align-items:start }
-.card { background:var(--card); padding:22px; border-radius:14px; box-shadow:0 6px 30px rgba(17,24,39,0.06); }
-h2{margin:0 0 12px 0; font-size:1.25rem; color:#111827}
-.sidebar h3{margin:0 0 8px 0; font-size:1rem}
-nav a{display:block; padding:8px 10px; color:var(--muted); text-decoration:none; border-radius:8px}
-/* keep sidebar/menu hover neutral to avoid orange tint on public pages */
-nav a:hover{background:transparent; color:#111827}
-.profile-form { max-width:720px; margin:0 }
-.profile-grid{display:grid; grid-template-columns:140px 1fr; gap:18px; align-items:center}
-.profile-preview { width:120px; height:120px; object-fit:cover; border-radius:999px; border:6px solid #fff; box-shadow:0 8px 24px rgba(15,23,42,0.08); }
-.file-btn { display:inline-block; margin-top:8px; font-size:0.9rem; color:var(--accent); cursor:pointer }
-.form-row { margin-bottom:12px }
-label { display:block; margin-bottom:6px; font-size:0.92rem; color:#374151 }
-.edit-input { width:100%; padding:10px 12px; border-radius:10px; border:1px solid #e6e6e9; background:#fff; box-sizing:border-box }
-.small { font-size:0.85rem; color:var(--muted) }
-.actions { display:flex; gap:10px; justify-content:flex-end; margin-top:8px }
-.btn { padding:10px 14px; border-radius:10px; border:none; cursor:pointer }
-.btn-primary{ background:var(--accent); color:#fff }
-.btn-outline{ background:transparent; border:1px solid #e6e6e9 }
-/* custom file input hide default */
-input[type=file]{ display:none }
-.upload-placeholder{ display:inline-flex; align-items:center; gap:10px; padding:8px 12px; border-radius:10px; border:1px dashed #e9e9ef; background:#fff }
+.seller-profile {
+    text-align: center;
+    padding-bottom: 1.5rem; /* ลด padding */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2); /* เส้นคั่นบางๆ */
+}
 
-@media (max-width:880px){ .layout{ grid-template-columns:1fr; } .profile-grid{grid-template-columns:1fr} .sidebar{order:2} }
+.seller-avatar {
+    width: 80px; /* ลดขนาดลง */
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.9); /* ขอบสีขาวที่เด่นขึ้น */
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+.seller-name {
+    font-size: 1.3rem; /* ตัวใหญ่ขึ้น */
+    margin-top: 10px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.seller-username {
+    opacity: 0.75;
+    margin-top: 2px;
+    font-size: 0.85rem; /* ลดขนาด */
+}
+
+.seller-menu {
+    margin-top: 1.5rem; /* ลด margin */
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* ลดช่องว่างระหว่างเมนู */
+}
+
+.seller-menu a {
+    padding: 10px 15px; /* ลด padding */
+    border-radius: 10px; /* โค้งมนมากขึ้น */
+    text-decoration: none;
+    color: white;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* ลดช่องว่าง */
+    font-size: 0.95rem; /* ลดขนาดตัวอักษร */
+}
+
+.seller-menu a:hover {
+    background: rgba(255,255,255,0.25);
+    transform: translateX(3px); /* เพิ่ม effect เลื่อนเล็กน้อย */
+}
+
+.seller-menu a.active {
+    background: white;
+    color: #FF7043 !important; /* สีส้มเด่น */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+
+.seller-logout {
+    background: white;
+    color: #FF7043;
+    padding: 10px; /* ลด padding */
+    border-radius: 10px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 1.5rem; /* เพิ่มระยะห่างจากเมนู */
+    font-size: 0.95rem;
+}
+.seller-logout:hover {
+    background: #FFDAB9;
+}
+
+
+/* ===========================
+         MAIN CONTENT
+=========================== */
+
+.seller-main {
+    margin-left: 250px; /* ปรับตามความกว้าง Sidebar */
+    padding: 2.5rem; /* ลด padding ให้กระชับ */
+    width: calc(100% - 250px);
+}
+
+
+
+/* ===========================
+       STORE HEADER BOX
+=========================== */
+
+.seller-header-box {
+    background: linear-gradient(135deg, #FFF3E6, #FFE0B2); /* ใส่ gradient */
+    padding: 2rem; /* ลด padding */
+    border-radius: 16px; /* โค้งมนขึ้น */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08); /* ปรับ shadow ให้ดูยกขึ้น */
+    margin-bottom: 2.5rem; /* ลดระยะห่างด้านล่าง */
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem; /* ลด gap */
+}
+
+.store-logo {
+    width: 80px; /* ลดขนาดเล็กกว่าเดิม */
+    height: 80px;
+    border-radius: 14px;
+    object-fit: cover;
+    background: #FFDAB9;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.store-title {
+    font-size: 1.8rem; /* ลดขนาด */
+    font-weight: 800;
+    color: #E65100; /* สีส้มเข้ม */
+}
+
+.store-subtitle {
+    color: #8D6E63;
+    font-size: 1rem; /* ลดขนาด */
+}
+
+.store-rating {
+    margin-top: 8px; /* ลด margin */
+    color: #FFC107;
+    font-size: 1.1rem; /* ลดขนาด */
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+
+.store-edit-btn {
+    background: #FF7043;
+    padding: 10px 20px; /* ลด padding */
+    border-radius: 10px;
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+    box-shadow: 0 3px 8px rgba(255, 112, 67, 0.4);
+    font-size: 0.95rem;
+}
+.store-edit-btn:hover {
+    background: #E64A19;
+}
+
+
+/* ===========================
+         STAT GRID
+=========================== */
+
+.stats-section {
+    margin-top: 1.8rem; /* ลด margin */
+    display: grid;
+    /* 4 columns ใน desktop, ย่อตามขนาดจอ */
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); /* ปรับขนาดขั้นต่ำ */
+    gap: 1.5rem; /* ลดช่องว่าง */
+}
+
+.stat-card {
+    background: white; /* เปลี่ยนเป็นสีขาว */
+    padding: 1.5rem 1.2rem; /* ลด padding */
+    border-radius: 14px;
+    text-align: left; /* จัดชิดซ้าย */
+    color: #E65100;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08); /* ปรับ shadow */
+    font-weight: 500;
+    border-left: 4px solid #FF7043; /* เพิ่มแถบสีส้มด้านซ้าย */
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+.stat-card h4 {
+    font-size: 0.9rem; /* ลดขนาด */
+    color: #4CAF50; /* สีเขียวสำหรับตัวอักษรหัวข้อ */
+    opacity: 0.7;
+    margin-bottom: 4px;
+}
+
+/* ปรับขนาดตัวเลขให้สมดุล */
+.stat-number {
+    font-size: 2.2rem; /* ตัวเลขใหญ่และเด่นมาก */
+    font-weight: 900;
+    color: #FF7043;
+    line-height: 1;
+}
+
+
+/* ===========================
+        PRODUCT GRID
+=========================== */
+
+.product-area {
+    margin-top: 3rem; /* ลดระยะห่าง */
+}
+
+.product-area .section-title {
+    color: #E65100;
+    font-size: 1.6rem; /* ลดขนาด */
+    font-weight: 800;
+    margin-bottom: 18px; /* ลด margin */
+    border-bottom: 2px solid #FFDAB9;
+    padding-bottom: 5px;
+}
+
+.product-grid {
+    display: grid;
+    /* ปรับขนาดขั้นต่ำของ product card */
+    grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); /* ปรับขนาดขั้นต่ำ */
+    gap: 1.5rem; /* ลดช่องว่าง */
+}
+
+.product-box {
+    background: white; /* เปลี่ยนเป็นสีขาว */
+    padding: 1.2rem; /* ลด padding */
+    border-radius: 14px;
+    text-align: center;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.product-box:hover {
+    transform: translateY(-4px) scale(1.01);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+}
+
+.product-img {
+    width: 100%; /* ให้รูปภาพเต็มความกว้างของ box */
+    max-width: 150px; /* กำหนดขนาดสูงสุด */
+    height: 150px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-bottom: 12px;
+}
+
+.product-name {
+    margin-top: 8px; /* ลด margin */
+    font-weight: 700;
+    font-size: 1.1rem; /* ลดขนาด */
+    color: #E65100;
+}
+
+.product-price {
+    color: #FF7043;
+    margin-top: 4px; /* ลด margin */
+    font-size: 1rem; /* ลดขนาด */
+    font-weight: 800;
+}
+
+.empty-text {
+    text-align: center;
+    opacity: 0.6;
+    font-size: 1rem; /* ลดขนาด */
+    padding: 2.5rem; /* ลด padding */
+    background: #FFF8F0;
+    border-radius: 14px;
+    grid-column: 1 / -1; /* ให้ข้อความอยู่ตรงกลาง grid */
+}

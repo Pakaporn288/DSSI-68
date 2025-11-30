@@ -1,68 +1,128 @@
-
 {% load static %}
-<link rel="stylesheet" href="{% static 'decorate.css' %}">
 
 {% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+
 <style>
     .navbar { display: none !important; }
-		.sidebar-menu a.active {
-			font-weight: bold;
-			color: #ffffff !important;
-			border-radius: 8px;
-			padding-left: 12px;
-		}
 </style>
-<div class="entrepreneur-container">
-	<aside class="sidebar">
-		<nav class="sidebar-menu">
-			<a href="{% url 'petjoy:entrepreneur-home' %}" class="active">โปรไฟล์</a>
-			<a href="#">รายละเอียดคำสั่งซื้อ</a>
-			<a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-			<a href="#">ข้อความ</a>
-			<a href="#">แก้ไขรายละเอียด</a>
-			<a href="#">รายได้</a>
-		</nav>
-		<form method="post" action="{% url 'petjoy:logout' %}">
-			{% csrf_token %}
-			<button type="submit" class="logout-btn">ออกจากระบบ</button>
-		</form>
-	</aside>
-	<main class="main-content">
-		<section class="profile-section">
-			{% if entrepreneur.profile_image %}
-				<img src="{{ entrepreneur.profile_image.url }}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
-			{% else %}
-				<img src="{% static 'images/ร้าน.png' %}" alt="โปรไฟล์ผู้ขาย" class="profile-image">
-			{% endif %}
-			<div class="profile-info">
-				<h2>{% if entrepreneur %}{{ entrepreneur.store_name }}{% else %}ร้านผู้ประกอบการ{% endif %}</h2>
-				<div class="review-score">
-					⭐ {% if avg_score %}{{ avg_score }}{% else %}-{% endif %} คะแนนรีวิว
-				</div>
-				<a href="{% url 'petjoy:entrepreneur-profile-edit' %}" class="edit-btn" style="display:inline-flex;align-items:center;gap:6px;text-decoration:none;background:#fb923c;color:#fff;padding:8px 18px;border-radius:8px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.07);">
-					แก้ไขโปรไฟล์ <span style="font-size:1.1em;color:#fff;">&#9998;</span>
-				</a>
-				<div class="profile-stats">
-					<div class="profile-stat">จำนวนสินค้า<br>{{ product_count }}</div>
-					<div class="profile-stat">คะแนนรีวิว<br>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</div>
-				</div>
-			</div>
-		</section>
-		<section class="product-cards">
-			{% for product in products %}
-			<div class="product-card">
-				{% if product.image %}
-					<img src="{{ product.image.url }}" alt="{{ product.name }}">
-				{% else %}
-					<img src="{% static 'images/CAT.jpg' %}" alt="{{ product.name }}">
-				{% endif %}
-				<div class="product-name">{{ product.name }}</div>
-				<div class="product-price">฿{{ product.price }}</div>
-			</div>
-			{% empty %}
-			<div>ไม่มีสินค้าภายในร้าน</div>
-			{% endfor %}
-		</section>
-	</main>
+
+<div class="seller-layout">
+
+    <aside class="seller-sidebar">
+        <div> 
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+                {% endif %}
+
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}" class="active">🏠 หน้าหลักร้าน</a>
+                <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}">🛍️ สินค้าทั้งหมด</a>
+                <a href="#">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="#">💰 รายได้</a>
+            </nav>
+        
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="seller-main">
+
+        <!-- ⭐ MESSAGE BLOCK (ใหม่) ⭐ -->
+        {% if messages %}
+        <div class="dashboard-messages">
+            {% for message in messages %}
+                <div class="dashboard-message-item">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <!-- จบ Message Block -->
+
+        <section class="seller-header-box">
+            <div class="header-left">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                {% endif %}
+
+                <div>
+                    <h2 class="store-title">ยินดีต้อนรับ, {{ entrepreneur.store_name }}</h2>
+                    <p class="store-subtitle">ร้านค้าทางการในระบบ PetJoy Dashboard</p>
+                    <p class="store-rating">
+                        <span style="font-size: 1.3rem;">⭐</span> 
+                        {{ avg_score|default:"0.0" }} คะแนนเฉลี่ย
+                    </p>
+                </div>
+            </div>
+
+            <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}" class="store-edit-btn">
+                ✏️ แก้ไขข้อมูลร้าน
+            </a>
+        </section>
+
+        <section class="stats-section">
+
+            <div class="stat-card">
+                <h4>จำนวนสินค้าทั้งหมด</h4>
+                <p class="stat-number">{{ product_count }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>คะแนนเฉลี่ยจากลูกค้า</h4>
+                <p class="stat-number">{{ avg_score|default:"0.0" }}</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>คำสั่งซื้อที่รอจัดส่ง</h4>
+                <p class="stat-number">0</p>
+            </div>
+
+            <div class="stat-card">
+                <h4>ยอดขายสะสมทั้งหมด</h4>
+                <p class="stat-number">฿0</p>
+            </div>
+
+        </section>
+
+        <section class="product-area">
+            <h2 class="section-title">🛍️ สินค้าในร้านของคุณ</h2>
+
+            <div class="product-grid">
+                {% for product in products %}
+                    <div class="product-box">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" class="product-img">
+                        {% else %}
+                            <img src="{% static 'images/no-image.png' %}" class="product-img">
+                        {% endif %}
+
+                        <h4 class="product-name">{{ product.name }}</h4>
+                        <p class="product-price">฿{{ product.price }}</p>
+                    </div>
+                {% empty %}
+                    <p class="empty-text">😔 ยังไม่มีสินค้าในร้านค้าของคุณ</p>
+                {% endfor %}
+            </div>
+
+        </section>
+
+    </main>
+
 </div>
+
 {% endblock %}
