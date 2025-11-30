@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django.urls import reverse_lazy
 import json
+from django.views import View
 from .ai_service import get_ai_response
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
@@ -364,6 +365,18 @@ def address_edit(request, id):
 
     return render(request, "petjoy/address_form.html", {"address": address})
 
+class EntrepreneurProductDetailView(View):
+    def get(self, request, pk):
+        if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
+            return redirect('petjoy:login')
+
+        product = get_object_or_404(Product, pk=pk, owner=request.user.entrepreneur)
+
+        return render(request, "petjoy/entrepreneur/entrepreneur_product_detail.html", {
+            "product": product,
+            "entrepreneur": request.user.entrepreneur
+        })
+
 class ProductListView(ListView):
     model = Product
     template_name = 'petjoy/products/product_list.html'
@@ -418,19 +431,21 @@ class ProductCreateView(CreateView):
     form_class = ProductForm
     template_name = 'petjoy/products/product_form.html'
     success_url = reverse_lazy('petjoy:product-list')
-    
+
     def dispatch(self, request, *args, **kwargs):
-        # Only entrepreneurs can create products
         if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
-            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนสร้างสินค้า')
-            return redirect('petjoy:entrepreneur-register')
+            messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนเพิ่มสินค้า')
+            return redirect('petjoy:login')
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['entrepreneur'] = self.request.user.entrepreneur
+        return ctx
+
     def form_valid(self, form):
-        obj = form.save(commit=False)
-        # assign owner to the entrepreneur profile
-        obj.owner = self.request.user.entrepreneur
-        obj.save()
+        form.instance.owner = self.request.user.entrepreneur
+        messages.success(self.request, "เพิ่มสินค้าเรียบร้อยแล้ว!")
         return super().form_valid(form)
 
 @method_decorator(login_required, name='dispatch')
@@ -475,15 +490,27 @@ class ProductDeleteView(DeleteView):
     success_url = reverse_lazy('petjoy:product-list')
 
     def dispatch(self, request, *args, **kwargs):
-        # Only owner entrepreneur may delete
+        # ตรวจสอบสิทธิ์: ต้องเป็นผู้ประกอบการเท่านั้น
         if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
             messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนลบสินค้า')
             return redirect('petjoy:login')
+
+        # ตรวจสอบว่าเป็นเจ้าของสินค้าหรือไม่
         obj = self.get_object()
         if obj.owner is None or obj.owner.user_id != request.user.id:
             messages.error(request, 'คุณไม่มีสิทธิ์ลบสินค้านี้')
             return redirect('petjoy:product-list')
+
         return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        ส่งข้อมูล entrepreneur เข้า template ด้วย
+        เพื่อให้ Sidebar แสดงชื่อร้าน รูปโปรไฟล์ และเมนูด้านซ้ายได้ถูกต้อง
+        """
+        ctx = super().get_context_data(**kwargs)
+        ctx['entrepreneur'] = self.request.user.entrepreneur
+        return ctx
 
 
 

@@ -1,7 +1,7 @@
 # petjoy/urls.py
 from django.urls import path
 from . import views
-from .views import entrepreneur_register
+from .views import EntrepreneurProductDetailView, entrepreneur_register
 from .views import entrepreneur_home
 
 app_name = 'petjoy'
@@ -49,6 +49,9 @@ urlpatterns = [
     path('orders/', views.orders_list, name="orders-list"),
     path('orders/<int:order_id>/', views.orders_detail, name="orders-detail"),
     path('orders/<int:order_id>/update-status/', views.update_order_status, name="update-order-status"),
+    path('entrepreneur/product/<int:pk>/',EntrepreneurProductDetailView.as_view(),name="entrepreneur-product-detail"
+),
+
 
 
 
