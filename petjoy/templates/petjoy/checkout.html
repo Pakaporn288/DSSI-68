@@ -1,0 +1,558 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}ดำเนินการสั่งซื้อ | PetJoy{% endblock %}
+
+{% block content %}
+
+<!-- Redesigned Checkout Template: improved layout, responsive, accessibility enhancements
+     NOTE: ไม่ได้แก้ไขฐานข้อมูลหรือ logicของ backend — แก้เฉพาะส่วน UI / CSS / JS เท่านั้น
+     แต่มีการเพิ่ม AJAX helper เพื่อเรียก endpoint สำหรับเพิ่มที่อยู่แบบไม่ออกหน้า (views.py ต้องรองรับ JSON)
+-->
+
+<style>
+  :root{
+    --brand:#ff8c00;
+    --brand-dark:#e57e00;
+    --accent:#28a745;
+    --muted:#6b6b6b;
+    --card-bg:#ffffff;
+    --surface:#fafafa;
+    --radius:10px;
+    --max-width:1100px;
+  }
+  body {background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);} 
+
+  .checkout-wrap{max-width:var(--max-width); margin:32px auto; padding:20px; box-sizing:border-box}
+  .checkout-grid{display:grid; grid-template-columns:1fr 360px; gap:22px}
+
+  /* Mobile stack */
+  @media (max-width:900px){
+    .checkout-grid{grid-template-columns:1fr}
+    .summary-card{order:2}
+  }
+
+  .card{background:var(--card-bg); border-radius:var(--radius); box-shadow:0 6px 18px rgba(16,24,40,0.06); padding:18px}
+  .section-header{display:flex; align-items:center; justify-content:space-between; gap:12px}
+  .section-title{font-weight:800; font-size:1.05rem}
+  .muted{color:var(--muted); font-size:0.95rem}
+
+  /* Step indicator */
+  .steps{display:flex; gap:12px; align-items:center; margin-bottom:14px}
+  .step{display:flex; align-items:center; gap:10px}
+  .circle{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff}
+  .circle.inactive{background:#ddd; color:#333}
+  .circle.active{background:var(--brand)}
+  .step-label{font-size:0.88rem}
+
+  /* Address area */
+  .current-address{display:flex; flex-direction:column; gap:6px}
+  .change-link{background:none; border:1px solid var(--brand); color:var(--brand); padding:6px 10px; border-radius:6px; font-weight:700; text-decoration:none}
+
+  /* Items table */
+  .items-list{display:flex; flex-direction:column; gap:12px}
+  .item-row{display:flex; gap:12px; align-items:center; padding:12px; border-radius:8px; background:var(--surface)}
+  .item-img{width:64px; height:64px; object-fit:cover; border-radius:8px}
+  .item-meta{flex:1}
+  .item-price{min-width:110px; text-align:right; font-weight:700}
+
+  .total-line{display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem; padding-top:8px; border-top:1px dashed #e6e6e6}
+
+  /* Summary card */
+  .summary-card{position:sticky; top:24px}
+  .summary-row{display:flex; justify-content:space-between; padding:6px 0; color:var(--muted)}
+  .summary-total{font-size:1.2rem; color:var(--brand); font-weight:900}
+
+  /* Buttons */
+  .btn{display:inline-flex; align-items:center; gap:8px; justify-content:center; border-radius:10px; padding:10px 16px; font-weight:800; cursor:pointer}
+  .btn-primary{background:var(--brand); color:#fff; border:0}
+  .btn-ghost{background:#fff; color:#333; border:1px solid #ddd}
+
+  /* Payment options */
+  .payment-list{display:flex; flex-direction:column; gap:10px}
+  .payment-card{border:1px solid #ececec; padding:14px; border-radius:8px; display:flex; gap:12px; align-items:flex-start}
+  .payment-card input{margin-top:3px}
+  .bank-details{font-size:0.95rem; color:var(--muted)}
+  .slip-upload{border:2px dashed var(--brand); padding:18px; border-radius:8px; text-align:center; display:none; cursor:pointer}
+
+  /* Modal */
+  .modal-overlay{position:fixed; inset:0; display:none; background:rgba(2,6,23,0.5); align-items:center; justify-content:center; z-index:1000}
+  .modal-panel{width:100%; max-width:780px; background:#fff; border-radius:12px; padding:20px;}
+  .address-card{border:1px solid #eee; padding:12px; border-radius:8px; display:flex; gap:12px; align-items:flex-start}
+  .address-card.selected{border-color:var(--brand); background: #fffaf5}
+
+  .inline-form-row{display:flex; gap:8px; flex-wrap:wrap}
+  .inline-form-row input, .inline-form-row select{flex:1; min-width:140px; padding:8px; border:1px solid #e8e8e8; border-radius:6px}
+
+  /* small utility */
+  .text-right{text-align:right}
+  .error-msg{color:#b00020; font-weight:700; margin-top:8px}
+  .success-msg{color:green; font-weight:700; margin-top:8px}
+</style>
+
+<div class="checkout-wrap">
+  <div class="card" style="margin-bottom:12px">
+    <div class="steps" role="list" aria-label="ขั้นตอนการสั่งซื้อ">
+      <div class="step" role="listitem">
+        <div class="circle {% if step == 1 %}active{% else %}inactive{% endif %}">{% if step > 1 %}✓{% else %}1{% endif %}</div>
+        <div class="step-label">ข้อมูลในการจัดส่ง</div>
+      </div>
+      <div class="step" role="listitem">
+        <div class="circle {% if step == 2 %}active{% else %}inactive{% endif %}">{% if step > 2 %}✓{% else %}2{% endif %}</div>
+        <div class="step-label">ชำระเงิน</div>
+      </div>
+      <div class="step" role="listitem">
+        <div class="circle {% if step == 3 %}active{% else %}inactive{% endif %}">{% if step == 3 %}✓{% else %}3{% endif %}</div>
+        <div class="step-label">ยืนยัน</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="checkout-grid">
+
+    <!-- LEFT: main flow -->
+    <div>
+
+      {% if step == 1 %}
+      <form method="POST" id="step1Form" class="card" aria-labelledby="step1Heading">
+        {% csrf_token %}
+        <input type="hidden" name="checkout_step" value="1">
+        <input type="hidden" name="selected_item_ids_str" value="{{ selected_item_ids_str }}">
+        <input type="hidden" name="address_id" id="selected_address_id" value="{% for address in addresses %}{% if address.is_default %}{{ address.id }}{% endif %}{% empty %}{% endfor %}" required>
+
+        <div class="section-header">
+          <div>
+            <div class="section-title" id="step1Heading">ที่อยู่จัดส่ง</div>
+            <div class="muted">เลือกหรือเพิ่มที่อยู่เพื่อจัดส่งพัสดุของคุณ</div>
+          </div>
+          <div>
+            <button type="button" id="openAddressModal" class="change-link" aria-haspopup="dialog">เปลี่ยน/เลือก</button>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;" id="currentAddressDisplay">
+          {% with default_address=addresses|first %}
+            {% if default_address %}
+              <div class="current-address">
+                <strong data-id="{{ default_address.id }}">{{ default_address.full_name }} | {{ default_address.phone }}</strong>
+                <div id="currentAddressText">{{ default_address.address_line }} ต.{{ default_address.subdistrict }} อ.{{ default_address.district }} จ.{{ default_address.province }} {{ default_address.zipcode }}</div>
+              </div>
+            {% else %}
+              <p style="color:red;">กรุณาเพิ่มที่อยู่จัดส่งก่อน</p>
+              <p><a href="{% url 'petjoy:address_add' %}" class="btn btn-primary" style="display:inline-block; margin-top:10px;">+ เพิ่มที่อยู่</a></p>
+            {% endif %}
+          {% endwith %}
+        </div>
+
+        <hr style="margin:16px 0; border:none; border-top:1px solid #f0f0f0">
+
+        <div>
+          <div class="section-title">รายการสั่งซื้อ</div>
+          <div class="muted">ตรวจสอบสินค้าและจำนวนก่อนยืนยัน</div>
+
+          <div class="items-list" style="margin-top:12px">
+            {% for owner, items in items_by_entrepreneur.items %}
+              <div style="font-weight:800; padding:8px 10px; background:#ffffff; border-radius:8px">ร้าน: {{ owner.store_name }}</div>
+              {% for item in items %}
+                <div class="item-row" aria-label="สินค้า {{ item.product.name }}">
+                  <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="รูปสินค้า {{ item.product.name }}" class="item-img">
+                  <div class="item-meta">
+                    <div style="font-weight:700">{{ item.product.name }}</div>
+                    <div class="muted">รหัสสินค้า: {{ item.product.id }} • ร้าน: {{ owner.store_name }}</div>
+                  </div>
+                  <div class="item-price">฿{{ item.product.price|floatformat:2|intcomma }} &times; {{ item.quantity }} = <div style="font-weight:900;">฿{{ item.total_price|floatformat:2|intcomma }}</div></div>
+                </div>
+              {% endfor %}
+            {% endfor %}
+
+            <div class="total-line">
+              <div class="muted">รวมยอดสุทธิ</div>
+              <div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:18px; gap:10px;">
+          <a href="{% url 'petjoy:cart-detail' %}" class="btn btn-ghost">ย้อนกลับ</a>
+          <button type="submit" class="btn btn-primary">ถัดไป</button>
+        </div>
+      </form>
+      {% endif %}
+
+
+      {% if step == 2 %}
+      <div class="card">
+        <h3 class="section-title">ยืนยันที่อยู่และวิธีการชำระเงิน</h3>
+        <div class="muted" style="margin-bottom:12px">ตรวจสอบข้อมูลเพื่อให้การชำระเงินเป็นไปอย่างรวดเร็ว</div>
+
+        <div style="margin-top:8px">
+          <div class="section-header">
+            <div>
+              <strong>{{ address.full_name }} | {{ address.phone }}</strong>
+              <div class="muted">{{ address.address_line }} ต.{{ address.subdistrict }} อ.{{ address.district }} จ.{{ address.province }} {{ address.zipcode }}</div>
+            </div>
+            <!-- ไม่แสดงปุ่มแก้ไขตามคำขอ -->
+          </div>
+        </div>
+
+        <div style="margin-top:14px">
+          <div class="section-title">สรุปยอดที่ต้องชำระ</div>
+          <div class="muted">รวมทุกคำสั่งซื้อจากร้านค้าที่เลือก</div>
+          <div style="text-align:right; margin-top:6px; font-weight:900; font-size:1.4rem; color:var(--brand)">฿{{ total_price|floatformat:2|intcomma }}</div>
+        </div>
+
+        {% if messages %}
+          {% for message in messages %}
+            <div role="alert" style="color:red; margin-bottom:10px">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data" id="step2Form" style="margin-top:16px">
+          {% csrf_token %}
+          <input type="hidden" name="checkout_step" value="2">
+
+          <div class="section-title" style="margin-bottom:8px">เลือกวิธีการชำระเงิน</div>
+
+          <div class="payment-list">
+            <label class="payment-card">
+              <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" required>
+              <div style="flex:1">
+                <div style="font-weight:800">โอนเงินผ่านบัญชีธนาคาร</div>
+                <div class="bank-details" style="margin-top:6px">
+                  {% for owner, items in items_by_entrepreneur.items %}
+                    <div style="margin-bottom:8px">
+                      <div style="font-weight:700">ร้าน: {{ owner.store_name }}</div>
+                      {% if owner.bank_name %}
+                        <div>{{ owner.bank_name }}</div>
+                        <div>ชื่อบัญชี: {{ owner.account_name }}</div>
+                        <div>เลขที่บัญชี: {{ owner.account_number }}</div>
+                      {% else %}
+                        <div style="color:red; font-weight:600">*ผู้ประกอบการยังไม่ได้ระบุข้อมูลบัญชีธนาคาร*</div>
+                      {% endif %}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            </label>
+
+            <div id="slipUploadContainer" class="slip-upload" role="button" tabindex="0" onclick="document.getElementById('slipFileInput').click()">
+              <div style="font-weight:800;">อัปโหลดสลิปการโอน</div>
+              <div class="muted">ไฟล์รูปภาพ หรือ PDF (แนะนำ PNG/JPG)</div>
+              <div id="fileNameDisplay" style="margin-top:8px; font-weight:700"></div>
+              <div id="slipError" class="error-msg" style="display:none">กรุณาแนบสลิปการโอนเงิน</div>
+            </div>
+            <input type="file" name="payment_slip" id="slipFileInput" accept="image/*,.pdf" style="display:none">
+
+            <label class="payment-card">
+              <input type="radio" id="cod" name="payment_method" value="cod">
+              <div style="flex:1">
+                <div style="font-weight:800">เก็บเงินปลายทาง (COD)</div>
+                <div class="muted">ชำระเงินกับพนักงานส่งของเมื่อรับพัสดุ</div>
+              </div>
+            </label>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:18px">
+            <!-- ตามข้อ A: แสดงปุ่มยืนยันคำสั่งซื้อเพียงปุ่มเดียว -->
+            <button type="submit" class="btn btn-primary" id="confirmOrderBtn">ยืนยันคำสั่งซื้อ</button>
+          </div>
+        </form>
+      </div>
+      {% endif %}
+
+      {% if step == 3 %}
+      <div class="card">
+        <div style="text-align:center; padding:18px">
+          <div style="font-size:2.2rem; color:var(--accent); font-weight:900">✓</div>
+          <h2 style="margin:8px 0; color:var(--accent)">ยืนยันคำสั่งซื้อเรียบร้อย</h2>
+          <div class="muted">เราจะเริ่มดำเนินการและติดต่อคุณภายใน 1-3 วันทำการ</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="section-title">ที่อยู่</div>
+          <div class="muted">{{ address.full_name }} | {{ address.phone }}</div>
+          <div style="margin-top:6px">{{ address.customer_address }}</div>
+        </div>
+
+        <div style="margin-top:12px">
+          <div class="section-title">รายการคำสั่งซื้อที่ถูกสร้าง</div>
+          {% for order in orders %}
+            <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0">
+              <div><strong>Order #{{ order.id }}</strong> (จากร้าน: {{ order.entrepreneur.store_name }})</div>
+              <div style="font-weight:800">฿{{ order.total_price|floatformat:2|intcomma }}</div>
+            </div>
+          {% endfor %}
+
+          <div style="margin-top:12px; font-weight:900; display:flex; justify-content:space-between;">
+            <div>รวมยอดสุทธิทั้งหมด</div>
+            <div style="color:var(--brand);">฿{{ total_price|floatformat:2|intcomma }}</div>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:12px; justify-content:center; margin-top:16px">
+          <a href="{% url 'petjoy:homepage' %}" class="btn btn-primary">กลับหน้าแรก</a>
+          <a href="{% url 'petjoy:order_history' %}" class="btn btn-ghost">ดูรายการคำสั่งซื้อของฉัน</a>
+        </div>
+      </div>
+      {% endif %}
+
+    </div>
+
+    <!-- RIGHT: summary / CTA -->
+    <aside class="summary-card">
+      <div class="card">
+        <div class="section-header">
+          <div class="section-title">สรุปคำสั่งซื้อ</div>
+          <div class="muted">ตรวจสอบอีกครั้ง</div>
+        </div>
+
+        <div style="margin-top:12px">
+          {% for owner, items in items_by_entrepreneur.items %}
+            <div style="font-weight:700; margin-bottom:6px">{{ owner.store_name }}</div>
+            {% for item in items %}
+              <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0">
+                <div style="max-width:65%">{{ item.product.name }} <span class="muted">x{{ item.quantity }}</span></div>
+                <div style="font-weight:800">฿{{ item.total_price|floatformat:2|intcomma }}</div>
+              </div>
+            {% endfor %}
+            <hr style="border:none; border-top:1px dashed #f0f0f0; margin:8px 0">
+          {% endfor %}
+
+          <div class="summary-row"><div class="muted">รวม</div><div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div></div>
+
+          <!-- ปุ่มถูกนำออกตามคำขอ — เหลือแค่สรุปยอด -->
+        </div>
+      </div>
+    </aside>
+
+  </div>
+</div>
+
+<!-- Address selection modal -->
+<div id="addressModal" class="modal-overlay" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-panel" role="document">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px">
+      <h3>เลือกที่อยู่จัดส่ง</h3>
+      <button id="closeModal" aria-label="ปิด">&times;</button>
+    </div>
+
+    <form id="modalAddressForm">
+      <div id="modalAddressList" style="display:flex; flex-direction:column; gap:10px; max-height:320px; overflow:auto; padding-bottom:6px;">
+        {% for address in addresses %}
+          <label class="address-card {% if address.is_default %}selected{% endif %}">
+            <input type="radio" name="modal_address_id" value="{{ address.id }}" data-name="{{ address.full_name }} | {{ address.phone }}" data-detail="{{ address.address_line }} ต.{{ address.subdistrict }} อ.{{ address.district }} จ.{{ address.province }} {{ address.zipcode }}" {% if address.is_default %}checked{% endif %}>
+            <div style="flex:1">
+              <div style="font-weight:800">{{ address.full_name }} | {{ address.phone }}</div>
+              <div class="muted">{{ address.address_line }} ต.{{ address.subdistrict }} อ.{{ address.district }} จ.{{ address.province }} {{ address.zipcode }}</div>
+              {% if address.is_default %}<div style="color:green; font-weight:700; margin-top:6px">(ค่าเริ่มต้น)</div>{% endif %}
+            </div>
+          </label>
+        {% empty %}
+          <div class="muted">ไม่พบที่อยู่ กรุณาเพิ่มที่อยู่ใหม่</div>
+        {% endfor %}
+      </div>
+
+      <!-- Inline add-address form (AJAX) -->
+      <div style="margin-top:12px; border-top:1px dashed #eee; padding-top:12px">
+        <div class="section-title" style="font-size:0.98rem">+ เพิ่มที่อยู่ใหม่</div>
+        <div class="muted" style="margin-bottom:8px">เพิ่มที่อยู่ได้โดยไม่ต้องไปหน้าที่อยู่</div>
+
+        <div id="addAddressMsg"></div>
+
+        <div class="inline-form-row">
+          <input name="full_name" id="ia_full_name" placeholder="ชื่อ-นามสกุล" required>
+          <input name="phone" id="ia_phone" placeholder="หมายเลขโทรศัพท์" required>
+          <input name="zipcode" id="ia_zipcode" placeholder="รหัสไปรษณีย์">
+        </div>
+        <div style="height:8px"></div>
+        <div class="inline-form-row">
+          <input name="address_line" id="ia_address_line" placeholder="บ้านเลขที่ / ตรอก / ถนน" required>
+          <input name="subdistrict" id="ia_subdistrict" placeholder="ตำบล/แขวง" required>
+          <input name="district" id="ia_district" placeholder="อำเภอ/เขต" required>
+          <input name="province" id="ia_province" placeholder="จังหวัด" required>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; margin-top:12px">
+          <button type="button" id="addAddressBtn" class="btn btn-ghost">+ เพิ่มที่อยู่</button>
+          <button type="button" id="confirmAddressChange" class="btn btn-primary">ยืนยันการเลือก</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  (function(){
+    const addressModal = document.getElementById('addressModal');
+    const openModalBtn = document.getElementById('openAddressModal');
+    const closeModalBtn = document.getElementById('closeModal');
+    const confirmBtn = document.getElementById('confirmAddressChange');
+    const currentAddressDisplay = document.getElementById('currentAddressDisplay');
+    const selectedAddressInput = document.getElementById('selected_address_id');
+
+    function openModal(){ addressModal.style.display='flex'; addressModal.setAttribute('aria-hidden','false'); }
+    function closeModal(){ addressModal.style.display='none'; addressModal.setAttribute('aria-hidden','true'); }
+
+    if(openModalBtn){ openModalBtn.addEventListener('click', openModal); }
+    if(closeModalBtn){ closeModalBtn.addEventListener('click', closeModal); }
+    if(addressModal){ addressModal.addEventListener('click', (e)=>{ if(e.target===addressModal) closeModal(); }); }
+
+    // highlight selected card
+    function refreshRadioListeners(){
+      const radios = document.querySelectorAll('input[name="modal_address_id"]');
+      radios.forEach(r=>{
+        r.addEventListener('change', ()=>{
+          document.querySelectorAll('.address-card').forEach(c=>c.classList.remove('selected'));
+          if(r.checked) r.closest('.address-card').classList.add('selected');
+        });
+        if(r.checked) r.closest('.address-card').classList.add('selected');
+      });
+    }
+    refreshRadioListeners();
+
+    if(confirmBtn){
+      confirmBtn.addEventListener('click', ()=>{
+        const sel = document.querySelector('input[name="modal_address_id"]:checked');
+        if(!sel){ alert('กรุณาเลือกที่อยู่จัดส่ง'); return; }
+        selectedAddressInput.value = sel.value;
+        const name = sel.dataset.name || '';
+        const detail = sel.dataset.detail || '';
+        const strongEl = currentAddressDisplay.querySelector('strong');
+        const pEl = currentAddressDisplay.querySelector('div#currentAddressText');
+        if(strongEl) strongEl.textContent = name;
+        if(pEl) pEl.textContent = detail;
+        closeModal();
+      });
+    }
+
+    // Add address (AJAX)
+    const addBtn = document.getElementById('addAddressBtn');
+    const addMsg = document.getElementById('addAddressMsg');
+    const modalList = document.getElementById('modalAddressList');
+
+    function clearAddForm(){
+      ['ia_full_name','ia_phone','ia_zipcode','ia_address_line','ia_subdistrict','ia_district','ia_province'].forEach(id=>{
+        const el = document.getElementById(id);
+        if(el) el.value = '';
+      });
+    }
+
+    if(addBtn){
+      addBtn.addEventListener('click', async ()=>{
+        addMsg.innerHTML = '';
+        const data = {
+          full_name: document.getElementById('ia_full_name').value.trim(),
+          phone: document.getElementById('ia_phone').value.trim(),
+          zipcode: document.getElementById('ia_zipcode').value.trim(),
+          address_line: document.getElementById('ia_address_line').value.trim(),
+          subdistrict: document.getElementById('ia_subdistrict').value.trim(),
+          district: document.getElementById('ia_district').value.trim(),
+          province: document.getElementById('ia_province').value.trim(),
+        };
+        // basic validation client-side
+        if(!data.full_name || !data.phone || !data.address_line || !data.subdistrict || !data.district || !data.province){
+          addMsg.innerHTML = '<div class="error-msg">กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน</div>';
+          return;
+        }
+        addBtn.disabled = true;
+        addBtn.textContent = 'กำลังเพิ่ม...';
+        try{
+          const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
+          const resp = await fetch("{% url 'petjoy:address_add' %}", {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrf,
+              'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(data)
+          });
+          if(resp.ok){
+            const j = await resp.json();
+            if(j.success && j.address){
+              addMsg.innerHTML = '<div class="success-msg">เพิ่มที่อยู่เรียบร้อยแล้ว</div>';
+              // Append new address to modal list
+              const a = j.address;
+              const label = document.createElement('label');
+              label.className = 'address-card';
+              label.innerHTML = `<input type="radio" name="modal_address_id" value="${a.id}" data-name="${a.full_name} | ${a.phone}" data-detail="${a.address_line} ต.${a.subdistrict} อ.${a.district} จ.${a.province} ${a.zipcode}" checked>
+                <div style="flex:1">
+                  <div style="font-weight:800">${a.full_name} | ${a.phone}</div>
+                  <div class="muted">${a.address_line} ต.${a.subdistrict} อ.${a.district} จ.${a.province} ${a.zipcode}</div>
+                </div>`;
+              modalList.prepend(label);
+              // Set as selected in UI and update current display immediately
+              refreshRadioListeners();
+              const sel = label.querySelector('input[name="modal_address_id"]');
+              sel.checked = true;
+              selectedAddressInput.value = a.id;
+              const strongEl = currentAddressDisplay.querySelector('strong');
+              const pEl = currentAddressDisplay.querySelector('div#currentAddressText');
+              if(strongEl) strongEl.textContent = `${a.full_name} | ${a.phone}`;
+              if(pEl) pEl.textContent = `${a.address_line} ต.${a.subdistrict} อ.${a.district} จ.${a.province} ${a.zipcode}`;
+              clearAddForm();
+            }else{
+              addMsg.innerHTML = `<div class="error-msg">${j.error || 'ไม่สามารถเพิ่มที่อยู่ได้'}</div>`;
+            }
+          } else {
+            const txt = await resp.text();
+            addMsg.innerHTML = '<div class="error-msg">เกิดข้อผิดพลาดในการเชื่อมต่อ (server)</div>';
+            console.error('address add failed', resp.status, txt);
+          }
+        }catch(e){
+          console.error(e);
+          addMsg.innerHTML = '<div class="error-msg">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</div>';
+        } finally {
+          addBtn.disabled = false;
+          addBtn.textContent = '+ เพิ่มที่อยู่';
+        }
+      });
+    }
+
+    // Step 2 slip upload behaviour + client-side validation
+    const bankRadio = document.getElementById('bank_transfer');
+    const codRadio = document.getElementById('cod');
+    const slipContainer = document.getElementById('slipUploadContainer');
+    const slipInput = document.getElementById('slipFileInput');
+    const fileNameDisplay = document.getElementById('fileNameDisplay');
+    const slipError = document.getElementById('slipError');
+    const step2Form = document.getElementById('step2Form');
+
+    function toggleSlip(){
+      if(bankRadio && bankRadio.checked){ slipContainer.style.display='block'; slipInput.setAttribute('data-required','1'); }
+      else if(slipContainer){ slipContainer.style.display='none'; slipInput.removeAttribute('data-required'); slipInput.value=''; if(fileNameDisplay) fileNameDisplay.textContent=''; slipError.style.display='none'; }
+    }
+
+    if(bankRadio){ bankRadio.addEventListener('change', toggleSlip); }
+    if(codRadio){ codRadio.addEventListener('change', toggleSlip); }
+    if(slipInput){ slipInput.addEventListener('change', function(){ if(this.files && this.files.length>0){ fileNameDisplay.textContent = 'ไฟล์ที่เลือก: '+ this.files[0].name; slipError.style.display='none'; } else { fileNameDisplay.textContent=''; } }); }
+    try{ toggleSlip(); }catch(e){}
+
+    if(step2Form){
+      step2Form.addEventListener('submit', function(e){
+        // client-side require slip when bank transfer selected
+        const pay = document.querySelector('input[name="payment_method"]:checked');
+        if(!pay){
+          e.preventDefault();
+          alert('กรุณาเลือกวิธีการชำระเงิน');
+          return;
+        }
+        if(pay.value === 'bank_transfer'){
+          // check slipInput has file
+          if(!slipInput || !slipInput.files || slipInput.files.length === 0){
+            e.preventDefault();
+            slipError.style.display = 'block';
+            slipError.textContent = 'กรุณาแนบสลิปการโอนเงิน';
+            // scroll into view
+            slipError.scrollIntoView({behavior:'smooth', block:'center'});
+            return;
+          }
+        }
+        // otherwise allow submit to server
+      });
+    }
+
+  })();
+</script>
+
+{% endblock %}

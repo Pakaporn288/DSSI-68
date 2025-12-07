@@ -151,3 +151,36 @@ class OrderItem(models.Model):
 
     def get_total(self):
         return self.quantity * self.price
+    
+class ChatRoom(models.Model):
+    """ห้องแชทระหว่างลูกค้ากับผู้ประกอบการ"""
+    customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer_chatrooms')
+    entrepreneur = models.ForeignKey('Entrepreneur', on_delete=models.CASCADE, related_name='entrepreneur_chatrooms')
+    
+    # อาจจะเพิ่ม 'order' field เพื่อผูกกับ Order ใด Order หนึ่งโดยเฉพาะ
+
+    class Meta:
+        unique_together = ('customer', 'entrepreneur')
+
+    def __str__(self):
+        return f"Chat between {self.customer.username} and {self.entrepreneur.store_name}"
+
+    # --- ส่วนที่เพิ่มเข้ามา เพื่อให้หน้า Chat List ดึงข้อความล่าสุดได้ถูกต้อง ---
+    @property
+    def last_message(self):
+        """ดึงข้อความล่าสุดของห้องนี้"""
+        return self.messages.order_by('-id').first()
+    # -------------------------------------------------------------
+
+class ChatMessage(models.Model):
+    """ข้อความในห้องแชท"""
+    room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    message = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+    
+    class Meta:
+        ordering = ['timestamp']
+        
+    def __str__(self):
+        return f"{self.sender.username}: {self.message[:50]}"

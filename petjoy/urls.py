@@ -26,6 +26,7 @@ urlpatterns = [
     path('cart/add/', views.add_to_cart, name='cart-add'), 
     path('cart/remove/<int:item_id>/', views.remove_from_cart, name='remove-from-cart'),
     path('cart/update/', views.update_cart, name='update-cart'),
+    path('checkout/', views.checkout_view, name='checkout'),
     # alias with underscore because some templates use 'favorites_list'
     path('favorites/', views.favorites_list, name='favorites_list'),
     path('favorites/toggle/', views.toggle_favorite, name='favorites-toggle'),
@@ -49,10 +50,19 @@ urlpatterns = [
     path('orders/', views.orders_list, name="orders-list"),
     path('orders/<int:order_id>/', views.orders_detail, name="orders-detail"),
     path('orders/<int:order_id>/update-status/', views.update_order_status, name="update-order-status"),
-    path('entrepreneur/product/<int:pk>/',EntrepreneurProductDetailView.as_view(),name="entrepreneur-product-detail"
-),
-
-
-
+    path('entrepreneur/product/<int:pk>/',EntrepreneurProductDetailView.as_view(),name="entrepreneur-product-detail"),
+    path("order-history/", views.order_history, name="order_history"),
+    path("order/detail/<int:order_id>/", views.order_detail_customer, name="order-detail-customer"),
+    path('orders/history/', views.order_history, name="order_history"),
+    path('orders/history/<int:order_id>/', views.order_detail_customer, name="order_detail_customer"),
+    path('orders/', views.orders_list, name="orders-list"), 
+    path('chat/', views.chat_list, name='chat_list'),
+    path('chat/start/<int:entrepreneur_id>/', views.start_chat_view, name='start_chat'),
+    path('chat/room/<int:room_id>/', views.chat_room, name='chat_room'), 
 
 ]
+
+
+
+
+

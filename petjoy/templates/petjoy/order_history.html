@@ -1,0 +1,214 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+{% load humanize %}
+{% block title %}ประวัติการสั่งซื้อ{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'profile_new.css' %}">
+
+<style>
+    /* Global Styles for Layout */
+    .profile-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+    }
+    .profile-sidebar-card {
+        width: 260px;
+        background: #ffffff;
+        padding: 20px;
+        border-radius: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        height: fit-content;
+    }
+    .profile-main-card {
+        flex: 1;
+        background: #fff;
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .section-title {
+        font-size: 1.8rem;
+        margin-bottom: 25px;
+        font-weight: 800;
+        color: #333;
+        border-bottom: 2px solid #ff8c00;
+        padding-bottom: 10px;
+    }
+
+    /* Order Card Styles */
+    .order-card {
+        border-radius: 12px;
+        padding: 20px;
+        background: #ffffff;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+        /* ⭐ NEW GRID LAYOUT: ข้อมูลหลัก, สถานะ, ราคา ⭐ */
+        display: grid;
+        grid-template-columns: 2fr 1.5fr 1fr;
+        grid-template-areas:
+            "info status total"
+            "items items items"
+            ". . action"; 
+        align-items: start;
+        transition: 0.3s ease;
+        border: 1px solid #eee;
+    }
+    .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-color: #ff8c0055;
+    }
+    
+    /* Grid Areas */
+    .order-info { grid-area: info; }
+    .order-status-wrapper { grid-area: status; text-align: center; }
+    .order-total-wrapper { grid-area: total; text-align: right; }
+    .order-items-summary { 
+        grid-area: items; 
+        padding: 10px 0;
+        margin-top: 10px;
+        border-top: 1px dashed #eee;
+        border-bottom: 1px dashed #eee;
+        font-size: 0.9rem;
+        color: #555;
+    }
+    .order-actions { grid-area: action; text-align: right; margin-top: 10px; }
+
+    /* Info Styles */
+    .order-info strong {
+        color: #333;
+        font-size: 1.1rem;
+        display: block;
+        margin-bottom: 5px;
+    }
+    .order-shop {
+        font-size: 0.95rem;
+        color: #555;
+    }
+    .order-total {
+        font-size: 1.4rem; /* ใหญ่ขึ้น */
+        font-weight: 700;
+        color: #ff8c00; /* สีส้ม */
+    }
+
+    /* Status Badge Styles (เดิม) */
+    .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        color: white;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        display: inline-block;
+        min-width: 100px;
+    }
+    .status-waiting { background: #FFA726; }
+    .status-paid { background: #4CAF50; } 
+    .status-preparing { background: #1976D2; }
+    .status-delivering { background: #33a7d2; }
+    .status-success { background: #2E7D32; }
+    .status-other { background: #757575; }
+
+    /* ⭐ ปรับปรุงปุ่มดูรายละเอียด ⭐ */
+    .btn-detail {
+        background: #ff8c00;
+        color: white;
+        border: none;
+        padding: 10px 15px; 
+        border-radius: 8px; 
+        text-decoration: none;
+        font-weight: 700; 
+        transition: background-color 0.2s, transform 0.1s;
+        display: inline-block; /* เปลี่ยนเป็น inline-block เพื่อให้จัดการง่าย */
+        text-align: center;
+        font-size: 0.95rem; 
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        min-width: 120px; 
+    }
+    .btn-detail:hover {
+        background: #e57e00;
+        transform: translateY(-1px);
+    }
+</style>
+
+<div class="profile-container">
+
+    <aside class="profile-sidebar-card">
+        <div class="sidebar-user-box">
+            {% if user.profile.image %}
+                <img src="{{ user.profile.image.url }}" class="sidebar-profile-image">
+            {% else %}
+                <img src="{% static 'images/อินแล้ว.jpg' %}" class="sidebar-profile-image">
+            {% endif %}
+            <h3>{{ user.get_full_name|default:user.username }}</h3>
+            <p class="sidebar-email">{{ user.email }}</p>
+        </div>
+
+        <nav class="sidebar-menu">
+            <a href="{% url 'petjoy:profile' %}" class="menu-item">ข้อมูลส่วนตัว</a>
+            <a href="{% url 'petjoy:address_list' %}" class="menu-item">ที่อยู่</a>
+            <a href="{% url 'petjoy:chat_list' %}" class="menu-item">ข้อความ</a>
+            <a href="{% url 'petjoy:order_history' %}" class="menu-item active">ประวัติคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:favorites_list' %}" class="menu-item">รายการโปรด</a>
+
+            <form action="{% url 'petjoy:logout' %}" method="post">
+                {% csrf_token %}
+                <button class="logout-btn">ออกจากระบบ</button>
+            </form>
+        </nav>
+    </aside>
+
+    <section class="profile-main-card">
+        <h2 class="section-title">ประวัติคำสั่งซื้อของคุณ</h2>
+
+        <div class="order-list">
+
+            {% for order in orders %}
+            <div class="order-card">
+
+                <div class="order-info">
+                    <div class="order-total">
+                        ฿{{ order.total_price|floatformat:2|intcomma }}
+                    </div>
+                    <p class="order-shop">ยอดรวมคำสั่งซื้อ #{{ order.id }}</p>
+                </div>
+                
+                <div class="order-status-wrapper">
+                    <span class="status-badge status-{{ order.status }}">
+                        {{ order.get_status_display }}
+                    </span>
+                </div>
+
+                <div class="order-total-wrapper">
+                    <strong>ร้าน: {{ order.entrepreneur.store_name }}</strong>
+                    <p class="order-shop">สั่งเมื่อ: {{ order.created_at|date:"d M Y H:i" }}</p> 
+                </div>
+
+                <div class="order-items-summary">
+                    สินค้า: 
+                    {% with order.items.all|slice:":3" as limited_items %}
+                        {% for item in limited_items %}
+                            {{ item.product.name }} (x{{ item.quantity }}){% if not forloop.last %}, {% else %}{% if order.items.count > 3 %}...{% endif %}{% endif %}
+                        {% empty %}
+                            ไม่มีรายการสินค้า
+                        {% endfor %}
+                    {% endwith %}
+                </div>
+
+                <div class="order-actions">
+                    <a href="{% url 'petjoy:order_detail_customer' order.id %}" class="btn-detail">ดูรายละเอียด</a>
+                </div>
+
+            </div>
+            {% empty %}
+                <p>ยังไม่มีประวัติการสั่งซื้อ</p>
+            {% endfor %}
+        </div>
+
+    </section>
+</div>
+
+{% endblock %}

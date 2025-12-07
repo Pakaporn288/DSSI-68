@@ -5,7 +5,45 @@
 
 {% block content %}
 <style>
+    /* ซ่อน Navbar ในหน้า Auth */
     .navbar { display: none !important; }
+    
+    /* สไตล์สำหรับฟอร์มหลายขั้นตอน */
+    .form-step {
+        display: none; /* ซ่อนทุก Step ยกเว้นอันแรก */
+    }
+    .form-step.active {
+        display: block; /* แสดง Step ที่ Active */
+    }
+    .form-section-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-top: 20px;
+        margin-bottom: 10px;
+        color: #333;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 5px;
+    }
+    .form-actions {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+    .form-actions button {
+        flex-grow: 1;
+        margin: 0 5px;
+    }
+    /* สไตล์ปุ่มเดิม */
+    .auth-button { /* สไตล์ปุ่ม submit เดิม */ } 
+    .back-button {
+        background-color: #ccc;
+        color: #333;
+        border: none;
+        padding: 10px 15px;
+        cursor: pointer;
+        border-radius: 4px;
+        font-weight: 600;
+    }
 </style>
 <div class="auth-page-wrapper">
     <div class="auth-left-panel">
@@ -13,48 +51,184 @@
     </div>
     <div class="auth-right-panel">
         <div class="auth-form-container">
-            <h2 class="auth-title">สมัครเป็นผู้ประกอบการ</h2>
-            <form method="POST">
+            <h2 class="auth-title">สมัครเป็นผู้ประกอบการ </h2>
+            
+            <form method="POST" id="multi-step-form" enctype="multipart/form-data"> 
                 {% csrf_token %}
-                <div class="form-field">
-                    <label for="id_name">ชื่อร้าน/บริษัท</label>
-                    <input type="text" name="store_name" id="id_name" required>
+
+                <div class="form-step active" id="step-1">
+                    <div class="form-section-title">1. ข้อมูลร้านค้าและที่อยู่</div>
+                    <div class="form-field">
+                        <label for="id_name">ชื่อร้าน/บริษัท</label>
+                        <input type="text" name="store_name" id="id_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_owner">ชื่อผู้ประกอบการ</label>
+                        <input type="text" name="owner_name" id="id_owner" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_tax_id">เลขประจำตัวผู้เสียภาษี</label>
+                        <input type="text" name="tax_id" id="id_tax_id">
+                    </div>
+                    
+                    <div class="form-field">
+                        <label for="id_email">อีเมล</label>
+                        <input type="email" name="email" id="id_email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
+                    </div>
+                    <div class="form-field">
+                        <label for="id_phone">เบอร์โทรศัพท์ (เบอร์เดิมที่ใช้ติดต่อ)</label>
+                        <input type="text" name="phone" id="id_phone" required>
+                    </div>
+
+                    <div class="form-field">
+                        <label for="id_shop_address">ที่อยู่ร้านโดยละเอียด</label>
+                        <textarea name="shop_address" id="id_shop_address" rows="3" required></textarea>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="auth-button" onclick="nextStep(1)">ถัดไป</button>
+                    </div>
                 </div>
-                <div class="form-field">
-                    <label for="id_owner">ชื่อผู้ประกอบการ</label>
-                    <input type="text" name="owner_name" id="id_owner" required>
+
+                <div class="form-step" id="step-2">
+                    <div class="form-section-title">2. เอกสารและบัญชีธนาคาร</div>
+
+                    <div class="form-section-title" style="margin-top: 0;">ข้อมูลบัญชีธนาคาร</div>
+                    <div class="form-field">
+                        <label for="id_bank_name">ชื่อธนาคาร</label>
+                        <input type="text" name="bank_name" id="id_bank_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_account_name">ชื่อบัญชี</label>
+                        <input type="text" name="account_name" id="id_account_name" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_account_number">เลขที่บัญชี</label>
+                        <input type="text" name="account_number" id="id_account_number" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_bank_book_copy">สำเนาหน้าสมุดบัญชี (ภาพ)</label>
+                        <input type="file" name="bank_book_copy" id="id_bank_book_copy" accept="image/*" required>
+                    </div>
+
+                    <div class="form-section-title">เอกสารยืนยันตัวตน</div>
+                    <div class="form-field">
+                        <label for="id_id_card_copy">สำเนาบัตรประจำตัวประชาชน (ภาพ)</label>
+                        <input type="file" name="id_card_copy" id="id_id_card_copy" accept="image/*" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_commerce_doc">เอกสารประกอบการค้า (ภาพ)</label>
+                        <input type="file" name="commerce_doc" id="id_commerce_doc" accept="image/*" required>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="button" class="back-button" onclick="prevStep(2)">ย้อนกลับ</button>
+                        {% if not user.is_authenticated %}
+                        <button type="button" class="auth-button" onclick="nextStep(2)">ถัดไป</button>
+                        {% else %}
+                        <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="form-field">
-                    <label for="id_email">อีเมล</label>
-                    <input type="email" name="email" id="id_email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}">
-                </div>
-                <div class="form-field">
-                    <label for="id_phone">เบอร์โทรศัพท์</label>
-                    <input type="text" name="phone" id="id_phone" required>
-                </div>
+
                 {% if not user.is_authenticated %}
-                <div class="form-field">
-                    <label for="id_username">ชื่อผู้ใช้ (จะใช้เข้าสู่ระบบ)</label>
-                    <input type="text" name="username" id="id_username" required>
+                <div class="form-step" id="step-3">
+                    <div class="form-section-title">3. บัญชีผู้ใช้สำหรับเข้าสู่ระบบ</div>
+                    <div class="form-field">
+                        <label for="id_username">ชื่อผู้ใช้ (จะใช้เข้าสู่ระบบ)</label>
+                        <input type="text" name="username" id="id_username" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_password">รหัสผ่าน</label>
+                        <input type="password" name="password" id="id_password" required>
+                    </div>
+                    <div class="form-field">
+                        <label for="id_password2">ยืนยันรหัสผ่าน</label>
+                        <input type="password" name="password2" id="id_password2" required>
+                    </div>
+                    <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">ยังไม่มีบัญชี? กรอกข้อมูลชื่อผู้ใช้และรหัสผ่านที่ต้องการ ระบบจะสร้างบัญชีให้และผูกกับร้านของคุณ</div>
+
+                    <div class="form-actions">
+                        <button type="button" class="back-button" onclick="prevStep(3)">ย้อนกลับ</button>
+                        <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
+                    </div>
                 </div>
-                <div class="form-field">
-                    <label for="id_password">รหัสผ่าน</label>
-                    <input type="password" name="password" id="id_password" required>
-                </div>
-                <div class="form-field">
-                    <label for="id_password2">ยืนยันรหัสผ่าน</label>
-                    <input type="password" name="password2" id="id_password2" required>
-                </div>
-                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">ยังไม่มีบัญชี? กรอกข้อมูลชื่อผู้ใช้และรหัสผ่านที่ต้องการ ระบบจะสร้างบัญชีให้และผูกกับร้านของคุณ</div>
-                {% else %}
-                <div class="note" style="font-size:0.95rem;color:#555;margin-bottom:8px;">คุณล็อกอินอยู่แล้ว ร้านจะถูกผูกกับบัญชีนี้</div>
                 {% endif %}
-                <button class="auth-button" type="submit">สมัครเป็นผู้ประกอบการ</button>
-            </form>
+                </form>
             <div class="auth-links">
                 <p>มีบัญชีผู้ประกอบการอยู่แล้ว? <a href="{% url 'petjoy:login' %}" class="white-btn">เข้าสู่ระบบ</a></p>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    // **********************************************
+    // JAVASCRIPT LOGIC สำหรับ Multi-step Form
+    // **********************************************
+    let currentStep = 1;
+    // ตรวจสอบว่ามี Step 3 หรือไม่ (ขึ้นอยู่กับสถานะการล็อกอิน)
+    const totalSteps = {% if user.is_authenticated %} 2 {% else %} 3 {% endif %};
+    
+    document.getElementById('current-step-num').textContent = currentStep;
+
+    function updateStep() {
+        // ซ่อนทุก Step
+        document.querySelectorAll('.form-step').forEach(step => {
+            step.classList.remove('active');
+        });
+        
+        // แสดง Step ปัจจุบัน
+        const activeStep = document.getElementById(`step-${currentStep}`);
+        if (activeStep) {
+            activeStep.classList.add('active');
+        }
+        
+        // อัปเดตตัวเลข Step ในหัวข้อ
+        document.getElementById('current-step-num').textContent = currentStep;
+    }
+
+    // ฟังก์ชันตรวจสอบความถูกต้อง (พื้นฐาน) สำหรับ Step ก่อนไปต่อ
+    function validateStep(step) {
+        let isValid = true;
+        const currentStepEl = document.getElementById(`step-${step}`);
+        const requiredFields = currentStepEl.querySelectorAll('[required]');
+        
+        requiredFields.forEach(field => {
+            // ตรวจสอบว่า Field มีค่าหรือไม่ (ใช้ .value สำหรับ text/email/number และ .files สำหรับ file)
+            let value = field.type === 'file' ? field.files.length : field.value.trim();
+            if (!value) {
+                isValid = false;
+                field.style.border = '1px solid red'; // เน้นช่องที่มีปัญหา
+            } else {
+                field.style.border = ''; // ล้างสไตล์
+            }
+        });
+
+        if (!isValid) {
+            alert('กรุณากรอกข้อมูลที่จำเป็นทั้งหมดในหน้านี้');
+        }
+        return isValid;
+    }
+
+    function nextStep(step) {
+        // 1. ตรวจสอบความถูกต้องของข้อมูลใน Step ปัจจุบัน
+        if (!validateStep(step)) {
+            return; // หยุดถ้าข้อมูลไม่ถูกต้อง
+        }
+
+        // 2. ไป Step ถัดไป
+        if (currentStep < totalSteps) {
+            currentStep++;
+            updateStep();
+        }
+    }
+
+    function prevStep(step) {
+        if (currentStep > 1) {
+            currentStep--;
+            updateStep();
+        }
+    }
+</script>
 {% endblock %}

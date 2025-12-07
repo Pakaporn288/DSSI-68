@@ -1,0 +1,40 @@
+{% load static %}
+
+<aside class="profile-sidebar-card">
+    <div class="sidebar-user-box">
+        {% if user.profile.image %}
+            <img src="{{ user.profile.image.url }}" class="sidebar-profile-image">
+        {% else %}
+            <img src="{% static 'images/อินแล้ว.jpg' %}" class="sidebar-profile-image">
+        {% endif %}
+        <h3>{{ user.get_full_name|default:user.username }}</h3>
+        <p class="sidebar-email">{{ user.email }}</p>
+    </div>
+
+    <nav class="sidebar-menu">
+        <a href="{% url 'petjoy:profile' %}" class="menu-item {% if active_menu == 'ข้อมูลส่วนตัว' %}active{% endif %}">
+            ข้อมูลส่วนตัว
+        </a>
+
+        <a href="{% url 'petjoy:address_list' %}" class="menu-item {% if active_menu == 'ที่อยู่' %}active{% endif %}">
+            ที่อยู่
+        </a>
+
+        <a href="{% url 'petjoy:chat_list' %}" class="menu-item {% if active_menu == 'ข้อความ' %}active{% endif %}">
+            ข้อความ
+        </a>
+
+        <a href="{% url 'petjoy:order_history' %}" class="menu-item {% if active_menu == 'ประวัติการสั่งซื้อ' %}active{% endif %}">
+            ประวัติการสั่งซื้อ
+        </a>
+
+        <a href="{% url 'petjoy:favorites_list' %}" class="menu-item {% if active_menu == 'รายการโปรด' %}active{% endif %}">
+            รายการโปรด
+        </a>
+
+        <form action="{% url 'petjoy:logout' %}" method="post" class="logout-form">
+            {% csrf_token %}
+            <button class="logout-btn">ออกจากระบบ</button>
+        </form>
+    </nav>
+</aside>

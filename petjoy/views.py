@@ -21,8 +21,12 @@ from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Address
 from django.utils.decorators import method_decorator
-from django.contrib.auth import update_session_auth_hash
 from .models import Order, OrderItem
+from django.db import transaction
+from django.forms import Form
+from django.shortcuts import get_object_or_404
+from .models import Order, OrderItem, ChatRoom, ChatMessage 
+
 
 logger = logging.getLogger(__name__)
 
@@ -144,6 +148,14 @@ def update_cart(request):
 
     return redirect("petjoy:cart-detail")
 
+@login_required
+def order_detail_customer(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.items.all()
+    return render(request, "petjoy/order_detail_customer.html", {
+        "order": order,
+        "items": items
+    })
 
 @login_required(login_url='petjoy:login')
 def cart_detail(request):
@@ -159,6 +171,205 @@ def cart_detail(request):
         "total_price": total_price,
         "total_items": total_items  # NEW
     })
+
+@login_required
+def order_history(request):
+    # เอาที่อยู่ทั้งหมดของ user
+    user_addresses = Address.objects.filter(user=request.user)
+
+    # เตรียม list สำหรับ match ตามชื่อ + เบอร์โทร
+    name_phone_pairs = []
+    for a in user_addresses:
+        name_phone_pairs.append((a.full_name, a.phone))
+
+    # หา orders ที่มีชื่อและเบอร์ตรงกันกับ address ของ user
+    from django.db.models import Q
+
+    q = Q()
+    for name, phone in name_phone_pairs:
+        # ใช้ Q เพื่อรวมเงื่อนไข OR
+        q |= (Q(customer_name=name) & Q(customer_phone=phone))
+
+    orders = Order.objects.filter(q).order_by("-id")
+
+    return render(request, "petjoy/order_history.html", {
+        "orders": orders
+    })
+
+
+@login_required(login_url='petjoy:login')
+def checkout_view(request):
+    # Step 1: ดึงข้อมูลสินค้าที่เลือกจากตะกร้า (GET)
+    if request.method == 'GET' and 'selected_items' in request.GET:
+        selected_item_ids = request.GET.getlist('selected_items')
+        
+        if not selected_item_ids:
+            messages.error(request, 'กรุณาเลือกสินค้าที่ต้องการสั่งซื้อ')
+            return redirect('petjoy:cart-detail')
+
+        cart_items = CartItem.objects.filter(id__in=selected_item_ids, user=request.user)
+        if not cart_items.exists():
+            messages.error(request, 'ไม่พบสินค้าที่เลือกในตะกร้าของคุณ')
+            return redirect('petjoy:cart-detail')
+
+        total_price = sum(item.total_price for item in cart_items)
+
+        addresses = Address.objects.filter(user=request.user).order_by('-is_default')
+        if not addresses.exists():
+            messages.warning(request, 'กรุณาเพิ่มที่อยู่จัดส่งก่อนดำเนินการสั่งซื้อ')
+            return redirect('petjoy:address_add')
+
+        # แยกสินค้าเป็นร้าน ๆ
+        items_by_entrepreneur = {}
+        for item in cart_items:
+            owner = item.product.owner
+            if owner:
+                items_by_entrepreneur.setdefault(owner, []).append(item)
+
+        # เก็บข้อมูลใน session
+        request.session['checkout_items_data'] = {
+            'item_ids': [str(x) for x in selected_item_ids],
+            'total_price': float(total_price),
+        }
+
+        return render(request, 'petjoy/checkout.html', {
+            'step': 1,
+            'items_by_entrepreneur': items_by_entrepreneur,
+            'total_price': total_price,
+            'addresses': addresses,
+            'selected_item_ids_str': ','.join(selected_item_ids)
+        })
+
+    # Step 2: เลือกวิธีชำระเงิน (POST)
+    if request.method == 'POST' and request.POST.get('checkout_step') == '1':
+        address_id = request.POST.get('address_id')
+        selected_item_ids_str = request.POST.get('selected_item_ids_str') or ''
+
+        if not address_id or not selected_item_ids_str:
+            messages.error(request, 'ข้อมูลไม่สมบูรณ์ หรือ Session หมดอายุ')
+            return redirect('petjoy:cart-detail')
+
+        address = get_object_or_404(Address, id=address_id, user=request.user)
+
+        checkout_data = request.session.get('checkout_items_data')
+        if not checkout_data:
+            messages.error(request, 'Session หมดอายุ กรุณารีเฟรชตะกร้าและเริ่มใหม่')
+            return redirect('petjoy:cart-detail')
+
+        # ตรวจสอบความตรงกันของสินค้า
+        if set(map(str, checkout_data.get('item_ids', []))) != set(map(str, selected_item_ids_str.split(','))):
+            messages.error(request, 'เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อ')
+            return redirect('petjoy:cart-detail')
+
+        # เก็บที่อยู่ไว้ใน session
+        request.session['checkout_address_id'] = address_id
+
+        # ดึงสินค้าใหม่อีกรอบ
+        item_ids = selected_item_ids_str.split(',')
+        cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
+
+        items_by_entrepreneur = {}
+        for item in cart_items:
+            owner = item.product.owner
+            if owner:
+                items_by_entrepreneur.setdefault(owner, []).append(item)
+
+        return render(request, 'petjoy/checkout.html', {
+            'step': 2,
+            'total_price': checkout_data['total_price'],
+            'address': address,
+            'items_by_entrepreneur': items_by_entrepreneur,
+        })
+
+    # Step 3: Confirm ชำระเงิน และสร้าง Order
+    if request.method == 'POST' and request.POST.get('checkout_step') == '2':
+
+        payment_method = request.POST.get('payment_method')
+        payment_slip = request.FILES.get('payment_slip')
+
+        if not payment_method:
+            messages.error(request, 'กรุณาเลือกวิธีการชำระเงิน')
+            return redirect('petjoy:cart-detail')
+
+        if payment_method == 'bank_transfer' and not payment_slip:
+            messages.error(request, 'กรุณาแนบสลิปการโอนเงิน')
+            return redirect('petjoy:cart-detail')
+
+        # ดึงข้อมูลจาก session
+        address_id = request.session.get('checkout_address_id')
+        item_ids = request.session.get('checkout_items_data', {}).get('item_ids')
+        total_price_raw = request.session.get('checkout_items_data', {}).get('total_price')
+
+        if not address_id or not item_ids or not total_price_raw:
+            messages.error(request, 'Session หมดอายุ กรุณาเริ่มใหม่')
+            return redirect('petjoy:cart-detail')
+
+        address = get_object_or_404(Address, id=address_id, user=request.user)
+        cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
+
+        if not cart_items.exists():
+            messages.error(request, 'ไม่พบสินค้าในตะกร้าที่เลือก')
+            return redirect('petjoy:cart-detail')
+
+        with transaction.atomic():
+
+            # แยกร้านค้า
+            items_by_entrepreneur = {}
+            for item in cart_items:
+                owner = item.product.owner
+                if owner:
+                    items_by_entrepreneur.setdefault(owner, []).append(item)
+
+            created_orders = []
+
+            for entrepreneur, items in items_by_entrepreneur.items():
+
+                shop_total_price = sum(item.total_price for item in items)
+
+                # ✅ สถานะ: ถ้าโอนเงิน (พร้อมสลิป) ให้เป็น 'paid' ไม่อย่างนั้นเป็น 'waiting'
+                if payment_method == 'bank_transfer':
+                    order_status = 'paid'
+                else:
+                    order_status = 'waiting' # COD หรือรอโอน (หากไม่มีสลิป)
+
+                # สร้าง order
+                order = Order.objects.create(
+                    entrepreneur=entrepreneur,
+                    customer_name=address.full_name,
+                    customer_phone=address.phone,
+                    customer_address=f"{address.address_line} {address.subdistrict} {address.district} {address.province} {address.zipcode}",
+                    total_price=shop_total_price,
+                    status=order_status,
+                )
+
+                # สร้าง order item
+                for cart_item in items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=cart_item.product,
+                        quantity=cart_item.quantity,
+                        price=cart_item.product.price
+                    )
+
+                created_orders.append(order)
+
+            # ลบสินค้าออกจากตะกร้า
+            cart_items.delete()
+
+            # เคลียร์ session
+            request.session.pop('checkout_items_data', None)
+            request.session.pop('checkout_address_id', None)
+
+        return render(request, 'petjoy/checkout.html', {
+            'step': 3,
+            'orders': created_orders,
+            'total_price': total_price_raw,
+            'address': address
+        })
+
+    # Default fallback
+    messages.error(request, 'กรุณาเลือกสินค้าที่ต้องการสั่งซื้อจากตะกร้า')
+    return redirect('petjoy:cart-detail')
 
 @login_required
 def entrepreneur_profile_edit_home(request):
@@ -306,7 +517,47 @@ def address_list(request):
 
 
 def address_add(request):
+    """
+    รองรับทั้งแบบหน้าเต็ม (POST form) และ AJAX (JSON) สำหรับเพิ่มที่อยู่
+    AJAX: รับ JSON POST, ตอบกลับเป็น JSON { success: True, address: {...} }
+    """
     if request.method == "POST":
+        # ถ้ามาเป็น JSON/AJAX
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest' or request.content_type == 'application/json':
+            try:
+                payload = json.loads(request.body.decode('utf-8'))
+            except Exception:
+                return JsonResponse({'success': False, 'error': 'Invalid JSON'}, status=400)
+            # basic validation
+            required = ['full_name', 'phone', 'address_line', 'subdistrict', 'district', 'province']
+            if not all(payload.get(k) for k in required):
+                return JsonResponse({'success': False, 'error': 'กรุณากรอกข้อมูลให้ครบถ้วน'}, status=400)
+            # create address
+            addr = Address.objects.create(
+                user=request.user,
+                full_name=payload.get('full_name'),
+                phone=payload.get('phone'),
+                address_line=payload.get('address_line'),
+                subdistrict=payload.get('subdistrict'),
+                district=payload.get('district'),
+                province=payload.get('province'),
+                zipcode=payload.get('zipcode') or ''
+            )
+            return JsonResponse({
+                'success': True,
+                'address': {
+                    'id': addr.id,
+                    'full_name': addr.full_name,
+                    'phone': addr.phone,
+                    'address_line': addr.address_line,
+                    'subdistrict': addr.subdistrict,
+                    'district': addr.district,
+                    'province': addr.province,
+                    'zipcode': addr.zipcode,
+                    'is_default': addr.is_default,
+                }
+            })
+        # ถ้ามาเป็น form submit ปกติ (ไม่ถูกปรับ)
         Address.objects.create(
             user=request.user,
             full_name=request.POST['full_name'],
@@ -315,10 +566,11 @@ def address_add(request):
             subdistrict=request.POST['subdistrict'],
             district=request.POST['district'],
             province=request.POST['province'],
-            zipcode=request.POST['zipcode'],
+            zipcode=request.POST.get('zipcode',''),
         )
         return redirect('petjoy:address_list')
 
+    # GET -> แสดงฟอร์ม (ปกติ)
     return render(request, 'petjoy/address_form.html')
 
 
@@ -862,3 +1114,77 @@ def update_order_status(request, order_id):
         return redirect("petjoy:orders-detail", order_id=order_id)
 
     return redirect("petjoy:orders-list")
+
+@login_required
+def chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมด"""
+    
+    # 1. ดึงห้องแชทที่ User เกี่ยวข้อง (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
+    rooms = ChatRoom.objects.filter(
+        Q(customer=request.user) | 
+        Q(entrepreneur__user=request.user)
+    ).distinct().order_by('-id') # เรียงตามห้องล่าสุด
+    
+    # 2. ส่งข้อมูลไปที่ Template เลย 
+    # (ห้ามมี Loop for room in rooms: room.last_message = ... เด็ดขาด!)
+    return render(request, 'petjoy/chat_list.html', {
+        'rooms': rooms
+    })
+
+
+
+@login_required
+def start_chat_view(request, entrepreneur_id):
+    """ฟังก์ชันสำหรับเริ่มแชท (กดปุ่ม 'แชทเลย' จากหน้าสินค้า)"""
+    from .models import Entrepreneur # import เฉพาะจุดเพื่อเลี่ยง circular import
+    
+    # 1. หาผู้ประกอบการเป้าหมาย
+    entrepreneur = get_object_or_404(Entrepreneur, id=entrepreneur_id)
+    
+    # 2. ป้องกันไม่ให้แชทกับตัวเอง (กรณี Login เป็นเจ้าของร้านนั้นอยู่)
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur.id == entrepreneur_id:
+        messages.error(request, "คุณไม่สามารถแชทกับร้านค้าของตัวเองได้")
+        return redirect('petjoy:homepage') # หรือ redirect กลับไปหน้าเดิม
+
+    # 3. หาห้องแชทเดิม หรือ สร้างใหม่ถ้ายังไม่มี
+    room, created = ChatRoom.objects.get_or_create(
+        customer=request.user,
+        entrepreneur=entrepreneur
+    )
+    
+    # 4. ส่งไปที่หน้าห้องแชท
+    return redirect('petjoy:chat_room', room_id=room.id)
+
+
+@login_required
+def chat_room(request, room_id):
+    """ฟังก์ชันแสดงหน้าห้องแชท"""
+    room = get_object_or_404(ChatRoom, id=room_id)
+    
+    # 1. ตรวจสอบสิทธิ์ว่า user นี้เกี่ยวข้องกับห้องนี้จริงไหม (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
+    is_customer = (request.user == room.customer)
+    is_entrepreneur = (hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur)
+    
+    if not (is_customer or is_entrepreneur):
+        messages.error(request, "คุณไม่มีสิทธิ์เข้าถึงห้องแชทนี้")
+        return redirect('petjoy:homepage')
+
+    # 2. จัดการการส่งข้อความ (POST)
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if message_text:
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text
+            )
+        return redirect('petjoy:chat_room', room_id=room.id)
+
+    # 3. ดึงข้อความเก่ามาแสดง
+    messages_list = room.messages.all().order_by('id')
+    
+    return render(request, 'petjoy/chat_room.html', {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user
+    })

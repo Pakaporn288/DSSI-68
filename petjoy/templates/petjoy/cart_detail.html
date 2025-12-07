@@ -202,7 +202,16 @@ document.getElementById("checkoutForm").addEventListener("submit", function(e) {
         return;
     }
 
-    alert("เลือกสินค้าเรียบร้อย!");
+    // ⭐⭐ แก้ไขส่วนนี้: เปลี่ยนจากการ alert เป็นการ Redirect ⭐⭐
+    const checkoutUrl = "{% url 'petjoy:checkout' %}";
+    const params = new URLSearchParams();
+    
+    selected.forEach(id => {
+        params.append('selected_items', id);
+    });
+
+    // ส่งไปยังหน้า Checkout
+    window.location.href = checkoutUrl + '?' + params.toString();
 });
 </script>
 

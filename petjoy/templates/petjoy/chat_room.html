@@ -1,0 +1,181 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block title %}ห้องแชท - PetJoy{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'profile_new.css' %}">
+
+<style>
+    .chat-layout {
+        display: flex;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+        padding: 0 20px;
+    }
+
+    .chat-main-card {
+        flex: 1;
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        display: flex;
+        flex-direction: column;
+        height: 600px; /* กำหนดความสูงเพื่อให้ Scroll ได้ */
+    }
+
+    .chat-header {
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .chat-title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .back-link {
+        color: #666;
+        text-decoration: none;
+        font-size: 0.9rem;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ส่วนแสดงข้อความ */
+    .messages-area {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .message-bubble {
+        max-width: 70%;
+        padding: 10px 15px;
+        border-radius: 12px;
+        position: relative;
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-wrap: break-word;
+    }
+
+    /* ข้อความของเรา (ขวา) */
+    .message-bubble.sent {
+        align-self: flex-end;
+        background-color: #ffb0bd; /* สีธีม PetJoy (ชมพู) */
+        color: #fff;
+        border-bottom-right-radius: 2px;
+    }
+
+    /* ข้อความของอีกฝ่าย (ซ้าย) */
+    .message-bubble.received {
+        align-self: flex-start;
+        background-color: #e0e0e0;
+        color: #333;
+        border-bottom-left-radius: 2px;
+    }
+
+    .message-time {
+        font-size: 0.7rem;
+        margin-top: 4px;
+        opacity: 0.8;
+        text-align: right;
+    }
+
+    /* ฟอร์มส่งข้อความ */
+    .chat-input-area {
+        display: flex;
+        gap: 10px;
+        padding-top: 10px;
+        border-top: 1px solid #eee;
+    }
+
+    .chat-input {
+        flex: 1;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 25px;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .chat-input:focus {
+        border-color: #ffb0bd;
+    }
+
+    .send-btn {
+        background-color: #ffb0bd;
+        color: white;
+        border: none;
+        padding: 0 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background-color 0.2s;
+    }
+    .send-btn:hover {
+        background-color: #ff8fa0;
+    }
+</style>
+
+<div class="chat-layout">
+    
+    {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
+
+    <div class="chat-main-card">
+        
+        <div class="chat-header">
+            <div class="chat-title">
+                {% if user == room.customer %}
+                    แชทกับร้าน: {{ room.entrepreneur.store_name }}
+                {% else %}
+                    แชทกับลูกค้า: {{ room.customer.username }}
+                {% endif %}
+            </div>
+            <a href="javascript:history.back()" class="back-link">❮ ย้อนกลับ</a>
+        </div>
+
+        <div class="messages-area" id="messagesArea">
+            {% for message in messages %}
+                <div class="message-bubble {% if message.sender == user %}sent{% else %}received{% endif %}">
+                    {{ message.message }}
+                    <div class="message-time">
+                        {% if message.timestamp %}
+                            {{ message.timestamp|date:"H:i" }}
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <p style="text-align:center; color:#999; margin-top:20px;">เริ่มการสนทนาได้เลย...</p>
+            {% endfor %}
+        </div>
+
+        <form method="post" class="chat-input-area">
+            {% csrf_token %}
+            <input type="text" name="message" class="chat-input" placeholder="พิมพ์ข้อความ..." required autocomplete="off">
+            <button type="submit" class="send-btn">ส่ง</button>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // สคริปต์เพื่อให้เลื่อนลงมาข้อความล่าสุดเสมอเมื่อโหลดหน้า
+    window.onload = function() {
+        var chatBox = document.getElementById("messagesArea");
+        chatBox.scrollTop = chatBox.scrollHeight;
+    };
+</script>
+
+{% endblock %}

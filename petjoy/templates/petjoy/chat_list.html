@@ -1,0 +1,116 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+{% block title %}ข้อความของคุณ{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{% static 'profile_new.css' %}">
+<style>
+    .chat-container {
+        display: flex;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+    }
+    .profile-main-card {
+        flex: 1;
+        background: #fff;
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .chat-item {
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        border-bottom: 1px solid #eee;
+        text-decoration: none;
+        color: #333;
+        transition: background-color 0.2s;
+    }
+    .chat-item:hover {
+        background-color: #f9f9f9;
+    }
+    .chat-info {
+        flex-grow: 1;
+        padding-left: 15px;
+    }
+    .chat-name {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+    .last-message {
+        font-size: 0.9rem;
+        color: #777;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-width: 90%;
+    }
+    .chat-date {
+        font-size: 0.8rem;
+        color: #aaa;
+    }
+    .chat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: #ff8c00;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.5rem;
+        overflow: hidden; /* เพิ่มเพื่อไม่ให้รูปเกินขอบวงกลม */
+        flex-shrink: 0;   /* ป้องกันวงกลมเบี้ยว */
+    }
+</style>
+
+<div class="chat-container">
+
+    {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
+
+    <section class="profile-main-card">
+        <h2 class="section-title">ข้อความ</h2>
+
+        {% for room in rooms %}
+            <a href="{% url 'petjoy:chat_room' room.id %}" class="chat-item">
+                <div class="chat-icon">
+                    {% if room.entrepreneur.profile_image %}
+                         <img src="{{ room.entrepreneur.profile_image.url }}" alt="Store Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                    {% else %}
+                        <span style="font-size: 1.2rem;">
+                            {% if room.entrepreneur.store_name|first %}
+                                {{ room.entrepreneur.store_name|first }}
+                            {% else %}
+                                💬
+                            {% endif %}
+                        </span>
+                    {% endif %}
+                </div>
+
+                <div class="chat-info">
+                    <div class="chat-name">
+                        ร้าน {{ room.entrepreneur.store_name }}
+                    </div>
+                    
+                    <p class="last-message">
+                        {% if room.last_message %}
+                            {{ room.last_message.message|truncatechars:50 }}
+                        {% else %}
+                            ยังไม่มีข้อความ
+                        {% endif %}
+                    </p>
+                </div>
+
+                {% if room.last_message %}
+                    <div class="chat-date">{{ room.last_message.timestamp|date:"H:i" }}</div>
+                {% endif %}
+            </a>
+        {% empty %}
+            <p>คุณยังไม่มีห้องแชทกับร้านค้าใด ๆ</p>
+            <p style="margin-top: 15px; color: #555;">สามารถเริ่มแชทได้จากหน้าสินค้ารายการใดก็ได้</p>
+        {% endfor %}
+
+    </section>
+</div>
+{% endblock %}

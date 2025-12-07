@@ -60,7 +60,11 @@
                             {% endif %}
                         </div>
                         <div class="store-buttons">
-                            <a href="#" class="store-btn chat-btn">แชทเลย</a>
+                            {% if user.is_authenticated %}
+                                <a href="{% url 'petjoy:start_chat' product.owner.pk %}" class="store-btn chat-btn">แชทเลย</a>
+                            {% else %}
+                                <a href="{% url 'petjoy:login' %}?next={% url 'petjoy:start_chat' product.owner.pk %}" class="store-btn chat-btn">แชทเลย</a>
+                            {% endif %}
                             {% if user.is_authenticated and user == product.owner.user %}
                                 <a href="{% url 'petjoy:entrepreneur-home' %}" class="store-btn view-store-btn">ดูร้านค้า</a>
                             {% else %}
