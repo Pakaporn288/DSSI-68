@@ -9,40 +9,63 @@
 <style>
     .navbar { display: none !important; }
 
-    /* ================================
-       ปุ่มจัดการสินค้า (สไตล์ใหม่ ไม่มีเส้นใต้)
-    ================================= */
+    .search-box {
+        background: white;
+        padding: 18px;
+        border-radius: 14px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+        margin-bottom: 20px;
+    }
+
+    .search-row {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+    }
+
+    .search-input, .category-select {
+        padding: 10px 14px;
+        border-radius: 10px;
+        border: 1px solid #ddd;
+        width: 100%;
+        font-size: 15px;
+    }
+
+    .search-btn {
+        background: #FF9800;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        transition: .2s;
+        white-space: nowrap;
+    }
+
+    .search-btn:hover { background: #F57C00; }
+
     .product-action-btn {
         display: inline-block;
         padding: 7px 14px;
         border-radius: 10px;
         font-size: 14px;
         font-weight: 700;
-        text-decoration: none !important;   /* ❗ สำคัญที่สุด */
+        text-decoration: none !important;
         border: none;
         cursor: pointer;
         transition: 0.2s ease-in-out;
     }
 
-    .btn-view {
-        background: #e3f2fd;
-        color: #1976D2;
-    }
+    .btn-view { background: #e3f2fd; color: #1976D2; }
     .btn-view:hover { background: #bbdefb; }
 
-    .btn-edit {
-        background: #FFD54F;
-        color: #5D4037;
-    }
+    .btn-edit { background: #FFD54F; color: #5D4037; }
     .btn-edit:hover { background: #FFCA28; }
 
-    .btn-delete {
-        background: #E53935;
-        color: white;
-    }
+    .btn-delete { background: #E53935; color: white; }
     .btn-delete:hover { background: #C62828; }
 </style>
-
 
 <div class="seller-layout">
 
@@ -97,6 +120,29 @@
         </section>
 
 
+        <!-- SEARCH BAR -->
+        <div class="search-box">
+            <form method="get" class="search-row">
+                
+                <input type="text" name="search" class="search-input"
+                       placeholder="🔍 ค้นหาชื่อสินค้า..."
+                       value="{{ request.GET.search }}">
+
+                <select name="category" class="category-select">
+                    <option value="">-- เลือกหมวดหมู่ --</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}"
+                                {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cat.display_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="search-btn">ค้นหา</button>
+            </form>
+        </div>
+
+
         <!-- TABLE -->
         <div style="overflow-x:auto;">
             <table class="product-table" 
@@ -118,7 +164,6 @@
                 {% for product in products %}
                     <tr style="border-bottom:1px solid #eee;">
 
-                        <!-- IMAGE -->
                         <td style="text-align:center;">
                             {% if product.image %}
                                 <img src="{{ product.image.url }}"
@@ -128,25 +173,20 @@
                             {% endif %}
                         </td>
 
-                        <!-- NAME -->
                         <td style="font-weight:bold; color:#E65100;">{{ product.name }}</td>
 
-                        <!-- PRICE -->
                         <td style="text-align:right; font-weight:700; color:#FF7043;">
                             {{ product.price }} บาท
                         </td>
 
-                        <!-- CATEGORY -->
                         <td style="text-align:center;">
                             {{ product.category.display_name }}
                         </td>
 
-                        <!-- STOCK -->
                         <td style="text-align:center;">
                             {{ product.total_stock }}/{{ product.stock }}
                         </td>
 
-                        <!-- ACTION BUTTONS -->
                         <td style="text-align:center;">
                             <div style="display:flex; justify-content:center; gap:8px;">
                                 
@@ -168,6 +208,12 @@
                             </div>
                         </td>
 
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:20px;">
+                            ❗ ไม่พบสินค้าในระบบ
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>

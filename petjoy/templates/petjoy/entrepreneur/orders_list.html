@@ -103,6 +103,17 @@
         font-size: 14px;
         font-weight: 600;
     }
+
+    /* New order-code badge style */
+    .order-code {
+        background: #FFE0CC;
+        color: #D65200;
+        padding: 6px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 14px;
+        display: inline-block;
+    }
 </style>
 
 <div class="seller-layout">
@@ -182,7 +193,7 @@
             {% if recent_orders %}
                 {% for o in recent_orders %}
                 <div class="recent-item">
-                    <span>คำสั่งซื้อ #{{ o.id }} - {{ o.customer_name }}</span>
+                    <span>คำสั่งซื้อ <strong style="color:#FF6A2E;">ORD-{{ o.order_number|stringformat:"06d" }}</strong> - {{ o.customer_name }}</span>
                     <a href="{% url 'petjoy:orders-detail' o.id %}" class="btn-view">ดู</a>
                 </div>
                 {% endfor %}
@@ -209,7 +220,12 @@
                 <tbody>
                     {% for order in orders %}
                     <tr>
-                        <td>#{{ order.id }}</td>
+
+                        <!-- NEW formatted order code -->
+                        <td>
+                            <span class="order-code">ORD-{{ order.order_number|stringformat:"06d" }}</span>
+                        </td>
+
                         <td>{{ order.customer_name }}</td>
                         <td>{{ order.total_price }} บาท</td>
 
@@ -232,6 +248,7 @@
                         <td>
                             <a href="{% url 'petjoy:orders-detail' order.id %}" class="btn-view">ดูรายละเอียด</a>
                         </td>
+
                     </tr>
                     {% endfor %}
                 </tbody>

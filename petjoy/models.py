@@ -131,6 +131,7 @@ class Order(models.Model):
     ]
 
     entrepreneur = models.ForeignKey("Entrepreneur", on_delete=models.CASCADE)
+    order_number = models.PositiveIntegerField(default=0)
     customer_name = models.CharField(max_length=200)
     customer_phone = models.CharField(max_length=50)
     customer_address = models.TextField()
@@ -139,8 +140,19 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='waiting')
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f"Order #{self.id}"
+    def save(self, *args, **kwargs):   # ⭐ เพิ่มตรงนี้
+        if self.order_number == 0:
+            last_order = Order.objects.filter(
+                entrepreneur=self.entrepreneur
+            ).order_by('-order_number').first()
+
+            if last_order:
+                self.order_number = last_order.order_number + 1
+            else:
+                self.order_number = 1
+
+        super().save(*args, **kwargs)
+
 
 
 class OrderItem(models.Model):
