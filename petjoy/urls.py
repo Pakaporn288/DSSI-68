@@ -3,6 +3,8 @@ from django.urls import path
 from . import views
 from .views import EntrepreneurProductDetailView, entrepreneur_register
 from .views import entrepreneur_home
+from .views import entrepreneur_chat_list, entrepreneur_chat_room, entrepreneur_chat_delete
+
 
 app_name = 'petjoy'
 
@@ -58,7 +60,12 @@ urlpatterns = [
     path('orders/', views.orders_list, name="orders-list"), 
     path('chat/', views.chat_list, name='chat_list'),
     path('chat/start/<int:entrepreneur_id>/', views.start_chat_view, name='start_chat'),
-    path('chat/room/<int:room_id>/', views.chat_room, name='chat_room'), 
+    path('chat/room/<int:room_id>/', views.chat_room, name='chat_room'),
+    path('chat/delete/<int:room_id>/', views.delete_chat, name='delete_chat'),
+    path('entrepreneur/chat/', entrepreneur_chat_list, name='entrepreneur-chat-list'),
+    path('entrepreneur/chat/room/<int:room_id>/', entrepreneur_chat_room, name='entrepreneur-chat-room'),
+    path('entrepreneur/chat/delete/<int:room_id>/', entrepreneur_chat_delete, name='entrepreneur-chat-delete'),
+
 
 ]
 

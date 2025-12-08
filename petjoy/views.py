@@ -25,7 +25,8 @@ from .models import Order, OrderItem
 from django.db import transaction
 from django.forms import Form
 from django.shortcuts import get_object_or_404
-from .models import Order, OrderItem, ChatRoom, ChatMessage 
+from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
+from django.template.loader import render_to_string
 
 
 logger = logging.getLogger(__name__)
@@ -1115,21 +1116,25 @@ def update_order_status(request, order_id):
 
     return redirect("petjoy:orders-list")
 
+
+
 @login_required
-def chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมด"""
-    
-    # 1. ดึงห้องแชทที่ User เกี่ยวข้อง (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
-    rooms = ChatRoom.objects.filter(
-        Q(customer=request.user) | 
-        Q(entrepreneur__user=request.user)
-    ).distinct().order_by('-id') # เรียงตามห้องล่าสุด
-    
-    # 2. ส่งข้อมูลไปที่ Template เลย 
-    # (ห้ามมี Loop for room in rooms: room.last_message = ... เด็ดขาด!)
-    return render(request, 'petjoy/chat_list.html', {
-        'rooms': rooms
-    })
+def delete_chat(request, room_id):
+    """ฟังก์ชันลบห้องแชท"""
+    if request.method == 'POST':
+        room = get_object_or_404(ChatRoom, id=room_id)
+        
+        # ตรวจสอบสิทธิ์ว่าเป็นเจ้าของห้องจริงไหม
+        is_owner = (request.user == room.customer) or \
+                   (hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur)
+        
+        if is_owner:
+            room.delete()
+            messages.success(request, "ลบห้องแชทเรียบร้อยแล้ว")
+        else:
+            messages.error(request, "คุณไม่มีสิทธิ์ลบห้องแชทนี้")
+            
+    return redirect('petjoy:chat_list')
 
 
 
@@ -1155,23 +1160,64 @@ def start_chat_view(request, entrepreneur_id):
     # 4. ส่งไปที่หน้าห้องแชท
     return redirect('petjoy:chat_room', room_id=room.id)
 
+@login_required
+def chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมด"""
+    
+    # 1. ดึงห้องแชทที่ User เกี่ยวข้อง (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
+    rooms = ChatRoom.objects.filter(
+        Q(customer=request.user) | 
+        Q(entrepreneur__user=request.user)
+    ).distinct().order_by('-id') # เรียงตามห้องล่าสุด
+    
+    # 2. ตรวจสอบว่าเป็นผู้ประกอบการหรือไม่
+    is_entrepreneur = hasattr(request.user, 'entrepreneur')
+
+    context = {
+        'rooms': rooms,
+        'current_user': request.user,
+        'is_entrepreneur': is_entrepreneur,
+        'entrepreneur': request.user.entrepreneur if is_entrepreneur else None,
+    }
+
+    # 3. เลือก Template ตามประเภทผู้ใช้
+    if is_entrepreneur:
+        # *** ชี้ไปที่พาธ Template สำหรับผู้ประกอบการโดยเฉพาะ ***
+        return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
+    else:
+        # ใช้ Template ของลูกค้าที่มีอยู่
+        return render(request, 'petjoy/chat_list.html', context)
+
+
+# ... (delete_chat และ start_chat_view ไม่มีการเปลี่ยนแปลง)
+
+
+@login_required
+def chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้าเท่านั้น"""
+    # ตรวจสอบว่าไม่ใช่ผู้ประกอบการ
+    if hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:entrepreneur-chat-list') # ส่งไปยังหน้าของร้านค้า
+        
+    rooms = ChatRoom.objects.filter(customer=request.user).order_by('-id')
+    
+    return render(request, 'petjoy/chat_list.html', {
+        'rooms': rooms,
+        'current_user': request.user
+    })
 
 @login_required
 def chat_room(request, room_id):
-    """ฟังก์ชันแสดงหน้าห้องแชท"""
-    room = get_object_or_404(ChatRoom, id=room_id)
+    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
+    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
     
-    # 1. ตรวจสอบสิทธิ์ว่า user นี้เกี่ยวข้องกับห้องนี้จริงไหม (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
-    is_customer = (request.user == room.customer)
-    is_entrepreneur = (hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur)
-    
-    if not (is_customer or is_entrepreneur):
-        messages.error(request, "คุณไม่มีสิทธิ์เข้าถึงห้องแชทนี้")
-        return redirect('petjoy:homepage')
+    # ถ้าเป็นเจ้าของร้านเข้ามา ให้ redirect ไปใช้หน้าของเจ้าของร้าน
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
+         return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
 
-    # 2. จัดการการส่งข้อความ (POST)
     if request.method == 'POST':
         message_text = request.POST.get('message', '').strip()
+        # ไม่มี file attachment สำหรับลูกค้าในหน้าเดิมนี้
         if message_text:
             ChatMessage.objects.create(
                 room=room,
@@ -1180,11 +1226,145 @@ def chat_room(request, room_id):
             )
         return redirect('petjoy:chat_room', room_id=room.id)
 
-    # 3. ดึงข้อความเก่ามาแสดง
-    messages_list = room.messages.all().order_by('id')
+    messages_list = room.chatmessage_set.all().order_by('id')
     
     return render(request, 'petjoy/chat_room.html', {
         'room': room,
         'messages': messages_list,
         'current_user': request.user
     })
+
+
+# ==========================================================
+# ⭐ CHAT FUNCTIONS: CUSTOMER (ฟังก์ชันสำหรับลูกค้า) ⭐
+# ==========================================================
+
+@login_required
+def chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้าเท่านั้น"""
+    # ถ้าเป็นผู้ประกอบการเข้ามา ให้ส่งไปยังหน้าของผู้ประกอบการ
+    if hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:entrepreneur-chat-list') 
+        
+    rooms = ChatRoom.objects.filter(customer=request.user).order_by('-id')
+    
+    return render(request, 'petjoy/chat_list.html', {
+        'rooms': rooms,
+        'current_user': request.user
+    })
+
+@login_required
+def chat_room(request, room_id):
+    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
+    # ดึงห้องแชทโดยตรวจสอบว่าเป็นลูกค้าในห้องนี้หรือไม่
+    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
+    
+    # ถ้าเป็นเจ้าของร้านเข้ามา (แม้จะผ่าน URL ของลูกค้า) ให้ redirect ไปใช้หน้าของเจ้าของร้าน
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
+         return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
+
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        
+        if message_text:
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text
+            )
+        return redirect('petjoy:chat_room', room_id=room.id)
+
+    # ⭐ แก้ไขการเรียกใช้: ใช้ room.messages.all() ตาม related_name ใน models.py ⭐
+    messages_list = room.messages.all().order_by('id') 
+    
+    return render(request, 'petjoy/chat_room.html', {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user
+    })
+
+
+# ==========================================================
+# ⭐ CHAT FUNCTIONS: ENTREPRENEUR (ฟังก์ชันสำหรับผู้ประกอบการ) ⭐
+# ==========================================================
+
+@login_required
+def entrepreneur_chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับผู้ประกอบการเท่านั้น"""
+    if not hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:chat_list') # หากไม่ใช่ผู้ประกอบการ ให้ใช้หน้าของลูกค้า
+
+    entrepreneur = request.user.entrepreneur
+    
+    rooms = ChatRoom.objects.filter(entrepreneur=entrepreneur).order_by('-id')
+
+    context = {
+        'rooms': rooms,
+        'current_user': request.user,
+        'entrepreneur': entrepreneur,
+    }
+
+    # ชี้ไปที่ Template ในโฟลเดอร์ entrepreneur/
+    return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
+
+
+@login_required
+def entrepreneur_chat_room(request, room_id):
+    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับผู้ประกอบการเท่านั้น"""
+    # ดึงผู้ประกอบการที่ล็อกอิน และตรวจสอบว่าห้องแชทนี้เป็นของร้านตัวเอง
+    entrepreneur = get_object_or_404(Entrepreneur, user=request.user)
+    room = get_object_or_404(ChatRoom, id=room_id, entrepreneur=entrepreneur)
+    
+    # 2. จัดการการส่งข้อความ (POST) พร้อมรองรับไฟล์แนบ
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        uploaded_file = request.FILES.get('attachment') 
+
+        if message_text or uploaded_file: 
+            
+            if uploaded_file:
+                # Placeholder: สร้างข้อความแจ้งว่ามีการแนบไฟล์
+                file_info = f"[ไฟล์แนบ: {uploaded_file.name}]"
+                if message_text:
+                    message_text += f"\n{file_info}"
+                else:
+                    message_text = file_info
+                
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text
+            )
+            return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
+
+    # 3. ดึงข้อความเก่ามาแสดง
+    # ⭐ แก้ไขการเรียกใช้: ใช้ room.messages.all() ตาม related_name ใน models.py ⭐
+    messages_list = room.messages.all().order_by('id') 
+    
+    context = {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user,
+        'entrepreneur': entrepreneur,
+    }
+
+    # ชี้ไปที่ Template ในโฟลเดอร์ entrepreneur/
+    return render(request, 'petjoy/entrepreneur/entrepreneur_chat_room.html', context)
+
+@login_required
+def entrepreneur_chat_delete(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+
+    # ป้องกันผู้ใช้ลบห้องของคนอื่น
+    if request.user != room.entrepreneur.user:
+        messages.error(request, "คุณไม่มีสิทธิ์ลบแชทนี้")
+        return redirect('petjoy:entrepreneur-chat-list')
+
+    # ลบข้อความทั้งหมดในห้อง
+    ChatMessage.objects.filter(room=room).delete()
+
+    # ลบตัวห้องแชท
+    room.delete()
+
+    messages.success(request, "ลบแชทเรียบร้อยแล้ว")
+    return redirect('petjoy:entrepreneur-chat-list')

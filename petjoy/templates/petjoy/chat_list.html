@@ -4,6 +4,8 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
 <style>
     .chat-container {
         display: flex;
@@ -18,18 +20,28 @@
         padding: 26px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
+    
+    /* Wrapper เพื่อจัดตำแหน่งปุ่มเมนู */
+    .chat-item-wrapper {
+        position: relative;
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s;
+    }
+    .chat-item-wrapper:hover {
+        background-color: #f9f9f9;
+    }
+
     .chat-item {
         display: flex;
         align-items: center;
         padding: 15px;
-        border-bottom: 1px solid #eee;
+        padding-right: 50px; /* เผื่อที่ให้ปุ่ม 3 จุด */
         text-decoration: none;
         color: #333;
-        transition: background-color 0.2s;
+        width: 100%;
+        box-sizing: border-box;
     }
-    .chat-item:hover {
-        background-color: #f9f9f9;
-    }
+
     .chat-info {
         flex-grow: 1;
         padding-left: 15px;
@@ -49,6 +61,7 @@
     .chat-date {
         font-size: 0.8rem;
         color: #aaa;
+        white-space: nowrap;
     }
     .chat-icon {
         width: 50px;
@@ -60,8 +73,72 @@
         justify-content: center;
         color: white;
         font-size: 1.5rem;
-        overflow: hidden; /* เพิ่มเพื่อไม่ให้รูปเกินขอบวงกลม */
-        flex-shrink: 0;   /* ป้องกันวงกลมเบี้ยว */
+        overflow: hidden;
+        flex-shrink: 0;
+    }
+
+    /* === ส่วนเมนู 3 จุด === */
+    .chat-options {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 10;
+    }
+    
+    .options-btn {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #aaa;
+        cursor: pointer;
+        padding: 5px 10px;
+        border-radius: 50%;
+        transition: background 0.2s;
+    }
+    .options-btn:hover {
+        background: #e0e0e0;
+        color: #333;
+    }
+
+    .options-dropdown {
+        display: none; /* ซ่อนไว้ก่อน */
+        position: absolute;
+        right: 0;
+        top: 30px;
+        background: white;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        border-radius: 8px;
+        overflow: hidden;
+        min-width: 120px;
+        z-index: 20;
+        border: 1px solid #eee;
+    }
+
+    .options-dropdown.show {
+        display: block;
+    }
+
+    .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 10px 15px;
+        text-align: left;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #333;
+        transition: background 0.1s;
+    }
+    .dropdown-item:hover {
+        background-color: #f5f5f5;
+    }
+    .dropdown-item.delete {
+        color: #dc3545;
+    }
+    .dropdown-item.delete:hover {
+        background-color: #fff1f1;
     }
 </style>
 
@@ -73,10 +150,11 @@
         <h2 class="section-title">ข้อความ</h2>
 
         {% for room in rooms %}
+        <div class="chat-item-wrapper">
             <a href="{% url 'petjoy:chat_room' room.id %}" class="chat-item">
                 <div class="chat-icon">
                     {% if room.entrepreneur.profile_image %}
-                         <img src="{{ room.entrepreneur.profile_image.url }}" alt="Store Logo" style="width: 100%; height: 100%; object-fit: cover;">
+                        <img src="{{ room.entrepreneur.profile_image.url }}" alt="Store Logo" style="width: 100%; height: 100%; object-fit: cover;">
                     {% else %}
                         <span style="font-size: 1.2rem;">
                             {% if room.entrepreneur.store_name|first %}
@@ -92,7 +170,6 @@
                     <div class="chat-name">
                         ร้าน {{ room.entrepreneur.store_name }}
                     </div>
-                    
                     <p class="last-message">
                         {% if room.last_message %}
                             {{ room.last_message.message|truncatechars:50 }}
@@ -106,11 +183,54 @@
                     <div class="chat-date">{{ room.last_message.timestamp|date:"H:i" }}</div>
                 {% endif %}
             </a>
+
+            <div class="chat-options">
+                <button type="button" class="options-btn" onclick="toggleDropdown(event, 'dropdown-{{ room.id }}')">
+                    <i class="fas fa-ellipsis-v"></i> </button>
+                
+                <div id="dropdown-{{ room.id }}" class="options-dropdown">
+                    <form action="{% url 'petjoy:delete_chat' room.id %}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบแชทนี้? ประวัติการสนทนาจะหายไปทั้งหมด');">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item delete">
+                            <i class="fas fa-trash-alt"></i> ลบแชท
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
         {% empty %}
-            <p>คุณยังไม่มีห้องแชทกับร้านค้าใด ๆ</p>
-            <p style="margin-top: 15px; color: #555;">สามารถเริ่มแชทได้จากหน้าสินค้ารายการใดก็ได้</p>
+            <div style="text-align: center; padding: 40px; color: #777;">
+                <p>คุณยังไม่มีห้องแชทกับร้านค้าใด ๆ</p>
+                <p style="font-size: 0.9rem; margin-top: 10px;">สามารถเริ่มแชทได้จากหน้าสินค้ารายการใดก็ได้</p>
+            </div>
         {% endfor %}
 
     </section>
 </div>
+
+<script>
+    // ฟังก์ชันเปิด/ปิด Dropdown
+    function toggleDropdown(event, dropdownId) {
+        event.preventDefault(); // ป้องกันไม่ให้คลิกแล้วเด้งเข้าห้องแชท
+        event.stopPropagation();
+        
+        // ปิด dropdown อื่นๆ ก่อน
+        document.querySelectorAll('.options-dropdown').forEach(d => {
+            if (d.id !== dropdownId) d.classList.remove('show');
+        });
+
+        // เปิด/ปิด ตัวที่เลือก
+        const dropdown = document.getElementById(dropdownId);
+        dropdown.classList.toggle('show');
+    }
+
+    // คลิกที่อื่นเพื่อปิด dropdown
+    window.onclick = function(event) {
+        if (!event.target.closest('.options-btn')) {
+            document.querySelectorAll('.options-dropdown').forEach(d => {
+                d.classList.remove('show');
+            });
+        }
+    }
+</script>
 {% endblock %}

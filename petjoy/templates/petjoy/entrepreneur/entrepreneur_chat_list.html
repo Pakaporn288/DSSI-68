@@ -1,0 +1,251 @@
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<style>
+    .navbar { display: none !important; }
+
+    .chat-list-layout {
+        display: flex;
+        max-width: 1200px;
+        margin: 40px auto;
+        gap: 30px;
+        padding: 0 20px;
+    }
+
+    .chat-main-card {
+        flex: 1;
+        background: white;
+        border-radius: 16px;
+        padding: 26px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+
+    .chat-header h2 {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #E65100;
+        margin-bottom: 25px;
+    }
+
+    /* รายการแชท */
+    .chat-item-wrapper {
+        background: white;
+        margin-bottom: 12px;
+        border-radius: 14px;
+        border: none !important;
+        transition: 0.2s;
+        position: relative;
+        box-shadow: 0 3px 10px rgba(255,138,80,0.15);
+        padding-right: 40px;
+    }
+
+    .chat-item-wrapper:hover {
+        background: #FFEDE2;
+        box-shadow: 0 4px 12px rgba(255,138,80,0.3);
+    }
+
+    .chat-item {
+        display: flex;
+        padding: 15px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .chat-avatar {
+        width: 55px;
+        height: 55px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+        border: 2px solid #FF8A50;
+    }
+
+    .chat-info {
+        flex-grow: 1;
+    }
+
+    .chat-name {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #E65100;
+    }
+
+    .chat-last-message {
+        color: #777;
+        font-size: 0.9rem;
+        margin-top: 5px;
+    }
+
+    .chat-timestamp {
+        font-size: 0.8rem;
+        color: #999;
+        padding-top: 5px;
+        white-space: nowrap;
+    }
+
+    /* ปุ่มสามจุด */
+    .chat-more-btn {
+        position: absolute;
+        right: 15px;
+        top: 18px;
+        font-size: 18px;
+        color: #999;
+        cursor: pointer;
+        padding: 6px;
+        border-radius: 6px;
+        transition: 0.2s;
+    }
+
+    .chat-more-btn:hover {
+        background: #FFEDE2;
+        color: #E65100;
+    }
+
+    .chat-more-menu {
+        position: absolute;
+        right: 10px;
+        top: 45px;
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        display: none;
+        z-index: 10;
+        overflow: hidden;
+    }
+
+    .chat-more-menu a {
+        display: block;
+        padding: 10px 15px;
+        color: #333;
+        text-decoration: none;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }
+
+    .chat-more-menu a:hover {
+        background: #FFEDE2;
+        color: #E65100;
+    }
+
+    .seller-sidebar .seller-menu a[href*="entrepreneur-chat-list"] {
+        background-color: #FF8A50;
+        color: white;
+        border-left: 5px solid #E65100;
+    }
+</style>
+
+<div class="seller-layout">
+
+    <aside class="seller-sidebar">
+        <div> 
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+                {% endif %}
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3> 
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+                <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}">🛍️ สินค้าทั้งหมด</a>
+                <a href="{% url 'petjoy:entrepreneur-chat-list' %}" class="active">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="#">💰 รายได้</a>
+            </nav>
+        
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="seller-main">
+        <div class="chat-main-card">
+            <div class="chat-header">
+                <h2>💬 กล่องข้อความกับลูกค้า</h2>
+            </div>
+
+            <section class="chat-list">
+                {% for room in rooms %}
+                    <div class="chat-item-wrapper">
+
+                        <!-- ปุ่ม 3 จุด -->
+                        <div class="chat-more-btn" onclick="toggleMenu({{ room.id }})">
+                            ⋮
+                        </div>
+
+                        <!-- เมนู -->
+                        <div class="chat-more-menu" id="menu-{{ room.id }}">
+                            <a href="{% url 'petjoy:entrepreneur-chat-delete' room.id %}">🗑️ ลบแชท</a>
+                        </div>
+
+                        <a href="{% url 'petjoy:entrepreneur-chat-room' room.id %}" class="chat-item">
+                            
+                            {% with room.customer.profile as customer_profile %}
+                                {% if customer_profile.image %}
+                                    <img src="{{ customer_profile.image.url }}" class="chat-avatar">
+                                {% else %}
+                                    <img src="{% static 'images/customer_default.png' %}" class="chat-avatar">
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <div class="chat-info">
+                                <div class="chat-name">ลูกค้า: {{ room.customer.username }}</div>
+                                
+                                <div class="chat-last-message">
+                                    {% with room.messages.last as last_message %}
+                                        {% if last_message %}
+                                            {% if last_message.sender == current_user %}คุณ: {% endif %}
+                                            {{ last_message.message|truncatechars:40 }}
+                                        {% else %}
+                                            เริ่มการสนทนา
+                                        {% endif %}
+                                    {% endwith %}
+                                </div>
+                            </div>
+                            
+                            <div class="chat-timestamp">
+                                {% with room.messages.last as last_message %}
+                                    {% if last_message.timestamp %}
+                                        {{ last_message.timestamp|date:"d M H:i" }}
+                                    {% endif %}
+                                {% endwith %}
+                            </div>
+                        </a>
+                    </div>
+                {% empty %}
+                    <div style="text-align: center; padding: 40px; color: #777;">
+                        <p>คุณยังไม่มีห้องแชทกับลูกค้าใด ๆ</p>
+                    </div>
+                {% endfor %}
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+function toggleMenu(id) {
+    document.querySelectorAll('.chat-more-menu').forEach(m => {
+        if (m.id !== "menu-" + id) m.style.display = "none";
+    });
+
+    const menu = document.getElementById("menu-" + id);
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+    if (!e.target.classList.contains("chat-more-btn")) {
+        document.querySelectorAll('.chat-more-menu').forEach(m => m.style.display = "none");
+    }
+});
+</script>
+
+{% endblock %}
