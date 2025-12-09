@@ -1,0 +1,277 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <title>ตั้งค่าโปรไฟล์ร้าน</title>
+
+    <!-- ใช้ CSS เดียวกับหน้าต่าง ๆ ของผู้ประกอบการ -->
+    <link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
+
+    <!-- เพิ่มแค่สไตล์ของส่วนเนื้อหา (ไม่ยุ่งกับ sidebar / seller-main) -->
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Kanit', sans-serif;
+            background: #f7f7f7;
+        }
+
+        .header-wrapper {
+            max-width: 950px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .seller-header-box {
+            background: linear-gradient(135deg, #FFF3E6, #FFE0B2);
+            padding: 22px 28px;
+            border-radius: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1.2rem;
+        }
+
+        .store-logo {
+            width: 72px;
+            height: 72px;
+            border-radius: 14px;
+            object-fit: cover;
+            background: #FFDAB9;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .store-title {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin: 0;
+            color: #E65100;
+        }
+
+        .store-subtitle {
+            margin: 4px 0 0 0;
+            color: #8D6E63;
+            font-size: 0.95rem;
+        }
+
+        .settings-area {
+            max-width: 950px;
+            margin: 0 auto 30px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .settings-section {
+            background: #ffffff;
+            padding: 20px 24px;
+            border-radius: 14px;
+            border: 1px solid #ffd2b7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #FF6A2E;
+            margin: 0 0 12px 0;
+        }
+
+        .form-field {
+            margin-top: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-field label {
+            font-weight: 600;
+        }
+
+        .form-field input,
+        .form-field textarea {
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .save-btn {
+            background-color: #FF7043;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+
+        .preview-img {
+            width: 180px;
+            border-radius: 10px;
+            margin-top: 8px;
+            border: 2px solid #FF6A2E;
+        }
+
+        .feedback {
+            margin-top: 8px;
+            color: green;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="seller-layout">
+
+    <!-- 🔸 แทบซ้าย: ใช้โค้ดแบบเดียวกับ orders_list.html -->
+    <aside class="seller-sidebar">
+
+        <div class="seller-profile">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+            {% endif %}
+            <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+            <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+        </div>
+
+        <nav class="seller-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+            <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:product-list' %}">📦 รายการสินค้า</a>
+            <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
+            <a href="{% url 'petjoy:entrepreneur_profile_settings' %}" class="active">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+            <a href="#">💰 รายได้</a>
+        </nav>
+
+        <form method="post" action="{% url 'petjoy:logout' %}">
+            {% csrf_token %}
+            <button class="seller-logout">ออกจากระบบ</button>
+        </form>
+
+    </aside>
+
+    <!-- เนื้อหาหลัก -->
+    <main class="seller-main">
+
+        <!-- หัวข้อบนสุด -->
+        <section class="header-wrapper">
+            <div class="seller-header-box">
+                <div class="header-left">
+                    {% if entrepreneur.profile_image %}
+                        <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                    {% else %}
+                        <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                    {% endif %}
+                    <div>
+                        <h2 class="store-title">ตั้งค่าโปรไฟล์ร้าน</h2>
+                        <p class="store-subtitle">จัดการข้อมูลของร้านค้า</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ฟอร์มตั้งค่าโปรไฟล์ -->
+        <section class="settings-area">
+
+            <!-- 1. ข้อมูลภาษี -->
+            <div class="settings-section">
+                <h3 class="section-title">1. ข้อมูลภาษีร้าน</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label>เลขประจำตัวผู้เสียภาษี</label>
+                        <input type="text" name="tax_id" value="{{ profile.tax_id|default:'' }}">
+                    </div>
+                    <button type="submit" name="save_tax" class="save-btn">บันทึก</button>
+                </form>
+            </div>
+
+            <!-- 2. ที่อยู่ร้าน -->
+            <div class="settings-section">
+                <h3 class="section-title">2. ที่อยู่ร้านโดยละเอียด</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label>ที่อยู่ร้าน</label>
+                        <textarea name="shop_address" rows="3">{{ profile.shop_address|default:'' }}</textarea>
+                    </div>
+                    <button type="submit" name="save_address" class="save-btn">บันทึก</button>
+                </form>
+            </div>
+
+            <!-- 3. ข้อมูลบัญชีธนาคาร -->
+            <div class="settings-section">
+                <h3 class="section-title">3. ข้อมูลบัญชีธนาคาร</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+
+                    <div class="form-field">
+                        <label>ชื่อธนาคาร</label>
+                        <input type="text" name="bank_name" value="{{ profile.bank_name|default:'' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>ชื่อบัญชี</label>
+                        <input type="text" name="account_name" value="{{ profile.account_name|default:'' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>เลขที่บัญชี</label>
+                        <input type="text" name="account_number" value="{{ profile.account_number|default:'' }}">
+                    </div>
+
+                    <div class="form-field">
+                        <label>สำเนาหน้าสมุดบัญชี (ภาพ)</label>
+                        <input type="file" name="bank_book_copy" accept="image/*">
+                    </div>
+
+                    {% if profile.bank_book_copy %}
+                        <img src="{{ profile.bank_book_copy.url }}" class="preview-img">
+                    {% endif %}
+
+                    <button type="submit" name="save_bank" class="save-btn">บันทึก</button>
+                </form>
+            </div>
+
+            <!-- 4. เอกสารยืนยันตัวตน -->
+            <div class="settings-section">
+                <h3 class="section-title">4. เอกสารยืนยันตัวตน</h3>
+                <form method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label>สำเนาบัตรประชาชน (ภาพ)</label>
+                        <input type="file" name="id_card_copy" accept="image/*">
+                    </div>
+
+                    {% if profile.id_card_copy %}
+                        <img src="{{ profile.id_card_copy.url }}" class="preview-img">
+                    {% endif %}
+
+                    <button type="submit" name="save_idcard" class="save-btn">บันทึก</button>
+                </form>
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+</body>
+</html>

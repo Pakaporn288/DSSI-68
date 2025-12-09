@@ -50,7 +50,6 @@ urlpatterns = [
     path('products/<int:pk>/update/', views.ProductUpdateView.as_view(), name='product-update'),
     path('products/<int:pk>/delete/', views.ProductDeleteView.as_view(), name='product-delete'),
     path('orders/', views.orders_list, name="orders-list"),
-    path('orders/<int:order_id>/', views.orders_detail, name="orders-detail"),
     path('orders/<int:order_id>/update-status/', views.update_order_status, name="update-order-status"),
     path('entrepreneur/product/<int:pk>/',EntrepreneurProductDetailView.as_view(),name="entrepreneur-product-detail"),
     path("order-history/", views.order_history, name="order_history"),
@@ -65,6 +64,9 @@ urlpatterns = [
     path('entrepreneur/chat/', entrepreneur_chat_list, name='entrepreneur-chat-list'),
     path('entrepreneur/chat/room/<int:room_id>/', entrepreneur_chat_room, name='entrepreneur-chat-room'),
     path('entrepreneur/chat/delete/<int:room_id>/', entrepreneur_chat_delete, name='entrepreneur-chat-delete'),
+    path("entrepreneur/profile/settings/", views.entrepreneur_profile_settings, name="entrepreneur_profile_settings"),
+    path("orders/<int:order_id>/", views.order_detail, name="orders-detail"),
+
 
 
 ]

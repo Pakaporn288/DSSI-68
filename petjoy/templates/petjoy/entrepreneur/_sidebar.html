@@ -1,15 +1,52 @@
-{% load static %}
-<aside class="sidebar">
-    <nav class="sidebar-menu">
-        <a href="{% url 'petjoy:entrepreneur-home' %}" class="active">โปรไฟล์</a>
-        <a href="#">รายละเอียดคำสั่งซื้อ</a>
-        <a href="{% url 'petjoy:product-list' %}">รายการสินค้า</a>
-        <a href="#">ข้อความ</a>
-        <a href="#">แก้ไขรายละเอียด</a>
-        <a href="#">รายได้</a>
+<aside class="seller-sidebar">
+
+    <div class="seller-profile">
+
+        {% if entrepreneur.profile_image %}
+            <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+        {% else %}
+            <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+        {% endif %}
+
+        <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+        <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+    </div>
+
+    <nav class="seller-menu">
+
+        <a href="{% url 'petjoy:entrepreneur-home' %}"
+           class="{% if request.resolver_match.url_name == 'entrepreneur-home' %}active{% endif %}">
+           🏠 หน้าหลักร้าน
+        </a>
+
+        <a href="{% url 'petjoy:orders-list' %}"
+           class="{% if request.resolver_match.url_name == 'orders-list' %}active{% endif %}">
+           📦 รายการคำสั่งซื้อ
+        </a>
+
+        <a href="{% url 'petjoy:product-list' %}"
+           class="{% if request.resolver_match.url_name == 'product-list' %}active{% endif %}">
+           🛍️ รายการสินค้า
+        </a>
+
+        <a href="{% url 'petjoy:entrepreneur-chat-list' %}"
+           class="{% if request.resolver_match.url_name == 'entrepreneur-chat-list' %}active{% endif %}">
+           💬 ข้อความ
+        </a>
+
+        <a href="{% url 'petjoy:entrepreneur_profile_settings' %}"
+           class="{% if request.resolver_match.url_name == 'entrepreneur_profile_settings' %}active{% endif %}">
+           ⚙️ ตั้งค่าโปรไฟล์ร้าน
+        </a>
+
+        <a href="#">
+           💰 รายได้
+        </a>
     </nav>
+
     <form method="post" action="{% url 'petjoy:logout' %}">
         {% csrf_token %}
-        <button type="submit" class="logout-btn">ออกจากระบบ</button>
+        <button class="seller-logout">ออกจากระบบ</button>
     </form>
+
 </aside>

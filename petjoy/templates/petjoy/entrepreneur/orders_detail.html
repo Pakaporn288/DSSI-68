@@ -1,0 +1,207 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+    .detail-box {
+        background: white;
+        padding: 25px;
+        border-radius: 16px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.07);
+        max-width: 950px;
+        margin: auto;
+    }
+
+    .order-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #E65100;
+        margin-bottom: 15px;
+    }
+
+    .order-row {
+        font-size: 16px;
+        margin: 8px 0;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .slip-img {
+        max-width: 380px;
+        margin-top: 10px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        border: 2px solid #FFB088;
+    }
+
+    .status-select {
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        font-size: 16px;
+        width: 220px;
+    }
+
+    .save-btn {
+        background: #FF6A2E;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        font-weight: 700;
+        margin-top: 12px;
+    }
+
+    .back-btn {
+        margin-top: 25px;
+        background: #888;
+        color: white;
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 700;
+        display: inline-block;
+    }
+
+    .item-table {
+        width: 100%;
+        margin-top: 15px;
+        border-collapse: collapse;
+    }
+
+    .item-table th, .item-table td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .item-table th {
+        background: #FFE6D5;
+        color: #D35400;
+        font-weight: 700;
+    }
+</style>
+
+
+<div class="seller-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="seller-sidebar">
+        <div class="seller-profile">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+            {% else %}
+                <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+            {% endif %}
+            <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+            <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+        </div>
+
+        <nav class="seller-menu">
+            <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+            <a class="active" href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+            <a href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
+            <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
+            <a href="{% url 'petjoy:entrepreneur_profile_settings' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+            <a href="#">💰 รายได้</a>
+        </nav>
+
+        <form method="post" action="{% url 'petjoy:logout' %}">
+            {% csrf_token %}
+            <button class="seller-logout">ออกจากระบบ</button>
+        </form>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="seller-main">
+
+        <div class="detail-box">
+
+            <h2 class="order-title">รายละเอียดคำสั่งซื้อ ORD-{{ order.order_number|stringformat:"06d" }}</h2>
+
+            <div class="order-row">
+                <strong>ลูกค้า:</strong> <span>{{ order.customer_name }}</span>
+            </div>
+
+            <div class="order-row">
+                <strong>เบอร์โทร:</strong> <span>{{ order.customer_phone }}</span>
+            </div>
+
+            <div class="order-row">
+                <strong>ที่อยู่จัดส่ง:</strong>
+                <span>{{ order.customer_address }}</span>
+            </div>
+
+            <div class="order-row">
+                <strong>ยอดรวม:</strong> <span>{{ order.total_price }} บาท</span>
+            </div>
+
+            <div class="order-row">
+                <strong>วันที่สั่งซื้อ:</strong> <span>{{ order.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <hr style="margin: 20px 0;">
+
+            <!-- ▶ รายการสินค้า -->
+            <h3 style="font-weight:700; margin-bottom:10px;">รายการสินค้า</h3>
+
+            {% if order.items.all %}
+                <table class="item-table">
+                    <tr>
+                        <th>สินค้า</th>
+                        <th>จำนวน</th>
+                        <th>ราคา</th>
+                        <th>รวม</th>
+                    </tr>
+
+                    {% for item in order.items.all %}
+                        <tr>
+                            <td>{{ item.product.name }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.price }} บาท</td>
+                            <td>{{ item.total }} บาท</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                <p style="color:#888;">ไม่มีรายการสินค้า</p>
+            {% endif %}
+
+            <hr style="margin: 20px 0;">
+
+            <!-- ▶ อัปเดตสถานะ -->
+            <h3 style="font-weight:700; margin-bottom:10px;">อัปเดตสถานะคำสั่งซื้อ</h3>
+
+            <form method="POST">
+                {% csrf_token %}
+                <select name="status" class="status-select">
+                    <option value="waiting" {% if order.status == "waiting" %}selected{% endif %}>รอชำระเงิน</option>
+                    <option value="paid" {% if order.status == "paid" %}selected{% endif %}>ชำระเงินแล้ว</option>
+                    <option value="preparing" {% if order.status == "preparing" %}selected{% endif %}>กำลังเตรียมของ</option>
+                    <option value="delivering" {% if order.status == "delivering" %}selected{% endif %}>กำลังจัดส่ง</option>
+                    <option value="success" {% if order.status == "success" %}selected{% endif %}>สำเร็จ</option>
+                </select>
+
+                <button class="save-btn">บันทึกสถานะ</button>
+            </form>
+
+            <hr style="margin: 20px 0;">
+
+            <!-- ▶ สลิปโอนเงิน -->
+            <h3 style="font-weight:700; margin-bottom:10px;">สลิปโอนเงิน</h3>
+
+            {% if order.slip_image %}
+                <img src="{{ order.slip_image.url }}" class="slip-img">
+            {% else %}
+                <p style="color:#888;">ยังไม่มีการแนบสลิป</p>
+            {% endif %}
+
+            <!-- ปุ่มย้อนกลับ -->
+            <a href="{% url 'petjoy:orders-list' %}" class="back-btn">⬅ กลับไปหน้ารายการคำสั่งซื้อ</a>
+
+        </div>
+
+    </main>
+
+</div>

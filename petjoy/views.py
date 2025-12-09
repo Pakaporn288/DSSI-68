@@ -28,7 +28,7 @@ from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
 from django.template.loader import render_to_string
 from petjoy.models import Order
-    
+from .models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -198,18 +198,19 @@ def order_history(request):
         "orders": orders
     })
 
-
 @login_required(login_url='petjoy:login')
 def checkout_view(request):
-    # Step 1: ดึงข้อมูลสินค้าที่เลือกจากตะกร้า (GET)
+
+    # STEP 1 — แสดงสินค้าในตะกร้าที่เลือก
     if request.method == 'GET' and 'selected_items' in request.GET:
         selected_item_ids = request.GET.getlist('selected_items')
-        
+
         if not selected_item_ids:
             messages.error(request, 'กรุณาเลือกสินค้าที่ต้องการสั่งซื้อ')
             return redirect('petjoy:cart-detail')
 
         cart_items = CartItem.objects.filter(id__in=selected_item_ids, user=request.user)
+
         if not cart_items.exists():
             messages.error(request, 'ไม่พบสินค้าที่เลือกในตะกร้าของคุณ')
             return redirect('petjoy:cart-detail')
@@ -228,7 +229,7 @@ def checkout_view(request):
             if owner:
                 items_by_entrepreneur.setdefault(owner, []).append(item)
 
-        # เก็บข้อมูลใน session
+        # เก็บข้อมูลไว้ใน session
         request.session['checkout_items_data'] = {
             'item_ids': [str(x) for x in selected_item_ids],
             'total_price': float(total_price),
@@ -242,10 +243,11 @@ def checkout_view(request):
             'selected_item_ids_str': ','.join(selected_item_ids)
         })
 
-    # Step 2: เลือกวิธีชำระเงิน (POST)
-    if request.method == 'POST' and request.POST.get('checkout_step') == '1':
-        address_id = request.POST.get('address_id')
-        selected_item_ids_str = request.POST.get('selected_item_ids_str') or ''
+    # STEP 2 — เลือกที่อยู่และวิธีชำระเงิน
+    if request.method == 'POST' and request.POST.get('checkout_step') == "1":
+
+        address_id = request.POST.get("address_id")
+        selected_item_ids_str = request.POST.get("selected_item_ids_str") or ''
 
         if not address_id or not selected_item_ids_str:
             messages.error(request, 'ข้อมูลไม่สมบูรณ์ หรือ Session หมดอายุ')
@@ -255,18 +257,17 @@ def checkout_view(request):
 
         checkout_data = request.session.get('checkout_items_data')
         if not checkout_data:
-            messages.error(request, 'Session หมดอายุ กรุณารีเฟรชตะกร้าและเริ่มใหม่')
+            messages.error(request, 'Session หมดอายุ กรุณาเริ่มใหม่')
             return redirect('petjoy:cart-detail')
 
         # ตรวจสอบความตรงกันของสินค้า
-        if set(map(str, checkout_data.get('item_ids', []))) != set(map(str, selected_item_ids_str.split(','))):
+        if set(map(str, checkout_data['item_ids'])) != set(selected_item_ids_str.split(',')):
             messages.error(request, 'เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อ')
             return redirect('petjoy:cart-detail')
 
-        # เก็บที่อยู่ไว้ใน session
         request.session['checkout_address_id'] = address_id
 
-        # ดึงสินค้าใหม่อีกรอบ
+        # โหลดสินค้าใหม่
         item_ids = selected_item_ids_str.split(',')
         cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
 
@@ -276,46 +277,46 @@ def checkout_view(request):
             if owner:
                 items_by_entrepreneur.setdefault(owner, []).append(item)
 
-        return render(request, 'petjoy/checkout.html', {
-            'step': 2,
-            'total_price': checkout_data['total_price'],
-            'address': address,
-            'items_by_entrepreneur': items_by_entrepreneur,
+        return render(request, "petjoy/checkout.html", {
+            "step": 2,
+            "total_price": checkout_data["total_price"],
+            "address": address,
+            "items_by_entrepreneur": items_by_entrepreneur,
         })
 
-    # Step 3: Confirm ชำระเงิน และสร้าง Order
-    if request.method == 'POST' and request.POST.get('checkout_step') == '2':
+    # STEP 3 — ยืนยันการสั่งซื้อและสร้าง Order จริง
+    if request.method == "POST" and request.POST.get("checkout_step") == "2":
 
-        payment_method = request.POST.get('payment_method')
-        payment_slip = request.FILES.get('payment_slip')
+        payment_method = request.POST.get("payment_method")
+        payment_slip = request.FILES.get("payment_slip")
 
         if not payment_method:
-            messages.error(request, 'กรุณาเลือกวิธีการชำระเงิน')
-            return redirect('petjoy:cart-detail')
+            messages.error(request, "กรุณาเลือกวิธีการชำระเงิน")
+            return redirect("petjoy:cart-detail")
 
-        if payment_method == 'bank_transfer' and not payment_slip:
-            messages.error(request, 'กรุณาแนบสลิปการโอนเงิน')
-            return redirect('petjoy:cart-detail')
+        # ถ้าชำระด้วยโอนเงิน ต้องมีสลิป
+        if payment_method == "bank_transfer" and not payment_slip:
+            messages.error(request, "กรุณาแนบสลิปการโอนเงิน")
+            return redirect("petjoy:cart-detail")
 
-        # ดึงข้อมูลจาก session
-        address_id = request.session.get('checkout_address_id')
-        item_ids = request.session.get('checkout_items_data', {}).get('item_ids')
-        total_price_raw = request.session.get('checkout_items_data', {}).get('total_price')
+        address_id = request.session.get("checkout_address_id")
+        item_ids = request.session.get("checkout_items_data", {}).get("item_ids")
+        total_price_raw = request.session.get("checkout_items_data", {}).get("total_price")
 
-        if not address_id or not item_ids or not total_price_raw:
-            messages.error(request, 'Session หมดอายุ กรุณาเริ่มใหม่')
-            return redirect('petjoy:cart-detail')
+        if not address_id or not item_ids:
+            messages.error(request, "Session หมดอายุ กรุณาเริ่มใหม่")
+            return redirect("petjoy:cart-detail")
 
         address = get_object_or_404(Address, id=address_id, user=request.user)
         cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
 
         if not cart_items.exists():
-            messages.error(request, 'ไม่พบสินค้าในตะกร้าที่เลือก')
-            return redirect('petjoy:cart-detail')
+            messages.error(request, "ไม่พบสินค้าในตะกร้าที่เลือก")
+            return redirect("petjoy:cart-detail")
 
         with transaction.atomic():
 
-            # แยกร้านค้า
+            # แยกร้าน
             items_by_entrepreneur = {}
             for item in cart_items:
                 owner = item.product.owner
@@ -328,24 +329,20 @@ def checkout_view(request):
 
                 shop_total_price = sum(item.total_price for item in items)
 
-                # ✅ สถานะ: ถ้าโอนเงิน (พร้อมสลิป) ให้เป็น 'paid' ไม่อย่างนั้นเป็น 'waiting'
-                if payment_method == 'bank_transfer':
-                    order_status = 'paid'
-                else:
-                    order_status = 'waiting' # COD หรือรอโอน (หากไม่มีสลิป)
+                order_status = "paid" if payment_method == "bank_transfer" else "waiting"
 
-                # สร้าง order
-                order = Order(
+                # ⭐ สร้างคำสั่งซื้อ
+                order = Order.objects.create(
                     entrepreneur=entrepreneur,
                     customer_name=address.full_name,
                     customer_phone=address.phone,
                     customer_address=f"{address.address_line} {address.subdistrict} {address.district} {address.province} {address.zipcode}",
                     total_price=shop_total_price,
                     status=order_status,
+                    slip_image=payment_slip if payment_method == "bank_transfer" else None,  # ⭐ บันทึกสลิป
                 )
-                order.save()
 
-                # สร้าง order item
+                # ⭐ สร้าง OrderItem
                 for cart_item in items:
                     OrderItem.objects.create(
                         order=order,
@@ -356,23 +353,24 @@ def checkout_view(request):
 
                 created_orders.append(order)
 
-            # ลบสินค้าออกจากตะกร้า
+            # ลบสินค้าในตะกร้า
             cart_items.delete()
 
-            # เคลียร์ session
-            request.session.pop('checkout_items_data', None)
-            request.session.pop('checkout_address_id', None)
+            # ล้าง session
+            request.session.pop("checkout_items_data", None)
+            request.session.pop("checkout_address_id", None)
 
-        return render(request, 'petjoy/checkout.html', {
-            'step': 3,
-            'orders': created_orders,
-            'total_price': total_price_raw,
-            'address': address
+        return render(request, "petjoy/checkout.html", {
+            "step": 3,
+            "orders": created_orders,
+            "total_price": total_price_raw,
+            "address": address,
         })
 
-    # Default fallback
-    messages.error(request, 'กรุณาเลือกสินค้าที่ต้องการสั่งซื้อจากตะกร้า')
-    return redirect('petjoy:cart-detail')
+    # fallback
+    messages.error(request, "กรุณาเลือกสินค้าที่ต้องการสั่งซื้อจากตะกร้า")
+    return redirect("petjoy:cart-detail")
+
 
 @login_required
 def entrepreneur_profile_edit_home(request):
@@ -768,6 +766,51 @@ class ProductDeleteView(DeleteView):
         return ctx
 
 
+@login_required
+def entrepreneur_profile_settings(request):
+
+    entrepreneur = request.user.entrepreneur  # ดึงโปรไฟล์ร้านของ user
+
+    if request.method == "POST":
+
+        # หมวด 1: TAX
+        if "save_tax" in request.POST:
+            entrepreneur.tax_id = request.POST.get("tax_id")
+            entrepreneur.save()
+            messages.success(request, "บันทึกข้อมูลภาษีแล้ว", extra_tags="tax")
+
+        # หมวด 2: Address
+        if "save_address" in request.POST:
+            entrepreneur.shop_address = request.POST.get("shop_address")
+            entrepreneur.save()
+            messages.success(request, "บันทึกที่อยู่ร้านแล้ว", extra_tags="address")
+
+        # หมวด 3: Bank Info
+        if "save_bank" in request.POST:
+            entrepreneur.bank_name = request.POST.get("bank_name")
+            entrepreneur.account_name = request.POST.get("account_name")
+            entrepreneur.account_number = request.POST.get("account_number")
+
+            if request.FILES.get("bank_book_copy"):
+                entrepreneur.bank_book_copy = request.FILES["bank_book_copy"]
+
+            entrepreneur.save()
+            messages.success(request, "บันทึกข้อมูลบัญชีธนาคารแล้ว", extra_tags="bank")
+
+        # หมวด 4: ID Card
+        if "save_idcard" in request.POST:
+            if request.FILES.get("id_card_copy"):
+                entrepreneur.id_card_copy = request.FILES["id_card_copy"]
+            entrepreneur.save()
+            messages.success(request, "บันทึกสำเนาบัตรประชาชนแล้ว", extra_tags="idcard")
+
+    # 🎯 ต้องส่ง entrepreneur เพิ่มเข้าไป
+    return render(request, "petjoy/entrepreneur/entrepreneur_profile_settings.html", {
+        "profile": entrepreneur,
+        "entrepreneur": entrepreneur,      # ⭐ สำคัญที่สุด
+        "is_entrepreneur": True,           # ใช้กับ sidebar ถ้าจำเป็น
+    })
+
 
 
 @login_required(login_url=reverse_lazy('petjoy:login'))
@@ -1093,14 +1136,24 @@ def orders_list(request):
     }
 
     return render(request, "petjoy/entrepreneur/orders_list.html", context)
+
 @login_required
-def orders_detail(request, order_id):
+def order_detail(request, order_id):
     entrepreneur = request.user.entrepreneur
+
+    # ป้องกันไม่ให้ร้านอื่นเข้ามาดู order ของร้านนี้
     order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
 
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        order.status = new_status
+        order.save()
+        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
+        return redirect("petjoy:orders-detail", order_id=order.id)
+
     return render(request, "petjoy/entrepreneur/orders_detail.html", {
+        "order": order,
         "entrepreneur": entrepreneur,
-        "order": order
     })
 
 

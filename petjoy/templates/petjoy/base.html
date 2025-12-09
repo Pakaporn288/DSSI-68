@@ -35,7 +35,6 @@
 
         <div class="navbar-right">
 
-            <!-- ⭐ UPDATED — รถเข็นมี Badge + ไม่มีเส้นใต้ -->
             <div class="nav-cart-wrapper">
                 <a href="{% url 'petjoy:cart-detail' %}" class="cart-icon">
                     🛒
@@ -69,13 +68,8 @@
     {% endif %}
 
     <main class="content">
-        {% if messages and not auth_page %}
-            <ul class="messages">
-                {% for message in messages %}
-                    <li class="{{ message.tags }}">{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+
+        <!-- 🔥 ลบ block messages ตามคำสั่ง — ไม่แตะโค้ดอื่น -->
 
         {% block content %}
         {% endblock %}
