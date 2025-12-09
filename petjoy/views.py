@@ -27,7 +27,8 @@ from django.forms import Form
 from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
 from django.template.loader import render_to_string
-
+from petjoy.models import Order
+    
 
 logger = logging.getLogger(__name__)
 
@@ -334,7 +335,7 @@ def checkout_view(request):
                     order_status = 'waiting' # COD หรือรอโอน (หากไม่มีสลิป)
 
                 # สร้าง order
-                order = Order.objects.create(
+                order = Order(
                     entrepreneur=entrepreneur,
                     customer_name=address.full_name,
                     customer_phone=address.phone,
@@ -342,6 +343,7 @@ def checkout_view(request):
                     total_price=shop_total_price,
                     status=order_status,
                 )
+                order.save()
 
                 # สร้าง order item
                 for cart_item in items:
