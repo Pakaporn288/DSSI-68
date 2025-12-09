@@ -1537,3 +1537,30 @@ body {
         width: 110px;
     }
 }
+.nav-notification-wrapper {
+    margin-left: 14px;     /* ห่างจากตะกร้า */
+    margin-right: 20px;    /* ห่างจากรูปโปรไฟล์ */
+}
+
+.notification-icon {
+    text-decoration: none;
+    font-size: 22px;
+    color: #333;
+}
+
+.notification-icon:hover {
+    color: #ff9800;             /* เปลี่ยนสีตอน hover ให้ดู interactive */
+}
+
+.notif-badge {
+    position: absolute;
+    top: -6px;
+    right: -10px;
+    background-color: #ff4d4f;
+    color: white;
+    padding: 2px 6px;
+    font-size: 11px;
+    border-radius: 50%;
+    font-weight: bold;
+    border: 2px solid white;   /* ทำให้ badge เนียน ไม่ทับ */
+}
