@@ -1,70 +1,2787 @@
 - model: admin.logentry
   pk: 1
   fields:
-    action_time: "2025-09-14T05:42:58.343Z"
+    action_time: '2025-09-14T05:42:58.343Z'
     user: 1
     content_type: 7
-    object_id: "1"
-    object_repr: "สุนัข"
+    object_id: '1'
+    object_repr: สุนัข
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 2
   fields:
-    action_time: "2025-09-14T05:43:11.810Z"
+    action_time: '2025-09-14T05:43:11.810Z'
     user: 1
     content_type: 7
-    object_id: "2"
-    object_repr: "แมว"
+    object_id: '2'
+    object_repr: แมว
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 3
   fields:
-    action_time: "2025-09-14T05:43:30.084Z"
+    action_time: '2025-09-14T05:43:30.084Z'
     user: 1
     content_type: 8
-    object_id: "1"
-    object_repr: "ไม่ล่อแมว"
+    object_id: '1'
+    object_repr: ไม่ล่อแมว
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 4
   fields:
-    action_time: "2025-09-14T06:53:33.901Z"
+    action_time: '2025-09-14T06:53:33.901Z'
     user: 1
     content_type: 4
-    object_id: "2"
-    object_repr: "testuser"
+    object_id: '2'
+    object_repr: testuser
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 5
   fields:
-    action_time: "2025-09-14T06:56:44.235Z"
+    action_time: '2025-09-14T06:56:44.235Z'
     user: 1
     content_type: 4
-    object_id: "3"
-    object_repr: "shop_owner"
+    object_id: '3'
+    object_repr: shop_owner
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 6
   fields:
-    action_time: "2025-09-14T07:49:35.688Z"
+    action_time: '2025-09-14T07:49:35.688Z'
     user: 1
     content_type: 10
-    object_id: "1"
-    object_repr: "Review for ไม่ล่อแมว by pp"
+    object_id: '1'
+    object_repr: Review for ไม่ล่อแมว by pp
     action_flag: 1
     change_message: '[{"added": {}}]'
 - model: admin.logentry
   pk: 7
   fields:
-    action_time: "2025-09-14T13:09:00.140Z"
+    action_time: '2025-09-14T13:09:00.140Z'
     user: 1
     content_type: 4
-    object_id: "1"
-    object_repr: "pp"
+    object_id: '1'
+    object_repr: pp
     action_flag: 2
-    change_message: "[]"
+    change_message: '[]'
+- model: admin.logentry
+  pk: 8
+  fields:
+    action_time: '2025-09-14T13:09:08.066Z'
+    user: 1
+    content_type: 4
+    object_id: '2'
+    object_repr: testuser
+    action_flag: 3
+    change_message: ''
+- model: admin.logentry
+  pk: 9
+  fields:
+    action_time: '2025-09-14T13:46:41.244Z'
+    user: 1
+    content_type: 9
+    object_id: '1'
+    object_repr: pp Profile
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 10
+  fields:
+    action_time: '2025-10-18T07:25:43.873Z'
+    user: 12
+    content_type: 7
+    object_id: '3'
+    object_repr: อาหารสัตว์
+    action_flag: 1
+    change_message: '[{"added": {}}]'
+- model: admin.logentry
+  pk: 11
+  fields:
+    action_time: '2025-10-19T08:02:57.553Z'
+    user: 12
+    content_type: 4
+    object_id: '13'
+    object_repr: Anajak_Puean_Love
+    action_flag: 3
+    change_message: ''
+- model: admin.logentry
+  pk: 12
+  fields:
+    action_time: '2025-10-19T08:31:55.543Z'
+    user: 12
+    content_type: 4
+    object_id: '14'
+    object_repr: Anajak_Puean_Love
+    action_flag: 3
+    change_message: ''
+- model: admin.logentry
+  pk: 13
+  fields:
+    action_time: '2025-12-08T08:24:15.417Z'
+    user: 12
+    content_type: 18
+    object_id: '2'
+    object_repr: 'moa: สอบถามสินค้าได้ไหมคะ'
+    action_flag: 3
+    change_message: ''
+- model: admin.logentry
+  pk: 14
+  fields:
+    action_time: '2025-12-08T08:24:20.487Z'
+    user: 12
+    content_type: 18
+    object_id: '1'
+    object_repr: 'moa: สวัสดีค่ะ'
+    action_flag: 3
+    change_message: ''
+- model: auth.permission
+  pk: 1
+  fields:
+    name: Can add log entry
+    content_type: 1
+    codename: add_logentry
+- model: auth.permission
+  pk: 2
+  fields:
+    name: Can change log entry
+    content_type: 1
+    codename: change_logentry
+- model: auth.permission
+  pk: 3
+  fields:
+    name: Can delete log entry
+    content_type: 1
+    codename: delete_logentry
+- model: auth.permission
+  pk: 4
+  fields:
+    name: Can view log entry
+    content_type: 1
+    codename: view_logentry
+- model: auth.permission
+  pk: 5
+  fields:
+    name: Can add permission
+    content_type: 2
+    codename: add_permission
+- model: auth.permission
+  pk: 6
+  fields:
+    name: Can change permission
+    content_type: 2
+    codename: change_permission
+- model: auth.permission
+  pk: 7
+  fields:
+    name: Can delete permission
+    content_type: 2
+    codename: delete_permission
+- model: auth.permission
+  pk: 8
+  fields:
+    name: Can view permission
+    content_type: 2
+    codename: view_permission
+- model: auth.permission
+  pk: 9
+  fields:
+    name: Can add group
+    content_type: 3
+    codename: add_group
+- model: auth.permission
+  pk: 10
+  fields:
+    name: Can change group
+    content_type: 3
+    codename: change_group
+- model: auth.permission
+  pk: 11
+  fields:
+    name: Can delete group
+    content_type: 3
+    codename: delete_group
+- model: auth.permission
+  pk: 12
+  fields:
+    name: Can view group
+    content_type: 3
+    codename: view_group
+- model: auth.permission
+  pk: 13
+  fields:
+    name: Can add user
+    content_type: 4
+    codename: add_user
+- model: auth.permission
+  pk: 14
+  fields:
+    name: Can change user
+    content_type: 4
+    codename: change_user
+- model: auth.permission
+  pk: 15
+  fields:
+    name: Can delete user
+    content_type: 4
+    codename: delete_user
+- model: auth.permission
+  pk: 16
+  fields:
+    name: Can view user
+    content_type: 4
+    codename: view_user
+- model: auth.permission
+  pk: 17
+  fields:
+    name: Can add content type
+    content_type: 5
+    codename: add_contenttype
+- model: auth.permission
+  pk: 18
+  fields:
+    name: Can change content type
+    content_type: 5
+    codename: change_contenttype
+- model: auth.permission
+  pk: 19
+  fields:
+    name: Can delete content type
+    content_type: 5
+    codename: delete_contenttype
+- model: auth.permission
+  pk: 20
+  fields:
+    name: Can view content type
+    content_type: 5
+    codename: view_contenttype
+- model: auth.permission
+  pk: 21
+  fields:
+    name: Can add session
+    content_type: 6
+    codename: add_session
+- model: auth.permission
+  pk: 22
+  fields:
+    name: Can change session
+    content_type: 6
+    codename: change_session
+- model: auth.permission
+  pk: 23
+  fields:
+    name: Can delete session
+    content_type: 6
+    codename: delete_session
+- model: auth.permission
+  pk: 24
+  fields:
+    name: Can view session
+    content_type: 6
+    codename: view_session
+- model: auth.permission
+  pk: 25
+  fields:
+    name: Can add category
+    content_type: 7
+    codename: add_category
+- model: auth.permission
+  pk: 26
+  fields:
+    name: Can change category
+    content_type: 7
+    codename: change_category
+- model: auth.permission
+  pk: 27
+  fields:
+    name: Can delete category
+    content_type: 7
+    codename: delete_category
+- model: auth.permission
+  pk: 28
+  fields:
+    name: Can view category
+    content_type: 7
+    codename: view_category
+- model: auth.permission
+  pk: 29
+  fields:
+    name: Can add product
+    content_type: 8
+    codename: add_product
+- model: auth.permission
+  pk: 30
+  fields:
+    name: Can change product
+    content_type: 8
+    codename: change_product
+- model: auth.permission
+  pk: 31
+  fields:
+    name: Can delete product
+    content_type: 8
+    codename: delete_product
+- model: auth.permission
+  pk: 32
+  fields:
+    name: Can view product
+    content_type: 8
+    codename: view_product
+- model: auth.permission
+  pk: 33
+  fields:
+    name: Can add profile
+    content_type: 9
+    codename: add_profile
+- model: auth.permission
+  pk: 34
+  fields:
+    name: Can change profile
+    content_type: 9
+    codename: change_profile
+- model: auth.permission
+  pk: 35
+  fields:
+    name: Can delete profile
+    content_type: 9
+    codename: delete_profile
+- model: auth.permission
+  pk: 36
+  fields:
+    name: Can view profile
+    content_type: 9
+    codename: view_profile
+- model: auth.permission
+  pk: 37
+  fields:
+    name: Can add review
+    content_type: 10
+    codename: add_review
+- model: auth.permission
+  pk: 38
+  fields:
+    name: Can change review
+    content_type: 10
+    codename: change_review
+- model: auth.permission
+  pk: 39
+  fields:
+    name: Can delete review
+    content_type: 10
+    codename: delete_review
+- model: auth.permission
+  pk: 40
+  fields:
+    name: Can view review
+    content_type: 10
+    codename: view_review
+- model: auth.permission
+  pk: 41
+  fields:
+    name: Can add entrepreneur
+    content_type: 11
+    codename: add_entrepreneur
+- model: auth.permission
+  pk: 42
+  fields:
+    name: Can change entrepreneur
+    content_type: 11
+    codename: change_entrepreneur
+- model: auth.permission
+  pk: 43
+  fields:
+    name: Can delete entrepreneur
+    content_type: 11
+    codename: delete_entrepreneur
+- model: auth.permission
+  pk: 44
+  fields:
+    name: Can view entrepreneur
+    content_type: 11
+    codename: view_entrepreneur
+- model: auth.permission
+  pk: 45
+  fields:
+    name: Can add chat history
+    content_type: 12
+    codename: add_chathistory
+- model: auth.permission
+  pk: 46
+  fields:
+    name: Can change chat history
+    content_type: 12
+    codename: change_chathistory
+- model: auth.permission
+  pk: 47
+  fields:
+    name: Can delete chat history
+    content_type: 12
+    codename: delete_chathistory
+- model: auth.permission
+  pk: 48
+  fields:
+    name: Can view chat history
+    content_type: 12
+    codename: view_chathistory
+- model: auth.permission
+  pk: 49
+  fields:
+    name: Can add favorite
+    content_type: 13
+    codename: add_favorite
+- model: auth.permission
+  pk: 50
+  fields:
+    name: Can change favorite
+    content_type: 13
+    codename: change_favorite
+- model: auth.permission
+  pk: 51
+  fields:
+    name: Can delete favorite
+    content_type: 13
+    codename: delete_favorite
+- model: auth.permission
+  pk: 52
+  fields:
+    name: Can view favorite
+    content_type: 13
+    codename: view_favorite
+- model: auth.permission
+  pk: 53
+  fields:
+    name: Can add cart item
+    content_type: 14
+    codename: add_cartitem
+- model: auth.permission
+  pk: 54
+  fields:
+    name: Can change cart item
+    content_type: 14
+    codename: change_cartitem
+- model: auth.permission
+  pk: 55
+  fields:
+    name: Can delete cart item
+    content_type: 14
+    codename: delete_cartitem
+- model: auth.permission
+  pk: 56
+  fields:
+    name: Can view cart item
+    content_type: 14
+    codename: view_cartitem
+- model: auth.permission
+  pk: 57
+  fields:
+    name: Can add address
+    content_type: 15
+    codename: add_address
+- model: auth.permission
+  pk: 58
+  fields:
+    name: Can change address
+    content_type: 15
+    codename: change_address
+- model: auth.permission
+  pk: 59
+  fields:
+    name: Can delete address
+    content_type: 15
+    codename: delete_address
+- model: auth.permission
+  pk: 60
+  fields:
+    name: Can view address
+    content_type: 15
+    codename: view_address
+- model: auth.permission
+  pk: 61
+  fields:
+    name: Can add order item
+    content_type: 16
+    codename: add_orderitem
+- model: auth.permission
+  pk: 62
+  fields:
+    name: Can change order item
+    content_type: 16
+    codename: change_orderitem
+- model: auth.permission
+  pk: 63
+  fields:
+    name: Can delete order item
+    content_type: 16
+    codename: delete_orderitem
+- model: auth.permission
+  pk: 64
+  fields:
+    name: Can view order item
+    content_type: 16
+    codename: view_orderitem
+- model: auth.permission
+  pk: 65
+  fields:
+    name: Can add order
+    content_type: 17
+    codename: add_order
+- model: auth.permission
+  pk: 66
+  fields:
+    name: Can change order
+    content_type: 17
+    codename: change_order
+- model: auth.permission
+  pk: 67
+  fields:
+    name: Can delete order
+    content_type: 17
+    codename: delete_order
+- model: auth.permission
+  pk: 68
+  fields:
+    name: Can view order
+    content_type: 17
+    codename: view_order
+- model: auth.permission
+  pk: 69
+  fields:
+    name: Can add chat message
+    content_type: 18
+    codename: add_chatmessage
+- model: auth.permission
+  pk: 70
+  fields:
+    name: Can change chat message
+    content_type: 18
+    codename: change_chatmessage
+- model: auth.permission
+  pk: 71
+  fields:
+    name: Can delete chat message
+    content_type: 18
+    codename: delete_chatmessage
+- model: auth.permission
+  pk: 72
+  fields:
+    name: Can view chat message
+    content_type: 18
+    codename: view_chatmessage
+- model: auth.permission
+  pk: 73
+  fields:
+    name: Can add chat room
+    content_type: 19
+    codename: add_chatroom
+- model: auth.permission
+  pk: 74
+  fields:
+    name: Can change chat room
+    content_type: 19
+    codename: change_chatroom
+- model: auth.permission
+  pk: 75
+  fields:
+    name: Can delete chat room
+    content_type: 19
+    codename: delete_chatroom
+- model: auth.permission
+  pk: 76
+  fields:
+    name: Can view chat room
+    content_type: 19
+    codename: view_chatroom
+- model: auth.user
+  pk: 1
+  fields:
+    password: pbkdf2_sha256$1000000$Ui6IoFKZgYNftexW4T8r6o$PIGyQy6yhR4RV1Scr0w73GHCFKu/RHYLS3bcTo8THz0=
+    last_login: '2025-10-17T08:44:58.999Z'
+    is_superuser: true
+    username: pp
+    first_name: ''
+    last_name: ''
+    email: pakaporn.so.66@ubu.ac.th
+    is_staff: true
+    is_active: true
+    date_joined: '2025-09-14T05:41:28Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 3
+  fields:
+    password: pbkdf2_sha256$1000000$oOWMhsyb35OiMCgmk8cFnC$c9giihfaxk6MqOSZYhzMR2bCfE1I1r6K+UbY6nJyKXs=
+    last_login: null
+    is_superuser: false
+    username: shop_owner
+    first_name: ''
+    last_name: ''
+    email: ''
+    is_staff: false
+    is_active: true
+    date_joined: '2025-09-14T06:56:43.768Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 4
+  fields:
+    password: pbkdf2_sha256$1000000$LLEruqmGPSLcfOguWFyMaN$O2e3knh89OVBmjnZdC36IsPTtvEjwQGHZ430ZPZ3RUo=
+    last_login: '2025-09-16T13:55:21.631Z'
+    is_superuser: false
+    username: ภคพร
+    first_name: ''
+    last_name: ''
+    email: pakaporn632@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-09-16T13:55:13.216Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 5
+  fields:
+    password: ''
+    last_login: '2025-10-08T09:18:12.306Z'
+    is_superuser: false
+    username: aom_05
+    first_name: ''
+    last_name: ''
+    email: aom@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-07T13:22:13.343Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 6
+  fields:
+    password: ''
+    last_login: '2025-10-08T09:29:58.239Z'
+    is_superuser: false
+    username: aom_04
+    first_name: ''
+    last_name: ''
+    email: aom@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-08T09:29:51.725Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 7
+  fields:
+    password: ''
+    last_login: '2025-10-08T09:42:15.611Z'
+    is_superuser: false
+    username: pakaporn
+    first_name: ''
+    last_name: ''
+    email: pakaporn.so.66@ubu.ac.th
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-08T09:42:09.340Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 8
+  fields:
+    password: pbkdf2_sha256$1000000$SyeJvDuqXZpchbVVdwn5cp$vf++KbXV01kGUQm2GvnnuKaHQOap5qrnBCMBMUyDJ3w=
+    last_login: '2025-12-09T17:31:28.720Z'
+    is_superuser: false
+    username: moa
+    first_name: ภคพร
+    last_name: สมจันทร์
+    email: pakaporn.so.66@ubu.ac.th
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-08T09:51:03.085Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 9
+  fields:
+    password: pbkdf2_sha256$1000000$ArbuxRbBbIpmXdDcInZ9cX$ovYvYUfOoAusf0iLWBLKNAmdAQO41B2CpjdIC/Fwf/0=
+    last_login: '2025-10-08T10:29:03.392Z'
+    is_superuser: false
+    username: nun
+    first_name: ''
+    last_name: ''
+    email: nun@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-08T10:28:40.767Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 10
+  fields:
+    password: pbkdf2_sha256$1000000$P9MPTdeg7hKE8pk8RyCqoH$6ujbw8MSFiZQ5l8knlxKOwt4tbcemRxOjes0EbW8MNk=
+    last_login: '2025-12-09T15:53:26.590Z'
+    is_superuser: false
+    username: pan
+    first_name: ''
+    last_name: ''
+    email: pan@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-08T10:34:16.689Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 11
+  fields:
+    password: pbkdf2_sha256$1000000$vdPzeyyVdX2DgKMXPLhOVr$1muGMwed0eKyTdS5p32HTAWvIpKZ6uEn17yVGxK7n6g=
+    last_login: '2025-12-09T13:43:57.251Z'
+    is_superuser: false
+    username: Ma_Noi
+    first_name: ''
+    last_name: ''
+    email: ma@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-17T06:40:33.724Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 12
+  fields:
+    password: pbkdf2_sha256$1000000$ZAbzyibwEuKpvf6vVx0ZXe$Ol465Dv4fO1Du5wma1rFf9KL+XmXsbSRYfO/xpzUQzE=
+    last_login: '2025-12-08T08:23:58.865Z'
+    is_superuser: true
+    username: mama
+    first_name: ''
+    last_name: ''
+    email: pakaporn632@gmail.com
+    is_staff: true
+    is_active: true
+    date_joined: '2025-10-18T07:24:37.883Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 15
+  fields:
+    password: pbkdf2_sha256$1000000$444ZpvGa4adCQrB1rgXvk8$/hJelxtjrnN18Y+W2bIQMXwJZcRiMVwwmkz4fQU3LyM=
+    last_login: '2025-12-10T05:14:20.234Z'
+    is_superuser: false
+    username: Petopia
+    first_name: ''
+    last_name: ''
+    email: Petopia@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-19T08:41:21.171Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 16
+  fields:
+    password: pbkdf2_sha256$1000000$xNnATAhcWfXfsbNHd4SKX3$8MeskuXCtRJq2+6OPxW2q/lIRa4pda/H6m78NEfe/D8=
+    last_login: '2025-12-09T13:04:09.937Z'
+    is_superuser: false
+    username: ClickPet
+    first_name: ''
+    last_name: ''
+    email: ClickPet@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-10-19T08:45:52.712Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 17
+  fields:
+    password: pbkdf2_sha256$1000000$J9vx8gXdLXdfe4h9NrkQXK$RZVgzJlu+lQlUAOG+1ED7rrbothwciL/Mcr5ZOi8kI8=
+    last_login: '2025-12-07T04:24:58.029Z'
+    is_superuser: false
+    username: Groom & Go
+    first_name: ''
+    last_name: ''
+    email: Groom@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2025-12-07T04:24:57.337Z'
+    groups: []
+    user_permissions: []
+- model: contenttypes.contenttype
+  pk: 1
+  fields:
+    app_label: admin
+    model: logentry
+- model: contenttypes.contenttype
+  pk: 2
+  fields:
+    app_label: auth
+    model: permission
+- model: contenttypes.contenttype
+  pk: 3
+  fields:
+    app_label: auth
+    model: group
+- model: contenttypes.contenttype
+  pk: 4
+  fields:
+    app_label: auth
+    model: user
+- model: contenttypes.contenttype
+  pk: 5
+  fields:
+    app_label: contenttypes
+    model: contenttype
+- model: contenttypes.contenttype
+  pk: 6
+  fields:
+    app_label: sessions
+    model: session
+- model: contenttypes.contenttype
+  pk: 7
+  fields:
+    app_label: petjoy
+    model: category
+- model: contenttypes.contenttype
+  pk: 8
+  fields:
+    app_label: petjoy
+    model: product
+- model: contenttypes.contenttype
+  pk: 9
+  fields:
+    app_label: petjoy
+    model: profile
+- model: contenttypes.contenttype
+  pk: 10
+  fields:
+    app_label: petjoy
+    model: review
+- model: contenttypes.contenttype
+  pk: 11
+  fields:
+    app_label: petjoy
+    model: entrepreneur
+- model: contenttypes.contenttype
+  pk: 12
+  fields:
+    app_label: petjoy
+    model: chathistory
+- model: contenttypes.contenttype
+  pk: 13
+  fields:
+    app_label: petjoy
+    model: favorite
+- model: contenttypes.contenttype
+  pk: 14
+  fields:
+    app_label: petjoy
+    model: cartitem
+- model: contenttypes.contenttype
+  pk: 15
+  fields:
+    app_label: petjoy
+    model: address
+- model: contenttypes.contenttype
+  pk: 16
+  fields:
+    app_label: petjoy
+    model: orderitem
+- model: contenttypes.contenttype
+  pk: 17
+  fields:
+    app_label: petjoy
+    model: order
+- model: contenttypes.contenttype
+  pk: 18
+  fields:
+    app_label: petjoy
+    model: chatmessage
+- model: contenttypes.contenttype
+  pk: 19
+  fields:
+    app_label: petjoy
+    model: chatroom
+- model: sessions.session
+  pk: osri5fs5dj3leu7yilz5ahq0tnfvn21j
+  fields:
+    session_data: .eJxVjDsOwjAQBe_iGllO8JeSPmew1utdHEC2FCcV4u4QKQW0b2beS0TY1hK3Tkucs7gIL06_WwJ8UN1BvkO9NYmtrsuc5K7Ig3Y5tUzP6-H-HRTo5VtDwMQQVA7kNJ3twMGMpBgzszbIpMk6tozBOENWez-qATl4DeSTV-L9ARgOOMc:1vSWcT:_ZrSU7Nmvh-SvSCZPzaoCoxzbPHIgfXUUra-c_2yzd8
+    expire_date: '2025-12-22T08:29:21.008Z'
+- model: sessions.session
+  pk: tdznnije5tr7nl01m838zqacq5uujid3
+  fields:
+    session_data: .eJxVjDEOwjAMRe-SGUWNcdyakZ0zVG5sSAE1UtNOiLtDpQ6w_vfef7le1iX3a7W5H9WdXAju8DsOkh42bUTvMt2KT2Va5nHwm-J3Wv2lqD3Pu_t3kKXmb43UgWpLErETbAyixSMgIxGAgZAiD9cWG1JhCbEhocQckBNHMHLvD93UNvU:1vAP71:T-i0Am4XnrwlOPDKA5bgcostZkeXSTqzzwl1oCDqVGY
+    expire_date: '2025-11-02T08:49:59.077Z'
+- model: sessions.session
+  pk: u7xv79cbkzmfv8h15g80odqs8mhlm7r7
+  fields:
+    session_data: .eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1v0MNL:p1Hg1XvgLYEk0wTcpgi4r19h7PIANiISQsKgl3A3ooE
+    expire_date: '2025-10-05T15:53:19.501Z'
+- model: sessions.session
+  pk: vt6pu3annxd3mv2jloqp2ufa1medun32
+  fields:
+    session_data: .eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1uyPYh:1jisc1PR3x6veK_8AVjMOx4iK8YAjaeUplfuhTfUJnE
+    expire_date: '2025-09-30T06:52:59.638Z'
+- model: petjoy.category
+  pk: 1
+  fields:
+    name: Dog
+    display_name: สุนัข
+- model: petjoy.category
+  pk: 2
+  fields:
+    name: Cat
+    display_name: แมว
+- model: petjoy.category
+  pk: 3
+  fields:
+    name: food
+    display_name: อาหารสัตว์
+- model: petjoy.product
+  pk: 1
+  fields:
+    name: ไม้ล่อแมว
+    description: ''
+    price: '129.00'
+    category: 2
+    image: product_images/Cat_teaser_dUhcgQ6.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: null
+- model: petjoy.product
+  pk: 4
+  fields:
+    name: ลูกบอลแมว
+    description: ''
+    price: '89.00'
+    category: 2
+    image: product_images/Cat_Ball.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: null
+- model: petjoy.product
+  pk: 6
+  fields:
+    name: ลูกบอลสุนัข
+    description: ''
+    price: '99.00'
+    category: 1
+    image: product_images/Dog_ball_e7g1Uaf.jpg
+    features: ''
+    total_stock: 5
+    stock: 5
+    food_type: null
+    owner: null
+- model: petjoy.product
+  pk: 12
+  fields:
+    name: ตุ๊กตาปลาทูใส่แคทนิป
+    description: ตุ๊กตาปลาทูขนาดสมจริงที่อัดแน่นไปด้วยแคทนิป (กัญชาแมว) เกรดพรีเมียม
+      ออกแบบมาให้น้องแมวกอดรัดฟัดเหวี่ยงและใช้ขาหลังเตะได้อย่างเต็มที่ ช่วยลดความเครียดและเพิ่มความสุข
+    price: '220.00'
+    category: 2
+    image: product_images/ทท.jpg
+    features: บรรจุแคทนิปออร์แกนิก 100%, เนื้อผ้าทนทานต่อกรงเล็บ, ขนาดเหมาะสำหรับการกอดและเตะ,
+      ช่วยให้แมวผ่อนคลาย
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 14
+  fields:
+    name: อาหารลูกแมว มีโอ(ปลาทะเล) 6.8กก.
+    description: "โปรตีนจากนมและปลาทะเล ช่วยเสริมสร้างการเจริญเติบโตและกล้ามเนื้อที่แข็งแรง\r\
+      \nทอรีนเป็นกรดอะมิโนที่ช่วยบำรุงดวงตาให้สดใส และเพิ่มประสิทธิภาพการมองเห็น\r\
+      \nวิตามินซี มีบทบาทในการช่วยกระตุ้นและเพิ่มประสิทธิภาพให้ระบบภูมิคุ้มกันในร่างกายแมวทำงานได้ดีขี้น\r\
+      \nโอเมก้า 3&6 และแร่ธาตุสังกะสี ช่วยบำรุงผิวหนังและขนให้เงางามมีสุขภาพดี\r\n\
+      FLUTD สูตรพิเศษที่พัฒนาขึ้นเพื่อป้องกันและลดความเสี่ยงการเกิดนิ่วในระบบทางเดินปัสสาวะส่วนล่างของแมว\r\
+      \nแคลเซียม ฟอสฟอรัส และวิตามินดี ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\nสูตรควบคุมปริมาณแร่ธาตุโซเดียม\
+      \ ช่วยลดความเสี่ยงต่อการเกิดโรคไต โรคหัวใจและความดันโลหิต"
+    price: '599.00'
+    category: 3
+    image: product_images/food1_Fl7R1LO.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 1
+- model: petjoy.product
+  pk: 15
+  fields:
+    name: อาหารแมวโต มีโอ(โกเม่) 6.8 กก.
+    description: "สำหรับแมวโตอายุ 1 ปีขึ้นไปทุกสายพันธุ์\r\nทอรีนเป็นกรดอะมิโนที่ช่วยบำรุงดวงตาให้สดใส\
+      \ และเพิ่มประสิทธิภาพการมองเห็น\r\nวิตามินซี มีบทบาทในการช่วยกระตุ้นและเพิ่มประสิทธิภาพให้ระบบ\
+      \ ภูมิคุ้มกันในร่างกายแมวทำงานได้ดีขี้น\r\nโอเมก้า 3&6 และแร่ธาตุสังกะสี ช่วยบำรุงผิวหนังและขนให้เงางามมีสุขภาพดี\r\
+      \nFLUTD สูตรพิเศษที่พัฒนาขึ้นเพื่อป้องกันและลดความเสี่ยงการเกิดนิ่วในระบบทางเดินปัสสาวะส่วนล่างของแมว\r\
+      \nแคลเซียม ฟอสฟอรัส และวิตามินดี ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\nสูตรควบคุมปริมาณแร่ธาตุโซเดียม\
+      \ ช่วยลดความเสี่ยงต่อการเกิดโรคไต โรคหัวใจและความดันโลหิต"
+    price: '599.00'
+    category: 3
+    image: product_images/food2.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 1
+- model: petjoy.product
+  pk: 16
+  fields:
+    name: อาหารแมวโต มีโอ(แซลมอน) 6.8 กก.
+    description: "สำหรับแมวโตอายุ 1 ปีขึ้นไปทุกสายพันธุ์\r\n● ทอรีนเป็นกรดอะมิโนที่ช่วยบำรุงดวงตาให้สดใส\
+      \ และเพิ่มประสิทธิภาพการมองเห็น\r\n● วิตามินซี มีบทบาทในการช่วยกระตุ้นและเพิ่มประสิทธิภาพให้ระบบภูมิคุ้มกันในร่างกายแมวทำงานได้ดีขี้น\r\
+      \n● โอเมก้า 3&6 และแร่ธาตุสังกะสี ช่วยบำรุงผิวหนังและขนให้เงางามมีสุขภาพดี\r\
+      \n● FLUTD สูตรพิเศษที่พัฒนาขึ้นเพื่อป้องกันและลดความเสี่ยงการเกิดนิ่วในระบบทางเดินปัสสาวะส่วนล่างของแมว\r\
+      \n● แคลเซียม ฟอสฟอรัส และวิตามินดี ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\n\
+      ● สูตรควบคุมปริมาณแร่ธาตุโซเดียม ช่วยลดความเสี่ยงต่อการเกิดโรคไต โรคหัวใจและความดันโลหิต"
+    price: '599.00'
+    category: 3
+    image: product_images/food3.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 1
+- model: petjoy.product
+  pk: 17
+  fields:
+    name: อาหารลูกแมว มีโอ(ปลาทู) 6.8 กก.
+    description: "อาหารลูกแมวมีโอ ปลาทู ตั้งแต่หย่านม -1 ปี\r\nอาหารลูกแมวมีโอ รสปลาทู\r\
+      \nเป็นอาหารที่มีสารอาหารครบถ้วนและสมดุล และได้รับการพัฒนาสูตรให้สารอาหารแต่ละชนิดได้ระดับตามความต้องการของลูกแมวที่กำหนดโดย\
+      \ US National Research Council (NRC) และ Association of American Feed Control\
+      \ Officials (AAFCO) ที่เป็นที่ยอมรับของทั่วโลก จึงมั่นใจได้ว่าลูแมวของคุณจะมีสุขภาพดีเมื่อเลี้ยงด้วยอาหารลูกแมวมีโอ\
+      \ รสปลาทู"
+    price: '599.00'
+    category: 3
+    image: product_images/food4.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 1
+- model: petjoy.product
+  pk: 18
+  fields:
+    name: อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.
+    description: "สำหรับแมวโตอายุ 1 ปีขึ้นไปทุกสายพันธุ์\r\nทอรีนเป็นกรดอะมิโนที่ช่วยบำรุงดวงตาให้สดใส\
+      \ และเพิ่มประสิทธิภาพการมองเห็น\r\nวิตามินซี มีบทบาทในการช่วยกระตุ้นและเพิ่มประสิทธิภาพให้ระบบ\
+      \ ภูมิคุ้มกันในร่างกายแมวทำงานได้ดีขี้น\r\nโอเมก้า 3&6 และแร่ธาตุสังกะสี ช่วยบำรุงผิวหนังและขนให้เงางามมีสุขภาพดี\r\
+      \nFLUTD สูตรพิเศษที่พัฒนาขึ้นเพื่อป้องกันและลดความเสี่ยงการเกิดนิ่วในระบบทางเดินปัสสาวะส่วนล่างของแมว\r\
+      \nแคลเซียม ฟอสฟอรัส และวิตามินดี ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\nสูตรควบคุมปริมาณแร่ธาตุโซเดียม\
+      \ ช่วยลดความเสี่ยงต่อการเกิดโรคไต โรคหัวใจและความดันโลหิต"
+    price: '599.00'
+    category: 3
+    image: product_images/food5.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 1
+- model: petjoy.product
+  pk: 19
+  fields:
+    name: KONG Wobbler  ยางกลมซ่อนขนม
+    description: "The KONG Wobbler™  เป็นของเล่น ที่เป็นเครื่องให้อาหารหรือขนมไปในตัว\r\
+      \nรูปทรงของเล่นแบบ KONG จะตั้งขึ้นเหมือนตุ๊กตาล้มลุก และเมื่อน้องหมา กลิ้ง หรือกัด\
+      \ ตัว KONG จะปล่อยอาหาร ออกทางรูเล็กๆ ด้านข้าง\r\nThe KONG Wobbler สามารถใช้เป็นเครื่องลดน้ำหนักให้สุนัข\
+      \ ด้วยการให้น้อง ออกกำลังกาย ตลอดการกิน"
+    price: '159.00'
+    category: 1
+    image: product_images/1.jpg
+    features: "ฝึกสัญชาติญาณการดมกลิ่น และการค้นหาอาหารให้แก่สุนัข\r\nเล่นสนุก ทนทาน\
+      \ กัดเล่นได้\r\nฝึกให้สุนัขออกกำลังกาย ระหว่างมื้ออาหาร\r\nทำความสะอาดง่าย เปิดง่ายด้วยระบบ\
+      \ สกรู\r\nผลิตในประเทศอเมริกา"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 20
+  fields:
+    name: KONG Goodie Bone Extreme  กระดูกยางสีดำ
+    description: "KONG Extreme Goodie Bone ทำจากยางธรรมชาติสูตรพิเศษ สีดำ เหนียวเป็นพิเศษ\
+      \ สำหรับสุนัขพันธ์ใหญ่ กรามแข็งแรง ช่วยเสริมสร้างทักษะ ให้สุนัขสนุกสนานกับการเคี้ยวได้ทั้งวัน\r\
+      \nทีปลายของกระดูด มีช่องสำหรับเสียบขนม เพิ่มความเพลิดเพลิน"
+    price: '220.00'
+    category: 1
+    image: product_images/2.jpg
+    features: "ทำจากยางธรรมชาติ ทนทาน เป็นรูปกระดูกเหมาะแก่การเคี้ยว\r\nช่องเสียบขนมด้านค้างเพิ่มความท้าทาย\r\
+      \nผลิตในประเทศอเมริกา"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 21
+  fields:
+    name: KONG Flyer จานร่อนสีแดง
+    description: "KONG Classic Flyer ทำจากยางธรรมชาติ ที่มีความยืดหยุ่น ยกระดับจานร่อนของเล่นไปอีกระดับ\
+      \ \r\nสามารถร่อนได้ดี ตกไม่แตก และไม่เป็นอันตรายกับสัตว์เลี้ยง สามารถกัดแทะเล่นได้อย่างสบาย"
+    price: '119.00'
+    category: 1
+    image: product_images/3.jpeg
+    features: "ทำจากยางที่มีความยืดหยุ่น กัดได้ ปลอดภัย ไม่เป็นอันตราย\r\nเป็นการออกกำลังกายอย่างดีสำหรับสัตว์เลี้ยง\r\
+      \nผลิตในประเทศอเมริกา"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 22
+  fields:
+    name: KONG Ball Extreme Bounce ลูกบอลยางสีดำ
+    description: "KONG EXTREME BALL ของเล่นสุนัข รุ่น Extreme ทนทาน เหนียวพิเศษ\r\n\
+      ทรงกลมลูกบอล แต่ยังคงมีรูสำหรับใส่ขนมหรืออาหาร เพื่อฝึก IQ สุนัข แก้เบื่อให้สุนัขได้อย่างดี\r\
+      \nเหมาะสำหรับสุนัขที่มีการกัดแทะรุนแรง\r\nทำจากยางธรรมชาติเด้งดึ๋ง ให้กระดอน\
+      \ ทั้งสนุกและได้วิ่งออกกำลังกาย"
+    price: '129.00'
+    category: 1
+    image: product_images/4.jpeg
+    features: "KONG Extreme Black ลูกบอลยางสีดำเพื่อความสนุกในการกัดที่ทนทาน\r\nทนต่อการเจาะเพื่อการเล่นที่ปลอดภัยอย่างต่อเนื่อง\r\
+      \nผลิตในประเทศอเมริกา"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 23
+  fields:
+    name: KONG Dr. Noyz Beaver  ตุ๊กตาบีเวอร์สีน้ำตาลนุ่ม
+    description: "KONG Dr. Noyz Beaver เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '129.00'
+    category: 1
+    image: product_images/5.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\nบีเวอร์ตัวเล็กสีน้ำตาล คล้ายหนู ดึงความสนใจสุนัขได้เป็นอย่างดี\
+      \ สุนัขวิ่งไล่ทุกตัว\r\nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 24
+  fields:
+    name: Kanimal Cat scratcher  รุ่น Curved
+    description: "ของเล่นแมว บันไดลับเล็บแมว รุ่น Curved\r\nขนาด: (57x25x6.5cm)"
+    price: '699.00'
+    category: 2
+    image: product_images/11.jpg
+    features: "พร้อมแคทนิป 1ห่อ เพิ่มความผ่อนคลาย\r\nทำจากกระดาษลูกผูก เป็นมิตรกับสิ่งแวดล้อม\r\
+      \nวัสดุคุณภาพดี แข็งแรง\r\nสามารถใช้ได้ทั้งแบบตั้ง และแบบนอน"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 25
+  fields:
+    name: ของเล่นเบ็ดตกแมว
+    description: ของเล่นสำหรับแมวฝึกทักษะในการกระโดดและเคลื่อนไหว
+    price: '59.00'
+    category: 2
+    image: product_images/12.png
+    features: เพื่อความเพลิดเพลินและออกกำลังกายสำหรับน้องแมว
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 26
+  fields:
+    name: KONG Softi s Fuzzy Bunny  ตุ๊กตากระต่าย
+    description: KONG Softies toys เป็นของเล่นแมวนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง ทนทาน
+      ปลอดภัยต่อแมว มีแคทนิบเกรดพรีเมียมอยู่ภายใน
+    price: '259.00'
+    category: 2
+    image: product_images/13.jpg
+    features: "ทำจากผ้านุ่ม ขนฟู ทนทาน\r\nกระต่ายตัวเล็ก ดึงความสนใจแมวได้เป็นอย่างดี\
+      \ วิ่งไล่ทุกตัว\r\nมีแคทนิบอยู่ภายใน"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 27
+  fields:
+    name: ของเล่นแมวรูปหนู หางขนนก
+    description: ของเล่นแมวรูปหนูด้านในมีเมล็ดจะส่งเสียงเมื่อเขย่าตัว
+    price: '29.00'
+    category: 2
+    image: product_images/15.jpg
+    features: "Length:5cm      \r\nWidth:2.5cm     \r\nTail Length:5cm"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 1
+- model: petjoy.product
+  pk: 28
+  fields:
+    name: อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.
+    description: "สำหรับสุนัขโตทุกสายพันธุ์\r\n● No Animal Protein Added คัดสรรโปรตีนคุณภาพจากพืช\
+      \ เหมาะสำหรับสุนัขที่แพ้โปรตีนจากเนื้อสัตว์\r\n● Reduced Animal Pretein Allergens\
+      \ ลดความเสี่ยงการแพ้โปรตีนจากเนื้อสัตว์\r\n● Optimal Immune Response วิตามินอีและซีลีเนียม\
+      \ ช่วยส่งเสริมการทำงานของระบบภูมิคุ้มกันของร่างกาย\r\n● Complete & Balanced\
+      \ Nutrition ครบถ้วนด้วยคุณค่าสารอาหารที่ช่วยให้สุนัขแข็งแรง และมีสุขภาพดี\r\n\
+      ● Healthy Heart โอเมก้า-3 จากเมล็ดแฟลกซ์ และสารต้านอนุมูลอิสระในน้ำมันรำข้าว\
+      \ ช่วยเสริมสร้างความแข็งแรงให้หัวใจ\r\n● Healthy Skin & Glossy Hair Coat โอเมก้า-3\
+      \ และ -6 ช่วยบำรุงผิวหนังและขนนุ่มสวยเงางาม\r\n● Healthy Digestive System วัตถุดิบคุณภาพ\
+      \ ย่อยง่าย ช่วยเพิ่มประสิทธิภาพของระบบย่อยอาหารและการขับถ่าย"
+    price: '299.00'
+    category: 3
+    image: product_images/16.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 1
+- model: petjoy.product
+  pk: 29
+  fields:
+    name: สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.
+    description: "สำหรับแม่สุนัขตั้งท้องและให้นมลูก และลูกสุนัขช่วงหย่านมถึง 3 เดือน\r\
+      \n• High Protein : โปรตีนสูงและมีคุณภาพ ส่งเสริมการเจริญเติบโตของตัวอ่อน สร้างน้ำนมในแม่สุนัข\
+      \ และส่งเสริมการเติบโตของลูกสุนัขหลังคลอด\r\n• Healthy Digestive System : พรีไบโอติก\
+      \ Galacto-oligosaccharide ช่วยส่งเสริมการเพิ่มแบคทีเรียที่มีประโยชน์ในลำไส้\
+      \ ทำให้สุขภาพของระบบทางเดินอาหารดีขึ้น พร้อมด้วย Yucca Schidigera Extract ช่วยในการลดกลิ่นมูล\r\
+      \n• Enhanced Brain Development : น้ำมันปลาทะเล แหล่งของดีเอชเอ และเลซิทิน แหล่งของโคลีน\
+      \ ช่วยเสริมสร้างพัฒนาการทางสมอง\r\n• Healthy Heart : โอเมก้า 3 จากน้ำมันปลาทะเล\
+      \ ช่วยเสริมสร้างความแข็งแรงให้หัวใจ\r\n• Immune System : วิตามินอีและซีลิเนียม\
+      \ ช่วยส่งเสริมการทำงานของระบบภูมิคุ้มกันของร่างกาย\r\n• Strong Bones & Teeth\
+      \ : แคลเซียมและฟอสฟอรัส ช่วยเสริมสร้างการเจริญเติบโตและความแข็งแรงของกระดูกและฟัน\r\
+      \n• Healthy Skin and Coat : โอเมก้า 3 และ 6 ช่วยบำรุงสุขภาพผิวหนังและสุขภาพขนที่เงางาม\r\
+      \n• Easy Water Absorption : คุณสมบัติพิเศษ เม็ดอาหารสามารถดูดซึมน้ำได้ดี ช่วยให้เคี้ยวได้ง่ายขึ้น"
+    price: '300.00'
+    category: 3
+    image: product_images/17.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 1
+- model: petjoy.product
+  pk: 30
+  fields:
+    name: รางบอลของเล่นสำหรับแมว
+    description: รางบอลแมว 3 ชั้น พร้อมลูกบอลสีสันสดใส 3 ลูก ช่วยกระตุ้นสัญชาตญาณนักล่าและคลายเหงา
+      ดีไซน์หัวแมวสีชมพูพาสเทลสุดน่ารัก ให้น้องแมวเพลิดเพลินได้ด้วยตัวเอง แม้เวลาคุณไม่อยู่
+    price: '199.00'
+    category: 2
+    image: product_images/21.png
+    features: "กระตุ้นสัญชาตญาณ: ส่งเสริมการไล่ล่า ตบ และตะครุบ\r\nบอลไม่หาย: ลูกบอลกลิ้งในราง\
+      \ 3 ชั้น ไม่หลุดออกมาข้างนอก\r\nคลายเครียด: ให้น้องแมวเล่นสนุกได้ด้วยตัวเอง\
+      \ ลดความเบื่อหน่าย\r\nปลอดภัย: วัสดุพลาสติก PP ทนทาน และมีฐานกันลื่น ยึดเกาะพื้นแน่น"
+    total_stock: 10
+    stock: 20
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 31
+  fields:
+    name: รางบอลสปริงค์หนูสีสันสดใส
+    description: รางบอลพร้อมสปริงค์หนูของเล่นสำหรับแมว
+    price: '189.00'
+    category: 2
+    image: product_images/22.png
+    features: "ในเซ็ทมีบอลมาให้ 2 ลูก พร้อมหนูสำหรับตบเพื่อความเพลิดเพลิน\r\nสีสันสดใส\r\
+      \nขนาดฐานกว้าง  25.5cm"
+    total_stock: 10
+    stock: 20
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 32
+  fields:
+    name: Kanimal  เบ็ดตกแมว
+    description: ขนาด ไม้ยาว 40cm  ลูกบอลเส้นผ่านศูนย์กลาง 4.5cm
+    price: '79.00'
+    category: 2
+    image: product_images/23.jpg
+    features: "ฝึกทักษะในการกระโดดและเคลื่อนไหว \r\nเพื่อความเพลิดเพลินและออกกำลังกายสำหรับน้องแมว\r\
+      \nเชือกยืดหยุ่น สปริงตัวบอลเพิ่มความสนุกเมื่อแมวตะปบ"
+    total_stock: 10
+    stock: 20
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 33
+  fields:
+    name: รางบอล UFO  มีแคทนิป
+    description: รางบอล UFO ของเล่นสำหรับแมว มีแคทนิป  (สีม่วง)
+    price: '249.00'
+    category: 2
+    image: product_images/24.png
+    features: "สีม่วงพลาสเทลน่ารัก\r\nมีบอล 3 ลูกในเซท\r\nมีแคทนิป ช่วยให้เเมวผ่อนคลาย"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 34
+  fields:
+    name: แคทนิปแมว รูปถุงมหาสมบัติ
+    description: Pirates Catnip Toy – Pouch of Gold ของเล่นกัญชาแมว รูปถุงมหาสมบัติ
+      (ในซีรีย์ Pirates)
+    price: '99.00'
+    category: 2
+    image: product_images/25.jpg
+    features: "มี catnip เกรดคุณภาพสูง \r\nมีกระดิ่ง \r\nขนนกสีสันสดใส \r\nวัสดุประกอบไปด้วย:\r\
+      \nPolyster, Fabric, Catnip, Crinkle Film."
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 35
+  fields:
+    name: Q-monster Q-balls ลูกบอลฝึกทักษะสุนัข
+    description: ปลุกพลังนักกีฬาในตัวสุนัข! ด้วย Q-monster Q-balls ลูกบอลฝึกทักษะสีสันสดใส
+      มาในถุงตาข่ายพกพาสะดวก เหมาะสำหรับเกมปา-เก็บ (Fetch) ช่วยสร้างปฏิสัมพันธ์ระหว่างคุณกับสุนัข
+      และทำให้น้องหมาได้ออกกำลังกายอย่างเต็มที่
+    price: '200.00'
+    category: 1
+    image: product_images/26.jpg
+    features: "ตัวลูกบอลเคลือบด้วยยางพารา 2 ชั้น ทำให้ทนทาน  เด้งดี เขวี้ยงได้ไกล\
+      \ สุนัขรู้สึกมันส์และเพลิดเพลินที่ได้เล่น\r\nผลิตจากยางพาราธรรมชาติ 100%\r\n\
+      สีสันชัดเจน มี 4 สีในชุด  บีบมีเสียง กระตุ้นความสนใจของสุนัขได้เป็นอย่างดี"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 36
+  fields:
+    name: Petstages Flip & Chew กิ่งไม้แทะเล่นของสุนัข
+    description: Dogwood Flip N Chew ออกแบบมาเพื่อให้ลูกสุนัขของคุณจับอุ้งเท้าได้ง่ายในขณะที่เคี้ยว
+      หรือพลิกไปรอบๆ เพื่อให้เคี้ยวได้ใกล้ยิ่งขึ้น ตัวของเล่นยังออกแบบให้มีรูเฉพาะที่ช่วยให้สุนัขของคุณพกพาของเล่นเคี้ยวชิ้นโปรดจากห้องหนึ่งไปอีกห้องหนึ่งได้
+      ของเล่นเคี้ยวสำหรับสุนัขที่ทนทานชิ้นนี้ไม่มีข้อเสียใดๆ! สันและพื้นผิวที่เป็นเอกลักษณ์บนกระดูกชิ้นนี้ช่วยทำความสะอาดฟันของลูกสุนัขของคุณ
+      พร้อมกับนวดเหงือกทุกครั้งที่เคี้ยว รับรองว่าสดใหม่!
+    price: '399.00'
+    category: 1
+    image: product_images/27.jpg
+    features: "ช่วยทำความสะอาดฟัน\r\nหยิบจับและพกพาสะดวก\r\nของเล่นเคี้ยวที่ปลอดภัยและทนทาน\r\
+      \nไม่แตกเป็นชิ้นเล็กชิ้นน้อย\r\nรสชาติและเนื้อสัมผัสเลียนแบบไม้จริง\r\nทำให้สุนัขเพลิดเพลิน\r\
+      \nการออกแบบตามหลักสรีรศาสตร์\r\nเลอะเทอะน้อยลง"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 37
+  fields:
+    name: KONG Cozie Ali Alligator - ตุ๊กตาจรเข้
+    description: "Kong Cozie Ali Alligator เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '299.00'
+    category: 1
+    image: product_images/28.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\nจรเข้ ขนฟูสีเขียว ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
+      \nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 38
+  fields:
+    name: KONG Cozie Funky Monkey - ตุ๊กตาลิง
+    description: "KONG Cozie Funky Monkey เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '299.00'
+    category: 1
+    image: product_images/29.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\nสิงโต สีฟ้าชมพูสดใส ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
+      \nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 39
+  fields:
+    name: Petstages Dogwood Mesquite - กิ่งไม้แทะเล่นของสุนัข
+    description: "แท่งไม้ แทะสนุกสำหรับสุนัขของ  Petstages รุ่นใหม่ล่าสุด เป็นไม้วัสดุธรรมชาติที่สุนัขแทะ\
+      \ และกินลงไปได้ รูปทรงและกลิ่นที่คุ้นเคย จะช่วยให้สุนัข\r\nมีความสุขมากขึ้น"
+    price: '199.00'
+    category: 1
+    image: product_images/30.jpg
+    features: "แข็งแรงทนทาน รสชาติและรสสัมผัสคือไม้จริงๆ บวกกันกลิ่น BBQ ที่หอมยั่วใจ\
+      \ จะทำให้สุนัขเพลิดเพลินมากขึ้น\r\nความแข็ง ระดับปานกลาง (Medium)\r\nไม่มีเสี้ยน\
+      \ ไม่แตกเป็นชิ้น วัสดุคัดสรรจากไม้ชั้นดี ไม่แตกเป็นแท่งเล็กหรือเสี้ยน ปลอดภัย\
+      \ 100% สำหรับสุนัขของเรา\r\nเป็นของเล่นก็ได้ สุนัขทุกตัวชอบเล่นกิ่งไม้ แน่นอน\
+      \ นี่คืออุปกรณ์ชั้นยอด ที่ช่วยให้คุณมีกิจกรรมกับสุนัข เขวี้ยงไปเก็บ หรือดึงเล่นก็มันส์"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 4
+- model: petjoy.product
+  pk: 40
+  fields:
+    name: อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.
+    description: "สุนัขโต อายุตั้งแต่ 1 ปีขึ้นไป\r\nคุณประโยชน์\r\n• โปรตีน ช่วยซ่อมแซมเนื้อเยื่อต่างๆ\
+      \ ทำให้สุนัขมีโครงสร้างและร่างกายที่สมบูรณ์แข็งแรง\r\n• คาร์โบไฮเดรต เป็นแหล่งพลังงานที่ดีของสุนัข\r\
+      \n• ไขมัน ให้พลังงาน และให้สุนัขมีขนสวย เงางาม\r\n• วิตามินเอ ช่วยบำรุงสายตา\r\
+      \n• วิตามินดี แคลเซียมและฟอสฟอรัส ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\n•\
+      \ ใยอาหาร ช่วยให้ระบบการขับถ่ายทำงานได้อย่างมีประสิทธิภาพ"
+    price: '999.00'
+    category: 3
+    image: product_images/31.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 4
+- model: petjoy.product
+  pk: 41
+  fields:
+    name: อาหารสุนัขโตพันธุ์เล็ก เอโปร รสเนื้อ ไก่ ไข่และผัก 10 กก.
+    description: "สุนัขโตพันธุ์เล็ก อายุตั้งแต่ 1 ปีขึ้นไป\r\nคุณประโยชน์\r\n• โปรตีน\
+      \ ช่วยซ่อมแซมเนื้อเยื่อต่างๆ ทำให้สุนัขมีโครงสร้างและร่างกายที่สมบูรณ์แข็งแรง\r\
+      \n• คาร์โบไฮเดรต เป็นแหล่งพลังงานที่ดีของสุนัข\r\n• ไขมัน ให้พลังงาน และให้สุนัขมีขนสวย\
+      \ เงางาม\r\n• วิตามินเอ ช่วยบำรุงสายตา\r\n• วิตามินดี แคลเซียมและฟอสฟอรัส ช่วยเสริมสร้างกระดูกและฟันของสุนัขให้แข็งแรง\r\
+      \n• ใยอาหาร ช่วยให้ระบบการขับถ่ายทำงานได้อย่างมีประสิทธิภาพ\r\n• ยัคค่า สารสกัดจากธรรมชาติ\
+      \ ช่วยลดกลิ่นมูลแหมาะกับสุนัขที่เลี้ยงภายในบ้าน"
+    price: '499.00'
+    category: 3
+    image: product_images/32.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 4
+- model: petjoy.product
+  pk: 42
+  fields:
+    name: อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.
+    description: "ลูกสุนัขทุกสายพันธุ์ อายุตั้งแต่หย่านม-1ปี\r\nคุณประโยชน์\r\n• โปรตีน\
+      \ ช่วยซ่อมแซมเนื้อเยื่อต่างๆ ทำให้สุนัขมีโครงสร้างและร่างกายที่สมบูรณ์แข็งแรง\r\
+      \n• คาร์โบไฮเดรต เป็นแหล่งพลังงานที่ดีของสุนัข\r\n• ไขมัน ให้พลังงาน และให้สุนัขมีขนสวย\
+      \ เงางาม\r\n• วิตามินเอ ช่วยบำรุงสายตา\r\n• วิตามินดี แคลเซียมและฟอสฟอรัส ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\
+      \n• ใยอาหาร ช่วยให้ระบบการขับถ่ายทำงานได้อย่างมีประสิทธิภาพ"
+    price: '499.00'
+    category: 3
+    image: product_images/33.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 4
+- model: petjoy.product
+  pk: 43
+  fields:
+    name: อาหารลูกสุนัข เอโปร รสตับย่าง 10 กก.
+    description: "ลูกสุนัขทุกสายพันธุ์ อายุตั้งแต่หย่านม-1ปี\r\nคุณประโยชน์\r\n• โปรตีน\
+      \ ช่วยซ่อมแซมเนื้อเยื่อต่างๆ ทำให้สุนัขมีโครงสร้างและร่างกายที่สมบูรณ์แข็งแรง\r\
+      \n• คาร์โบไฮเดรต เป็นแหล่งพลังงานที่ดีของสุนัข\r\n• ไขมัน ให้พลังงาน และให้สุนัขมีขนสวย\
+      \ เงางาม\r\n• วิตามินเอ ช่วยบำรุงสายตา\r\n• วิตามินดี แคลเซียมและฟอสฟอรัส ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\
+      \n• ใยอาหาร ช่วยให้ระบบการขับถ่ายทำงานได้อย่างมีประสิทธิภาพ"
+    price: '499.00'
+    category: 3
+    image: product_images/34.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 4
+- model: petjoy.product
+  pk: 44
+  fields:
+    name: อาหารแมว ซอย แคท 10 กก.
+    description: "สำหรับแมวอายุ 1 ปีขึ้นไป ทุกสายพันธุ์\r\nEssential Benefit\r\n•\
+      \ ลดความเสี่ยงการเกิดโรคไต ด้วยสูตรโซเดียมต่ำ\r\n• บำรุงสุขภาพเหงือกและฟัน ลดความเสี่ยงการเกิดคราบพลัคและหินปูน\
+      \ ด้วยเนื้อสัมผัสของเม็ดอาหาร\r\n• บำรุงผิวหนังให้สุขภาพดีและขนสวยเงางาม ด้วยกรดไขมันโอเมก้า\
+      \ 3 และ 6 สังกะสี และไบโอติน\r\n• บำรุงสายตาและการมองเห็น ด้วยทอรีน\r\n• เสริมสร้างภูมิคุ้มกันร่างกาย\
+      \ ด้วยซีลีเนียมและวิตามิน อี\r\n• เสริมสร้างกระดูกและฟันให้แข็งแรง ด้วยแคลเซียม\
+      \ ฟอสฟอรัส และวิตามิน ดี"
+    price: '599.00'
+    category: 3
+    image: product_images/35.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 4
+- model: petjoy.product
+  pk: 45
+  fields:
+    name: อาหารแมว ซอย แคท รสปลาทูน่า 10 กก.
+    description: "สำหรับแมวโต อายุ 1 ปีขึ้นไป ทุกสายพันธุ์\r\nEssential Benefit\r\n\
+      • ลดความเสี่ยงการเกิดโรคไต ด้วยสูตรโซเดียมต่ำ\r\n• บำรุงสุขภาพเหงือกและฟัน ลดความเสี่ยงการเกิดคราบพลัคและหินปูน\
+      \ ด้วยเนื้อสัมผัสของเม็ดอาหาร\r\n• บำรุงผิวหนังให้สุขภาพดีและขนสวยเงางาม ด้วยกรดไขมันโอเมก้า\
+      \ 3 และ 6 สังกะสี และไบโอติน\r\n• บำรุงสายตาและการมองเห็น ด้วยทอรีน\r\n• เสริมสร้างภูมิคุ้มกันร่างกาย\
+      \ ด้วยซีลีเนียมและวิตามิน อี\r\n• เสริมสร้างกระดูกและฟันให้แข็งแรง ด้วยแคลเซียม\
+      \ ฟอสฟอรัส และวิตามิน ดี"
+    price: '599.00'
+    category: 3
+    image: product_images/36.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 4
+- model: petjoy.product
+  pk: 46
+  fields:
+    name: อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 3 มิกซ์ 20 กก.
+    description: "สำหรับแมวอายุ 1 ปีขึ้นไป ทุกสายพันธุ์\r\n• กรดไขมันโอเมก้า 3 และ\
+      \ 6 สังกะสี และไบโอติน : บำรุงผิวหนังให้มีสุขภาพดี และขนสวยเงางาม\r\n• แคลเซียม\
+      \ ฟอสฟอรัส และวิตามิน ดี : เสริมสร้างกระดูกและฟันให้แข็งแรง\r\n• ทอรีน : บำรุงสายตาและการมองเห็น\r\
+      \n• โคลีน : เสริมสร้างการทำงานของระบบประสาท\r\n• ซีลีเนียมและวิตามิน อี : เสริมสร้างภูมิคุ้มกันในร่างกาย\r\
+      \n• ควบคุมความเค็ม : ลดความเสี่ยงโรคไต\r\n• เนื้อสัมผัสของเม็ดอาหาร : ช่วยลดความเสี่ยงการเกิดคราบแบคทีเรียและหินปูนบนผิวฟั"
+    price: '999.00'
+    category: 3
+    image: product_images/37.png
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 4
+- model: petjoy.product
+  pk: 47
+  fields:
+    name: อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 8 กก.
+    description: "สำหรับแมวอายุ 1 ปีขึ้นไป ทุกสายพันธุ์\r\n• กรดไขมันโอเมก้า 3 และ\
+      \ 6 สังกะสี และไบโอติน : บำรุงผิวหนังให้มีสุขภาพดี และขนสวยเงางาม\r\n• แคลเซียม\
+      \ ฟอสฟอรัส และวิตามิน ดี : เสริมสร้างกระดูกและฟันให้แข็งแรง\r\n• ทอรีน : บำรุงสายตาและการมองเห็น\r\
+      \n• โคลีน : เสริมสร้างการทำงานของระบบประสาท\r\n• ซีลีเนียมและวิตามิน อี : เสริมสร้างภูมิคุ้มกันในร่างกาย\r\
+      \n• ควบคุมความเค็ม : ลดความเสี่ยงโรคไต\r\n• เนื้อสัมผัสของเม็ดอาหาร : ช่วยลดความเสี่ยงการเกิดคราบแบคทีเรียและหินปูนบนผิวฟัน"
+    price: '489.00'
+    category: 3
+    image: product_images/38.png
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 4
+- model: petjoy.product
+  pk: 48
+  fields:
+    name: อาหารลูกสุนัข เอโปร ไอ.คิว.ฟอร์มูล่า 1 กก.
+    description: "สำหรับลูกสุนัขทุกสายพันธุ์\r\nรสชาติอร่อยเป็นที่ชื่นชอบของลูกสุนัข\r\
+      \nครบถ้วนด้วยคุณค่าทางโภชนาการ และสารอาหารที่จำเป็นสำหรับลูกสุนัขของคุณ"
+    price: '89.00'
+    category: 3
+    image: product_images/39.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 4
+- model: petjoy.product
+  pk: 49
+  fields:
+    name: ของเล่นสุนัข เชือกฝ้ายถัก + บอลคู่
+    description: 'ขนาด:  ยาว 30cm, เส้นผ่านศูนย์กลางลูกบอล  7cm.'
+    price: '119.00'
+    category: 1
+    image: product_images/40.jpg
+    features: "เชือกฝ้ายถัก ช่วยขัดฟัน มัดปม \r\nบอลเทนนิสคู่ มีน้ำหนัก เขวี้ยงได้ไกล\r\
+      \nของเล่นชักกะเย่อ สานสัมพันธ์กับสุนัข"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 50
+  fields:
+    name: Nerf Dog Crunchable (Small)
+    description: 'ขนาด: 4 x 2.5 x 2.5 นิ้ว'
+    price: '199.00'
+    category: 1
+    image: product_images/41.jpg
+    features: สนุกกับเกมด้วยลูกบอล Nerf Dog Mega Tough Hydrosport ขนาด 4 นิ้ว! การผสมผสานอันเป็นเอกลักษณ์ระหว่างยางโฟมที่แข็งแรงและ
+      TPR ที่ทนทาน ทนทานต่อการเคี้ยวเป็นเวลานาน พร้อมเสียงเอี๊ยดอ๊าดแบบโต้ตอบที่น้องหมาชื่นชอบ
+      เหมาะสำหรับการโยนและคาบกลับมา หรือเล่นคนเดียว แถมยังลอยน้ำได้อีกด้วย!
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 51
+  fields:
+    name: KONG Cozie Rosie Rhino - แรดม่วงโรซี่
+    description: "Kong Cozie Rosie Rhino เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '299.00'
+    category: 1
+    image: product_images/42.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น คี้ยวมันส์\r\nแรดสีม่วงตัวใหญ่ มีนอขาว ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
+      \nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 52
+  fields:
+    name: KONG Dr. Noyz Teddy Bear - ตุ๊กตาหมีเท็ดดี้
+    description: "KONG Dr. Noyz Teddy Bear เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '299.00'
+    category: 1
+    image: product_images/43.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\nหมีเท็ดดี้ตัวเล็กสีน้ำตาล ดึงความสนใจสุนัขได้เป็นอย่างดี\
+      \ สุนัขวิ่งไล่ทุกตัว\r\nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 53
+  fields:
+    name: Kong Cozie Elmer Elephant - ช้างชมพูเอลเมอร์ขนนุ่ม
+    description: "Kong Cozie Elmer Elephant เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง\
+      \ ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ\r\nเพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา"
+    price: '299.00'
+    category: 1
+    image: product_images/44.jpg
+    features: "ผ้านุ่ม ยืดหยุ่น คี้ยวมันส์\r\nช้างตัวใหญ่ สีชมพูสดใส ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
+      \nมีเสียงอี๊ดๆ เวลากัด"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 54
+  fields:
+    name: Catit Digger ให้อาหารและขนม
+    description: ส่งเสริมให้แมวใช้พลังงานพร้อมกับการกินอาหาร/ขนม ในลักษณะที่สนุกและเป็นธรรมชาติ
+      ด้วยการเล่นกับชาตญาณของแมวที่ชอบเขี่ยอาหารออกมากินทีละเล็กน้อย จึงช่วยให้แมวได้ออกกำลังกาย
+      และลดอาการ binge eating (กินมากเกินไป)
+    price: '399.00'
+    category: 2
+    image: product_images/45.jpg
+    features: ใส่อาหารหรือขนมเข้าไปในท่อหลายๆ อัน เพื่อให้แมวได้ สูดกลิ่นและเขี่ยออกมากิน
+      แต่ละท่อมีปลายลักษณะโค้ง ทำให้ง่ายต่อการใช้งานและทำความสะอาด
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 55
+  fields:
+    name: Catit Play Circuit รางบอลแบบเรียบ
+    description: Play Circuit จะมีรางบอลที่เรียบเสมอพื้น ซึ่งเหมาะสมสำหรับการสร้างความเร็วของลูกบอล
+      สามารถเข้ากันได้กับสินค้า Senses 2.0 รุ่นใหม่ และยาวกว่า circuit รุ่นเก่า 10"/25
+      cm
+    price: '359.00'
+    category: 2
+    image: product_images/46.jpg
+    features: สามารถต่อกันได้อย่างง่ายดาย เพื่อสร้าง layout กว่า 100 แบบ ซึ่ งทำให้คุณสามารถสร้างประสบการณ์สัมผัสใหม่ๆ
+      ให้กับแมวของ คุณอย่างต่อเนื่อง และช่วยรักษาความขี้เล่นของเขาไว้
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 56
+  fields:
+    name: Catit Play Pirates Door Hanger  รูปปู แบบแขวนประตู
+    description: ให้แมวของคุณข่วนและกระโจนเข้าใส่อย่างสุดเหวี่ยงด้วยของเล่นติดประตูแคทนิปแสนสนุกเหล่านี้
+      เพียงแขวนของเล่นไว้กับมือจับประตู ก็ทำให้แมวของคุณเพลิดเพลินได้นานหลายชั่วโมง
+      ขณะที่พวกมันพยายามจับเหยื่อ ของเล่นแต่ละชิ้นอัดแน่นไปด้วยแคทนิปอันเย้ายวนใจ
+    price: '89.00'
+    category: 2
+    image: product_images/47.jpg
+    features: "ของเล่นประตูรูปแคทนิป 2 แบบให้เลือก: ปู/ดาว และ นกแก้ว/ดาว\r\nใช้ได้กับมือจับประตูทุกชนิด\r\
+      \nบรรจุแคทนิป"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 57
+  fields:
+    name: FOFOS Rubik's Cube Hunting กล่องสุ่มเบ็ดตกแมวอัตโนมัติ
+    description: "รุ่น 5ด้าน 7รู \r\nมีสีขาว\r\nใบพัดคู่เลียนแบบการเคลื่อนไหวของเหยื่อจริง\r\
+      \nระบบตรวจจับด้วยอินฟราเรดอัจฉริยะ เมื่อแมวเข้าใกล้ จะเริ่มทำงานอัตโนมัติ\r\n\
+      ระบบหยุดอัตโนมัติหลังเล่น 5 นาที \r\nเพื่อความปลอดภัยและประหยัดพลังงาน\r\nช่องหลบซ่อน\
+      \ 5 ด้าน 7 รู"
+    price: '499.00'
+    category: 2
+    image: product_images/48.png
+    features: "ออกแบบให้แมว ตะปบและเล่นได้รอบทิศ สนุกเหมือนล่าเหยื่อจริง\r\nชาร์จไฟด้วยสาย\
+      \ TYPE-C (แถมสายชาร์จ)"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 58
+  fields:
+    name: Cat it Food Tree เขาวงกตใส่อาหารและขนม
+    description: สามารถปรับระดับความยากง่ายได้หลายระดับ ด้วยการหมุนแผ่นจานที่อยู่ตรงกลาง
+      และการปรับขนาดของช่องเปิดอีกทั้งยังเพิ่มความหลากหลายเข้าไปได้อีกโดยการเปลี่ยนปริมาณอาหารที่ใส่เข้าไปและ/หรือ
+      ตำแหน่งที่ตั้งในบ้านของคุณ
+    price: '599.00'
+    category: 2
+    image: product_images/49.jpg
+    features: "ด้วยช่องเปิดด้านบนที่ แคบจึงป้องกันไม่ให้เข้าถึงอาหารได้โดยง่าย และด้วยฐานล่างที่\
+      \ กว้างและคงทนจึงเพิ่มความมั่นคงแข็งแรง\r\nปรับความยากได้ 3 ระดับ\r\nถอดและทำความสะอาดได้ง่าย"
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.product
+  pk: 59
+  fields:
+    name: อาหารลูกแมวเพาช์มีโอ ปลาทูน่าในเยลลี่ ขนาด 80 กรัม
+    description: ทำจากเนื้อปลาแท้ๆ ผลิตจากวัตถุดิบ สดใหม่ ที่คัดสรรมาอย่างดี ปรุงรสชาติเฉพาะน้องเหมียว
+      เต็มคำกับเนื้อปลา หอม อร่อยถูกใจน้องเหมียว
+    price: '17.00'
+    category: 3
+    image: product_images/51.png
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 5
+- model: petjoy.product
+  pk: 60
+  fields:
+    name: อาหารแมวเพาช์มีโอ ปลาทะเล ขนาด 80 กรัม
+    description: ทำจากเนื้อปลาแท้ๆ ผลิตจากวัตถุดิบ สดใหม่ ที่คัดสรรมาอย่างดี ปรุงรสชาติเฉพาะน้องเหมียว
+      เต็มคำกับเนื้อปลา หอม อร่อยถูกใจน้องเหมียว
+    price: '17.00'
+    category: 3
+    image: product_images/52.png
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 5
+- model: petjoy.product
+  pk: 61
+  fields:
+    name: มีโอ อาหารแมวเพาช์ ปลาทูน่าในเยลลี่ ขนาด 80 กรัม
+    description: ทำจากเนื้อปลาแท้ๆ ผลิตจากวัตถุดิบ สดใหม่ ที่คัดสรรมาอย่างดี ปรุงรสชาติเฉพาะน้องเหมียว
+      เต็มคำกับเนื้อปลา หอม อร่อยถูกใจน้องเหมียว
+    price: '17.00'
+    category: 3
+    image: product_images/53.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 5
+- model: petjoy.product
+  pk: 62
+  fields:
+    name: อาหารแมวเพาช์มีโอ ปลาทูกับปลาซาร์ดีน ขนาด 80 กรัม
+    description: ทำจากเนื้อปลาแท้ๆ ผลิตจากวัตถุดิบ สดใหม่ ที่คัดสรรมาอย่างดี ปรุงรสชาติเฉพาะน้องเหมียว
+      เต็มคำกับเนื้อปลา หอม อร่อยถูกใจน้องเหมียว
+    price: '17.00'
+    category: 3
+    image: product_images/54.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 5
+- model: petjoy.product
+  pk: 63
+  fields:
+    name: อาหารลูกแมวเพาช์มีโอ ปลาทูน่าพร้อมปลาซาร์ดีนในเยลลี่ ขนาด 80 กรัม
+    description: ''
+    price: '17.00'
+    category: 3
+    image: product_images/55.jpg
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: cat
+    owner: 5
+- model: petjoy.product
+  pk: 64
+  fields:
+    name: เพดดิกรี อาหารสุนัขโตรสไก่และผัก1.5กก.
+    description: กรดไขมันโอเมก้า 6 และสังกะสี เพื่อสุขภาพผิวที่ดี พร้อมขนนุ่มสวยเงางาม
+      แคลเซียมและฟอสฟอรัส เสริมสร้างกระดูกและฟันให้แข็งแรง ใยอาหาร ช่วยให้มีระบบย่อยอาหารและการขับถ่ายที่ดี
+      โปรตีน เพื่อกล้ามเนื้อที่แข็งแรงสมบูรณ์ วิตามินและแร่ธาตุ ช่วยให้ระบบต่างๆของร่างกายทำงานได้อย่างมีประสิทธิภาพ
+      สำหรับสุนัขโตเต็มวัย
+    price: '209.00'
+    category: 3
+    image: product_images/56.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 65
+  fields:
+    name: เพดดิกรี อาหารเปียกสุนัขแบบกระป๋องสูตรเนื้อไก่ 700ก.
+    description: ให้สุนัขของคุณได้เพลิดเพลินไปกับการอิ่มอร่อยพร้อมกับรับสารอาหารอย่างครบถ้วน
+      ด้วยอาหารสุนัขสำเร็จรูปหลากหลายรสชาติจาก Pedigree ที่คัดสรรส่วนผสมทุกอย่างได้อย่างลงตัวและมีประโยชน์ที่สุด
+      ผลิตจากเนื้อคุณภาพ สารอาหารครบถ้วน มีรสชาติอร่อย ทำจากเนื้อสัตว์ ความจุ 700
+      กรัม
+    price: '109.00'
+    category: 3
+    image: product_images/57.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 66
+  fields:
+    name: เพดดิกรี กระป๋องรสเนื้อ 400ก.
+    description: Pedigree Can Beef อาหารสุนัขเปียก ชนิดกระป๋อง รสเนื้อวัว (400 g)
+      เพดดิกรี ชนิดเปียกแบบกระป๋อง เนื้อวัว มีชิ้นเนื้อนุ่ม อร่อย มีรสชาติที่เค้ารัก
+      พร้อมคุณค่าที่เค้าต้องการ รวมไปถึงวิตามิน แร่ธาตุ แคลเซียม โอเมก้าและซิงค์ ไฟเบอร์
+      และ โปรตีน ให้เค้าแข็งแรงมีชีวิตชีวา จากภายในสู่ภายนอก จุดเด่น ทำจากเนื้อสัตว์และเส้นใยอาหารจากธรรมชาติที่คัดสรรแล้ว
+      ผ่านการปรุงด้วยความร้อนที่พอเหมาะให้เนื้อมีความนุ่มเพื่อรสชาติที่สุนัขชื่นชอบ
+      อุดมด้วยวิตามินอี และ โอเมก้า 6 เพื่อสุขภาพผิวที่ดีและขนสวยเป็นเงางาม คุณค่าสารอาหารครบถัวนและสมดุล
+    price: '65.00'
+    category: 3
+    image: product_images/58.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 67
+  fields:
+    name: เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.
+    description: พดดิกรี®เดนต้าสติก 80% ของสุนัขโตเต็มวัยมีปัญหาสุขภาพเหงือก แต่เจ้าของกว่า
+      90% ไม่เคยรู้ คนและสุนัขแตกต่างกัน ในขณะที่คนมีปัญหาฟันผุ แต่สำหรับสุนัขนั้นปัญหาสุขภาพเหงือกเป็นโรคทางช่องปากที่สำคัญ
+      ซึ่งเกิดจากคราบพลัคและระบบคุ้มกันของร่างกายต่อคราบพลัค เพดดิกรี เดนต้าสติก ขนมขัดฟันรูปทรงตัว
+      X ที่เป็นเอกลักษณ์จากเพดดิกรี พร้อมออกแบบให้เหมาะกับสุนัขแต่ละขนาด ช่วยลดการก่อตัวของคราบพลัคและหินปูน
+      ด้วยเนื้อสัมผัสที่ช่วยขัดฟัน พร้อมซิงค์ ซัลเฟตและเอสทีพีพีที่เข้าทำงานในขณะที่สุนัขของคุณเคี้ยว
+      เพื่อให้สุนัขของคุณไกลโรคเหงือก มีสุขภาพช่องปากที่ดีและมีความสุขในทุกๆวันทางช่องปากที่สำคัญ
+      ซึ่งเกิดจากคราบพลัคและระบบคุ้มกันของร่างกายต่อคราบพลัค เพดดิกรี เดนต้าสติก ขนมขัดฟันรูปทรงตัว
+      X ที่เป็นเอกลักษณ์จากเพดดิกรี ช่วยลดการก่อตัวของคราบพลัคและหินปูน ด้วยเนื้อสัมผัสที่ช่วยขัดฟัน
+      พร้อมซิงค์ ซัลเฟตและเอสทีพีพีที่เข้าทำงานในขณะที่สุนัขของคุณเคี้ยว เพื่อให้สุนัขของคุณไกลโรคเหงือก
+      มีสุขภาพช่องปากที่ดีและมีความสุขในทุกๆวัน
+    price: '59.00'
+    category: 3
+    image: product_images/59.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 68
+  fields:
+    name: เพดดิกรี เพาซ์ สูตรสุนัขโตรสไก่ชิ้นในน้ำเกรวี่ 130ก.
+    description: "ทำจากเนื้อสัตว์และเส้นใยอาหารจากธรรมชาติที่คัดสรรแล้ว อุดมด้วยวิตามินอี\
+      \ และ โอเมก้า 6 เพื่อสุขภาพผิวที่ดีและขนสวยเป็นเงา รสวัวและไก่ชิ้น\r\nเพดดิกรี®\
+      \ ชนิดเปียกแบบซอง รสเนื้อวัวและไก่ชิ้นในน้ำเกรวี่ ด้วยสูตรเนื้อชิ้นในน้ำเกรวี่\
+      \ อร่อยเข้มข้น เพื่อรสชาติที่เค้ารัก พร้อมคุณค่าสารอาหารครบถ้วนและสมดุล รวมไปถึงวิตามิน\
+      \ แร่ธาตุ แคลเซียม โอเมก้าและซิงค์ ไฟเบอร์ และ โปรตีน ให้เค้าแข็งแรง สุขภาพดีครบ\
+      \ 5 ประการ\r\nจุดเด่น\r\n1.ทำจากเนื้อสัตว์และเส้นใยอาหารจากธรรมชาติที่คัดสรรแล้ว\
+      \ ผ่านการปรุงด้วยความร้อนที่พอเหมาะให้เนื้อมีความนุ่มเพื่อรสชาติที่สุนัขชื่นชอบ\r\
+      \n2. บรรจุในซองฟอยล์พิเศษ คงความอร่อย สดใหม่ และกลิ่นหอม ของเนื้อชิ้นในน้ำซอสเข้มข้น\r\
+      \n3. อุดมด้วยวิตามินอี และ โอเมก้า 6 เพื่อสุขภาพผิวที่ดีและขนสวยเป็นเงา\r\n\
+      4. คุณค่าสารอาหารครบถัวนและสมดุลเพื่อสุขภาพที่ดีครบ 5 ประการ"
+    price: '29.00'
+    category: 3
+    image: product_images/60.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 69
+  fields:
+    name: เพดดิกรี อาหารสูตรสุนัขโตพันธุ์เล็กรสตับย่าง 1.3กก.
+    description: เพดดิกรี® แบบเม็ด สูตรสุนัขพันธุ์เล็ก เพื่อให้สุนัขมีสุขภาพดีครบ
+      5 ประการ ช่วยให้ขนสุขภาพดีเงางามขึ้นภายใน 6 สัปดาห์ อุดไปด้วยวิตามินและแร่ธาตุถึง
+      23 ชนิด เพดดิกรี®อาหารสุนัขชนิดแห้ง แบบเม็ด คิดค้นและมุ่งพัฒนาสูตรอาหารสำหรับลูกสุนัขพันธุ์เล็กโดยเฉพาะ
+      อุดมไปด้วยสารอาหารที่มีประโยชน์ ช่วยให้ลูกสุนัขมีสุขภาพดีครบทั้ง 5 ประการ มีกรดไขมันโอเมก้า
+      6 และสังกะสี ซึ่งได้รับการพิสูจน์ทางวิทยาศาสตร์แล้วว่าช่วยให้ขนสุขภาพดีเงางามขึ้นภายใน
+      6 สัปดาห์! ประกอบด้วยวิตามินและแร่ธาตุ 23 ชนิด เพื่อเสริมสร้างภูมิคุ้มกันที่ดี
+      ช่วยให้แข็งแรง มีเม็ดขนาดเล็กและมีทตี้ พ็อกเก็ตส์ (R) เพื่อเพิ่มรสชาติ ที่แสนอร่อยในแต่ละมื้อ
+    price: '175.00'
+    category: 3
+    image: product_images/ทดสอบอาหาร.webp
+    features: ''
+    total_stock: 0
+    stock: 0
+    food_type: dog
+    owner: 5
+- model: petjoy.product
+  pk: 70
+  fields:
+    name: Kanimal Cat Toy ตุ๊กตา Mini Bear ยัดไส้ Catnip กัญชาแมว
+    description: Kanimal Cat Toy ของเล่นแมว ของเล่นตุ๊กตา Mini Bear ยัดไส้ Catnip
+      กัญชาแมว สำหรับแมวทุกสายพันธุ์ ขนาด 7.5x13.5 ซม.
+    price: '189.00'
+    category: 2
+    image: product_images/ทดสอบของเลน.jpg
+    features: Kanimal ของเล่นแมวยัดไส้ Catnip ผลิตจากผ้าอย่างดี ไม่เป็นอันตรายต่อน้องเเมว
+      สามารถยัด Catnip เพิ่มลงบนของเล่นได้
+    total_stock: 0
+    stock: 0
+    food_type: null
+    owner: 5
+- model: petjoy.profile
+  pk: 1
+  fields:
+    user: 1
+    image: profile_pics/458440515_1254363705538350_6279119048900114851_n.jpg
+    favorites:
+    - 12
+- model: petjoy.profile
+  pk: 2
+  fields:
+    user: 4
+    image: profile_pics/default.jpg
+    favorites: []
+- model: petjoy.profile
+  pk: 3
+  fields:
+    user: 5
+    image: profile_pics/2ca1a0e050d0803adcdf6db37639506e.jpg
+    favorites: []
+- model: petjoy.profile
+  pk: 4
+  fields:
+    user: 6
+    image: profile_pics/2ca1a0e050d0803adcdf6db37639506e_EYrWo2r.jpg
+    favorites: []
+- model: petjoy.profile
+  pk: 5
+  fields:
+    user: 7
+    image: profile_pics/ทดสอบ.jpg
+    favorites: []
+- model: petjoy.profile
+  pk: 6
+  fields:
+    user: 8
+    image: profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg
+    favorites:
+    - 43
+    - 23
+    - 14
+    - 47
+    - 69
+- model: petjoy.profile
+  pk: 7
+  fields:
+    user: 9
+    image: ''
+    favorites: []
+- model: petjoy.profile
+  pk: 8
+  fields:
+    user: 10
+    image: ''
+    favorites:
+    - 1
+- model: petjoy.profile
+  pk: 9
+  fields:
+    user: 11
+    image: ''
+    favorites: []
+- model: petjoy.profile
+  pk: 11
+  fields:
+    user: 12
+    image: ''
+    favorites: []
+- model: petjoy.profile
+  pk: 13
+  fields:
+    user: 15
+    image: ''
+    favorites: []
+- model: petjoy.profile
+  pk: 14
+  fields:
+    user: 16
+    image: ''
+    favorites: []
+- model: petjoy.review
+  pk: 1
+  fields:
+    product: 1
+    user: 1
+    rating: 3
+    comment: ของใช้ได้ แต่ด้ามจับไม่ค่อยแข็งแรงเท่าไร แมวเล่นแป๊บเดียวก็เบื่อบ้างบางครั้ง
+      ถือว่าพอใช้ได้แต่ยังไม่ประทับใจมากนักครับ
+    created_at: '2025-09-14T07:49:35.672Z'
+- model: petjoy.chathistory
+  pk: 1
+  fields:
+    user: 1
+    user_message: แนะนำสินค้าแมวราคาไม่เกินร้อยหน่อยค่ะ
+    ai_response: 'แนะนำ ลูกบอลแมว ราคา 89 บาท  เป็นของเล่นที่แมวชอบเล่นค่ะ  หรือถ้าอยากให้แมวได้กัดเล่นด้วย  ของเล่นกันแทะ
+      ราคา 129 บาท  อาจจะเกินงบเล็กน้อยแต่คุ้มค่าค่ะ
+
+      '
+    created_at: '2025-09-14T10:30:07.511Z'
+- model: petjoy.chathistory
+  pk: 2
+  fields:
+    user: 1
+    user_message: แนะนำสินค้าหน่อย
+    ai_response: 'สวัสดีค่ะ!  เราขอแนะนำ ลูกบอลแมว ราคา 89 บาท  และ ลูกบอลสุนัข ราคา
+      99 บาท  สำหรับเล่นสนุกๆ  หรือถ้าชอบไม้ล่อแมว ก็มีราคา 159 บาทค่ะ
+
+      '
+    created_at: '2025-09-14T14:11:20.918Z'
+- model: petjoy.chathistory
+  pk: 3
+  fields:
+    user: null
+    user_message: แนะนำของน้องแมว
+    ai_response: 'ยินดีค่ะ!  สำหรับน้องแมว เราแนะนำ ลูกบอลแมว ราคา 89 บาท หรือ ไม้ล่อแมว
+      ราคา 159 บาท  เลือกได้ตามความชอบของน้องแมวเลยค่ะ
+
+      '
+    created_at: '2025-09-16T10:42:03.569Z'
+- model: petjoy.chathistory
+  pk: 4
+  fields:
+    user: null
+    user_message: สวัสดีค่ะ
+    ai_response: 'สวัสดีค่ะ ยินดีต้อนรับสู่ PetJoy!  มีอะไรให้ PetJoy Bot ช่วยเหลือบ้างคะ?
+
+      '
+    created_at: '2025-09-16T13:43:54.641Z'
+- model: petjoy.chathistory
+  pk: 5
+  fields:
+    user: null
+    user_message: สินค้าน้องหมา
+    ai_response: 'สำหรับน้องหมา เรามีลูกบอลสุนัข ราคา 99 บาท  เหมาะสำหรับเล่นสนุกๆ
+      ค่ะ
+
+      '
+    created_at: '2025-09-16T13:44:10.032Z'
+- model: petjoy.chathistory
+  pk: 6
+  fields:
+    user: 4
+    user_message: แนะนำสินค้าน้องแมวหน่อยค่ะ
+    ai_response: 'สำหรับน้องแมว แนะนำ ลูกบอลแมว ราคา 89 บาท  หรือ ไม้ล่อแมว ราคา 159
+      บาทค่ะ  เลือกได้ตามความชอบของน้องแมวเลย
+
+      '
+    created_at: '2025-09-16T13:56:33.294Z'
+- model: petjoy.chathistory
+  pk: 7
+  fields:
+    user: 4
+    user_message: ดี
+    ai_response: 'ยินดีที่ได้ช่วยเหลือค่ะ!  ต้องการทราบอะไรเพิ่มเติมคะ?  หากสนใจของเล่นสำหรับสัตว์เลี้ยง
+      เรามีลูกบอลแมว (89 บาท), ลูกบอลสุนัข (99 บาท) และไม้ล่อแมว (159 บาท) ค่ะ
+
+      '
+    created_at: '2025-09-16T13:57:00.967Z'
+- model: petjoy.chathistory
+  pk: 8
+  fields:
+    user: 1
+    user_message: สินค้าสุนัข
+    ai_response: 'ร้านเรามีลูกบอลสุนัข ราคา 99 บาท  เหมาะสำหรับเล่นกับสุนัขของคุณค่ะ  สนใจสินค้าอื่นๆเพิ่มเติมไหมคะ
+
+      '
+    created_at: '2025-09-16T15:04:20.091Z'
+- model: petjoy.chathistory
+  pk: 9
+  fields:
+    user: 1
+    user_message: ดี
+    ai_response: 'ขออภัยค่ะ ฉันไม่เข้าใจคำถามของคุณ  คุณต้องการทราบข้อมูลเกี่ยวกับสินค้าของเราหรือไม่คะ?  ถ้าใช่
+      โปรดแจ้งรายละเอียดเพิ่มเติม เช่น สัตว์เลี้ยงที่คุณเลี้ยง หรือประเภทของสินค้าที่คุณสนใจค่ะ
+
+      '
+    created_at: '2025-09-16T16:56:21.980Z'
+- model: petjoy.chathistory
+  pk: 10
+  fields:
+    user: null
+    user_message: cat
+    ai_response: 'สนใจของเล่นแมวหรือคะ?  เรามีลูกบอลแมว ราคา 89 บาท และไม้ล่อแมว ราคา
+      129 บาทค่ะ  สนใจแบบไหนดีคะ
+
+      '
+    created_at: '2025-09-17T07:08:57.365Z'
+- model: petjoy.chathistory
+  pk: 11
+  fields:
+    user: 1
+    user_message: แนะนำสินค้าแมว
+    ai_response: 'แนะนำ ลูกบอลแมว ราคา 89 บาท และ ไม้ล่อแมว ราคา 129 บาท  ค่ะ  เล่นสนุก
+      เพิ่มความเพลิดเพลินให้เจ้าเหมียว
+
+      '
+    created_at: '2025-09-17T12:28:27.917Z'
+- model: petjoy.chathistory
+  pk: 12
+  fields:
+    user: null
+    user_message: แนะนำสินค้า
+    ai_response: 'สวัสดีค่ะ!  PetJoy มีลูกบอลแมว (89 บาท), ลูกบอลสุนัข (99 บาท) และไม้ล่อแมว
+      (129 บาท)  สนใจสินค้าชิ้นไหนคะ?
+
+      '
+    created_at: '2025-09-17T12:34:30.787Z'
+- model: petjoy.chathistory
+  pk: 13
+  fields:
+    user: null
+    user_message: แนะนำสินค้าน้องแมว
+    ai_response: 'สำหรับน้องแมว เราแนะนำ ลูกบอลแมว ราคา 89 บาท  หรือ ไม้ล่อแมว ราคา
+      129 บาท  ช่วยเพิ่มความสนุกและการออกกำลังกายให้แมวของคุณได้ค่ะ
+
+      '
+    created_at: '2025-09-17T12:37:10.438Z'
+- model: petjoy.chathistory
+  pk: 14
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:37:44.856Z'
+- model: petjoy.chathistory
+  pk: 15
+  fields:
+    user: null
+    user_message: สุนัข
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:42:34.861Z'
+- model: petjoy.chathistory
+  pk: 16
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:51:11.711Z'
+- model: petjoy.chathistory
+  pk: 17
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:52:49.251Z'
+- model: petjoy.chathistory
+  pk: 18
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:54:08.186Z'
+- model: petjoy.chathistory
+  pk: 19
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:56:03.913Z'
+- model: petjoy.chathistory
+  pk: 20
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:57:50.698Z'
+- model: petjoy.chathistory
+  pk: 21
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-28T16:58:38.003Z'
+- model: petjoy.chathistory
+  pk: 22
+  fields:
+    user: 1
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-29T01:30:42.489Z'
+- model: petjoy.chathistory
+  pk: 23
+  fields:
+    user: 1
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-29T01:34:34.625Z'
+- model: petjoy.chathistory
+  pk: 24
+  fields:
+    user: 1
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-29T01:38:32.775Z'
+- model: petjoy.chathistory
+  pk: 25
+  fields:
+    user: 1
+    user_message: แมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-09-29T01:41:44.806Z'
+- model: petjoy.chathistory
+  pk: 26
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-10-07T08:34:16.010Z'
+- model: petjoy.chathistory
+  pk: 27
+  fields:
+    user: null
+    user_message: แนะนำสินค้า
+    ai_response: PetJoy Bot ยินดีให้บริการค่ะ ที่ร้านมีของเล่นสำหรับทั้งสุนัขและแมวค่ะ
+      มีทั้งลูกบอล และไม้ล่อแมว ไม่ทราบว่าคุณลูกค้ามองหาสินค้าให้สัตว์เลี้ยงชนิดใดคะ
+    created_at: '2025-10-07T08:35:43.445Z'
+- model: petjoy.chathistory
+  pk: 28
+  fields:
+    user: null
+    user_message: ขอน้องแมว
+    ai_response: 'PetJoy Bot ยินดีให้บริการครับ
+
+      สำหรับน้องแมว เรามีของเล่นแนะนำ 2 รายการ คือ ลูกบอลแมว ราคา 89 บาท และไม้ล่อแมว
+      ราคา 129 บาทครับ'
+    created_at: '2025-10-07T08:36:09.006Z'
+- model: petjoy.chathistory
+  pk: 29
+  fields:
+    user: null
+    user_message: น้อ
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ หากเป็นน้องแมว เรามีลูกบอลแมว
+      (89.-) และไม้ล่อแมว (129.-) ค่ะ แต่ถ้าเป็นน้องหมา เราก็มีลูกบอลสุนัข (99.-)
+      ให้เลือกนะคะ
+    created_at: '2025-10-07T09:13:27.107Z'
+- model: petjoy.chathistory
+  pk: 30
+  fields:
+    user: null
+    user_message: น้องแมว
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+      สำหรับน้องแมว ทางร้านมีของเล่นแนะนำคือ ลูกบอลแมว (89 บาท) และ ไม้ล่อแมว (129
+      บาท) ให้น้องได้สนุกเพลิดเพลินค่ะ'
+    created_at: '2025-10-07T09:13:28.922Z'
+- model: petjoy.chathistory
+  pk: 31
+  fields:
+    user: 5
+    user_message: สินค้าน้องแมวมีอะไรบ้าง
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      สำหรับน้องแมวเรามี "ลูกบอลแมว" ราคา 89 บาท และ "ไม้ล่อแมว" ราคา 129 บาทค่ะ ทั้งสองอย่างเป็นของเล่นยอดนิยมที่น้องแมวจะต้องชอบแน่นอนค่ะ'
+    created_at: '2025-10-07T16:29:33.191Z'
+- model: petjoy.chathistory
+  pk: 32
+  fields:
+    user: 5
+    user_message: แนะนำสินค้าน้องแมวหน่อย
+    ai_response: PetJoy Bot ยินดีให้บริการค่ะ สำหรับน้องแมว ขอแนะนำ "ลูกบอลแมว" (89
+      บาท) และ "ไม้ล่อแมว" (129 บาท) ค่ะ เป็นของเล่นยอดนิยมที่ช่วยให้น้องแมวได้ออกกำลังกายและสนุกสนาน
+      รับรองว่าถูกใจแน่นอนค่ะ
+    created_at: '2025-10-08T08:00:13.474Z'
+- model: petjoy.chathistory
+  pk: 33
+  fields:
+    user: 5
+    user_message: สุนัข
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ
+
+
+      สำหรับน้องสุนัข เรามี "ลูกบอลสุนัข" ราคา 99 บาทครับ เหมาะสำหรับให้น้องได้วิ่งเล่นและออกกำลังกายอย่างสนุกสนาน'
+    created_at: '2025-10-08T08:15:01.239Z'
+- model: petjoy.chathistory
+  pk: 34
+  fields:
+    user: 8
+    user_message: สินค้าแมว
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการ
+
+
+      สำหรับน้องแมว ทางร้านมี "ลูกบอลแมว" (89 บาท) และ "ไม้ล่อแมว" (129 บาท) ให้เลือกครับ
+      เป็นของเล่นยอดนิยมที่น้องแมวชื่นชอบมากครับ'
+    created_at: '2025-10-08T09:52:01.397Z'
+- model: petjoy.chathistory
+  pk: 35
+  fields:
+    user: 10
+    user_message: น้องหมา
+    ai_response: สำหรับน้องหมา PetJoy Bot ขอแนะนำ "ลูกบอลสุนัข" ในราคาเพียง 99 บาทค่ะ
+      เหมาะสำหรับให้น้องได้วิ่งเล่นสนุกและออกกำลังกายเพื่อสุขภาพที่แข็งแรงค่ะ
+    created_at: '2025-10-08T10:35:22.166Z'
+- model: petjoy.chathistory
+  pk: 36
+  fields:
+    user: 1
+    user_message: สินค้าสุนัข
+    ai_response: สำหรับน้องสุนัข เรามี "ลูกบอลสุนัข" ราคา 99 บาทค่ะ เป็นของเล่นที่ช่วยให้น้องๆ
+      ได้ออกกำลังกายและสนุกสนานเพลิดเพลิน
+    created_at: '2025-10-16T15:55:30.930Z'
+- model: petjoy.chathistory
+  pk: 37
+  fields:
+    user: 8
+    user_message: แมว
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      สำหรับน้องแมว เรามีของเล่นแนะนำคือ ลูกบอลแมว, ไม้ล่อแมว และตุ๊กตาปลาทูใส่แคทนิปค่ะ
+      โดยเฉพาะตุ๊กตาปลาทูจะช่วยให้น้องแมวผ่อนคลายและมีความสุขมากเป็นพิเศษค่ะ'
+    created_at: '2025-10-17T08:46:25.245Z'
+- model: petjoy.chathistory
+  pk: 38
+  fields:
+    user: 8
+    user_message: ของแมวทั้งหมด
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ
+
+
+      สินค้าสำหรับน้องแมวทั้งหมดที่มีจำหน่าย ได้แก่ ลูกบอลแมว, ไม้ล่อแมว, ตุ๊กตาปลาทูใส่แคทนิป
+      และอาหารลูกแมว มีโอ รสปลาทะเลครับ สนใจชิ้นไหนเป็นพิเศษสอบถามได้เลยครับ'
+    created_at: '2025-10-18T09:11:57.181Z'
+- model: petjoy.chathistory
+  pk: 39
+  fields:
+    user: 8
+    user_message: อาหารแมว แมวเด็กกินำได้ไหม
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      ได้ค่ะ ที่ร้านมี "อาหารลูกแมว มีโอ รสปลาทะเล" สำหรับลูกแมวโดยเฉพาะ ช่วยเสริมสร้างการเจริญเติบโตให้แข็งแรง
+      ราคา 599 บาทค่ะ'
+    created_at: '2025-10-18T09:12:37.808Z'
+- model: petjoy.chathistory
+  pk: 40
+  fields:
+    user: 8
+    user_message: cat
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ทางร้านมีสินค้าสำหรับน้องแมวทั้งอาหารและของเล่นค่ะ
+      ขอแนะนำอาหารแมวมีโอสำหรับทุกวัย และของเล่นสนุกๆ อย่าง ตุ๊กตาปลาทูใส่แคทนิป และไม้ล่อแมวค่ะ
+    created_at: '2025-10-19T07:40:27.218Z'
+- model: petjoy.chathistory
+  pk: 41
+  fields:
+    user: 8
+    user_message: ฉันอยากได้อาหารแมวราคาไม่เกิน100พอจะมีไหม
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      มีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ ขนาด 80 กรัม ทำจากเนื้อปลาแท้ๆ มีหลายรสชาติให้เลือก
+      ทั้งสำหรับแมวโตและลูกแมว ราคาเพียงซองละ 17 บาทเท่านั้นค่ะ'
+    created_at: '2025-10-19T13:40:48.574Z'
+- model: petjoy.chathistory
+  pk: 42
+  fields:
+    user: null
+    user_message: สินค้าแมวมีอะไรบ้าง
+    ai_response: PetJoy Bot ยินดีให้บริการค่ะ สินค้าสำหรับน้องแมวมีครบครัน ทั้งอาหารและของเล่นค่ะ
+      เรามีอาหารเม็ดและอาหารเปียกสำหรับแมวทุกวัย ส่วนของเล่นก็มีหลากหลาย เช่น รางบอล,
+      เบ็ดตกแมว, ตุ๊กตาแคทนิป และที่ลับเล็บค่ะ
+    created_at: '2025-11-14T13:41:07.417Z'
+- model: petjoy.chathistory
+  pk: 43
+  fields:
+    user: null
+    user_message: ของเล่นแมวหน่อย
+    ai_response: สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ เรามีของเล่นแมวหลายแบบให้เลือกครับ
+      แนะนำ "Catit Play Circuit รางบอล" ให้น้องแมวเล่นสนุกได้ด้วยตัวเอง หรือถ้าชอบเล่นกับเจ้าของก็มี
+      "ไม้ล่อแมว" และ "ตุ๊กตาปลาทูใส่แคทนิป" ให้น้องแมวกอดฟัดเพลินๆ ครับ
+    created_at: '2025-11-18T02:03:50.477Z'
+- model: petjoy.chathistory
+  pk: 44
+  fields:
+    user: null
+    user_message: ของเล่นแมว
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-11-18T02:04:51.678Z'
+- model: petjoy.chathistory
+  pk: 45
+  fields:
+    user: null
+    user_message: ของเล่นแมว
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ทางร้านมีของเล่นแมวหลากหลายแบบให้เลือก
+      ทั้งแบบรางบอล, ตุ๊กตาใส่แคทนิป, และเบ็ดตกแมวค่ะ หากน้องแมวชอบเล่นคนเดียว ขอแนะนำ
+      "Catit Play Circuit รางบอล" หรือ "FOFOS กล่องสุ่มเบ็ดตกแมวอัตโนมัติ" เลยค่ะ
+    created_at: '2025-11-18T02:05:32.647Z'
+- model: petjoy.chathistory
+  pk: 46
+  fields:
+    user: 8
+    user_message: สินค้าแมว
+    ai_response: สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ ที่ร้านมีสินค้าสำหรับน้องแมวหลากหลาย
+      ทั้งอาหาร ของเล่น และที่ลับเล็บ ไม่ทราบว่าสนใจสินค้าประเภทไหนเป็นพิเศษ หรือน้องแมวอายุเท่าไหร่ครับ
+      จะได้แนะนำสินค้าที่เหมาะสมให้ครับ
+    created_at: '2025-11-20T05:36:48.482Z'
+- model: petjoy.chathistory
+  pk: 47
+  fields:
+    user: null
+    user_message: สินค้ามีอะไรบ้าง
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ
+
+
+      ร้านเรามีสินค้าหลากหลาย ทั้งอาหาร ของเล่น และของใช้ต่างๆ ครบครันสำหรับทั้งสุนัขและแมว
+      ไม่ทราบว่าคุณลูกค้าสนใจสินค้าสำหรับสัตว์เลี้ยงประเภทไหนเป็นพิเศษครับ'
+    created_at: '2025-11-20T06:05:37.210Z'
+- model: petjoy.chathistory
+  pk: 48
+  fields:
+    user: null
+    user_message: สินค้าน้องแมว
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ สำหรับน้องแมวเรามีสินค้าทั้งอาหารและของเล่นหลากหลายประเภทเลยค่ะ
+
+
+      เรามีทั้งอาหารเม็ดสำหรับแมวโตและลูกแมว เช่น อาหารมีโอ รวมถึงของเล่นสนุกๆ อย่างเบ็ดตกแมว
+      รางบอล และตุ๊กตาปลาทูใส่แคทนิปค่ะ สนใจสินค้าประเภทไหนเป็นพิเศษสอบถามได้เลยนะคะ'
+    created_at: '2025-11-20T08:17:44.330Z'
+- model: petjoy.chathistory
+  pk: 49
+  fields:
+    user: null
+    user_message: มีสินค้าน้องแมวแนะนำไหม
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการ
+
+
+      สำหรับน้องแมว เรามีสินค้าแนะนำหลากหลายครับ หากเป็นของเล่นสุดไฮเทคต้อง **FOFOS
+      Rubik''s Cube Hunting** กล่องสุ่มเบ็ดตกแมวอัตโนมัติ หรือถ้าชอบแบบคลาสสิกก็มี
+      **ตุ๊กตาปลาทูใส่แคทนิป** ให้น้องแมวกอดฟัดเพลินๆ ครับ นอกจากนี้เรายังมี **อาหารแมวมีโอ**
+      ทั้งสูตรลูกแมวและแมวโตให้เลือกหลายรสชาติครับ'
+    created_at: '2025-11-20T16:16:28.969Z'
+- model: petjoy.chathistory
+  pk: 50
+  fields:
+    user: null
+    user_message: แนะนำสินค้าน้องแมวหน่อย
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ
+
+      สำหรับน้องแมว ทางร้านมีสินค้าหลากหลาย ทั้งของเล่นและอาหาร ขอแนะนำของเล่นยอดฮิต
+      เช่น **Catit Play Circuit รางบอล** หรือ **ตุ๊กตาปลาทูใส่แคทนิป** ส่วนอาหารก็มี
+      **อาหารแมวมีโอ** สำหรับแมวทุกวัยให้เลือกครับ'
+    created_at: '2025-11-21T15:08:59.045Z'
+- model: petjoy.chathistory
+  pk: 51
+  fields:
+    user: null
+    user_message: อาหารแมวยี่ห้อไหนดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-11-23T06:31:18.655Z'
+- model: petjoy.chathistory
+  pk: 52
+  fields:
+    user: null
+    user_message: อาหารแมวยี่ห้อไหนดี
+    ai_response: สวัสดีค่ะ ที่ร้านเรามียี่ห้อ "มีโอ" ซึ่งเป็นที่นิยมและมีให้เลือกหลากหลาย
+      ทั้งสำหรับลูกแมว แมวโต และมีอาหารเปียกด้วยค่ะ นอกจากนี้ยังมียี่ห้อ "ซอย แคท"
+      และ "เอโปร ไอ.คิว. ฟอร์มูล่า" สำหรับแมวโตเป็นอีกทางเลือกเช่นกันค่ะ
+    created_at: '2025-11-23T06:32:50.097Z'
+- model: petjoy.chathistory
+  pk: 53
+  fields:
+    user: null
+    user_message: อาหารแมวยี่ห้อไหนดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-11-23T06:42:40.250Z'
+- model: petjoy.chathistory
+  pk: 54
+  fields:
+    user: null
+    user_message: อาหารแมวยี่ห้อไหนดี
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      ที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ เช่น มีโอ, ซอย แคท และ เอโปร ค่ะ ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตคะ
+      จะได้ช่วยแนะนำสูตรที่เหมาะสมที่สุดให้ค่ะ'
+    created_at: '2025-11-23T06:43:51.443Z'
+- model: petjoy.chathistory
+  pk: 55
+  fields:
+    user: null
+    user_message: ช่วยแนะนำสินค้าที่เหมาะกับแมวอายุ 2 ปีหน่อย
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      สำหรับแมวอายุ 2 ปี ขอแนะนำอาหารสำหรับแมวโต เช่น "อาหารแมวโต มีโอ" ที่มีให้เลือกหลายรสชาติ
+      ส่วนของเล่นที่ช่วยให้น้องแมวได้ออกกำลังกายและคลายเหงา ขอแนะนำ "Catit Play Circuit
+      รางบอล" หรือ "ตุ๊กตาปลาทูใส่แคทนิป" ให้น้องได้กอดรัดฟัดเหวี่ยงค่ะ'
+    created_at: '2025-11-23T06:47:49.529Z'
+- model: petjoy.chathistory
+  pk: 56
+  fields:
+    user: null
+    user_message: ราคาของอาหารแมวเท่าไหร่
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2025-11-23T06:57:24.383Z'
+- model: petjoy.chathistory
+  pk: 57
+  fields:
+    user: null
+    user_message: ราคาของอาหารแมวเท่าไหร่
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ
+
+
+      ราคาอาหารแมวมีหลายราคาขึ้นอยู่กับชนิดและขนาดครับ แบบเปียกชนิดซองเริ่มต้นที่
+      17 บาท ส่วนอาหารเม็ดแบบถุงมีราคาตั้งแต่ 489 บาท ถึง 999 บาทครับ'
+    created_at: '2025-11-23T06:58:08.820Z'
+- model: petjoy.chathistory
+  pk: 58
+  fields:
+    user: null
+    user_message: คุณทำอะไรได้บ้าง
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ดิฉันสามารถช่วยตอบคำถามและแนะนำสินค้าสำหรับน้องหมาและน้องแมวได้ค่ะ
+      ลองบอกได้เลยว่าคุณกำลังมองหาอะไรอยู่
+    created_at: '2025-11-23T06:59:13.846Z'
+- model: petjoy.chathistory
+  pk: 59
+  fields:
+    user: null
+    user_message: อาหารแมวยี่ห้อไหนดี
+    ai_response: สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ ที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ
+      เช่น มีโอ, ซอย แคท และ เอโปร ครับ โดยยี่ห้อ "มีโอ" เป็นที่นิยมและมีให้เลือกหลายสูตร
+      ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตครับ จะได้แนะนำสูตรที่เหมาะสมให้
+    created_at: '2025-11-23T08:07:34.750Z'
+- model: petjoy.chathistory
+  pk: 60
+  fields:
+    user: null
+    user_message: คุณมีสินค้าอะไรแนะนำฉันบ้าง
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการ ไม่ทราบว่าคุณลูกค้ามองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ?
+      ทางร้านมีทั้งอาหารและของเล่นคุณภาพดีให้เลือกมากมายเลยค่ะ
+    created_at: '2025-11-23T14:15:59.364Z'
+- model: petjoy.chathistory
+  pk: 61
+  fields:
+    user: null
+    user_message: มีอาหารแมวราคาไม่เกิน100ไหม
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      มีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ (Me-O Pouch) ขนาด 80 กรัม ราคาซองละ 17 บาท มีให้เลือกหลายรสชาติ
+      เช่น ปลาทะเล, ปลาทูน่าในเยลลี่ และปลาทูกับปลาซาร์ดีนค่ะ'
+    created_at: '2025-11-23T14:16:50.576Z'
+- model: petjoy.chathistory
+  pk: 62
+  fields:
+    user: null
+    user_message: มีอาหารแมวราคาไม่เกิน100ไหม
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+
+      มีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ เป็นอาหารเปียกแบบซอง ทำจากเนื้อปลาแท้ๆ ราคาซองละ
+      17 บาท มีให้เลือกหลายรสชาติ เช่น ปลาทะเล และปลาทูน่าในเยลลี่ค่ะ'
+    created_at: '2025-11-23T14:49:33.989Z'
+- model: petjoy.chathistory
+  pk: 63
+  fields:
+    user: null
+    user_message: แมว
+    ai_response: สวัสดีครับ PetJoy มีสินค้าสำหรับน้องแมวหลากหลายเลยครับ ทั้งอาหารเม็ด
+      อาหารเปียก และของเล่นน่าสนใจมากมาย เช่น FOFOS Rubik's Cube Hunting กล่องสุ่มเบ็ดตกแมวอัตโนมัติ,
+      Catit Play Circuit รางบอลแบบเรียบ หรือตุ๊กตาปลาทูใส่แคทนิปครับ
+    created_at: '2025-11-24T08:53:14.717Z'
+- model: petjoy.chathistory
+  pk: 64
+  fields:
+    user: null
+    user_message: มีอะไรบ้าง
+    ai_response: 'สวัสดีครับ PetJoy Bot ยินดีให้บริการ!
+
+
+      ที่ร้าน PetJoy เรามีสินค้าหลากหลาย ทั้งอาหารสุนัขและแมวหลายสูตร รวมถึงของเล่นยอดนิยม
+      เช่น KONG Dr. Noyz Teddy Bear สำหรับสุนัข และ Catit Play Circuit สำหรับแมวครับ'
+    created_at: '2025-11-24T08:53:44.360Z'
+- model: petjoy.chathistory
+  pk: 65
+  fields:
+    user: null
+    user_message: ของแมว
+    ai_response: สวัสดีค่ะ สำหรับน้องแมวที่ PetJoy เรามีทั้งอาหารเม็ดและอาหารเปียกหลากหลายรสชาติจากมีโอและซอย
+      แคทค่ะ นอกจากนี้ยังมีของเล่นมากมาย เช่น รางบอล Catit Play Circuit, ตุ๊กตาปลาทูใส่แคทนิบ
+      หรือ FOFOS Rubik's Cube กล่องสุ่มเบ็ดตกแมวอัตโนมัติให้เลือกสรรค่ะ
+    created_at: '2025-11-24T08:54:12.734Z'
+- model: petjoy.chathistory
+  pk: 66
+  fields:
+    user: 8
+    user_message: สวัสดี
+    ai_response: สวัสดีค่ะ ยินดีต้อนรับสู่ PetJoy Bot! มีอะไรให้ PetJoy Bot ช่วยเหลือหรือแนะนำสินค้าให้คุณลูกค้าและน้องๆ
+      ได้บ้างคะ?
+    created_at: '2025-11-27T11:07:38.106Z'
+- model: petjoy.chathistory
+  pk: 67
+  fields:
+    user: 8
+    user_message: มีไรบ้าง
+    ai_response: สวัสดีค่ะ PetJoy มีสินค้าหลากหลายสำหรับสัตว์เลี้ยงของคุณ ทั้งอาหารสุนัขและแมวคุณภาพดี
+      รวมถึงของเล่นสนุกๆ มากมาย เช่น ตุ๊กตา, รางบอล, ของเล่นลับเล็บ และกล่องสุ่มเบ็ดตกแมวอัตโนมัติค่ะ
+    created_at: '2025-11-27T11:07:56.332Z'
+- model: petjoy.chathistory
+  pk: 68
+  fields:
+    user: 8
+    user_message: อาหารแมวหน่อย
+    ai_response: 'เรามีอาหารแมวหลากหลายให้เลือกครับ ทั้งอาหารเม็ด Me-O สำหรับแมวโต
+      รสโกเม่, แซลมอน, ปลาทูน่า (599 บาท) และอาหารเม็ดสำหรับลูกแมวมีโอ รสปลาทะเล,
+      ปลาทู (599 บาท)
+
+      นอกจากนี้ยังมีอาหารเปียก Me-O ขนาด 80 กรัม หลายรสชาติ เช่น ปลาทะเล, ปลาทูน่าในเยลลี่
+      (17 บาท) ให้เลือกอีกด้วยครับ'
+    created_at: '2025-11-30T13:59:51.716Z'
+- model: petjoy.entrepreneur
+  pk: 1
+  fields:
+    user: 11
+    store_name: The Pet Hub
+    owner_name: Ma_Noi
+    email: ma@gmail.com
+    phone: ''
+    profile_image: entrepreneur_profiles/ราน1.jpg
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.entrepreneur
+  pk: 2
+  fields:
+    user: null
+    store_name: Anajak Puean Love
+    owner_name: ภคพร
+    email: APL@gmail.com
+    phone: '0647120613'
+    profile_image: ''
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.entrepreneur
+  pk: 3
+  fields:
+    user: null
+    store_name: Anajak Puean Love
+    owner_name: ภคพร
+    email: AP@gmail.com
+    phone: '0647120613'
+    profile_image: ''
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.entrepreneur
+  pk: 4
+  fields:
+    user: 15
+    store_name: Petopia
+    owner_name: ภคพร
+    email: Petopia@gmail.com
+    phone: '0647120613'
+    profile_image: entrepreneur_profiles/ราน2.jpg
+    tax_id: null
+    shop_address: null
+    bank_name: กรุงไทย
+    account_name: เปียอโรสโซ่
+    account_number: '123456789'
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.entrepreneur
+  pk: 5
+  fields:
+    user: 16
+    store_name: ClickPet
+    owner_name: ภคพร
+    email: ClickPet@gmail.com
+    phone: '0647120613'
+    profile_image: entrepreneur_profiles/ราน3.jpg
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.entrepreneur
+  pk: 6
+  fields:
+    user: 17
+    store_name: Groom & Go
+    owner_name: ปามมี่
+    email: Groom@gmail.com
+    phone: Ma_Noi
+    profile_image: ''
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+- model: petjoy.cartitem
+  pk: 14
+  fields:
+    user: 8
+    product: 69
+    quantity: 1
+- model: petjoy.cartitem
+  pk: 18
+  fields:
+    user: 8
+    product: 25
+    quantity: 1
+- model: petjoy.cartitem
+  pk: 23
+  fields:
+    user: 8
+    product: 40
+    quantity: 1
+- model: petjoy.address
+  pk: 2
+  fields:
+    user: 8
+    full_name: ภคพร สมจันทร์
+    phone: '0647120613'
+    address_line: มหาวิทยาอุบลราชธานี
+    province: xxxxx
+    district: xxxxxx
+    subdistrict: xxxxxx
+    zipcode: '12345'
+    is_default: true
+- model: petjoy.address
+  pk: 3
+  fields:
+    user: 10
+    full_name: เจ้าลี่
+    phone: '0647120613'
+    address_line: มหาวิทยาอุบลราชธานี
+    province: xxxxx
+    district: xxxxxx
+    subdistrict: xxxxxx
+    zipcode: '12345'
+    is_default: true
+- model: petjoy.order
+  pk: 10
+  fields:
+    entrepreneur: 4
+    order_number: 1
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    total_price: '299.00'
+    status: paid
+    slip_image: slips/Screenshot-2567-07-03-at-13.24.34.png
+    created_at: '2025-12-09T17:19:46.077Z'
+- model: petjoy.orderitem
+  pk: 11
+  fields:
+    order: 10
+    product: 37
+    quantity: 1
+    price: '299.00'

@@ -156,6 +156,32 @@
   }
 },
 {
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2025-12-08T08:24:15.417Z",
+    "user": 12,
+    "content_type": 18,
+    "object_id": "2",
+    "object_repr": "moa: สอบถามสินค้าได้ไหมคะ",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2025-12-08T08:24:20.487Z",
+    "user": 12,
+    "content_type": 18,
+    "object_id": "1",
+    "object_repr": "moa: สวัสดีค่ะ",
+    "action_flag": 3,
+    "change_message": ""
+  }
+},
+{
   "model": "auth.permission",
   "pk": 1,
   "fields": {
@@ -624,6 +650,222 @@
   }
 },
 {
+  "model": "auth.permission",
+  "pk": 53,
+  "fields": {
+    "name": "Can add cart item",
+    "content_type": 14,
+    "codename": "add_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 54,
+  "fields": {
+    "name": "Can change cart item",
+    "content_type": 14,
+    "codename": "change_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 55,
+  "fields": {
+    "name": "Can delete cart item",
+    "content_type": 14,
+    "codename": "delete_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 56,
+  "fields": {
+    "name": "Can view cart item",
+    "content_type": 14,
+    "codename": "view_cartitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 57,
+  "fields": {
+    "name": "Can add address",
+    "content_type": 15,
+    "codename": "add_address"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 58,
+  "fields": {
+    "name": "Can change address",
+    "content_type": 15,
+    "codename": "change_address"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 59,
+  "fields": {
+    "name": "Can delete address",
+    "content_type": 15,
+    "codename": "delete_address"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 60,
+  "fields": {
+    "name": "Can view address",
+    "content_type": 15,
+    "codename": "view_address"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 61,
+  "fields": {
+    "name": "Can add order item",
+    "content_type": 16,
+    "codename": "add_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 62,
+  "fields": {
+    "name": "Can change order item",
+    "content_type": 16,
+    "codename": "change_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 63,
+  "fields": {
+    "name": "Can delete order item",
+    "content_type": 16,
+    "codename": "delete_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 64,
+  "fields": {
+    "name": "Can view order item",
+    "content_type": 16,
+    "codename": "view_orderitem"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 65,
+  "fields": {
+    "name": "Can add order",
+    "content_type": 17,
+    "codename": "add_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 66,
+  "fields": {
+    "name": "Can change order",
+    "content_type": 17,
+    "codename": "change_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 67,
+  "fields": {
+    "name": "Can delete order",
+    "content_type": 17,
+    "codename": "delete_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 68,
+  "fields": {
+    "name": "Can view order",
+    "content_type": 17,
+    "codename": "view_order"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 69,
+  "fields": {
+    "name": "Can add chat message",
+    "content_type": 18,
+    "codename": "add_chatmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 70,
+  "fields": {
+    "name": "Can change chat message",
+    "content_type": 18,
+    "codename": "change_chatmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 71,
+  "fields": {
+    "name": "Can delete chat message",
+    "content_type": 18,
+    "codename": "delete_chatmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 72,
+  "fields": {
+    "name": "Can view chat message",
+    "content_type": 18,
+    "codename": "view_chatmessage"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 73,
+  "fields": {
+    "name": "Can add chat room",
+    "content_type": 19,
+    "codename": "add_chatroom"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 74,
+  "fields": {
+    "name": "Can change chat room",
+    "content_type": 19,
+    "codename": "change_chatroom"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 75,
+  "fields": {
+    "name": "Can delete chat room",
+    "content_type": 19,
+    "codename": "delete_chatroom"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 76,
+  "fields": {
+    "name": "Can view chat room",
+    "content_type": 19,
+    "codename": "view_chatroom"
+  }
+},
+{
   "model": "auth.user",
   "pk": 1,
   "fields": {
@@ -736,11 +978,11 @@
   "pk": 8,
   "fields": {
     "password": "pbkdf2_sha256$1000000$SyeJvDuqXZpchbVVdwn5cp$vf++KbXV01kGUQm2GvnnuKaHQOap5qrnBCMBMUyDJ3w=",
-    "last_login": "2025-11-20T05:25:02.127Z",
+    "last_login": "2025-12-09T17:31:28.720Z",
     "is_superuser": false,
     "username": "moa",
-    "first_name": "เจ้า",
-    "last_name": "หนูออม",
+    "first_name": "ภคพร",
+    "last_name": "สมจันทร์",
     "email": "pakaporn.so.66@ubu.ac.th",
     "is_staff": false,
     "is_active": true,
@@ -772,7 +1014,7 @@
   "pk": 10,
   "fields": {
     "password": "pbkdf2_sha256$1000000$P9MPTdeg7hKE8pk8RyCqoH$6ujbw8MSFiZQ5l8knlxKOwt4tbcemRxOjes0EbW8MNk=",
-    "last_login": "2025-10-17T08:12:12.827Z",
+    "last_login": "2025-12-09T15:53:26.590Z",
     "is_superuser": false,
     "username": "pan",
     "first_name": "",
@@ -790,7 +1032,7 @@
   "pk": 11,
   "fields": {
     "password": "pbkdf2_sha256$1000000$vdPzeyyVdX2DgKMXPLhOVr$1muGMwed0eKyTdS5p32HTAWvIpKZ6uEn17yVGxK7n6g=",
-    "last_login": "2025-10-22T07:08:37.985Z",
+    "last_login": "2025-12-09T13:43:57.251Z",
     "is_superuser": false,
     "username": "Ma_Noi",
     "first_name": "",
@@ -808,7 +1050,7 @@
   "pk": 12,
   "fields": {
     "password": "pbkdf2_sha256$1000000$ZAbzyibwEuKpvf6vVx0ZXe$Ol465Dv4fO1Du5wma1rFf9KL+XmXsbSRYfO/xpzUQzE=",
-    "last_login": "2025-11-20T06:04:21.976Z",
+    "last_login": "2025-12-08T08:23:58.865Z",
     "is_superuser": true,
     "username": "mama",
     "first_name": "",
@@ -826,7 +1068,7 @@
   "pk": 15,
   "fields": {
     "password": "pbkdf2_sha256$1000000$444ZpvGa4adCQrB1rgXvk8$/hJelxtjrnN18Y+W2bIQMXwJZcRiMVwwmkz4fQU3LyM=",
-    "last_login": "2025-11-19T04:31:53.561Z",
+    "last_login": "2025-12-10T05:14:20.234Z",
     "is_superuser": false,
     "username": "Petopia",
     "first_name": "",
@@ -844,7 +1086,7 @@
   "pk": 16,
   "fields": {
     "password": "pbkdf2_sha256$1000000$xNnATAhcWfXfsbNHd4SKX3$8MeskuXCtRJq2+6OPxW2q/lIRa4pda/H6m78NEfe/D8=",
-    "last_login": "2025-11-19T02:35:59.384Z",
+    "last_login": "2025-12-09T13:04:09.937Z",
     "is_superuser": false,
     "username": "ClickPet",
     "first_name": "",
@@ -853,6 +1095,24 @@
     "is_staff": false,
     "is_active": true,
     "date_joined": "2025-10-19T08:45:52.712Z",
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "auth.user",
+  "pk": 17,
+  "fields": {
+    "password": "pbkdf2_sha256$1000000$J9vx8gXdLXdfe4h9NrkQXK$RZVgzJlu+lQlUAOG+1ED7rrbothwciL/Mcr5ZOi8kI8=",
+    "last_login": "2025-12-07T04:24:58.029Z",
+    "is_superuser": false,
+    "username": "Groom & Go",
+    "first_name": "",
+    "last_name": "",
+    "email": "Groom@gmail.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2025-12-07T04:24:57.337Z",
     "groups": [],
     "user_permissions": []
   }
@@ -962,6 +1222,62 @@
   }
 },
 {
+  "model": "contenttypes.contenttype",
+  "pk": 14,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "cartitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 15,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "address"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 16,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "orderitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 17,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "order"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 18,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "chatmessage"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 19,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "chatroom"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "osri5fs5dj3leu7yilz5ahq0tnfvn21j",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQBe_iGllO8JeSPmew1utdHEC2FCcV4u4QKQW0b2beS0TY1hK3Tkucs7gIL06_WwJ8UN1BvkO9NYmtrsuc5K7Ig3Y5tUzP6-H-HRTo5VtDwMQQVA7kNJ3twMGMpBgzszbIpMk6tozBOENWez-qATl4DeSTV-L9ARgOOMc:1vSWcT:_ZrSU7Nmvh-SvSCZPzaoCoxzbPHIgfXUUra-c_2yzd8",
+    "expire_date": "2025-12-22T08:29:21.008Z"
+  }
+},
+{
   "model": "sessions.session",
   "pk": "tdznnije5tr7nl01m838zqacq5uujid3",
   "fields": {
@@ -983,14 +1299,6 @@
   "fields": {
     "session_data": ".eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1uyPYh:1jisc1PR3x6veK_8AVjMOx4iK8YAjaeUplfuhTfUJnE",
     "expire_date": "2025-09-30T06:52:59.638Z"
-  }
-},
-{
-  "model": "sessions.session",
-  "pk": "y9n8s0voaxr9cbhkyur36goxifpwxl70",
-  "fields": {
-    "session_data": "eyJjYXJ0Ijp7IjU1IjoxfX0:1vLzUQ:vjSm8CdEvJNbf2xUwQueXcbgt3NRu2tJ3zPhcxOjqUM",
-    "expire_date": "2025-12-04T07:54:02.301Z"
   }
 },
 {
@@ -1348,7 +1656,7 @@
     "image": "product_images/21.png",
     "features": "กระตุ้นสัญชาตญาณ: ส่งเสริมการไล่ล่า ตบ และตะครุบ\r\nบอลไม่หาย: ลูกบอลกลิ้งในราง 3 ชั้น ไม่หลุดออกมาข้างนอก\r\nคลายเครียด: ให้น้องแมวเล่นสนุกได้ด้วยตัวเอง ลดความเบื่อหน่าย\r\nปลอดภัย: วัสดุพลาสติก PP ทนทาน และมีฐานกันลื่น ยึดเกาะพื้นแน่น",
     "total_stock": 10,
-    "stock": 10,
+    "stock": 20,
     "food_type": null,
     "owner": 4
   }
@@ -1364,7 +1672,7 @@
     "image": "product_images/22.png",
     "features": "ในเซ็ทมีบอลมาให้ 2 ลูก พร้อมหนูสำหรับตบเพื่อความเพลิดเพลิน\r\nสีสันสดใส\r\nขนาดฐานกว้าง  25.5cm",
     "total_stock": 10,
-    "stock": 10,
+    "stock": 20,
     "food_type": null,
     "owner": 4
   }
@@ -1380,7 +1688,7 @@
     "image": "product_images/23.jpg",
     "features": "ฝึกทักษะในการกระโดดและเคลื่อนไหว \r\nเพื่อความเพลิดเพลินและออกกำลังกายสำหรับน้องแมว\r\nเชือกยืดหยุ่น สปริงตัวบอลเพิ่มความสนุกเมื่อแมวตะปบ",
     "total_stock": 10,
-    "stock": 10,
+    "stock": 20,
     "food_type": null,
     "owner": 4
   }
@@ -1395,8 +1703,8 @@
     "category": 2,
     "image": "product_images/24.png",
     "features": "สีม่วงพลาสเทลน่ารัก\r\nมีบอล 3 ลูกในเซท\r\nมีแคทนิป ช่วยให้เเมวผ่อนคลาย",
-    "total_stock": 0,
-    "stock": 0,
+    "total_stock": 10,
+    "stock": 10,
     "food_type": null,
     "owner": 4
   }
@@ -1411,8 +1719,8 @@
     "category": 2,
     "image": "product_images/25.jpg",
     "features": "มี catnip เกรดคุณภาพสูง \r\nมีกระดิ่ง \r\nขนนกสีสันสดใส \r\nวัสดุประกอบไปด้วย:\r\nPolyster, Fabric, Catnip, Crinkle Film.",
-    "total_stock": 0,
-    "stock": 0,
+    "total_stock": 10,
+    "stock": 10,
     "food_type": null,
     "owner": 4
   }
@@ -2047,7 +2355,11 @@
     "user": 8,
     "image": "profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg",
     "favorites": [
-      6
+      43,
+      23,
+      14,
+      47,
+      69
     ]
   }
 },
@@ -2599,6 +2911,206 @@
   }
 },
 {
+  "model": "petjoy.chathistory",
+  "pk": 49,
+  "fields": {
+    "user": null,
+    "user_message": "มีสินค้าน้องแมวแนะนำไหม",
+    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการ\n\nสำหรับน้องแมว เรามีสินค้าแนะนำหลากหลายครับ หากเป็นของเล่นสุดไฮเทคต้อง **FOFOS Rubik's Cube Hunting** กล่องสุ่มเบ็ดตกแมวอัตโนมัติ หรือถ้าชอบแบบคลาสสิกก็มี **ตุ๊กตาปลาทูใส่แคทนิป** ให้น้องแมวกอดฟัดเพลินๆ ครับ นอกจากนี้เรายังมี **อาหารแมวมีโอ** ทั้งสูตรลูกแมวและแมวโตให้เลือกหลายรสชาติครับ",
+    "created_at": "2025-11-20T16:16:28.969Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 50,
+  "fields": {
+    "user": null,
+    "user_message": "แนะนำสินค้าน้องแมวหน่อย",
+    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\nสำหรับน้องแมว ทางร้านมีสินค้าหลากหลาย ทั้งของเล่นและอาหาร ขอแนะนำของเล่นยอดฮิต เช่น **Catit Play Circuit รางบอล** หรือ **ตุ๊กตาปลาทูใส่แคทนิป** ส่วนอาหารก็มี **อาหารแมวมีโอ** สำหรับแมวทุกวัยให้เลือกครับ",
+    "created_at": "2025-11-21T15:08:59.045Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 51,
+  "fields": {
+    "user": null,
+    "user_message": "อาหารแมวยี่ห้อไหนดี",
+    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
+    "created_at": "2025-11-23T06:31:18.655Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 52,
+  "fields": {
+    "user": null,
+    "user_message": "อาหารแมวยี่ห้อไหนดี",
+    "ai_response": "สวัสดีค่ะ ที่ร้านเรามียี่ห้อ \"มีโอ\" ซึ่งเป็นที่นิยมและมีให้เลือกหลากหลาย ทั้งสำหรับลูกแมว แมวโต และมีอาหารเปียกด้วยค่ะ นอกจากนี้ยังมียี่ห้อ \"ซอย แคท\" และ \"เอโปร ไอ.คิว. ฟอร์มูล่า\" สำหรับแมวโตเป็นอีกทางเลือกเช่นกันค่ะ",
+    "created_at": "2025-11-23T06:32:50.097Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 53,
+  "fields": {
+    "user": null,
+    "user_message": "อาหารแมวยี่ห้อไหนดี",
+    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
+    "created_at": "2025-11-23T06:42:40.250Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 54,
+  "fields": {
+    "user": null,
+    "user_message": "อาหารแมวยี่ห้อไหนดี",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ เช่น มีโอ, ซอย แคท และ เอโปร ค่ะ ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตคะ จะได้ช่วยแนะนำสูตรที่เหมาะสมที่สุดให้ค่ะ",
+    "created_at": "2025-11-23T06:43:51.443Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 55,
+  "fields": {
+    "user": null,
+    "user_message": "ช่วยแนะนำสินค้าที่เหมาะกับแมวอายุ 2 ปีหน่อย",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nสำหรับแมวอายุ 2 ปี ขอแนะนำอาหารสำหรับแมวโต เช่น \"อาหารแมวโต มีโอ\" ที่มีให้เลือกหลายรสชาติ ส่วนของเล่นที่ช่วยให้น้องแมวได้ออกกำลังกายและคลายเหงา ขอแนะนำ \"Catit Play Circuit รางบอล\" หรือ \"ตุ๊กตาปลาทูใส่แคทนิป\" ให้น้องได้กอดรัดฟัดเหวี่ยงค่ะ",
+    "created_at": "2025-11-23T06:47:49.529Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 56,
+  "fields": {
+    "user": null,
+    "user_message": "ราคาของอาหารแมวเท่าไหร่",
+    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
+    "created_at": "2025-11-23T06:57:24.383Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 57,
+  "fields": {
+    "user": null,
+    "user_message": "ราคาของอาหารแมวเท่าไหร่",
+    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\n\nราคาอาหารแมวมีหลายราคาขึ้นอยู่กับชนิดและขนาดครับ แบบเปียกชนิดซองเริ่มต้นที่ 17 บาท ส่วนอาหารเม็ดแบบถุงมีราคาตั้งแต่ 489 บาท ถึง 999 บาทครับ",
+    "created_at": "2025-11-23T06:58:08.820Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 58,
+  "fields": {
+    "user": null,
+    "user_message": "คุณทำอะไรได้บ้าง",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ดิฉันสามารถช่วยตอบคำถามและแนะนำสินค้าสำหรับน้องหมาและน้องแมวได้ค่ะ ลองบอกได้เลยว่าคุณกำลังมองหาอะไรอยู่",
+    "created_at": "2025-11-23T06:59:13.846Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 59,
+  "fields": {
+    "user": null,
+    "user_message": "อาหารแมวยี่ห้อไหนดี",
+    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ ที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ เช่น มีโอ, ซอย แคท และ เอโปร ครับ โดยยี่ห้อ \"มีโอ\" เป็นที่นิยมและมีให้เลือกหลายสูตร ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตครับ จะได้แนะนำสูตรที่เหมาะสมให้",
+    "created_at": "2025-11-23T08:07:34.750Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 60,
+  "fields": {
+    "user": null,
+    "user_message": "คุณมีสินค้าอะไรแนะนำฉันบ้าง",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการ ไม่ทราบว่าคุณลูกค้ามองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ? ทางร้านมีทั้งอาหารและของเล่นคุณภาพดีให้เลือกมากมายเลยค่ะ",
+    "created_at": "2025-11-23T14:15:59.364Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 61,
+  "fields": {
+    "user": null,
+    "user_message": "มีอาหารแมวราคาไม่เกิน100ไหม",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nมีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ (Me-O Pouch) ขนาด 80 กรัม ราคาซองละ 17 บาท มีให้เลือกหลายรสชาติ เช่น ปลาทะเล, ปลาทูน่าในเยลลี่ และปลาทูกับปลาซาร์ดีนค่ะ",
+    "created_at": "2025-11-23T14:16:50.576Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 62,
+  "fields": {
+    "user": null,
+    "user_message": "มีอาหารแมวราคาไม่เกิน100ไหม",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nมีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ เป็นอาหารเปียกแบบซอง ทำจากเนื้อปลาแท้ๆ ราคาซองละ 17 บาท มีให้เลือกหลายรสชาติ เช่น ปลาทะเล และปลาทูน่าในเยลลี่ค่ะ",
+    "created_at": "2025-11-23T14:49:33.989Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 63,
+  "fields": {
+    "user": null,
+    "user_message": "แมว",
+    "ai_response": "สวัสดีครับ PetJoy มีสินค้าสำหรับน้องแมวหลากหลายเลยครับ ทั้งอาหารเม็ด อาหารเปียก และของเล่นน่าสนใจมากมาย เช่น FOFOS Rubik's Cube Hunting กล่องสุ่มเบ็ดตกแมวอัตโนมัติ, Catit Play Circuit รางบอลแบบเรียบ หรือตุ๊กตาปลาทูใส่แคทนิปครับ",
+    "created_at": "2025-11-24T08:53:14.717Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 64,
+  "fields": {
+    "user": null,
+    "user_message": "มีอะไรบ้าง",
+    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการ!\n\nที่ร้าน PetJoy เรามีสินค้าหลากหลาย ทั้งอาหารสุนัขและแมวหลายสูตร รวมถึงของเล่นยอดนิยม เช่น KONG Dr. Noyz Teddy Bear สำหรับสุนัข และ Catit Play Circuit สำหรับแมวครับ",
+    "created_at": "2025-11-24T08:53:44.360Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 65,
+  "fields": {
+    "user": null,
+    "user_message": "ของแมว",
+    "ai_response": "สวัสดีค่ะ สำหรับน้องแมวที่ PetJoy เรามีทั้งอาหารเม็ดและอาหารเปียกหลากหลายรสชาติจากมีโอและซอย แคทค่ะ นอกจากนี้ยังมีของเล่นมากมาย เช่น รางบอล Catit Play Circuit, ตุ๊กตาปลาทูใส่แคทนิบ หรือ FOFOS Rubik's Cube กล่องสุ่มเบ็ดตกแมวอัตโนมัติให้เลือกสรรค่ะ",
+    "created_at": "2025-11-24T08:54:12.734Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 66,
+  "fields": {
+    "user": 8,
+    "user_message": "สวัสดี",
+    "ai_response": "สวัสดีค่ะ ยินดีต้อนรับสู่ PetJoy Bot! มีอะไรให้ PetJoy Bot ช่วยเหลือหรือแนะนำสินค้าให้คุณลูกค้าและน้องๆ ได้บ้างคะ?",
+    "created_at": "2025-11-27T11:07:38.106Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 67,
+  "fields": {
+    "user": 8,
+    "user_message": "มีไรบ้าง",
+    "ai_response": "สวัสดีค่ะ PetJoy มีสินค้าหลากหลายสำหรับสัตว์เลี้ยงของคุณ ทั้งอาหารสุนัขและแมวคุณภาพดี รวมถึงของเล่นสนุกๆ มากมาย เช่น ตุ๊กตา, รางบอล, ของเล่นลับเล็บ และกล่องสุ่มเบ็ดตกแมวอัตโนมัติค่ะ",
+    "created_at": "2025-11-27T11:07:56.332Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 68,
+  "fields": {
+    "user": 8,
+    "user_message": "อาหารแมวหน่อย",
+    "ai_response": "เรามีอาหารแมวหลากหลายให้เลือกครับ ทั้งอาหารเม็ด Me-O สำหรับแมวโต รสโกเม่, แซลมอน, ปลาทูน่า (599 บาท) และอาหารเม็ดสำหรับลูกแมวมีโอ รสปลาทะเล, ปลาทู (599 บาท)\nนอกจากนี้ยังมีอาหารเปียก Me-O ขนาด 80 กรัม หลายรสชาติ เช่น ปลาทะเล, ปลาทูน่าในเยลลี่ (17 บาท) ให้เลือกอีกด้วยครับ",
+    "created_at": "2025-11-30T13:59:51.716Z"
+  }
+},
+{
   "model": "petjoy.entrepreneur",
   "pk": 1,
   "fields": {
@@ -2607,7 +3119,14 @@
     "owner_name": "Ma_Noi",
     "email": "ma@gmail.com",
     "phone": "",
-    "profile_image": "entrepreneur_profiles/ราน1.jpg"
+    "profile_image": "entrepreneur_profiles/ราน1.jpg",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": null,
+    "account_name": null,
+    "account_number": null,
+    "bank_book_copy": "",
+    "id_card_copy": ""
   }
 },
 {
@@ -2619,7 +3138,14 @@
     "owner_name": "ภคพร",
     "email": "APL@gmail.com",
     "phone": "0647120613",
-    "profile_image": ""
+    "profile_image": "",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": null,
+    "account_name": null,
+    "account_number": null,
+    "bank_book_copy": "",
+    "id_card_copy": ""
   }
 },
 {
@@ -2631,7 +3157,14 @@
     "owner_name": "ภคพร",
     "email": "AP@gmail.com",
     "phone": "0647120613",
-    "profile_image": ""
+    "profile_image": "",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": null,
+    "account_name": null,
+    "account_number": null,
+    "bank_book_copy": "",
+    "id_card_copy": ""
   }
 },
 {
@@ -2643,7 +3176,14 @@
     "owner_name": "ภคพร",
     "email": "Petopia@gmail.com",
     "phone": "0647120613",
-    "profile_image": "entrepreneur_profiles/ราน2.jpg"
+    "profile_image": "entrepreneur_profiles/ราน2.jpg",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": "กรุงไทย",
+    "account_name": "เปียอโรสโซ่",
+    "account_number": "123456789",
+    "bank_book_copy": "",
+    "id_card_copy": ""
   }
 },
 {
@@ -2655,7 +3195,115 @@
     "owner_name": "ภคพร",
     "email": "ClickPet@gmail.com",
     "phone": "0647120613",
-    "profile_image": "entrepreneur_profiles/ราน3.jpg"
+    "profile_image": "entrepreneur_profiles/ราน3.jpg",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": null,
+    "account_name": null,
+    "account_number": null,
+    "bank_book_copy": "",
+    "id_card_copy": ""
+  }
+},
+{
+  "model": "petjoy.entrepreneur",
+  "pk": 6,
+  "fields": {
+    "user": 17,
+    "store_name": "Groom & Go",
+    "owner_name": "ปามมี่",
+    "email": "Groom@gmail.com",
+    "phone": "Ma_Noi",
+    "profile_image": "",
+    "tax_id": null,
+    "shop_address": null,
+    "bank_name": null,
+    "account_name": null,
+    "account_number": null,
+    "bank_book_copy": "",
+    "id_card_copy": ""
+  }
+},
+{
+  "model": "petjoy.cartitem",
+  "pk": 14,
+  "fields": {
+    "user": 8,
+    "product": 69,
+    "quantity": 1
+  }
+},
+{
+  "model": "petjoy.cartitem",
+  "pk": 18,
+  "fields": {
+    "user": 8,
+    "product": 25,
+    "quantity": 1
+  }
+},
+{
+  "model": "petjoy.cartitem",
+  "pk": 23,
+  "fields": {
+    "user": 8,
+    "product": 40,
+    "quantity": 1
+  }
+},
+{
+  "model": "petjoy.address",
+  "pk": 2,
+  "fields": {
+    "user": 8,
+    "full_name": "ภคพร สมจันทร์",
+    "phone": "0647120613",
+    "address_line": "มหาวิทยาอุบลราชธานี",
+    "province": "xxxxx",
+    "district": "xxxxxx",
+    "subdistrict": "xxxxxx",
+    "zipcode": "12345",
+    "is_default": true
+  }
+},
+{
+  "model": "petjoy.address",
+  "pk": 3,
+  "fields": {
+    "user": 10,
+    "full_name": "เจ้าลี่",
+    "phone": "0647120613",
+    "address_line": "มหาวิทยาอุบลราชธานี",
+    "province": "xxxxx",
+    "district": "xxxxxx",
+    "subdistrict": "xxxxxx",
+    "zipcode": "12345",
+    "is_default": true
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 10,
+  "fields": {
+    "entrepreneur": 4,
+    "order_number": 1,
+    "customer_name": "ภคพร สมจันทร์",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "total_price": "299.00",
+    "status": "paid",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13.24.34.png",
+    "created_at": "2025-12-09T17:19:46.077Z"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 11,
+  "fields": {
+    "order": 10,
+    "product": 37,
+    "quantity": 1,
+    "price": "299.00"
   }
 }
 ]
