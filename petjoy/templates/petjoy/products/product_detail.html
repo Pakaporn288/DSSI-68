@@ -4,7 +4,6 @@
 
 {% block content %}
 
-<!-- CSS เฉพาะหน้า -->
 <link rel="stylesheet" href="{% static 'product_detail.css' %}">
 
 <div class="simple-detail-container">
@@ -17,7 +16,7 @@
     <div class="detail-content-wrapper">
 
         <!-- ================================
-             LEFT SIDE — IMAGE + STORE INFO + REVIEWS
+             LEFT SIDE — IMAGE + STORE + REVIEWS
         ================================= -->
         <div class="detail-image-section">
 
@@ -59,12 +58,14 @@
                                 <a href="{% url 'petjoy:entrepreneur-public' product.owner.pk %}">{{ product.owner.store_name|cut:"-" }}</a>
                             {% endif %}
                         </div>
+
                         <div class="store-buttons">
                             {% if user.is_authenticated %}
                                 <a href="{% url 'petjoy:start_chat' product.owner.pk %}" class="store-btn chat-btn">แชทเลย</a>
                             {% else %}
                                 <a href="{% url 'petjoy:login' %}?next={% url 'petjoy:start_chat' product.owner.pk %}" class="store-btn chat-btn">แชทเลย</a>
                             {% endif %}
+
                             {% if user.is_authenticated and user == product.owner.user %}
                                 <a href="{% url 'petjoy:entrepreneur-home' %}" class="store-btn view-store-btn">ดูร้านค้า</a>
                             {% else %}
@@ -126,21 +127,28 @@
 
             <!-- ❤️ FAVORITE BUTTON -->
             {% if user.is_authenticated %}
-                <button id="favoriteBtn"
-                        class="favorite-toggle favorite-heart {% if product in user.profile.favorites.all %}fav-active{% endif %}"
-                        data-product-id="{{ product.pk }}"
-                        aria-pressed="{% if product in user.profile.favorites.all %}true{% else %}false{% endif %}">
-                    {% if product in user.profile.favorites.all %}❤️{% else %}♡{% endif %}
+                <button 
+                    id="favoriteBtn"
+                    class="favorite-toggle favorite-heart {% if product in user.profile.favorites.all %}fav-active{% endif %}"
+                    data-product-id="{{ product.pk }}"
+                    aria-pressed="{% if product in user.profile.favorites.all %}true{% else %}false{% endif %}">
+                    {% if product in user.profile.favorites.all %}
+                        <i class="fa-solid fa-heart" style="color:#ff3b3b;"></i>
+                    {% else %}
+                        <i class="fa-regular fa-heart"></i>
+                    {% endif %}
                 </button>
             {% else %}
-                <button type="button" class="favorite-heart anonymous-fav">♡</button>
+                <button 
+                    type="button"
+                    class="favorite-heart favorite-toggle anonymous-fav"
+                    data-product-id="{{ product.pk }}">
+                    <i class="fa-regular fa-heart"></i>
+                </button>
             {% endif %}
 
-
-            <!-- PRICE -->
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
 
-            <!-- BUTTONS -->
             <div class="action-buttons" style="display:flex; gap:12px; margin-top:20px;">
                 <button type="button"
                         class="btn-add-cart"
@@ -152,7 +160,6 @@
 
                 <button type="button" class="btn-buy-now">⚡ สั่งซื้อสินค้า</button>
             </div>
-
 
             <!-- QUANTITY MODAL -->
             <div id="quantityModal" class="modal-overlay" style="display:none;">
@@ -178,7 +185,6 @@
                 </div>
             </div>
 
-
             {% if product.features %}
                 <h3>คุณสมบัติสินค้า</h3>
                 <p>{{ product.features|linebreaks }}</p>
@@ -196,13 +202,14 @@
 
 {% endblock %}
 
-
 {% block extra_scripts %}
 
-<!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- JS ภายนอกที่คุณใช้งาน -->
+<!-- Font Awesome สำหรับไอคอนหัวใจ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
+
+<!-- JS -->
 <script src="{% static 'js/product_detail.js' %}"></script>
 <script src="{% static 'js/favorites.js' %}"></script>
 

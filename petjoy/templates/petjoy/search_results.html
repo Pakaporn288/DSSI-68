@@ -4,68 +4,94 @@
 {% block title %}ค้นหา - PetJoy{% endblock %}
 
 {% block content %}
-<main class="content" style="padding:20px; max-width:1100px; margin:0 auto;">
-    <section class="search-results">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-            <div style="display:flex;align-items:center;gap:12px;">
-                <button type="button" onclick="history.back()" class="back-btn" aria-label="ย้อนกลับ">&lt;</button>
-                <h2 style="margin:0;">ค้นหา</h2>
-            </div>
-            <div style="color:#6b7280">ผลการค้นหา: "<strong>{{ query }}</strong>"</div>
-        </div>
 
-        <div style="margin-top:16px; display:flex; gap:20px; flex-wrap:wrap; align-items:flex-start;">
-            <div style="flex:1 1 65%; min-width:300px;">
-                <div style="margin-bottom:8px; color:#374151;">สินค้าที่พบ ({{ products|length }})</div>
-                {% if products %}
-                    <div style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:16px;">
-                        {% for product in products %}
-                        <article style="border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; background:#fff;">
-                            <a href="{% url 'petjoy:product-detail' product.id %}" style="text-decoration:none;color:inherit; display:block;">
-                                <div style="height:150px;display:flex;align-items:center;justify-content:center;background:#f9fafb;">
-                                    {% if product.image %}
-                                        <img src="{{ product.image.url }}" alt="{{ product.name }}" style="max-height:140px; max-width:100%; object-fit:contain;">
-                                    {% else %}
-                                        <img src="{% static 'images/Cat teaser.jpg' %}" alt="placeholder" style="max-height:140px; object-fit:contain;">
-                                    {% endif %}
-                                </div>
-                                <div style="padding:10px;">
-                                    <h3 style="margin:0 0 6px 0; font-size:1rem;">{{ product.name }}</h3>
-                                    {# recommendation snippet removed as requested #}
-                                    {% if product.price %}
-                                        <div style="font-weight:600; color:#111827;">฿{{ product.price }}</div>
-                                    {% endif %}
-                                    <form method="post" action="{% url 'petjoy:cart-add' %}" style="margin-top:8px;">
-                                        {% csrf_token %}
-                                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                                        <input type="hidden" name="quantity" value="1">
-                                        <button type="submit" class="add-to-cart-btn" style="background:#10B981;color:#fff;padding:8px 10px;border-radius:6px;border:none;font-weight:600;cursor:pointer;">เพิ่มลงตะกร้า</button>
-                                    </form>
-                                </div>
-                            </a>
-                        </article>
-                        {% endfor %}
+<link rel="stylesheet" href="{% static 'search_results_new.css' %}">
+
+<main class="search-page">
+
+    <!-- HEADER -->
+    <div class="search-header">
+        <button class="back-btn" onclick="history.back()">‹</button>
+        <h2>ค้นหา</h2>
+        <div class="search-info">ผลการค้นหา: "<strong>{{ query }}</strong>"</div>
+    </div>
+
+    <div class="search-main-layout">
+
+        <!-- LEFT: PRODUCT LIST -->
+        <section class="product-section">
+
+            <h3 class="section-title">สินค้าที่พบ ({{ products|length }})</h3>
+
+            {% if products %}
+            <div class="product-grid">
+                {% for product in products %}
+                <article class="product-card">
+
+                    <a href="{% url 'petjoy:product-detail' product.id %}" class="product-img-box">
+                        {% if product.image %}
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                        {% else %}
+                            <img src="{% static 'images/Cat teaser.jpg' %}" alt="placeholder">
+                        {% endif %}
+                    </a>
+
+                    <div class="product-details">
+
+                        <h4 class="product-name">{{ product.name }}</h4>
+
+                        {% if product.price %}
+                        <div class="product-price">฿{{ product.price }}</div>
+                        {% endif %}
+
+                        <form method="post" action="{% url 'petjoy:cart-add' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="product_id" value="{{ product.id }}">
+                            <input type="hidden" name="quantity" value="1">
+                            <button 
+                                class="add-cart-btn"
+                                data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+                                เพิ่มลงตะกร้า
+                            </button>
+                        </form>
+
                     </div>
+
+                </article>
+                {% endfor %}
+            </div>
+
+            {% else %}
+            <div class="no-results">
+                <img src="{% static 'images/no-result.png' %}" alt="No results">
+                <p>ไม่พบสินค้า</p>
+            </div>
+            {% endif %}
+
+        </section>
+
+        <!-- RIGHT: SIDEBAR -->
+        <aside class="sidebar">
+            <div class="sidebar-box">
+                <h4>หมวดหมู่ที่เกี่ยวข้อง</h4>
+
+                {% if categories %}
+                <ul class="category-list">
+                    {% for cat in categories %}
+                    <li>{{ cat.display_name }}</li>
+                    {% endfor %}
+                </ul>
                 {% else %}
-                    <div class="no-results" style="padding:16px; background:#fff; border:1px dashed #e5e7eb; border-radius:8px;">ไม่มีสินค้า</div>
+                <p class="sidebar-empty">ไม่มีหมวดหมู่ที่เกี่ยวข้อง</p>
                 {% endif %}
             </div>
+        </aside>
 
-            <aside style="flex:1 1 30%; min-width:220px;">
-                <div style="background:#fff; padding:12px; border-radius:8px; border:1px solid #e5e7eb;">
-                    <h4 style="margin-top:0;">หมวดหมู่ที่เกี่ยวข้อง</h4>
-                    {% if categories %}
-                        <ul style="list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:6px;">
-                            {% for cat in categories %}
-                                <li style="padding:8px; border-radius:6px; background:#f8fafc;">{{ cat.display_name }}</li>
-                            {% endfor %}
-                        </ul>
-                    {% else %}
-                        <div style="color:#6b7280;">ไม่มีหมวดหมู่ที่เกี่ยวข้อง</div>
-                    {% endif %}
-                </div>
-            </aside>
-        </div>
-    </section>
+    </div>
 </main>
+
+<!-- SweetAlert + JS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="{% static 'js/search_results.js' %}"></script>
+
 {% endblock %}
