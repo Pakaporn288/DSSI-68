@@ -33,6 +33,7 @@ python -m venv .venv
 
 ### 3. Install Required Packages
 ```bash
+python.exe -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
