@@ -42,6 +42,14 @@ pip install -r requirements.txt
   ```env
   GOOGLE_API_KEY=<your-google-api-key>
   ```
+- ถ้าใช้ PostgreSQL:
+  ```
+  DB_NAME=Petjoy_db
+  DB_USER=petjoy_user
+  DB_PASSWORD=12345
+  DB_HOST=localhost
+  DB_PORT=5432
+  ```
 
 ### 5. Set Up the Database
 - ตรวจสอบให้แน่ใจว่าติดตั้งและใช้งาน PostgreSQL เรียบร้อยแล้ว
@@ -51,7 +59,7 @@ pip install -r requirements.txt
   CREATE USER petjoy_user WITH PASSWORD '12345';
   GRANT ALL PRIVILEGES ON DATABASE Petjoy_db TO petjoy_user;
   ```
-- Apply migrations:
+- จากนั้น migrations:
   ```bash
   python manage.py migrate
   ```
@@ -80,19 +88,20 @@ python manage.py runserver
 
 ---
 
-## ข้อมูลเพิ่มเติม
-- อัปเดต `ALLOWED_HOSTS` ใน `settings.py` สำหรับการผลิต
-- ใช้วิธีการที่ปลอดภัยในการจัดเก็บข้อมูลสำคัญ เช่น ข้อมูลรับรองฐานข้อมูลและคีย์ API
 
----
 
-## Encoding and Data Dump Tips
-- เพื่อหลีกเลี่ยงปัญหาการเข้ารหัส ให้ใช้คำสั่งต่อไปนี้:
-  ```bash
-  $env:PYTHONIOENCODING="utf-8"
-  python manage.py dumpdata --indent 2 > db.json
-  ```
-- หรือใช้อีกอย่าง:
+## การ Dump & Restore Database
+- Dump JSON
   ```bash
   python -Xutf8 manage.py dumpdata --indent 2 -o db.json
   ```
+- แปลง JSON → YAML
+- ภายในโปรเจกต์มีไฟล์:
+  ```bash
+  json_to_yaml.py
+  ```
+- ใช้งานดังนี้:
+  ```bash
+  python json_to_yaml.py
+  ```
+- ผลลัพธ์จะได้ data.yaml
