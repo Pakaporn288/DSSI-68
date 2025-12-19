@@ -33,6 +33,7 @@ python -m venv .venv
 
 ### 3. Install Required Packages
 ```bash
+python.exe -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
@@ -40,9 +41,10 @@ pip install -r requirements.txt
 - สร้างไฟล์ `.env` ในไดเร็กทอรีรูท
 - เพิ่มตัวแปรต่อไปนี้:
   ```env
-  GOOGLE_API_KEY=<your-google-api-key>
+  GOOGLE_API_KEY="AIzaSyAGMoKIqp1zyUok8yE-oyXATJVEb9evaKo"
+
   ```
-- ถ้าใช้ PostgreSQL:
+-  Database settings PostgreSQL:
   ```
   DB_NAME=Petjoy_db
   DB_USER=petjoy_user
@@ -59,6 +61,7 @@ pip install -r requirements.txt
   CREATE USER petjoy_user WITH PASSWORD '12345';
   GRANT ALL PRIVILEGES ON DATABASE Petjoy_db TO petjoy_user;
   ```
+
 - จากนั้น migrations:
   ```bash
   python manage.py migrate
