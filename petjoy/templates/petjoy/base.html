@@ -38,17 +38,17 @@
             <!-- Cart -->
             <div class="nav-cart-wrapper">
                 <a href="{% url 'petjoy:cart-detail' %}" class="cart-icon">
-                    🛒
+                    <i class="ri-shopping-cart-2-line"></i>
                     {% if cart_count > 0 %}
                     <span class="cart-badge">{{ cart_count }}</span>
                     {% endif %}
                 </a>
             </div>
 
-            <!-- 🔔 Notification Bell (เพิ่มเฉพาะส่วนนี้เท่านั้น) -->
+            <!-- Notification -->
             <div class="nav-notification-wrapper">
                 <a href="#" class="notification-icon">
-                    🔔
+                    <i class="ri-notification-3-line"></i>
                     {% if user.is_authenticated and notification_count > 0 %}
                     <span class="notif-badge">{{ notification_count }}</span>
                     {% endif %}

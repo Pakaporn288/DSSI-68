@@ -7,105 +7,116 @@
 
 <div class="cart-container">
 
-    <h1 class="cart-title">🛒 ตะกร้าสินค้าของคุณ</h1>
+    <!-- 🔙 Back + Title -->
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:25px;">
+        <a href="{% url 'petjoy:homepage' %}" class="back-arrow">‹</a>
+        <h1 class="cart-title" style="margin:0;">ตะกร้าสินค้าของคุณ</h1>
+    </div>
 
     {% if cart_items %}
-        <div class="cart-items-list">
+    <div class="cart-items-list">
 
-            {% for item in cart_items %}
-            <div class="cart-item-card">
+        {% for item in cart_items %}
+        <div class="cart-item-card">
 
-                <div class="cart-item-left">
-                    <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-img-link">
-                        {% if item.product.image %}
-                            <img src="{{ item.product.image.url }}" class="cart-img">
-                        {% else %}
-                            <img src="{% static 'images/no-image.png' %}" class="cart-img">
-                        {% endif %}
+            <!-- Image -->
+            <div class="cart-item-left">
+                <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-img-link">
+                    {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" class="cart-img">
+                    {% else %}
+                        <img src="{% static 'images/no-image.png' %}" class="cart-img">
+                    {% endif %}
+                </a>
+            </div>
+
+            <!-- Info -->
+            <div class="cart-item-right">
+
+                <h2 class="cart-item-name">
+                    <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-item-name-link">
+                        {{ item.product.name }}
+                    </a>
+                </h2>
+
+                <p class="cart-item-shop">
+                    ร้านค้า:
+                    {% if item.product.owner %}
+                        {{ item.product.owner.store_name }}
+                    {% else %}
+                        -
+                    {% endif %}
+                </p>
+
+                <p class="cart-item-price">
+                    ราคา {{ item.product.price|floatformat:0|intcomma }} บาท
+                </p>
+
+                <!-- Quantity -->
+                <div class="qty-controls">
+                    <form method="POST" action="{% url 'petjoy:update-cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="hidden" name="quantity" value="{{ item.quantity|add:'-1' }}">
+                        <button type="submit" class="qty-btn">−</button>
+                    </form>
+
+                    <span class="qty-number">{{ item.quantity|intcomma }}</span>
+
+                    <form method="POST" action="{% url 'petjoy:update-cart' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="item_id" value="{{ item.id }}">
+                        <input type="hidden" name="quantity" value="{{ item.quantity|add:'1' }}">
+                        <button type="submit" class="qty-btn">+</button>
+                    </form>
+                </div>
+
+                <p class="cart-item-total">
+                    รวม <strong>{{ item.total_price|floatformat:0|intcomma }}</strong> บาท
+                </p>
+
+                <!-- Actions -->
+                <div class="cart-item-actions">
+                    <!-- ✅ แก้ตรงนี้อย่างเดียว -->
+                    <a href="{% url 'petjoy:checkout' %}?selected_items={{ item.id }}"
+                       class="btn-order-single">
+                        สั่งซื้อสินค้านี้
+                    </a>
+
+                    <a href="{% url 'petjoy:remove-from-cart' item.id %}" class="btn-remove">
+                        ลบสินค้า
                     </a>
                 </div>
 
-                <div class="cart-item-right">
-
-                    <h2 class="cart-item-name">
-                        <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-item-name-link">
-                            {{ item.product.name }}
-                        </a>
-                    </h2>
-
-                    <!-- ⭐ ชื่อร้าน -->
-                    <p class="cart-item-shop">
-                        ร้านค้า: 
-                        {% if item.product.owner %}
-                            {{ item.product.owner.store_name }}
-                        {% else %}
-                            -
-                        {% endif %}
-                    </p>
-
-                    <p class="cart-item-price">
-                        ราคา: {{ item.product.price|floatformat:0|intcomma }} บาท
-                    </p>
-
-                    <div class="qty-controls">
-                        <form method="POST" action="{% url 'petjoy:update-cart' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="item_id" value="{{ item.id }}">
-                            <input type="hidden" name="quantity" value="{{ item.quantity|add:'-1' }}">
-                            <button type="submit" class="qty-btn">-</button>
-                        </form>
-
-                        <span class="qty-number">{{ item.quantity|intcomma }}</span>
-
-                        <form method="POST" action="{% url 'petjoy:update-cart' %}">
-                            {% csrf_token %}
-                            <input type="hidden" name="item_id" value="{{ item.id }}">
-                            <input type="hidden" name="quantity" value="{{ item.quantity|add:'1' }}">
-                            <button type="submit" class="qty-btn">+</button>
-                        </form>
-                    </div>
-
-                    <p class="cart-item-total">
-                        รวม: <span>{{ item.total_price|floatformat:0|intcomma }}</span> บาท
-                    </p>
-
-                    <div class="cart-item-actions">
-                        <a href="{% url 'petjoy:product-detail' item.product.id %}" class="btn-order-single">
-                            สั่งซื้อสินค้านี้
-                        </a>
-
-                        <a href="{% url 'petjoy:remove-from-cart' item.id %}" class="btn-remove">
-                            ลบออกจากตะกร้า
-                        </a>
-                    </div>
-
-                </div>
             </div>
-            {% endfor %}
-
         </div>
+        {% endfor %}
+    </div>
 
-        <!-- SUMMARY -->
-        <div class="cart-summary-new">
-            <p class="summary-line">
-                <strong>ยอดรวมทั้งหมด:</strong> {{ total_price|floatformat:0|intcomma }} บาท
-            </p>
+    <!-- SUMMARY -->
+    <div class="cart-summary-new">
+        <p class="summary-line">
+            <strong>ยอดรวมทั้งหมด:</strong>
+            {{ total_price|floatformat:0|intcomma }} บาท
+        </p>
 
-            <p class="summary-line">
-                <strong>จำนวนสินค้า:</strong> {{ total_items|intcomma }} ชิ้น
-            </p>
+        <p class="summary-line">
+            <strong>จำนวนสินค้า:</strong>
+            {{ total_items|intcomma }} ชิ้น
+        </p>
 
-            <button class="btn-checkout-orange" id="openCheckoutPopup">
-                ดำเนินการสั่งซื้อ
-            </button>
-        </div>
+        <button class="btn-checkout-orange" id="openCheckoutPopup">
+            ดำเนินการสั่งซื้อ
+        </button>
+    </div>
 
     {% else %}
-        <p class="cart-empty">ยังไม่มีสินค้าในตะกร้า</p>
+        <div class="cart-empty">
+            🛒 ยังไม่มีสินค้าในตะกร้า
+        </div>
     {% endif %}
 
 </div>
-
 
 <!-- =======================
      CHECKOUT POPUP 
@@ -120,9 +131,7 @@
 
             <div class="popup-items">
                 {% for item in cart_items %}
-
                 <label class="popup-item">
-
                     <input type="checkbox"
                         name="selected_items"
                         value="{{ item.id }}"
@@ -134,20 +143,15 @@
 
                     <div class="popup-info">
                         <p class="popup-name">{{ item.product.name }}</p>
-
-                        <!-- ⭐ ราคาแบบมีคอมมา -->
                         <p class="popup-price">
-                            {{ item.product.price|floatformat:0|intcomma }} บาท × {{ item.quantity }}
-                            = <strong>{{ item.total_price|floatformat:0|intcomma }}</strong> บาท
+                            {{ item.product.price|floatformat:0|intcomma }} × {{ item.quantity }}
+                            = <strong>{{ item.total_price|floatformat:0|intcomma }}</strong>
                         </p>
                     </div>
-
                 </label>
-
                 {% endfor %}
             </div>
 
-            <!-- ⭐ ยอดรวมสินค้าที่เลือก (นอก loop) -->
             <div class="popup-summary">
                 รวมราคาสินค้าที่เลือก:
                 <span id="popupTotal" style="font-weight:700;color:#E65100;">0</span> บาท
@@ -163,18 +167,15 @@
     </div>
 </div>
 
-
-<!-- POPUP SCRIPT -->
+<!-- SCRIPT (เดิมทั้งหมด) -->
 <script>
 function calculatePopupTotal() {
     let total = 0;
-
     document.querySelectorAll("input[name='selected_items']:checked").forEach(chk => {
         let price = parseFloat(chk.dataset.price);
         let qty = parseInt(chk.dataset.qty);
         total += price * qty;
     });
-
     document.getElementById("popupTotal").textContent = total.toLocaleString();
 }
 
@@ -202,15 +203,9 @@ document.getElementById("checkoutForm").addEventListener("submit", function(e) {
         return;
     }
 
-    // ⭐⭐ แก้ไขส่วนนี้: เปลี่ยนจากการ alert เป็นการ Redirect ⭐⭐
     const checkoutUrl = "{% url 'petjoy:checkout' %}";
     const params = new URLSearchParams();
-    
-    selected.forEach(id => {
-        params.append('selected_items', id);
-    });
-
-    // ส่งไปยังหน้า Checkout
+    selected.forEach(id => params.append('selected_items', id));
     window.location.href = checkoutUrl + '?' + params.toString();
 });
 </script>

@@ -1,5 +1,6 @@
 {% extends 'petjoy/base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block title %}PetJoy{% endblock %}
 
@@ -7,96 +8,112 @@
 <main class="content">
 
     <!-- ============================
-         NEW PERSONAL GREETING BANNER
+         GREETING
     ================================ -->
     <div class="hello-banner">
         <div class="hello-left">
-            <h1>สวัสดี {{ request.user.first_name|default:"เพื่อนรัก" }} </h1>
+            <h1>สวัสดี {{ request.user.first_name|default:"เพื่อนรัก" }}</h1>
             <p>ขอให้วันนี้เป็นวันที่ดีสำหรับคุณและเจ้าตัวน้อยนะคะ ❤️</p>
         </div>
-
         <img src="{% static 'images/ลบพื้นหลัง.png' %}" class="hello-img" alt="pet">
     </div>
 
     <!-- ============================
-         CATEGORY SECTION
+         CATEGORY
     ================================ -->
     <section class="pet-selection">
         <h3>เลือกแก๊งของคุณ</h3>
         <div class="pet-options">
-            <a href="{% url 'petjoy:dog-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+
+            <a href="{% url 'petjoy:dog-products' %}" class="pet-card">
                 <div class="pet-image-container">
-                    <img src="{% static 'images/DOG.jpg' %}" alt="สุนัข">
+                    <img src="{% static 'images/DOG.jpg' %}">
                 </div>
                 <span>สุนัข</span>
             </a>
 
-            <a href="{% url 'petjoy:cat-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+            <a href="{% url 'petjoy:cat-products' %}" class="pet-card">
                 <div class="pet-image-container">
-                    <img src="{% static 'images/CAT.jpg' %}" alt="แมว">
+                    <img src="{% static 'images/CAT.jpg' %}">
                 </div>
                 <span>แมว</span>
             </a>
 
-            <a href="{% url 'petjoy:food-products' %}" class="pet-card" style="text-decoration:none; color:inherit;">
+            <a href="{% url 'petjoy:food-products' %}" class="pet-card">
                 <div class="pet-image-container">
-                    <img src="{% static 'images/food.png' %}" alt="อาหารสัตว์">
+                    <img src="{% static 'images/food.png' %}">
                 </div>
                 <span>อาหารสัตว์</span>
             </a>
+
         </div>
     </section>
 
     <!-- ============================
-         RECOMMENDED PRODUCTS SECTION
+         RECOMMENDED PRODUCTS
     ================================ -->
     <section class="recommend-products">
         <h3 class="recommend-title">สินค้าแนะนำ</h3>
 
-        <div class="products-grid">
-            <div class="product-item">
-                <div class="product-image-placeholder">
-                    <img src="{% static 'images/Cat teaser.jpg' %}" alt="ไม้ล่อแมว" class="product-image">
-                </div>
-                <div class="product-name">ไม้ล่อแมว</div>
-                <a href="{% url 'petjoy:product-detail' 1 %}" class="view-more-button">เลือกดูเพิ่มเติม</a>
-            </div>
+        <div class="products-grid small-grid">
 
-            <div class="product-item">
-                <div class="product-image-placeholder">
-                    <img src="{% static 'images/Cat Ball.jpg' %}" alt="ลูกบอลแมว" class="product-image">
-                </div>
-                <div class="product-name">ลูกบอลแมว</div>
-                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
-            </div>
+            {% for product in products|slice:":6" %}
+            <div class="product-item small-card">
 
-            <div class="product-item">
-                <div class="product-image-placeholder">
-                    <img src="{% static 'images/Dog Ball.jpg' %}" alt="ลูกบอลสุนัข" class="product-image">
+                <div class="product-image-placeholder small-img">
+                    {% if product.image %}
+                        <img src="{{ product.image.url }}" class="product-image">
+                    {% else %}
+                        <img src="{% static 'images/no-image.png' %}" class="product-image">
+                    {% endif %}
                 </div>
-                <div class="product-name">ลูกบอลสุนัข</div>
-                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
-            </div>
 
-            <div class="product-item">
-                <div class="product-image-placeholder">
-                    <img src="{% static 'images/Dog rubber teether toy.jpg' %}" alt="ของเล่นกันแทะ" class="product-image">
+                <div class="product-name small-name">
+                    {{ product.name }}
                 </div>
-                <div class="product-name">ของเล่นกันแทะ</div>
-                <button class="view-more-button">เลือกดูเพิ่มเติม</button>
+
+                <div class="product-price small-price">
+                    {{ product.price|floatformat:0|intcomma }} บาท
+                </div>
+
+                <!-- ปุ่ม -->
+                <div class="product-actions">
+                    <form method="POST" action="{% url 'petjoy:cart-add' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="product_id" value="{{ product.id }}">
+                        <input type="hidden" name="quantity" value="1">
+                        <button type="submit" class="add-cart-btn nice-btn">
+                            + เพิ่มตะกร้า
+                        </button>
+                    </form>
+
+                    <a href="{% url 'petjoy:product-detail' product.id %}"
+                       class="detail-btn">
+                        ดูรายละเอียด
+                    </a>
+                </div>
+
             </div>
+            {% empty %}
+                <p style="text-align:center;color:#777;">
+                    ยังไม่มีสินค้าในระบบ
+                </p>
+            {% endfor %}
+
         </div>
     </section>
 
 </main>
 
-<!-- Chatbot -->
+<!-- ============================
+     CHATBOT
+=============================== -->
 <div id="chatbot-container" class="chatbot-popup hidden">
     <div class="chatbot-header">
         <span class="chatbot-header-title">🐾 PetJoy</span>
     </div>
     <div class="chatbot-body" id="chat-response">
-        <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำของเล่นไหมคะ?</div>
+        <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำไหมคะ?</div>
     </div>
     <div class="chatbot-input-area">
         <input type="text" id="chatbot-input" placeholder="พิมพ์ข้อความ..." />

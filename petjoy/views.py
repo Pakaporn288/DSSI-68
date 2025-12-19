@@ -33,8 +33,10 @@ from .models import Order, OrderItem
 logger = logging.getLogger(__name__)
 
 def homepage(request):
-    products = Product.objects.all()[:4]
-    return render(request, 'petjoy/homepage.html', {'products': products})
+    products = Product.objects.order_by('?')[:4]  # 👈 สุ่ม 6 ชิ้น
+    return render(request, 'petjoy/homepage.html', {
+        'products': products,
+    })
 
 def ask_ai_view(request):
     if request.method == 'POST':
