@@ -8,3 +8,4 @@ admin.site.register(Review)
 admin.site.register(Profile) 
 admin.site.register(ChatRoom)
 admin.site.register(ChatMessage)
+

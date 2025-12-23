@@ -1,0 +1,100 @@
+{% extends "petjoy/base.html" %}
+
+{% block content %}
+<div class="container" style="max-width:650px;margin:50px auto;text-align:center;">
+
+    <h2 style="margin-bottom:25px;">รีวิวสินค้า</h2>
+
+    {% for item in items %}
+    <div style="
+        background:#fff;
+        padding:30px;
+        border-radius:22px;
+        box-shadow:0 6px 18px rgba(0,0,0,0.06);
+        margin-bottom:30px;
+    ">
+
+        <!-- รูปสินค้า -->
+        {% if item.product.image %}
+        <img src="{{ item.product.image.url }}"
+             alt="{{ item.product.name }}"
+             style="
+                width:110px;
+                height:110px;
+                object-fit:cover;
+                border-radius:16px;
+                margin-bottom:12px;
+             ">
+        {% endif %}
+
+        <h4 style="margin-bottom:18px;">
+            {{ item.product.name }}
+        </h4>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- ดาว -->
+            <div class="star-rating" style="margin-bottom:20px;">
+                {% for i in "54321" %}
+                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                <label for="star{{ i }}">★</label>
+                {% endfor %}
+            </div>
+
+            <!-- ความคิดเห็น -->
+            <textarea name="comment"
+                      rows="4"
+                      placeholder="เขียนรีวิวของคุณ..."
+                      required
+                      style="
+                        width:100%;
+                        padding:12px 14px;
+                        border-radius:14px;
+                        border:1px solid #ddd;
+                        margin-bottom:20px;
+                        resize:none;
+                      "></textarea>
+
+            <button type="submit"
+                    style="
+                        padding:12px 30px;
+                        background:#ff7a00;
+                        color:#fff;
+                        border:none;
+                        border-radius:999px;
+                        font-size:16px;
+                        cursor:pointer;
+                    ">
+                ส่งรีวิว
+            </button>
+        </form>
+    </div>
+    {% endfor %}
+
+</div>
+
+<style>
+.star-rating {
+    direction: rtl;
+    display: inline-flex;
+}
+.star-rating input {
+    display: none;
+}
+.star-rating label {
+    font-size:34px;
+    color:#ddd;
+    cursor:pointer;
+    transition: transform 0.15s, color 0.15s;
+}
+.star-rating label:hover,
+.star-rating label:hover ~ label {
+    color:#ffb703;
+    transform: scale(1.1);
+}
+.star-rating input:checked ~ label {
+    color:#ffb703;
+}
+</style>
+{% endblock %}

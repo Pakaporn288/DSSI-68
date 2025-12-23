@@ -1,0 +1,81 @@
+{% extends 'petjoy/base.html' %}
+
+{% block content %}
+<div class="container" style="max-width:900px; margin:40px auto;">
+
+    <!-- Header -->
+    <div style="display:flex; align-items:center; gap:12px; margin-bottom:30px;">
+        <a href="{% url 'petjoy:homepage' %}"
+           style="
+               display:inline-flex;
+               align-items:center;
+               gap:6px;
+               padding:10px 16px;
+               background:#fff3eb;
+               color:#ff7a00;
+               border-radius:999px;
+               font-size:14px;
+               font-weight:600;
+               text-decoration:none;
+               border:1px solid #ffd2b8;
+           ">
+            <i class="ri-arrow-left-line"></i>
+            กลับหน้าแรก
+        </a>
+
+        <h2 style="margin:0; font-size:22px;">การแจ้งเตือน</h2>
+    </div>
+
+    {% if orders %}
+        {% for order in orders %}
+
+            {% if order.status == 'preparing' %}
+            <!-- กำลังเตรียมของ -->
+            <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
+                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
+                <div>
+                    <strong>{{ order.display_title }}</strong><br>
+                    <span style="color:#ff7a00;font-weight:600;">กำลังเตรียมสินค้า</span><br>
+                    <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                </div>
+            </div>
+
+            {% elif order.status == 'delivering' %}
+            <!-- กำลังจัดส่ง -->
+            <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
+                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
+                <div>
+                    <strong>{{ order.display_title }}</strong><br>
+                    <span style="color:#2563eb;font-weight:600;">กำลังจัดส่ง</span><br>
+                    <small>เลขพัสดุ: <b>{{ order.tracking_number }}</b></small><br>
+                    <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                </div>
+            </div>
+
+            {% elif order.status == 'success' %}
+            <!-- สำเร็จ + รีวิว -->
+            <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
+                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <strong>{{ order.display_title }}</strong><br>
+                    <span style="color:#22c55e;font-weight:600;">จัดส่งสำเร็จ</span><br>
+                    <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                </div>
+
+                <!-- ปุ่มรีวิว -->
+                <a href="{% url 'petjoy:review_product' order.id %}"
+                   style="padding:8px 16px;background:#ff7a00;color:#fff;
+                          border-radius:999px;font-size:14px;text-decoration:none;">
+                    รีวิวสินค้า
+                </a>
+            </div>
+            {% endif %}
+
+        {% endfor %}
+    {% else %}
+        <div style="background:#fff;padding:60px;border-radius:16px;text-align:center;color:#999;">
+            🔔 ยังไม่มีการแจ้งเตือน
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

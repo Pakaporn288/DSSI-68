@@ -1538,14 +1538,43 @@ body {
     }
 }
 .nav-notification-wrapper {
+    position: relative;
     margin-left: 14px;     /* ห่างจากตะกร้า */
     margin-right: 20px;    /* ห่างจากรูปโปรไฟล์ */
 }
 
 .notification-icon {
+    position: relative;
     text-decoration: none;
+    position: relative !important;
+    display: inline-flex;          /* 🔴 จุดสำคัญ */
+    align-items: center;
+    justify-content: center;
     font-size: 22px;
     color: #333;
+    text-decoration: none;
+}
+
+.notification-icon .notif-badge {
+    position: absolute !important;
+    top: -8px;
+    right: -10px;
+
+    background-color: #ff3b30;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+
+    min-width: 20px;
+    min-height: 20px;
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #FF7043;
+    z-index: 5;
 }
 
 .notification-icon:hover {
@@ -1563,6 +1592,7 @@ body {
     border-radius: 50%;
     font-weight: bold;
     border: 2px solid white;   /* ทำให้ badge เนียน ไม่ทับ */
+    
 }
 /* ============================
    RECOMMENDED PRODUCT CARDS

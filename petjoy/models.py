@@ -1,6 +1,9 @@
 from django.conf import settings
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
+
+
 
 class Category(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -49,11 +52,31 @@ class Profile(models.Model):
 
 
 class Review(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reviews')
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='reviews'
+    )
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    rating = models.IntegerField(default=5)
+
+    # ✅ แก้เฉพาะตรงนี้
+    order = models.ForeignKey(
+        "Order",
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        null=True,      # ← เพิ่ม
+        blank=True      # ← เพิ่ม
+    )
+
+    rating = models.IntegerField(
+        default=5,
+        validators=[MinValueValidator(1), MaxValueValidator(5)]
+    )
     comment = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product', 'order')
 
     def __str__(self):
         return f'Review for {self.product.name} by {self.user.username}'
@@ -156,6 +179,11 @@ class Order(models.Model):
         null=True,
         blank=True
     )
+    tracking_number = models.CharField(
+        max_length=100,
+        blank=True,
+        null=True
+    )
 
     order_number = models.IntegerField()
     customer_name = models.CharField(max_length=255)
@@ -166,6 +194,8 @@ class Order(models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="waiting")
     slip_image = models.ImageField(upload_to="slips/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    has_unread_status_update = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
 
@@ -181,6 +211,8 @@ class Order(models.Model):
                 self.order_number = 1
 
         super().save(*args, **kwargs)
+
+        
 
 class OrderItem(models.Model):
     order = models.ForeignKey(

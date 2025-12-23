@@ -66,7 +66,8 @@ urlpatterns = [
     path('entrepreneur/chat/delete/<int:room_id>/', entrepreneur_chat_delete, name='entrepreneur-chat-delete'),
     path("entrepreneur/profile/settings/", views.entrepreneur_profile_settings, name="entrepreneur_profile_settings"),
     path("orders/<int:order_id>/", views.order_detail, name="orders-detail"),
-
+    path("notifications/", views.notification_list, name="notification_list"),
+    path("review/<int:order_id>/", views.review_product, name="review_product")
 
 
 ]

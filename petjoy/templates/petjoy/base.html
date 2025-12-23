@@ -47,7 +47,7 @@
 
             <!-- Notification -->
             <div class="nav-notification-wrapper">
-                <a href="#" class="notification-icon">
+                <a href="{% url 'petjoy:notification_list' %}" class="notification-icon">
                     <i class="ri-notification-3-line"></i>
                     {% if user.is_authenticated and notification_count > 0 %}
                     <span class="notif-badge">{{ notification_count }}</span>

@@ -21,14 +21,12 @@ from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
 from django.contrib.admin.views.decorators import staff_member_required
 from .models import Address
 from django.utils.decorators import method_decorator
-from .models import Order, OrderItem
 from django.db import transaction
 from django.forms import Form
 from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
 from django.template.loader import render_to_string
 from petjoy.models import Order
-from .models import Order, OrderItem
 
 logger = logging.getLogger(__name__)
 
@@ -175,6 +173,68 @@ def cart_detail(request):
         "total_price": total_price,
         "total_items": total_items  # NEW
     })
+
+def notification_list(request):
+    if not request.user.is_authenticated:
+        return redirect("login")
+
+    # ใช้วิธีเดียวกับ order_history (ชื่อ + เบอร์)
+    addresses = Address.objects.filter(user=request.user)
+    q = Q()
+    for addr in addresses:
+        q |= Q(customer_name=addr.full_name, customer_phone=addr.phone)
+
+    orders = (
+        Order.objects
+        .filter(q)
+        .prefetch_related('items__product')
+        .order_by('-created_at')
+    )
+
+    # สร้าง display_title ให้แต่ละ order
+    for order in orders:
+        items = order.items.all()
+        if items.exists():
+            first_product = items.first().product.name
+            count = items.count()
+
+            if count > 1:
+                order.display_title = f"{first_product} และอีก {count - 1} รายการ"
+            else:
+                order.display_title = first_product
+        else:
+            order.display_title = "คำสั่งซื้อของคุณ"
+
+    # 🔔 ถือว่าเข้ามาอ่านแจ้งเตือนแล้ว
+    orders.filter(has_unread_status_update=True).update(
+        has_unread_status_update=False
+    )
+
+    return render(request, "petjoy/notification_list.html", {
+        "orders": orders
+    })
+
+@login_required
+def review_product(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    items = order.items.all()
+
+    if request.method == "POST":
+        for item in items:
+            Review.objects.create(
+                user=request.user,
+                product=item.product,
+                order=order,
+                rating=request.POST.get("rating"),
+                comment=request.POST.get("comment")
+            )
+        return redirect("petjoy:product_detail", pk=item.product.id)
+
+    return render(request, "petjoy/review_form.html", {
+        "order": order,
+        "items": items
+    })
+
 
 @login_required
 def order_history(request):
@@ -1149,6 +1209,7 @@ def order_detail(request, order_id):
     if request.method == "POST":
         new_status = request.POST.get("status")
         order.status = new_status
+        order.has_unread_status_update = True  # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
         order.save()
         messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
         return redirect("petjoy:orders-detail", order_id=order.id)
@@ -1167,12 +1228,15 @@ def update_order_status(request, order_id):
     if request.method == "POST":
         new_status = request.POST.get("status")
         order.status = new_status
+
+        # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
+        order.has_unread_status_update = True
+
         order.save()
         messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
         return redirect("petjoy:orders-detail", order_id=order_id)
 
     return redirect("petjoy:orders-list")
-
 
 
 @login_required
