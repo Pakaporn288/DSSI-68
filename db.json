@@ -1049,11 +1049,11 @@
   "model": "auth.user",
   "pk": 8,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$WmE6PtXIAj3eWhyWFhvcX8$Ao1IqsLrboptWReduisZh//1H+Q84UQVgrbygcuXyLM=",
-    "last_login": "2025-12-24T09:10:40.138Z",
+    "password": "pbkdf2_sha256$720000$XBzit87akEPU0rtl5jbajQ$esgcUdaBhUBC7dHFPeQDxMHLWPChqi/iIjaf0K1EQrE=",
+    "last_login": "2025-12-24T09:27:40.954Z",
     "is_superuser": false,
     "username": "moa",
-    "first_name": "Pakaporn",
+    "first_name": "ภคพร",
     "last_name": "Somchan",
     "email": "pakaporn.so.66@ubu.ac.th",
     "is_staff": false,
@@ -1139,8 +1139,8 @@
   "model": "auth.user",
   "pk": 15,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$5dzcGtHBE49KIY3YZOzRyh$+XdanXfxSVF8pOtF8mbTN0QJ6JNH2+TxRDvCZmItv2I=",
-    "last_login": "2025-12-24T09:12:43.164Z",
+    "password": "pbkdf2_sha256$720000$RWdNwgUePnMrGoCh7wIHWK$iHkTZkJCam3SsQfLaQRjkHTaxyJiIFF8Iv4+4vuF91M=",
+    "last_login": "2025-12-24T09:27:31.494Z",
     "is_superuser": false,
     "username": "Petopia",
     "first_name": "",
@@ -1367,14 +1367,6 @@
 },
 {
   "model": "sessions.session",
-  "pk": "mn8udxcaweymjzta6o8g3pkjw8245mp5",
-  "fields": {
-    "session_data": ".eJxVjDsOwyAQBe9CHSFg-aZM7zOgBdbBSYQlY1dR7h4huUjaNzPvzSIee41Hpy0uhV2ZNOzyOybMT2qDlAe2-8rz2vZtSXwo_KSdT2uh1-10_w4q9jpqlAYEBZ-V0pQLQgYjHRjvAmmBs0AAa12QabaoSBcSwgQw1kvnUmCfL_omN0k:1vYKvD:gEE3FthwPaBTnC_ygdtoerA2I6gkwt8hIGahyWgQJf4",
-    "expire_date": "2026-01-07T09:12:43.169Z"
-  }
-},
-{
-  "model": "sessions.session",
   "pk": "osri5fs5dj3leu7yilz5ahq0tnfvn21j",
   "fields": {
     "session_data": ".eJxVjDsOwjAQBe_iGllO8JeSPmew1utdHEC2FCcV4u4QKQW0b2beS0TY1hK3Tkucs7gIL06_WwJ8UN1BvkO9NYmtrsuc5K7Ig3Y5tUzP6-H-HRTo5VtDwMQQVA7kNJ3twMGMpBgzszbIpMk6tozBOENWez-qATl4DeSTV-L9ARgOOMc:1vSWcT:_ZrSU7Nmvh-SvSCZPzaoCoxzbPHIgfXUUra-c_2yzd8",
@@ -1391,14 +1383,6 @@
 },
 {
   "model": "sessions.session",
-  "pk": "to4qczipr4zx54t4dqxilyhw6rrhqeiq",
-  "fields": {
-    "session_data": ".eJxVjDsOwyAQBe9CHSFg-aZM7zOgBdbBSYQlY1dR7h4huUjaNzPvzSIee41Hpy0uhV2ZNOzyOybMT2qDlAe2-8rz2vZtSXwo_KSdT2uh1-10_w4q9jpqlAYEBZ-V0pQLQgYjHRjvAmmBs0AAa12QabaoSBcSwgQw1kvnUmCfL_omN0k:1vYHXR:sxN6xkq9OxebF37TAn-6dPYvOMUEC__UDpoEMTZmcrE",
-    "expire_date": "2026-01-07T05:35:57.839Z"
-  }
-},
-{
-  "model": "sessions.session",
   "pk": "u7xv79cbkzmfv8h15g80odqs8mhlm7r7",
   "fields": {
     "session_data": ".eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1v0MNL:p1Hg1XvgLYEk0wTcpgi4r19h7PIANiISQsKgl3A3ooE",
@@ -1411,6 +1395,14 @@
   "fields": {
     "session_data": ".eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1uyPYh:1jisc1PR3x6veK_8AVjMOx4iK8YAjaeUplfuhTfUJnE",
     "expire_date": "2025-09-30T06:52:59.638Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ydbvjpwadqkyveamnzs83o8b55ejk61v",
+  "fields": {
+    "session_data": ".eJxVjM0OwiAQhN-FsyH8LJX16N1nIGxZpGogKe3J-O62SQ96mmS-b-YtQlyXEtbOc5iSuAjtxOm3pDg-ue4kPWK9Nzm2uswTyV2RB-3y1hK_rof7d1BiL9saM4IiC8lQ9rglaEjW6IiO9Nkkyxa9AyDjBoOAQwavyHibHUdWLD5f49Y3JQ:1vYL9X:llcksYE9rm7Omfh-BwzLyKTo9X43Enn92s60gsA0HIQ",
+    "expire_date": "2026-01-07T09:27:31.498Z"
   }
 },
 {
@@ -2467,12 +2459,13 @@
     "user": 8,
     "image": "profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg",
     "favorites": [
-      43,
+      40,
       47,
-      69,
-      14,
       23,
-      39
+      39,
+      69,
+      43,
+      14
     ]
   }
 },
@@ -2566,6 +2559,18 @@
     "rating": 4,
     "comment": "ตุ๊กตานิ่มดีค่ะ",
     "created_at": "2025-12-24T05:28:16.048Z"
+  }
+},
+{
+  "model": "petjoy.review",
+  "pk": 4,
+  "fields": {
+    "product": 40,
+    "user": 8,
+    "order": 14,
+    "rating": 5,
+    "comment": "น้องหมาที่บ้านชอบมากค่ะ",
+    "created_at": "2025-12-24T09:39:33.098Z"
   }
 },
 {
@@ -3412,15 +3417,6 @@
 },
 {
   "model": "petjoy.cartitem",
-  "pk": 36,
-  "fields": {
-    "user": 8,
-    "product": 39,
-    "quantity": 1
-  }
-},
-{
-  "model": "petjoy.cartitem",
   "pk": 38,
   "fields": {
     "user": 8,
@@ -3527,6 +3523,23 @@
   }
 },
 {
+  "model": "petjoy.order",
+  "pk": 14,
+  "fields": {
+    "entrepreneur": 4,
+    "tracking_number": null,
+    "order_number": 5,
+    "customer_name": "เจ้า ออม",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "total_price": "999.00",
+    "status": "success",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13.24.34_5XGJqPb.png",
+    "created_at": "2025-12-24T09:33:45.667Z",
+    "has_unread_status_update": false
+  }
+},
+{
   "model": "petjoy.orderitem",
   "pk": 11,
   "fields": {
@@ -3564,6 +3577,44 @@
     "product": 40,
     "quantity": 1,
     "price": "999.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 15,
+  "fields": {
+    "order": 14,
+    "product": 40,
+    "quantity": 1,
+    "price": "999.00"
+  }
+},
+{
+  "model": "petjoy.chatroom",
+  "pk": 11,
+  "fields": {
+    "customer": 8,
+    "entrepreneur": 4
+  }
+},
+{
+  "model": "petjoy.chatmessage",
+  "pk": 16,
+  "fields": {
+    "room": 11,
+    "sender": 8,
+    "message": "สวัสดีค่ะ",
+    "timestamp": "2025-12-24T09:29:00.480Z"
+  }
+},
+{
+  "model": "petjoy.chatmessage",
+  "pk": 17,
+  "fields": {
+    "room": 11,
+    "sender": 15,
+    "message": "สวัสดีค่ะ 😊 ทางร้านพร้อมให้บริการค่ะ",
+    "timestamp": "2025-12-24T09:37:50.482Z"
   }
 }
 ]
