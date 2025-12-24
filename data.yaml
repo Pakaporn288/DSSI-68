@@ -735,11 +735,11 @@
 - model: auth.user
   pk: 8
   fields:
-    password: pbkdf2_sha256$720000$XBzit87akEPU0rtl5jbajQ$esgcUdaBhUBC7dHFPeQDxMHLWPChqi/iIjaf0K1EQrE=
-    last_login: '2025-12-24T09:27:40.954Z'
+    password: pbkdf2_sha256$1000000$b4PAs9QlO1NY3oCLuMu2Dv$9dnsW5v0POzKYqdh/UoRWpYA/a50MwDmqoWtl4d/sfg=
+    last_login: '2025-12-24T13:28:52.506Z'
     is_superuser: false
     username: moa
-    first_name: ภคพร
+    first_name: Pakaporn
     last_name: Somchan
     email: pakaporn.so.66@ubu.ac.th
     is_staff: false
@@ -810,8 +810,8 @@
 - model: auth.user
   pk: 15
   fields:
-    password: pbkdf2_sha256$720000$RWdNwgUePnMrGoCh7wIHWK$iHkTZkJCam3SsQfLaQRjkHTaxyJiIFF8Iv4+4vuF91M=
-    last_login: '2025-12-24T09:27:31.494Z'
+    password: pbkdf2_sha256$1000000$LT9fdfxpYcqJLlr1KEkAFg$kq310GNEb43bKHa3ik8Xx4z4vZMzhNJp60aNYZpTb/U=
+    last_login: '2025-12-24T13:29:22.428Z'
     is_superuser: false
     username: Petopia
     first_name: ''
@@ -982,11 +982,6 @@
   fields:
     session_data: .eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1uyPYh:1jisc1PR3x6veK_8AVjMOx4iK8YAjaeUplfuhTfUJnE
     expire_date: '2025-09-30T06:52:59.638Z'
-- model: sessions.session
-  pk: ydbvjpwadqkyveamnzs83o8b55ejk61v
-  fields:
-    session_data: .eJxVjM0OwiAQhN-FsyH8LJX16N1nIGxZpGogKe3J-O62SQ96mmS-b-YtQlyXEtbOc5iSuAjtxOm3pDg-ue4kPWK9Nzm2uswTyV2RB-3y1hK_rof7d1BiL9saM4IiC8lQ9rglaEjW6IiO9Nkkyxa9AyDjBoOAQwavyHibHUdWLD5f49Y3JQ:1vYL9X:llcksYE9rm7Omfh-BwzLyKTo9X43Enn92s60gsA0HIQ
-    expire_date: '2026-01-07T09:27:31.498Z'
 - model: petjoy.category
   pk: 1
   fields:
@@ -2024,12 +2019,13 @@
     user: 8
     image: profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg
     favorites:
-    - 40
-    - 47
+    - 34
     - 23
     - 39
-    - 69
+    - 40
+    - 47
     - 43
+    - 69
     - 14
 - model: petjoy.profile
   pk: 7
@@ -2078,33 +2074,6 @@
     comment: ของใช้ได้ แต่ด้ามจับไม่ค่อยแข็งแรงเท่าไร แมวเล่นแป๊บเดียวก็เบื่อบ้างบางครั้ง
       ถือว่าพอใช้ได้แต่ยังไม่ประทับใจมากนักครับ
     created_at: '2025-09-14T07:49:35.672Z'
-- model: petjoy.review
-  pk: 2
-  fields:
-    product: 39
-    user: 8
-    order: 11
-    rating: 5
-    comment: น้องหมาที่บ้านชอบมากค่ะ ส่งไวด้วย
-    created_at: '2025-12-23T13:32:25.547Z'
-- model: petjoy.review
-  pk: 3
-  fields:
-    product: 38
-    user: 8
-    order: 12
-    rating: 4
-    comment: ตุ๊กตานิ่มดีค่ะ
-    created_at: '2025-12-24T05:28:16.048Z'
-- model: petjoy.review
-  pk: 4
-  fields:
-    product: 40
-    user: 8
-    order: 14
-    rating: 5
-    comment: น้องหมาที่บ้านชอบมากค่ะ
-    created_at: '2025-12-24T09:39:33.098Z'
 - model: petjoy.chathistory
   pk: 1
   fields:
@@ -2885,127 +2854,3 @@
     subdistrict: xxxxxx
     zipcode: '12345'
     is_default: true
-- model: petjoy.order
-  pk: 10
-  fields:
-    entrepreneur: 4
-    tracking_number: null
-    order_number: 1
-    customer_name: ภคพร สมจันทร์
-    customer_phone: '0647120613'
-    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
-    total_price: '299.00'
-    status: paid
-    slip_image: slips/Screenshot-2567-07-03-at-13.24.34.png
-    created_at: '2025-12-09T17:19:46.077Z'
-    has_unread_status_update: false
-- model: petjoy.order
-  pk: 11
-  fields:
-    entrepreneur: 4
-    tracking_number: null
-    order_number: 2
-    customer_name: เจ้า ออม
-    customer_phone: '0647120613'
-    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
-    total_price: '199.00'
-    status: success
-    slip_image: slips/Screenshot-2567-07-03-at-13.24.34_v1AFwpp.png
-    created_at: '2025-12-14T07:06:23.030Z'
-    has_unread_status_update: false
-- model: petjoy.order
-  pk: 12
-  fields:
-    entrepreneur: 4
-    tracking_number: null
-    order_number: 3
-    customer_name: เจ้า ออม
-    customer_phone: '0647120613'
-    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
-    total_price: '299.00'
-    status: success
-    slip_image: slips/Screenshot-2567-07-03-at-13_KuPbc0a.24.34.png
-    created_at: '2025-12-23T11:10:15.692Z'
-    has_unread_status_update: false
-- model: petjoy.order
-  pk: 13
-  fields:
-    entrepreneur: 4
-    tracking_number: null
-    order_number: 4
-    customer_name: เจ้า ออม
-    customer_phone: '0647120613'
-    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
-    total_price: '999.00'
-    status: success
-    slip_image: slips/Screenshot-2567-07-03-at-13_M23NDlg.24.34.png
-    created_at: '2025-12-23T12:20:53.511Z'
-    has_unread_status_update: false
-- model: petjoy.order
-  pk: 14
-  fields:
-    entrepreneur: 4
-    tracking_number: null
-    order_number: 5
-    customer_name: เจ้า ออม
-    customer_phone: '0647120613'
-    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
-    total_price: '999.00'
-    status: success
-    slip_image: slips/Screenshot-2567-07-03-at-13.24.34_5XGJqPb.png
-    created_at: '2025-12-24T09:33:45.667Z'
-    has_unread_status_update: false
-- model: petjoy.orderitem
-  pk: 11
-  fields:
-    order: 10
-    product: 37
-    quantity: 1
-    price: '299.00'
-- model: petjoy.orderitem
-  pk: 12
-  fields:
-    order: 11
-    product: 39
-    quantity: 1
-    price: '199.00'
-- model: petjoy.orderitem
-  pk: 13
-  fields:
-    order: 12
-    product: 38
-    quantity: 1
-    price: '299.00'
-- model: petjoy.orderitem
-  pk: 14
-  fields:
-    order: 13
-    product: 40
-    quantity: 1
-    price: '999.00'
-- model: petjoy.orderitem
-  pk: 15
-  fields:
-    order: 14
-    product: 40
-    quantity: 1
-    price: '999.00'
-- model: petjoy.chatroom
-  pk: 11
-  fields:
-    customer: 8
-    entrepreneur: 4
-- model: petjoy.chatmessage
-  pk: 16
-  fields:
-    room: 11
-    sender: 8
-    message: สวัสดีค่ะ
-    timestamp: '2025-12-24T09:29:00.480Z'
-- model: petjoy.chatmessage
-  pk: 17
-  fields:
-    room: 11
-    sender: 15
-    message: สวัสดีค่ะ 😊 ทางร้านพร้อมให้บริการค่ะ
-    timestamp: '2025-12-24T09:37:50.482Z'
