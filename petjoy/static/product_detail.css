@@ -104,3 +104,43 @@
     color: #ff4d6d !important;
     transform: scale(1.35);
 }
+
+/* ========================================================= */
+/* ★ ADDED : fix report modal textarea / select overflow     */
+/* ========================================================= */
+#reportModal textarea,
+#reportModal select {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+/* ========================================================= */
+/* RESTORE REPORT BUTTON STYLE (เอาดีไซน์เดิมกลับมา)       */
+/* ========================================================= */
+
+.btn-report {
+    background: #ffffff;
+    border: 1.5px solid #d93535;
+    color: #d93535;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s ease;
+}
+
+.btn-report i {
+    font-size: 0.95rem;
+}
+
+.btn-report:hover {
+    background: #d93535;
+    color: #ffffff;
+}
+
+.btn-report:hover i {
+    color: #ffffff;
+}

@@ -1,70 +1,85 @@
 {% extends "petjoy/base.html" %}
 
 {% block content %}
-<div class="container" style="max-width:650px;margin:50px auto;text-align:center;">
+<div class="container" style="max-width:650px;margin:40px auto; padding: 0 20px;">
 
-    <h2 style="margin-bottom:25px;">รีวิวสินค้า</h2>
+    <div style="margin-bottom: 20px; text-align: left;">
+        <a href="{% url 'petjoy:notification_list' %}" 
+           style="text-decoration:none; color:#666; font-size:14px; display:inline-flex; align-items:center; gap:5px;">
+            <i class="ri-arrow-left-s-line" style="font-size:20px;"></i> ย้อนกลับ
+        </a>
+    </div>
+
+    <div style="text-align:center;">
+        <h2 style="margin-bottom:10px;">รีวิวสินค้า 🐾</h2>
+        <p style="color:#888; margin-bottom:30px;">บอกความประทับใจของคุณให้เราทราบหน่อยนะคะ</p>
+    </div>
 
     {% for item in items %}
     <div style="
         background:#fff;
         padding:30px;
         border-radius:22px;
-        box-shadow:0 6px 18px rgba(0,0,0,0.06);
+        box-shadow:0 6px 25px rgba(0,0,0,0.05);
         margin-bottom:30px;
+        text-align: center;
     ">
 
-        <!-- รูปสินค้า -->
         {% if item.product.image %}
         <img src="{{ item.product.image.url }}"
              alt="{{ item.product.name }}"
              style="
-                width:110px;
-                height:110px;
+                width:120px;
+                height:120px;
                 object-fit:cover;
-                border-radius:16px;
-                margin-bottom:12px;
+                border-radius:20px;
+                margin-bottom:15px;
+                border: 4px solid #fff3eb;
              ">
         {% endif %}
 
-        <h4 style="margin-bottom:18px;">
+        <h4 style="margin-bottom:20px; font-size:18px; color:#333;">
             {{ item.product.name }}
         </h4>
 
-        <form method="post">
+        <form method="post" id="reviewForm">
             {% csrf_token %}
 
-            <!-- ดาว -->
-            <div class="star-rating" style="margin-bottom:20px;">
+            <div class="star-rating" style="margin-bottom:25px;">
                 {% for i in "54321" %}
                 <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
                 <label for="star{{ i }}">★</label>
                 {% endfor %}
             </div>
 
-            <!-- ความคิดเห็น -->
             <textarea name="comment"
                       rows="4"
-                      placeholder="เขียนรีวิวของคุณ..."
+                      placeholder="รีวิวจากลูกค้า..."
                       required
                       style="
                         width:100%;
-                        padding:12px 14px;
-                        border-radius:14px;
-                        border:1px solid #ddd;
-                        margin-bottom:20px;
+                        padding:15px;
+                        border-radius:16px;
+                        border:1.5px solid #eee;
+                        margin-bottom:25px;
                         resize:none;
+                        font-family: inherit;
+                        background: #fdfdfd;
                       "></textarea>
 
             <button type="submit"
                     style="
-                        padding:12px 30px;
-                        background:#ff7a00;
+                        width: 100%;
+                        padding:14px;
+                        background: linear-gradient(135deg, #ff9d42 0%, #ff7a00 100%);
                         color:#fff;
                         border:none;
-                        border-radius:999px;
+                        border-radius:16px;
                         font-size:16px;
+                        font-weight: 600;
                         cursor:pointer;
+                        box-shadow: 0 4px 15px rgba(255,122,0,0.3);
+                        transition: 0.3s;
                     ">
                 ส่งรีวิว
             </button>
@@ -83,18 +98,22 @@
     display: none;
 }
 .star-rating label {
-    font-size:34px;
-    color:#ddd;
+    font-size:40px;
+    color:#e0e0e0;
     cursor:pointer;
-    transition: transform 0.15s, color 0.15s;
+    transition: transform 0.2s, color 0.2s;
 }
 .star-rating label:hover,
 .star-rating label:hover ~ label {
     color:#ffb703;
-    transform: scale(1.1);
+    transform: scale(1.15);
 }
 .star-rating input:checked ~ label {
     color:#ffb703;
+}
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255,122,0,0.4);
 }
 </style>
 {% endblock %}

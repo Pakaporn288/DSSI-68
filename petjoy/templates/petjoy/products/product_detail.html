@@ -15,17 +15,12 @@
 
     <div class="detail-content-wrapper">
 
-        <!-- ================================
-             LEFT SIDE — IMAGE + STORE + REVIEWS
-        ================================= -->
         <div class="detail-image-section">
 
-            <!-- IMAGE -->
             {% if product.image %}
                 <img src="{{ product.image.url }}" alt="{{ product.name }}" class="detail-product-image">
             {% endif %}
 
-            <!-- STORE INFO -->
             <div class="store-info-section">
                 {% if product.owner %}
                     {% if product.owner.profile_image %}
@@ -86,7 +81,6 @@
                 {% endif %}
             </div>
 
-            <!-- REVIEWS -->
             <div class="reviews-section">
                 <h3>รีวิวจากลูกค้า ({{ reviews.count }})</h3>
 
@@ -114,18 +108,11 @@
 
         </div>
 
-
-
-
-        <!-- ================================
-             RIGHT SIDE — PRODUCT INFO
-        ================================= -->
         <div class="detail-info-section">
 
             <h2 class="detail-product-name">{{ product.name }}</h2>
             <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
 
-            <!-- ❤️ FAVORITE BUTTON -->
             {% if user.is_authenticated %}
                 <button 
                     id="favoriteBtn"
@@ -161,27 +148,21 @@
                 <button type="button" class="btn-buy-now">⚡ สั่งซื้อสินค้า</button>
             </div>
 
-            <!-- QUANTITY MODAL -->
             <div id="quantityModal" class="modal-overlay" style="display:none;">
                 <div class="modal-box">
-
                     <h3>เลือกจำนวนสินค้า</h3>
-
                     <div class="modal-qty-selector">
                         <button type="button" id="qtyMinus">-</button>
                         <input type="text" id="modalQtyInput" value="1">
                         <button type="button" id="qtyPlus">+</button>
                     </div>
-
                     <form method="post" action="{% url 'petjoy:cart-add' %}">
                         {% csrf_token %}
                         <input type="hidden" name="product_id" value="{{ product.id }}">
                         <input type="hidden" id="modalQtyHidden" name="quantity" value="1">
-
                         <button type="submit" class="modal-confirm-btn">ยืนยัน</button>
                         <button type="button" class="modal-cancel-btn" id="closeModalBtn">ยกเลิก</button>
                     </form>
-
                 </div>
             </div>
 
@@ -195,22 +176,47 @@
                 <p>{{ product.description|linebreaks }}</p>
             </div>
 
-        </div>
+            <div class="report-section" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; text-align: right;">
+                <button type="button"
+                        class="btn-report"
+                        onclick="openReportModal()"
+                        data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}"> <!-- ★ ADDED -->
+                    <i class="fa-solid fa-flag"></i> รายงานปัญหาสินค้าชิ้นนี้
+                </button>
+            </div>
 
+            <div id="reportModal" class="modal-overlay" style="display:none;">
+                <div class="modal-box" style="max-width: 400px;">
+                    <h3>รายงานสินค้า</h3>
+                    <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">กรุณาระบุเหตุผลที่ต้องการรายงาน</p>
+                    
+                    <form id="reportForm">
+                        {% csrf_token %}
+                        <select name="reason" id="reportReason" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;">
+                            <option value="inappropriate">เนื้อหาไม่เหมาะสม</option>
+                            <option value="scam">เข้าข่ายหลอกลวง</option>
+                            <option value="copyright">ละเมิดลิขสิทธิ์</option>
+                            <option value="other">อื่นๆ</option>
+                        </select>
+                        <textarea name="details" id="reportDetails" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; min-height: 100px; font-family: inherit; resize: vertical;"></textarea>
+                        
+                        <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                            <button type="button" onclick="submitReport()" class="modal-confirm-btn" style="background: #d93535; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">ส่งรายงาน</button>
+                            <button type="button" onclick="closeReportModal()" class="modal-cancel-btn" style="background: #eee; padding: 12px; border-radius: 10px; border: none; cursor: pointer;">ยกเลิก</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 
 {% endblock %}
 
 {% block extra_scripts %}
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-<!-- Font Awesome สำหรับไอคอนหัวใจ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
-
-<!-- JS -->
-<script src="{% static 'js/product_detail.js' %}"></script>
+<script src="{% static 'js/product_detail.js' %}?v=login-check"></script>
 <script src="{% static 'js/favorites.js' %}"></script>
-
 {% endblock %}

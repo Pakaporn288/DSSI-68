@@ -3,7 +3,6 @@
 {% block content %}
 <div class="container" style="max-width:900px; margin:40px auto;">
 
-    <!-- Header -->
     <div style="display:flex; align-items:center; gap:12px; margin-bottom:30px;">
         <a href="{% url 'petjoy:homepage' %}"
            style="
@@ -30,7 +29,6 @@
         {% for order in orders %}
 
             {% if order.status == 'preparing' %}
-            <!-- กำลังเตรียมของ -->
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
                         box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
                 <div>
@@ -41,7 +39,6 @@
             </div>
 
             {% elif order.status == 'delivering' %}
-            <!-- กำลังจัดส่ง -->
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
                         box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
                 <div>
@@ -53,7 +50,6 @@
             </div>
 
             {% elif order.status == 'success' %}
-            <!-- สำเร็จ + รีวิว -->
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
                         box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
                 <div>
@@ -62,12 +58,15 @@
                     <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
                 </div>
 
-                <!-- ปุ่มรีวิว -->
+                {% if not order.reviews.exists %}
                 <a href="{% url 'petjoy:review_product' order.id %}"
                    style="padding:8px 16px;background:#ff7a00;color:#fff;
                           border-radius:999px;font-size:14px;text-decoration:none;">
                     รีวิวสินค้า
                 </a>
+                {% else %}
+                <span style="color:#22c55e; font-size:14px;"><i class="ri-checkbox-circle-fill"></i> รีวิวแล้ว</span>
+                {% endif %}
             </div>
             {% endif %}
 

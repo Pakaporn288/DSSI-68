@@ -4,167 +4,224 @@
 {% block content %}
 
 <style>
-    .public-container {
-        max-width: 1100px;
-        margin: auto;
-        padding: 20px;
+    :root {
+        --primary-orange: #ff6a2e;
+        --bg-body: #f8f9fa;
+        --text-dark: #2d3436;
     }
 
-    .back-btn {
-        font-size: 1.5rem;
-        border: none;
-        background: none;
-        cursor: pointer;
-        color: #555;
-        padding: 5px 10px;
+    body { background-color: var(--bg-body); }
+
+    .shop-page-container {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 0 20px;
     }
 
-    .store-header {
+    /* --- ปรับปรุงปุ่มย้อนกลับใหม่ (Custom CSS Arrow) --- */
+    .back-btn-box {
+        margin-bottom: 20px;
+    }
+
+    .custom-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 20px;
+        background: white;
+        color: var(--text-dark);
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        transition: 0.3s;
+        border: 1px solid #eee;
+    }
+
+    /* สร้างลูกศรด้วย CSS */
+    .custom-back-btn::before {
+        content: "";
+        width: 8px;
+        height: 8px;
+        border-left: 2px solid currentColor;
+        border-bottom: 2px solid currentColor;
+        transform: rotate(45deg);
+    }
+
+    .custom-back-btn:hover {
+        background: var(--primary-orange);
+        color: white;
+        border-color: var(--primary-orange);
+        transform: translateX(-5px);
+    }
+
+    /* --- ส่วนข้อมูลร้านค้า (Layout แนวนอนตามภาพล่าสุด) --- */
+    .store-profile-header {
+        background: white;
+        border-radius: 25px;
+        padding: 30px;
         display: flex;
         align-items: center;
-        gap: 20px;
-        background: white;
-        padding: 25px;
-        border-radius: 18px;
-        box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-        margin-bottom: 25px;
+        gap: 25px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+        margin-bottom: 40px;
     }
 
-    .store-img {
-        width: 120px;
-        height: 120px;
-        border-radius: 100px;
-        object-fit: cover;
-        border: 4px solid #FF6A2E;
+    .store-logo-frame {
+        width: 110px;
+        height: 110px;
+        border-radius: 20px;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+        flex-shrink: 0;
     }
 
-    .store-info h2 {
-        font-size: 1.8rem;
-        color: #E65100;
-        margin-bottom: 8px;
-        font-weight: 800;
-    }
-
-    .store-stats {
-        display: flex;
-        gap: 20px;
-    }
-
-    .stat-box {
-        background: #FFF2E8;
-        padding: 12px 18px;
-        border-radius: 10px;
-        text-align: center;
-        min-width: 120px;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    }
-
-    .stat-box b {
-        font-size: 1.4rem;
-        color: #FF6A2E;
-    }
-
-    .product-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-        gap: 22px;
-        margin-top: 20px;
-    }
-
-    .product-card {
-        background: white;
-        padding: 12px;
-        border-radius: 14px;
-        text-align: center;
-        box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-        cursor: pointer;
-        transition: 0.2s;
-    }
-
-    .product-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 5px 16px rgba(0,0,0,0.12);
-    }
-
-    .product-card img {
+    .store-logo-frame img {
         width: 100%;
-        height: 160px;
+        height: 100%;
         object-fit: cover;
+    }
+
+    .store-info-content h1 {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 8px;
+        color: var(--text-dark);
+    }
+
+    .store-stats-badge {
+        display: inline-block;
+        background: #fdf2f0;
+        color: var(--primary-orange);
+        padding: 5px 15px;
         border-radius: 10px;
-    }
-
-    .product-name {
-        font-size: 1rem;
-        margin-top: 10px;
+        font-size: 0.9rem;
         font-weight: 600;
-        color: #444;
+        margin-bottom: 15px;
     }
 
-    .product-price {
-        font-size: 1.2rem;
-        margin-top: 4px;
+    .btn-chat-now {
+        background: var(--primary-orange);
+        color: white;
+        padding: 12px 30px;
+        border-radius: 12px;
+        text-decoration: none;
         font-weight: 700;
-        color: #FF6A2E;
+        display: inline-block;
+        transition: 0.3s;
+        box-shadow: 0 4px 15px rgba(255, 106, 46, 0.2);
+    }
+
+    .btn-chat-now:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(255, 106, 46, 0.3);
+        color: white;
+    }
+
+    /* --- สินค้า --- */
+    .section-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+    }
+
+    .product-list-wrapper {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 20px;
+    }
+
+    .p-item-card {
+        background: white;
+        border-radius: 20px;
+        padding: 12px;
+        text-decoration: none;
+        border: 1px solid transparent;
+        transition: 0.3s;
+    }
+
+    .p-item-card:hover {
+        border-color: #eee;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        transform: translateY(-5px);
+    }
+
+    .p-item-img {
+        width: 100%;
+        aspect-ratio: 1/1;
+        border-radius: 15px;
+        overflow: hidden;
+        margin-bottom: 12px;
+    }
+
+    .p-item-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .p-item-name {
+        color: var(--text-dark);
+        font-weight: 600;
+        display: block;
+        margin-bottom: 5px;
+    }
+
+    .p-item-price {
+        color: var(--primary-orange);
+        font-weight: 800;
+        font-size: 1.1rem;
+    }
+
+    @media (max-width: 600px) {
+        .store-profile-header { flex-direction: column; text-align: center; }
+        .product-list-wrapper { grid-template-columns: repeat(2, 1fr); gap: 12px; }
     }
 </style>
 
-
-<div class="public-container">
-
-    <!-- ปุ่มย้อนกลับ -->
-    <button type="button" class="back-btn" onclick="history.back();">&lt;</button>
-
-    <!-- ส่วนหัวร้านค้า -->
-    <div class="store-header">
-
-        {% if entrepreneur.profile_image %}
-            <img src="{{ entrepreneur.profile_image.url }}" class="store-img">
-        {% else %}
-            <img src="{% static 'images/ร้าน.png' %}" class="store-img">
-        {% endif %}
-
-        <div class="store-info">
-            <h2>{{ entrepreneur.store_name }}</h2>
-
-            <div class="store-stats">
-                <div class="stat-box">
-                    <div>จำนวนสินค้า</div>
-                    <b>{{ product_count }}</b>
-                </div>
-
-                <div class="stat-box">
-                    <div>คะแนนรีวิว</div>
-                    <b>{% if avg_score %}{{ avg_score }}{% else %}-{% endif %}</b>
-                </div>
-            </div>
-        </div>
-
+<div class="shop-page-container">
+    <div class="back-btn-box">
+        <a href="javascript:history.back()" class="custom-back-btn">
+            ย้อนกลับ
+        </a>
     </div>
 
-    <!-- ส่วนแสดงสินค้า -->
-    <div class="product-grid">
-
-        {% for product in products %}
-        <div class="product-card" onclick="location.href='{% url 'petjoy:product-detail' product.id %}'">
-
-            {% if product.image %}
-                <img src="{{ product.image.url }}" alt="{{ product.name }}">
+    <div class="store-profile-header">
+        <div class="store-logo-frame">
+            {% if entrepreneur.profile_image %}
+                <img src="{{ entrepreneur.profile_image.url }}" alt="Logo">
             {% else %}
-                <img src="{% static 'images/CAT.jpg' %}" alt="{{ product.name }}">
+                <img src="{% static 'images/ร้าน.png' %}" alt="Logo">
             {% endif %}
-
-            <div class="product-name">{{ product.name }}</div>
-            <div class="product-price">฿{{ product.price|floatformat:0|intcomma }}</div>
-
         </div>
-        {% empty %}
-            <p style="grid-column:1/-1; text-align:center; font-size:1.2rem; padding:20px;">
-                ไม่มีสินค้าภายในร้านนี้
-            </p>
-        {% endfor %}
-
+        
+        <div class="store-info-content">
+            <h1>{{ entrepreneur.store_name }}</h1>
+            <div class="store-stats-badge">
+                ★ {{ avg_score|default:"4.5" }} | สินค้า {{ product_count }} รายการ
+            </div>
+            <br>
+            <a href="#" class="btn-chat-now">เริ่มแชทกับร้านค้า</a>
+        </div>
     </div>
 
+    <h2 class="section-title">สินค้าทั้งหมด</h2>
+    <div class="product-list-wrapper">
+        {% for product in products %}
+        <a href="{% url 'petjoy:product-detail' product.id %}" class="p-item-card">
+            <div class="p-item-img">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" alt="{{ product.name }}">
+                {% else %}
+                    <img src="{% static 'images/CAT.jpg' %}" alt="{{ product.name }}">
+                {% endif %}
+            </div>
+            <span class="p-item-name">{{ product.name }}</span>
+            <span class="p-item-price">฿{{ product.price|floatformat:0|intcomma }}</span>
+        </a>
+        {% endfor %}
+    </div>
 </div>
 
 {% endblock %}

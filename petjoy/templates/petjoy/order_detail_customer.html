@@ -1,7 +1,7 @@
 {% extends "petjoy/base.html" %}
 {% load static %}
 {% load humanize %}
-{% block title %}รายละเอียดคำสั่งซื้อ #{{ order.id }}{% endblock %}
+{% block title %}รายละเอียดคำสั่งซื้อ | PetJoy{% endblock %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
@@ -35,12 +35,33 @@
         margin-bottom: 25px;
         color: #333;
     }
-    .back-link {
+
+    /* สไตล์ปุ่มย้อนกลับแบบใหม่ (สวยและเด่นขึ้น) */
+    .back-btn-wrapper {
+        margin-bottom: 25px;
+    }
+    .back-link-btn {
+        display: inline-flex;
+        align-items: center;
+        background-color: #fff;
         color: #ff8c00;
-        font-weight: 600;
-        margin-bottom: 20px;
-        display: inline-block;
+        padding: 8px 18px;
+        border: 2px solid #ff8c00;
+        border-radius: 50px;
         text-decoration: none;
+        font-weight: 700;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 6px rgba(255, 140, 0, 0.15);
+    }
+    .back-link-btn i {
+        margin-right: 8px;
+    }
+    .back-link-btn:hover {
+        background-color: #ff8c00;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(255, 140, 0, 0.3);
+        transform: translateX(-3px);
     }
     
     /* Info Blocks */
@@ -51,20 +72,29 @@
         margin-bottom: 30px;
     }
     .info-block {
-        background: #f7f7f7;
-        padding: 18px;
-        border-radius: 10px;
+        background: #fcfcfc;
+        padding: 20px;
+        border-radius: 12px;
         font-size: 1rem;
+        border: 1px solid #f0f0f0;
     }
     .info-block strong {
         color: #ff8c00;
         display: block;
-        margin-bottom: 8px;
+        margin-bottom: 12px;
         font-size: 1.1rem;
+        border-bottom: 1px solid #ff8c0022;
+        padding-bottom: 5px;
     }
     .info-row {
         margin-bottom: 8px;
         color: #555;
+        display: flex;
+        justify-content: space-between;
+    }
+    .info-label {
+        color: #888;
+        font-weight: 500;
     }
     
     /* Item Table */
@@ -74,43 +104,50 @@
         margin-top: 15px;
     }
     .item-table th, .item-table td {
-        padding: 12px 5px;
+        padding: 15px 10px;
         text-align: left;
         border-bottom: 1px solid #eee;
     }
     .item-table th {
         font-weight: 700;
-        background: #fcfcfc;
+        background: #fafafa;
+        color: #666;
+        text-transform: uppercase;
+        font-size: 0.85rem;
     }
-    .item-table td:nth-child(3), .item-table td:nth-child(4) {
+    .item-table td:nth-child(2), .item-table td:nth-child(3), .item-table td:nth-child(4) {
         text-align: right;
     }
     .item-img {
-        width: 50px;
-        height: 50px;
+        width: 60px;
+        height: 60px;
         object-fit: cover;
-        border-radius: 6px;
-        margin-right: 10px;
+        border-radius: 8px;
+        margin-right: 15px;
         vertical-align: middle;
+        border: 1px solid #eee;
     }
     .item-name-col {
         display: flex;
         align-items: center;
+        font-weight: 600;
+        color: #333;
     }
     .final-total-row td {
         border-top: 2px solid #333;
         font-weight: 800;
-        font-size: 1.3rem;
+        font-size: 1.5rem;
         color: #ff8c00;
         text-align: right;
+        padding-top: 20px;
     }
 
-    /* Status Badge from order_history */
+    /* Status Badge */
     .status-badge {
-        padding: 4px 10px;
-        border-radius: 15px;
+        padding: 6px 14px;
+        border-radius: 20px;
         color: white;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         font-weight: 700;
         display: inline-block;
     }
@@ -119,9 +156,18 @@
     .status-preparing { background: #1976D2; }
     .status-delivering { background: #33a7d2; }
     .status-success { background: #2E7D32; }
+    .status-cancel { background: #d32f2f; }
     .status-other { background: #757575; }
-</style>
 
+    .order-header-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+    }
+</style>
 
 <div class="detail-container">
 
@@ -139,7 +185,7 @@
         <nav class="sidebar-menu">
             <a href="{% url 'petjoy:profile' %}" class="menu-item">ข้อมูลส่วนตัว</a>
             <a href="{% url 'petjoy:address_list' %}" class="menu-item">ที่อยู่</a>
-            <a href="#" class="menu-item">ข้อความ</a>
+            <a href="{% url 'petjoy:chat_list' %}" class="menu-item">ข้อความ</a>
             <a href="{% url 'petjoy:order_history' %}" class="menu-item active">ประวัติคำสั่งซื้อ</a>
             <a href="{% url 'petjoy:favorites_list' %}" class="menu-item">รายการโปรด</a>
 
@@ -150,41 +196,69 @@
         </nav>
     </aside>
 
-
     <section class="profile-main-card">
-        <a href="{% url 'petjoy:order_history' %}" class="back-link">&#9664; ย้อนกลับไปประวัติคำสั่งซื้อ</a>
-        <h2 class="section-title">รายละเอียดคำสั่งซื้อ #{{ order.id }}</h2>
-
-        <div class="info-grid">
-            
-            <div class="info-block">
-                <strong>สถานะและการชำระเงิน</strong>
-                <div class="info-row">สถานะปัจจุบัน: 
-                    <span class="status-badge status-{{ order.status }}">
-                        {{ order.get_status_display }}
-                    </span>
-                </div>
-                <div class="info-row">วันที่สั่งซื้อ: {{ order.created_at|date:"d/m/Y H:i" }}</div>
-                <div class="info-row">ร้านค้า: {{ order.entrepreneur.store_name }}</div>
-            </div>
-
-            <div class="info-block">
-                <strong>ที่อยู่จัดส่งและผู้ติดต่อ</strong>
-                <div class="info-row">{{ order.customer_name }} ({{ order.customer_phone }})</div>
-                <div class="info-row">{{ order.customer_address }}</div>
-            </div>
-            
+        <div class="back-btn-wrapper">
+            <a href="{% url 'petjoy:order_history' %}" class="back-link-btn">
+                <i class="fas fa-arrow-left"></i> กลับไปรายการคำสั่งซื้อ
+            </a>
         </div>
 
-        <h3 class="section-title" style="font-size: 1.4rem;">รายการสินค้า</h3>
+        <div class="order-header-meta">
+            <div>
+                <h2 class="section-title" style="margin-bottom: 5px;">รายละเอียดคำสั่งซื้อ</h2>
+                <span style="color: #888;">หมายเลขคำสั่งซื้อ: PETJ-{{ order.id|stringformat:"05d" }}</span>
+            </div>
+            <div style="text-align: right;">
+                <span class="status-badge status-{{ order.status }}">
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+        </div>
+
+        <div class="info-grid">
+            <div class="info-block">
+                <strong>ข้อมูลการสั่งซื้อ</strong>
+                <div class="info-row">
+                    <span class="info-label">วันที่สั่งซื้อ:</span>
+                    <span>{{ order.created_at|date:"d M Y" }} เวลา {{ order.created_at|date:"H:i" }} น.</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ร้านค้า:</span>
+                    <span style="font-weight: 600;">{{ order.entrepreneur.store_name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">ชำระเงินผ่าน:</span>
+                    <span style="font-weight: 600;">
+                        {% if order.slip_image %}โอนเงินผ่านธนาคาร{% else %}เก็บเงินปลายทาง{% endif %}
+                    </span>
+                </div>
+                {% if order.tracking_number %}
+                <div class="info-row">
+                    <span class="info-label">เลขพัสดุ:</span>
+                    <span style="color: #1976D2; font-weight: 600;">{{ order.tracking_number }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="info-block">
+                <strong>ที่อยู่จัดส่ง</strong>
+                <div class="info-row" style="margin-bottom: 5px; font-weight: 600;">{{ order.customer_name }}</div>
+                <div class="info-row" style="margin-bottom: 10px; color: #888;">{{ order.customer_phone }}</div>
+                <div style="color: #555; line-height: 1.5; font-size: 0.95rem;">
+                    {{ order.customer_address }}
+                </div>
+            </div>
+        </div>
+
+        <h3 class="section-title" style="font-size: 1.4rem; border-left: 5px solid #ff8c00; padding-left: 15px;">รายการสินค้า</h3>
 
         <table class="item-table">
             <thead>
                 <tr>
-                    <th style="width: 55%;">สินค้า</th>
+                    <th style="width: 50%;">สินค้า</th>
                     <th style="width: 15%;">ราคา/ชิ้น</th>
-                    <th style="width: 15%; text-align: right;">จำนวน</th>
-                    <th style="width: 15%; text-align: right;">รวม</th>
+                    <th style="width: 15%;">จำนวน</th>
+                    <th style="width: 20%;">รวม</th>
                 </tr>
             </thead>
             <tbody>
@@ -197,19 +271,19 @@
                             {% else %}
                                 <img src="{% static 'images/no-image.png' %}" class="item-img">
                             {% endif %}
-                            {{ item.product.name }}
+                            <span>{{ item.product.name }}</span>
                         </div>
                     </td>
                     <td>฿{{ item.price|floatformat:2|intcomma }}</td>
-                    <td style="text-align: right;">x{{ item.quantity }}</td>
-                    <td style="text-align: right;">฿{{ item.get_total|floatformat:2|intcomma }}</td>
+                    <td>x{{ item.quantity }}</td>
+                    <td style="font-weight: 700; color: #333;">฿{{ item.total|floatformat:2|intcomma }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
             <tfoot>
                 <tr class="final-total-row">
-                    <td colspan="3" style="text-align: right; border-top: 2px solid #333;">ยอดรวมสุทธิ</td>
-                    <td style="text-align: right; border-top: 2px solid #333;">฿{{ order.total_price|floatformat:2|intcomma }}</td>
+                    <td colspan="3">ยอดรวมสุทธิ</td>
+                    <td>฿{{ order.total_price|floatformat:2|intcomma }}</td>
                 </tr>
             </tfoot>
         </table>

@@ -1,13 +1,9 @@
-// ===============================
-// product_detail.js (FINAL FINAL)
-// ===============================
+// ===========================================================
+// product_detail.js
+// ===========================================================
 
-// ทำให้โค้ดรอจน DOM โหลดครบก่อน
 document.addEventListener("DOMContentLoaded", () => {
 
-    // -------------------------------
-    // ดึงปุ่มต่าง ๆ
-    // -------------------------------
     const addToCartBtn = document.getElementById("addToCartBtn");
     const buyNowBtn = document.querySelector(".btn-buy-now");
 
@@ -17,10 +13,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const qtyInput = document.getElementById("modalQtyInput");
     const qtyHidden = document.getElementById("modalQtyHidden");
     const closeModalBtn = document.getElementById("closeModalBtn");
+    const confirmBtn = modal ? modal.querySelector(".modal-confirm-btn") : null;
 
-    // -------------------------------
-    // popup แจ้งเตือนให้เข้าสู่ระบบ
-    // -------------------------------
+    let purchaseMode = "cart"; // cart | buy
+
     function requireLoginAlert() {
         Swal.fire({
             icon: "warning",
@@ -37,86 +33,142 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-
     // ===========================================================
-    // ⭐ ปุ่ม "เพิ่มลงตะกร้า"
+    // เพิ่มลงตะกร้า
     // ===========================================================
     if (addToCartBtn) {
-        addToCartBtn.addEventListener("click", () => {
-
-            // ตรวจว่าล็อกอินหรือไม่
+        addToCartBtn.addEventListener("click", (event) => {
             const isLoggedIn = addToCartBtn.dataset.loggedIn === "1";
-
             if (!isLoggedIn) {
-                // ⭐⭐ ป้องกันไม่ให้ favorites.js ทำงานแทน
-                if (event.stopPropagation) event.stopPropagation();
-
+                event?.stopPropagation();
                 return requireLoginAlert();
             }
 
-            // ถ้าล็อกอินแล้ว → เปิด modal
+            purchaseMode = "cart";
             modal.style.display = "flex";
         });
     }
 
-
     // ===========================================================
-    // ⭐ ปุ่ม "ยกเลิก" ของ modal
-    // ===========================================================
-    if (closeModalBtn) {
-        closeModalBtn.addEventListener("click", () => {
-            modal.style.display = "none";
-        });
-    }
-
-
-    // ===========================================================
-    // ⭐ เพิ่มจำนวนสินค้า
-    // ===========================================================
-    if (qtyPlus) {
-        qtyPlus.addEventListener("click", () => {
-            let value = parseInt(qtyInput.value) || 1;
-            value++;
-            qtyInput.value = value;
-            qtyHidden.value = value;
-        });
-    }
-
-    // ===========================================================
-    // ⭐ ลดจำนวนสินค้า
-    // ===========================================================
-    if (qtyMinus) {
-        qtyMinus.addEventListener("click", () => {
-            let value = parseInt(qtyInput.value) || 1;
-            value = Math.max(1, value - 1);
-            qtyInput.value = value;
-            qtyHidden.value = value;
-        });
-    }
-
-
-    // ===========================================================
-    // ⭐ ปุ่ม "สั่งซื้อสินค้า"
+    // สั่งซื้อสินค้า (เลือกจำนวนก่อน)
     // ===========================================================
     if (buyNowBtn) {
-        buyNowBtn.addEventListener("click", () => {
-
+        buyNowBtn.addEventListener("click", (event) => {
             const isLoggedIn = addToCartBtn.dataset.loggedIn === "1";
-
             if (!isLoggedIn) {
-                // ⭐⭐ ป้องกัน favorites.js intercept
-                if (event.stopPropagation) event.stopPropagation();
-
+                event?.stopPropagation();
                 return requireLoginAlert();
             }
 
-            // ถ้าล็อกอินแล้ว → TODO: Redirect ไป checkout ได้เลย
-            Swal.fire({
-                icon: "info",
-                title: "ระบบกำลังพัฒนา",
-                text: "คุณสามารถเพิ่มสินค้าลงตะกร้าแล้วไปที่หน้า Checkout ได้ค่ะ"
-            });
+            purchaseMode = "buy";
+            modal.style.display = "flex";
         });
     }
 
+    // ===========================================================
+    // ปรับจำนวน
+    // ===========================================================
+    qtyPlus?.addEventListener("click", () => {
+        let val = parseInt(qtyInput.value) || 1;
+        val++;
+        qtyInput.value = val;
+        qtyHidden.value = val;
+    });
+
+    qtyMinus?.addEventListener("click", () => {
+        let val = parseInt(qtyInput.value) || 1;
+        val = Math.max(1, val - 1);
+        qtyInput.value = val;
+        qtyHidden.value = val;
+    });
+
+    // ===========================================================
+    // ยกเลิก modal
+    // ===========================================================
+    closeModalBtn?.addEventListener("click", () => {
+        modal.style.display = "none";
+    });
+
+    // ===========================================================
+    // ยืนยันจำนวน
+    // ===========================================================
+    if (confirmBtn) {
+        confirmBtn.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            const productId = addToCartBtn.dataset.productId;
+            const quantity = qtyHidden.value;
+            const csrfToken = document.querySelector("input[name=csrfmiddlewaretoken]").value;
+
+            const form = document.createElement("form");
+            form.method = "POST";
+            form.action = "/cart/add/";
+
+            form.innerHTML = `
+                <input type="hidden" name="csrfmiddlewaretoken" value="${csrfToken}">
+                <input type="hidden" name="product_id" value="${productId}">
+                <input type="hidden" name="quantity" value="${quantity}">
+            `;
+
+            if (purchaseMode === "buy") {
+                const buyNowInput = document.createElement("input");
+                buyNowInput.type = "hidden";
+                buyNowInput.name = "buy_now";
+                buyNowInput.value = "1";
+                form.appendChild(buyNowInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        });
+    }
+
+});
+
+// ===========================================================
+// REPORT MODAL (แก้: เพิ่มปุ่มยกเลิกกลับมา)
+// ===========================================================
+window.openReportModal = function () {
+    const btn = document.querySelector(".btn-report");
+    const isLoggedIn = btn?.dataset.loggedIn === "1";
+
+    if (!isLoggedIn) {
+        return Swal.fire({
+            icon: "warning",
+            title: "กรุณาเข้าสู่ระบบ",
+            text: "คุณต้องเข้าสู่ระบบเพื่อรายงานสินค้า",
+            showCancelButton: true,
+            confirmButtonText: "เข้าสู่ระบบ",
+            cancelButtonText: "ยกเลิก",
+            reverseButtons: true
+        }).then(result => {
+            if (result.isConfirmed) {
+                window.location.href = `/login/?next=${window.location.pathname}`;
+            }
+        });
+    }
+
+    const modal = document.getElementById("reportModal");
+    if (modal) modal.style.display = "flex";
+};
+
+window.closeReportModal = function () {
+    const modal = document.getElementById("reportModal");
+    if (modal) modal.style.display = "none";
+};
+
+window.submitReport = function () {
+    Swal.fire({
+        icon: "success",
+        title: "ส่งรายงานเรียบร้อย",
+        text: "ขอบคุณที่ช่วยแจ้งปัญหา"
+    });
+    closeReportModal();
+};
+
+document.addEventListener("click", function (e) {
+    const modal = document.getElementById("reportModal");
+    if (modal && e.target === modal) {
+        closeReportModal();
+    }
 });

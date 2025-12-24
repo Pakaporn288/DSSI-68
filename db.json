@@ -866,6 +866,78 @@
   }
 },
 {
+  "model": "auth.permission",
+  "pk": 77,
+  "fields": {
+    "name": "Can add notification",
+    "content_type": 20,
+    "codename": "add_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 78,
+  "fields": {
+    "name": "Can change notification",
+    "content_type": 20,
+    "codename": "change_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 79,
+  "fields": {
+    "name": "Can delete notification",
+    "content_type": 20,
+    "codename": "delete_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 80,
+  "fields": {
+    "name": "Can view notification",
+    "content_type": 20,
+    "codename": "view_notification"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 81,
+  "fields": {
+    "name": "Can add product report",
+    "content_type": 21,
+    "codename": "add_productreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 82,
+  "fields": {
+    "name": "Can change product report",
+    "content_type": 21,
+    "codename": "change_productreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 83,
+  "fields": {
+    "name": "Can delete product report",
+    "content_type": 21,
+    "codename": "delete_productreport"
+  }
+},
+{
+  "model": "auth.permission",
+  "pk": 84,
+  "fields": {
+    "name": "Can view product report",
+    "content_type": 21,
+    "codename": "view_productreport"
+  }
+},
+{
   "model": "auth.user",
   "pk": 1,
   "fields": {
@@ -977,12 +1049,12 @@
   "model": "auth.user",
   "pk": 8,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$SyeJvDuqXZpchbVVdwn5cp$vf++KbXV01kGUQm2GvnnuKaHQOap5qrnBCMBMUyDJ3w=",
-    "last_login": "2025-12-09T17:31:28.720Z",
+    "password": "pbkdf2_sha256$1000000$WmE6PtXIAj3eWhyWFhvcX8$Ao1IqsLrboptWReduisZh//1H+Q84UQVgrbygcuXyLM=",
+    "last_login": "2025-12-24T09:10:40.138Z",
     "is_superuser": false,
     "username": "moa",
-    "first_name": "ภคพร",
-    "last_name": "สมจันทร์",
+    "first_name": "Pakaporn",
+    "last_name": "Somchan",
     "email": "pakaporn.so.66@ubu.ac.th",
     "is_staff": false,
     "is_active": true,
@@ -1032,7 +1104,7 @@
   "pk": 11,
   "fields": {
     "password": "pbkdf2_sha256$1000000$vdPzeyyVdX2DgKMXPLhOVr$1muGMwed0eKyTdS5p32HTAWvIpKZ6uEn17yVGxK7n6g=",
-    "last_login": "2025-12-09T13:43:57.251Z",
+    "last_login": "2025-12-19T07:14:49.351Z",
     "is_superuser": false,
     "username": "Ma_Noi",
     "first_name": "",
@@ -1067,8 +1139,8 @@
   "model": "auth.user",
   "pk": 15,
   "fields": {
-    "password": "pbkdf2_sha256$1000000$444ZpvGa4adCQrB1rgXvk8$/hJelxtjrnN18Y+W2bIQMXwJZcRiMVwwmkz4fQU3LyM=",
-    "last_login": "2025-12-10T05:14:20.234Z",
+    "password": "pbkdf2_sha256$1000000$5dzcGtHBE49KIY3YZOzRyh$+XdanXfxSVF8pOtF8mbTN0QJ6JNH2+TxRDvCZmItv2I=",
+    "last_login": "2025-12-24T09:12:43.164Z",
     "is_superuser": false,
     "username": "Petopia",
     "first_name": "",
@@ -1086,7 +1158,7 @@
   "pk": 16,
   "fields": {
     "password": "pbkdf2_sha256$1000000$xNnATAhcWfXfsbNHd4SKX3$8MeskuXCtRJq2+6OPxW2q/lIRa4pda/H6m78NEfe/D8=",
-    "last_login": "2025-12-09T13:04:09.937Z",
+    "last_login": "2025-12-23T09:53:24.349Z",
     "is_superuser": false,
     "username": "ClickPet",
     "first_name": "",
@@ -1270,6 +1342,38 @@
   }
 },
 {
+  "model": "contenttypes.contenttype",
+  "pk": 20,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "notification"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 21,
+  "fields": {
+    "app_label": "petjoy",
+    "model": "productreport"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "ids5ijhecmhnpq8iwwcoro3wvoioqlv0",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hCgDIJL9z0DGYapVA0kpV0Z765NutDtf-_9l4i4rSVunZc4Z3ERXpx-t4T04LqDfMd6a5JaXZc5yV2RB-1ybJmf18P9OyjYy7c2xNYzemdB6YGAgkUgIk1GWcqEnD1TmACNcagCDjrBeWLnFYDNRrw__eM4WQ:1vYIHF:A0pV5wMBFQCcpnIOUxnIaMkKPmjCy-h8X9HrrS09lt8",
+    "expire_date": "2026-01-07T06:23:17.070Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "mn8udxcaweymjzta6o8g3pkjw8245mp5",
+  "fields": {
+    "session_data": ".eJxVjDsOwyAQBe9CHSFg-aZM7zOgBdbBSYQlY1dR7h4huUjaNzPvzSIee41Hpy0uhV2ZNOzyOybMT2qDlAe2-8rz2vZtSXwo_KSdT2uh1-10_w4q9jpqlAYEBZ-V0pQLQgYjHRjvAmmBs0AAa12QabaoSBcSwgQw1kvnUmCfL_omN0k:1vYKvD:gEE3FthwPaBTnC_ygdtoerA2I6gkwt8hIGahyWgQJf4",
+    "expire_date": "2026-01-07T09:12:43.169Z"
+  }
+},
+{
   "model": "sessions.session",
   "pk": "osri5fs5dj3leu7yilz5ahq0tnfvn21j",
   "fields": {
@@ -1283,6 +1387,14 @@
   "fields": {
     "session_data": ".eJxVjDEOwjAMRe-SGUWNcdyakZ0zVG5sSAE1UtNOiLtDpQ6w_vfef7le1iX3a7W5H9WdXAju8DsOkh42bUTvMt2KT2Va5nHwm-J3Wv2lqD3Pu_t3kKXmb43UgWpLErETbAyixSMgIxGAgZAiD9cWG1JhCbEhocQckBNHMHLvD93UNvU:1vAP71:T-i0Am4XnrwlOPDKA5bgcostZkeXSTqzzwl1oCDqVGY",
     "expire_date": "2025-11-02T08:49:59.077Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "to4qczipr4zx54t4dqxilyhw6rrhqeiq",
+  "fields": {
+    "session_data": ".eJxVjDsOwyAQBe9CHSFg-aZM7zOgBdbBSYQlY1dR7h4huUjaNzPvzSIee41Hpy0uhV2ZNOzyOybMT2qDlAe2-8rz2vZtSXwo_KSdT2uh1-10_w4q9jpqlAYEBZ-V0pQLQgYjHRjvAmmBs0AAa12QabaoSBcSwgQw1kvnUmCfL_omN0k:1vYHXR:sxN6xkq9OxebF37TAn-6dPYvOMUEC__UDpoEMTZmcrE",
+    "expire_date": "2026-01-07T05:35:57.839Z"
   }
 },
 {
@@ -2356,10 +2468,11 @@
     "image": "profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg",
     "favorites": [
       43,
-      23,
-      14,
       47,
-      69
+      69,
+      14,
+      23,
+      39
     ]
   }
 },
@@ -2425,9 +2538,34 @@
   "fields": {
     "product": 1,
     "user": 1,
+    "order": null,
     "rating": 3,
     "comment": "ของใช้ได้ แต่ด้ามจับไม่ค่อยแข็งแรงเท่าไร แมวเล่นแป๊บเดียวก็เบื่อบ้างบางครั้ง ถือว่าพอใช้ได้แต่ยังไม่ประทับใจมากนักครับ",
     "created_at": "2025-09-14T07:49:35.672Z"
+  }
+},
+{
+  "model": "petjoy.review",
+  "pk": 2,
+  "fields": {
+    "product": 39,
+    "user": 8,
+    "order": 11,
+    "rating": 5,
+    "comment": "น้องหมาที่บ้านชอบมากค่ะ ส่งไวด้วย",
+    "created_at": "2025-12-23T13:32:25.547Z"
+  }
+},
+{
+  "model": "petjoy.review",
+  "pk": 3,
+  "fields": {
+    "product": 38,
+    "user": 8,
+    "order": 12,
+    "rating": 4,
+    "comment": "ตุ๊กตานิ่มดีค่ะ",
+    "created_at": "2025-12-24T05:28:16.048Z"
   }
 },
 {
@@ -3111,6 +3249,36 @@
   }
 },
 {
+  "model": "petjoy.chathistory",
+  "pk": 69,
+  "fields": {
+    "user": null,
+    "user_message": "สวัสดีค่ะ",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ มีอะไรให้ PetJoy Bot ช่วยแนะนำหรือสอบถามเกี่ยวกับสินค้าสำหรับสัตว์เลี้ยงของคุณลูกค้าได้เลยนะคะ",
+    "created_at": "2025-12-10T09:56:29.833Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 70,
+  "fields": {
+    "user": 8,
+    "user_message": "สวัสดีค่ะ",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ผู้ช่วยร้าน PetJoy ยินดีให้บริการค่ะ มีอะไรให้ช่วยแนะนำสินค้าหรือสอบถามข้อมูลเพิ่มเติมได้เลยนะคะ",
+    "created_at": "2025-12-19T07:21:47.094Z"
+  }
+},
+{
+  "model": "petjoy.chathistory",
+  "pk": 71,
+  "fields": {
+    "user": 8,
+    "user_message": "สวัสดีค่ะ",
+    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ มีอะไรให้ช่วยไหมคะ หรือกำลังมองหาสินค้าอะไรอยู่เป็นพิเศษหรือเปล่าคะ",
+    "created_at": "2025-12-24T07:15:40.523Z"
+  }
+},
+{
   "model": "petjoy.entrepreneur",
   "pk": 1,
   "fields": {
@@ -3122,9 +3290,9 @@
     "profile_image": "entrepreneur_profiles/ราน1.jpg",
     "tax_id": null,
     "shop_address": null,
-    "bank_name": null,
-    "account_name": null,
-    "account_number": null,
+    "bank_name": "กสิกรไทย",
+    "account_name": "The Pet Hub",
+    "account_number": "123456789",
     "bank_book_copy": "",
     "id_card_copy": ""
   }
@@ -3198,9 +3366,9 @@
     "profile_image": "entrepreneur_profiles/ราน3.jpg",
     "tax_id": null,
     "shop_address": null,
-    "bank_name": null,
-    "account_name": null,
-    "account_number": null,
+    "bank_name": "ไทยพาณิชย์",
+    "account_name": "ClickPet",
+    "account_number": "1235498786",
     "bank_book_copy": "",
     "id_card_copy": ""
   }
@@ -3226,44 +3394,38 @@
 },
 {
   "model": "petjoy.cartitem",
-  "pk": 14,
+  "pk": 26,
   "fields": {
     "user": 8,
-    "product": 69,
+    "product": 24,
     "quantity": 1
   }
 },
 {
   "model": "petjoy.cartitem",
-  "pk": 18,
+  "pk": 35,
   "fields": {
     "user": 8,
-    "product": 25,
+    "product": 46,
     "quantity": 1
   }
 },
 {
   "model": "petjoy.cartitem",
-  "pk": 23,
+  "pk": 36,
   "fields": {
     "user": 8,
-    "product": 40,
+    "product": 39,
     "quantity": 1
   }
 },
 {
-  "model": "petjoy.address",
-  "pk": 2,
+  "model": "petjoy.cartitem",
+  "pk": 38,
   "fields": {
     "user": 8,
-    "full_name": "ภคพร สมจันทร์",
-    "phone": "0647120613",
-    "address_line": "มหาวิทยาอุบลราชธานี",
-    "province": "xxxxx",
-    "district": "xxxxxx",
-    "subdistrict": "xxxxxx",
-    "zipcode": "12345",
-    "is_default": true
+    "product": 31,
+    "quantity": 1
   }
 },
 {
@@ -3282,10 +3444,26 @@
   }
 },
 {
+  "model": "petjoy.address",
+  "pk": 7,
+  "fields": {
+    "user": 8,
+    "full_name": "เจ้า ออม",
+    "phone": "0647120613",
+    "address_line": "มหาวิทยาอุบลราชธานี",
+    "province": "xxxxx",
+    "district": "xxxxxx",
+    "subdistrict": "xxxxxx",
+    "zipcode": "12345",
+    "is_default": true
+  }
+},
+{
   "model": "petjoy.order",
   "pk": 10,
   "fields": {
     "entrepreneur": 4,
+    "tracking_number": null,
     "order_number": 1,
     "customer_name": "ภคพร สมจันทร์",
     "customer_phone": "0647120613",
@@ -3293,7 +3471,59 @@
     "total_price": "299.00",
     "status": "paid",
     "slip_image": "slips/Screenshot-2567-07-03-at-13.24.34.png",
-    "created_at": "2025-12-09T17:19:46.077Z"
+    "created_at": "2025-12-09T17:19:46.077Z",
+    "has_unread_status_update": false
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 11,
+  "fields": {
+    "entrepreneur": 4,
+    "tracking_number": null,
+    "order_number": 2,
+    "customer_name": "เจ้า ออม",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "total_price": "199.00",
+    "status": "success",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13.24.34_v1AFwpp.png",
+    "created_at": "2025-12-14T07:06:23.030Z",
+    "has_unread_status_update": false
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 12,
+  "fields": {
+    "entrepreneur": 4,
+    "tracking_number": null,
+    "order_number": 3,
+    "customer_name": "เจ้า ออม",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "total_price": "299.00",
+    "status": "success",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13_KuPbc0a.24.34.png",
+    "created_at": "2025-12-23T11:10:15.692Z",
+    "has_unread_status_update": false
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 13,
+  "fields": {
+    "entrepreneur": 4,
+    "tracking_number": null,
+    "order_number": 4,
+    "customer_name": "เจ้า ออม",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "total_price": "999.00",
+    "status": "success",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13_M23NDlg.24.34.png",
+    "created_at": "2025-12-23T12:20:53.511Z",
+    "has_unread_status_update": false
   }
 },
 {
@@ -3304,6 +3534,36 @@
     "product": 37,
     "quantity": 1,
     "price": "299.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 12,
+  "fields": {
+    "order": 11,
+    "product": 39,
+    "quantity": 1,
+    "price": "199.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 13,
+  "fields": {
+    "order": 12,
+    "product": 38,
+    "quantity": 1,
+    "price": "299.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 14,
+  "fields": {
+    "order": 13,
+    "product": 40,
+    "quantity": 1,
+    "price": "999.00"
   }
 }
 ]

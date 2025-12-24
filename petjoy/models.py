@@ -263,3 +263,16 @@ class ChatMessage(models.Model):
 
     def __str__(self):
         return f"{self.sender.username}: {self.message[:50]}"
+
+class ProductReport(models.Model):
+    REPORT_REASONS = [
+        ('inappropriate', 'เนื้อหาไม่เหมาะสม'),
+        ('scam', 'เข้าข่ายหลอกลวง'),
+        ('copyright', 'ละเมิดลิขสิทธิ์'),
+        ('other', 'อื่นๆ'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='reports')
+    reason = models.CharField(max_length=20, choices=REPORT_REASONS)
+    details = models.TextField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)

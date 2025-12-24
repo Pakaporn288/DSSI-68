@@ -6,15 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}PetJoy{% endblock %}</title>
 
-    <!-- CSS หลักของเว็บ -->
     <link rel="stylesheet" href="{% static 'decorate.css' %}">
     <link rel="stylesheet" href="{% static 'search_form.css' %}">
-
-    <!-- CSS สำหรับหน้า auth + cart -->
     <link rel="stylesheet" href="{% static 'auth_style.css' %}">
 
-    <!-- icon -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     {% block extra_head %}{% endblock %}
 </head>
@@ -34,8 +32,6 @@
         </div>
 
         <div class="navbar-right">
-
-            <!-- Cart -->
             <div class="nav-cart-wrapper">
                 <a href="{% url 'petjoy:cart-detail' %}" class="cart-icon">
                     <i class="ri-shopping-cart-2-line"></i>
@@ -45,7 +41,6 @@
                 </a>
             </div>
 
-            <!-- Notification -->
             <div class="nav-notification-wrapper">
                 <a href="{% url 'petjoy:notification_list' %}" class="notification-icon">
                     <i class="ri-notification-3-line"></i>
@@ -54,38 +49,44 @@
                     {% endif %}
                 </a>
             </div>
-            <!-- END Notification -->
 
             {% if user.is_authenticated %}
                 <a href="{% url 'petjoy:profile' %}" class="profile-link">
                     {% if user.profile.image %}
-                        <img src="{{ user.profile.image.url }}" 
-                             alt="Profile Picture" 
-                             class="profile-icon"
-                             style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <img src="{{ user.profile.image.url }}" alt="Profile" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff;">
                     {% else %}
-                        <img src="{% static 'images/อินแล้ว.jpg' %}" 
-                             alt="Profile Picture" 
-                             class="profile-icon"
-                             style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                        <img src="{% static 'images/อินแล้ว.jpg' %}" alt="Profile" class="profile-icon" style="object-fit:cover; border-radius:50%; width:40px; height:40px; border:2px solid #fff;">
                     {% endif %}
                 </a>
-
             {% else %}
                 <a href="{% url 'petjoy:login' %}" class="login-text white-btn">เข้าสู่ระบบ</a>
             {% endif %}
-
         </div>
     </header>
     {% endif %}
 
     <main class="content">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </main>
 
-    <form id="csrf-form" style="display:none;">{% csrf_token %}</form>
+    {% if messages %}
+        <script>
+            {% for message in messages %}
+                {% if 'review_success' in message.tags %}
+                    Swal.fire({
+                        title: 'รีวิวสำเร็จ!',
+                        text: "{{ message }}",
+                        icon: 'success',
+                        confirmButtonColor: '#ff7a00',
+                        confirmButtonText: 'ตกลง',
+                        backdrop: `rgba(255,122,0,0.1)`
+                    });
+                {% endif %}
+            {% endfor %}
+        </script>
+    {% endif %}
 
+    <form id="csrf-form" style="display:none;">{% csrf_token %}</form>
     <script src="{% static 'js/main.js' %}"></script>
     <script src="{% static 'js/chatbot.js' %}"></script>
     {% block extra_scripts %}{% endblock %}

@@ -176,7 +176,7 @@ def cart_detail(request):
 
 def notification_list(request):
     if not request.user.is_authenticated:
-        return redirect("login")
+        return redirect("petjoy:login")
 
     # ใช้วิธีเดียวกับ order_history (ชื่อ + เบอร์)
     addresses = Address.objects.filter(user=request.user)
@@ -214,21 +214,31 @@ def notification_list(request):
         "orders": orders
     })
 
+# แก้ไขฟังก์ชัน review_product ใน views.py
 @login_required
 def review_product(request, order_id):
     order = get_object_or_404(Order, id=order_id)
     items = order.items.all()
 
     if request.method == "POST":
+        rating = request.POST.get("rating")
+        comment = request.POST.get("comment")
+        
         for item in items:
+            # สร้างรีวิว
             Review.objects.create(
                 user=request.user,
                 product=item.product,
                 order=order,
-                rating=request.POST.get("rating"),
-                comment=request.POST.get("comment")
+                rating=rating,
+                comment=comment
             )
-        return redirect("petjoy:product_detail", pk=item.product.id)
+        
+        # เมื่อรีวิวเสร็จ ให้ตั้งค่าว่า Order นี้รีวิวแล้ว (สมมติว่าใช้ field field หนึ่งใน Order หรือตรวจสอบจาก Review model)
+        # ในที่นี้เราจะส่ง Success Message ไปให้ SweetAlert ใน Template ทำงาน
+        messages.success(request, "บันทึกรีวิวเรียบร้อยแล้ว ขอบคุณที่ใช้บริการค่ะ! 🐾", extra_tags='review_success')
+        
+        return redirect("petjoy:notification_list") # กลับไปหน้าแจ้งเตือน
 
     return render(request, "petjoy/review_form.html", {
         "order": order,
@@ -1356,9 +1366,6 @@ def chat_room(request, room_id):
     })
 
 
-# ==========================================================
-# ⭐ CHAT FUNCTIONS: CUSTOMER (ฟังก์ชันสำหรับลูกค้า) ⭐
-# ==========================================================
 
 @login_required
 def chat_list(request):
@@ -1489,3 +1496,23 @@ def entrepreneur_chat_delete(request, room_id):
 
     messages.success(request, "ลบแชทเรียบร้อยแล้ว")
     return redirect('petjoy:entrepreneur-chat-list')
+
+@login_required
+@require_POST
+def report_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reason = request.POST.get('reason')
+    details = request.POST.get('details', '')
+
+    if not reason:
+        return JsonResponse({'success': False, 'error': 'กรุณาระบุเหตุผล'}, status=400)
+
+    from .models import ProductReport
+    ProductReport.objects.create(
+        user=request.user,
+        product=product,
+        reason=reason,
+        details=details
+    )
+
+    return JsonResponse({'success': True, 'message': 'ส่งรายงานให้เจ้าหน้าที่เรียบร้อยแล้ว'})
