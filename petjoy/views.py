@@ -27,6 +27,7 @@ from django.shortcuts import get_object_or_404
 from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
 from django.template.loader import render_to_string
 from petjoy.models import Order
+from .models import Review, ReviewReply
 
 logger = logging.getLogger(__name__)
 
@@ -244,6 +245,41 @@ def review_product(request, order_id):
         "order": order,
         "items": items
     })
+
+@login_required
+def reply_review(request, review_id):
+    review = get_object_or_404(Review, id=review_id)
+
+    entrepreneur = get_object_or_404(
+        Entrepreneur,
+        user=request.user
+    )
+
+    if hasattr(review, "reply"):
+        return redirect("petjoy:entrepreneur_reviews")
+
+    if request.method == "POST":
+        message = request.POST.get("reply")
+
+        if message:
+            ReviewReply.objects.create(
+                review=review,
+                entrepreneur=entrepreneur,
+                message=message
+            )
+
+            # 🔔 แจ้งเตือนลูกค้าผ่าน Order
+            if review.order:
+                review.order.has_unread_status_update = True
+                review.order.save()
+
+            messages.success(
+                request,
+                "ตอบรีวิวเรียบร้อยแล้ว"
+            )
+
+    return redirect("petjoy:entrepreneur_reviews")
+
 
 
 @login_required
@@ -883,6 +919,47 @@ def entrepreneur_profile_settings(request):
         "is_entrepreneur": True,           # ใช้กับ sidebar ถ้าจำเป็น
     })
 
+@login_required(login_url=reverse_lazy('petjoy:login'))
+def entrepreneur_reviews(request):
+    # ป้องกัน user ทั่วไป
+    if not hasattr(request.user, 'entrepreneur'):
+        messages.error(request, "คุณต้องเป็นผู้ประกอบการก่อน")
+        return redirect('petjoy:login')
+
+    entrepreneur = request.user.entrepreneur
+
+    # 👉 base queryset (ของเดิม)
+    reviews = Review.objects.filter(
+        product__owner=entrepreneur
+    ).select_related(
+        'product',
+        'user'
+    ).prefetch_related(
+        'reply'
+    )
+
+    # =========================
+    # 🔍 FILTER LOGIC (เพิ่ม)
+    # =========================
+    filter_type = request.GET.get('filter', 'all')
+
+    if filter_type == 'unreplied':
+        # ยังไม่ตอบ
+        reviews = reviews.filter(reply__isnull=True).order_by('-created_at')
+
+    elif filter_type == 'replied_latest':
+        # ตอบแล้ว เรียงตามเวลาตอบล่าสุด
+        reviews = reviews.filter(reply__isnull=False).order_by('-reply__created_at')
+
+    else:
+        # all (ค่า default)
+        reviews = reviews.order_by('-created_at')
+
+    return render(request, 'petjoy/entrepreneur/reviews.html', {
+        'entrepreneur': entrepreneur,
+        'reviews': reviews,
+        'current_filter': filter_type,  # (เผื่อเอาไปทำ active state)
+    })
 
 
 @login_required(login_url=reverse_lazy('petjoy:login'))

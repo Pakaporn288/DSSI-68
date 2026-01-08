@@ -28,6 +28,34 @@
     {% if orders %}
         {% for order in orders %}
 
+            <!-- =================================================
+                 ADD ONLY : แจ้งเตือนร้านตอบรีวิว (กดได้)
+                 ใช้ order.reviews (related_name จาก models.py ล่าสุด)
+            ================================================== -->
+            {% if order.has_unread_status_update and order.reviews.exists %}
+            <a href="{% url 'petjoy:my_reviews' %}"
+               style="text-decoration:none; color:inherit;">
+                <div style="
+                    background:#fff7ed;
+                    border-radius:16px;
+                    padding:20px 22px;
+                    margin-bottom:16px;
+                    box-shadow:0 6px 18px rgba(0,0,0,0.06);
+                ">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#c2410c;font-weight:600;">
+                            💬 ร้านค้าได้ตอบรีวิวสินค้าของคุณแล้ว
+                        </span><br>
+                        <small style="color:#aaa;">
+                            {{ order.updated_at|date:"d M Y • H:i" }}
+                        </small>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+            <!-- =================== END ADD ONLY =================== -->
+
             {% if order.status == 'preparing' %}
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
                         box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
@@ -65,7 +93,9 @@
                     รีวิวสินค้า
                 </a>
                 {% else %}
-                <span style="color:#22c55e; font-size:14px;"><i class="ri-checkbox-circle-fill"></i> รีวิวแล้ว</span>
+                <span style="color:#22c55e; font-size:14px;">
+                    <i class="ri-checkbox-circle-fill"></i> รีวิวแล้ว
+                </span>
                 {% endif %}
             </div>
             {% endif %}

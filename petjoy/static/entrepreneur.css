@@ -300,3 +300,287 @@
     border-radius: 14px;
     grid-column: 1 / -1; /* ให้ข้อความอยู่ตรงกลาง grid */
 }
+
+/* ===========================
+   HEADER ACTIONS (LOGOUT TOP)
+=========================== */
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logout-top-btn {
+    background: #FFF3E6;              /* โทนอ่อนแบบเดียวกับ header */
+    color: #FF7043;
+    border: 2px solid #FF7043;
+    padding: 10px 20px;               /* เท่ากับ store-edit-btn */
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 3px 8px rgba(255, 112, 67, 0.25);
+    font-size: 0.95rem;
+}
+
+.logout-top-btn:hover {
+    background: #FF7043;
+    color: #ffffff;
+}
+
+
+.logout-top-btn:hover {
+    background: #FF7043;
+    color: white;
+}
+/* ===========================
+   SIDEBAR SCROLL FIX
+   เพิ่มอย่างเดียว ไม่แก้ของเดิม
+=========================== */
+
+/* ทำให้ sidebar เลื่อนได้ */
+.seller-sidebar {
+    overflow-y: auto;
+}
+
+/* (ทางเลือก) ซ่อน scrollbar ให้ดูเนียนขึ้น */
+.seller-sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.seller-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 10px;
+}
+/* ===========================
+   SIDEBAR LOGOUT MATCH MENU
+   เพิ่มอย่างเดียว ไม่แก้ HTML
+=========================== */
+
+/* ดึง logout ให้ชิดกับเมนู */
+.sidebar-logout-form {
+    margin-top: 10px;        /* จากเดิมที่ดูห่างเกิน */
+}
+
+/* ทำให้ปุ่ม logout หน้าตาเหมือน menu item */
+.sidebar-logout-btn {
+    display: block;
+    width: 100%;
+    padding: 12px 16px;
+    margin-bottom: 10px;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    color: #ffffff;
+    font-weight: 600;
+    text-align: left;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+/* hover / active เหมือนเมนู */
+.sidebar-logout-btn:hover {
+    background: #ffffff;
+    color: #FF7043;
+}
+/* ===== LOGOUT AS SIDEBAR MENU ===== */
+.seller-logout {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    margin-top: 10px;
+
+    background: rgba(255,255,255,0.15);
+    color: #ffffff;
+
+    border-radius: 10px;
+    border: none;
+
+    font-weight: 600;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+
+    transition: all 0.2s ease;
+}
+
+.seller-logout:hover {
+    background: #ffffff;
+    color: #FF7043;
+}
+/* ===========================
+   REVIEW PAGE STYLE
+=========================== */
+
+.review-section {
+    max-width: 900px;
+    margin: 40px auto;
+}
+
+.review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px 24px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+.review-product-link {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #FF7043;
+    text-decoration: none;
+}
+
+.review-product-link:hover {
+    text-decoration: underline;
+}
+
+.review-rating {
+    margin: 8px 0;
+    font-weight: 600;
+}
+
+.review-comment {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.review-footer {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: #777;
+}
+/* ===========================
+   REVIEW PRODUCT INFO
+=========================== */
+
+.review-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.review-product-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.review-product-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FF7043;
+}
+/* ===========================
+   REVIEW PRODUCT INFO
+=========================== */
+
+.review-product {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.review-product-img {
+    width: 48px;
+    height: 48px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.review-product-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #FF7043;
+}
+/* ===========================
+   REVIEW REPLY UI
+=========================== */
+
+.reply-toggle-btn {
+    margin-top: 14px;
+    background: transparent;
+    border: none;
+    color: #FF7043;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+}
+
+.reply-toggle-btn:hover {
+    text-decoration: underline;
+}
+
+.reply-form {
+    display: none;
+    margin-top: 12px;
+}
+
+.reply-form.active {
+    display: block;
+}
+
+.reply-form textarea {
+    width: 100%;
+    min-height: 90px;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    resize: vertical;
+    font-family: 'Kanit', sans-serif;
+    margin-bottom: 10px;
+}
+
+.reply-submit-btn {
+    background: #FF7043;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.reply-submit-btn:hover {
+    background: #E64A19;
+}
+.reply-status {
+    margin-top: 12px;
+    font-weight: 600;
+    color: #2E7D32;
+}
+/* ===========================
+   REVIEW FILTER BAR
+=========================== */
+
+.review-filter-bar {
+    display: flex;
+    gap: 12px;
+    margin: 20px 0 30px;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #f3f4f6;
+    color: #555;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.filter-btn:hover {
+    background: #FF7043;
+    color: #fff;
+}

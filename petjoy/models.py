@@ -276,3 +276,19 @@ class ProductReport(models.Model):
     reason = models.CharField(max_length=20, choices=REPORT_REASONS)
     details = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+class ReviewReply(models.Model):
+    review = models.OneToOneField(
+        Review,
+        on_delete=models.CASCADE,
+        related_name="reply"
+    )
+    entrepreneur = models.ForeignKey(
+        Entrepreneur,
+        on_delete=models.CASCADE
+    )
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Reply to review {self.review.id}"

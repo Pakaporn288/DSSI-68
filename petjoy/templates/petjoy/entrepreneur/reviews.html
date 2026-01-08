@@ -1,0 +1,148 @@
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+
+<style>
+    .navbar { display: none !important; }
+</style>
+
+<div class="seller-layout">
+
+    <aside class="seller-sidebar">
+        <div> 
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+                {% endif %}
+
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+                <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}">🛍️ สินค้าทั้งหมด</a>
+                <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur_profile_settings' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="{% url 'petjoy:entrepreneur_reviews' %}" class="active">📋 รีวิวสินค้า</a>
+                <a href="#">💰 รายได้</a>
+            </nav>
+
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="seller-main">
+
+        <section class="seller-header-box">
+            <div class="header-left">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                {% endif %}
+
+                <div>
+                    <h2 class="store-title">รีวิวจากลูกค้า</h2>
+                    <p class="store-subtitle">
+                        ความคิดเห็นและคะแนนจากลูกค้าที่ซื้อสินค้าจากร้านคุณ
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ===== FILTER BAR (เพิ่มใหม่) ===== -->
+        <div class="review-filter-bar">
+            <a href="?filter=all" class="filter-btn">ทั้งหมด</a>
+            <a href="?filter=unreplied" class="filter-btn">ยังไม่ตอบ</a>
+            <a href="?filter=replied_latest" class="filter-btn">ตอบล่าสุด</a>
+        </div>
+
+        <section class="review-section">
+
+            {% if reviews %}
+                <div class="review-list">
+                    {% for review in reviews %}
+                        <div class="review-card">
+
+                            <div class="review-product-name">
+                                🛍️ {{ review.product.name }}
+                            </div>
+
+                            <p class="review-rating">
+                                ⭐ {{ review.rating }} / 5
+                            </p>
+
+                            <p class="review-comment">
+                                {{ review.comment }}
+                            </p>
+
+                            <div class="review-footer">
+                                <span>👤 {{ review.user.username }}</span>
+                                <span>{{ review.created_at|date:"d M Y H:i" }}</span>
+                            </div>
+
+                            {% if not review.reply %}
+                                <button class="reply-toggle-btn"
+                                        onclick="toggleReply('{{ review.id }}')">
+                                    💬 ตอบกลับรีวิว
+                                </button>
+
+                                <form method="post"
+                                      action="{% url 'petjoy:reply_review' review.id %}"
+                                      class="reply-form"
+                                      id="reply-form-{{ review.id }}">
+                                    {% csrf_token %}
+                                    <textarea name="reply"
+                                              placeholder="พิมพ์คำตอบจากร้าน..."
+                                              required></textarea>
+                                    <button type="submit" class="reply-submit-btn">
+                                        ส่งคำตอบ
+                                    </button>
+                                </form>
+                            {% endif %}
+
+                            {% if review.reply %}
+                                <div class="reply-status">
+                                    ✅ ร้านตอบกลับแล้ว
+                                </div>
+
+                                <div class="review-reply-box">
+                                    <strong>💬 คำตอบจากร้าน</strong>
+                                    <p>{{ review.reply.message }}</p>
+                                    <span class="reply-date">
+                                        {{ review.reply.created_at|date:"d M Y H:i" }}
+                                    </span>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="empty-text">😔 ยังไม่มีรีวิวจากลูกค้า</p>
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</div>
+
+<script>
+function toggleReply(id) {
+    const form = document.getElementById('reply-form-' + id);
+    form.classList.toggle('active');
+}
+</script>
+
+{% endblock %}
