@@ -87,7 +87,10 @@
                 {% for review in reviews %}
                     <div class="review-item">
                         <div class="review-header">
-                            <span class="review-user">{{ review.user.username }}</span>
+                            <span class="review-user">
+                                {{ review.user.profile.name|default:review.user.first_name|default:review.user.username }}
+
+                            </span>
                             <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
                         </div>
 
@@ -100,6 +103,16 @@
                         </div>
 
                         <p class="review-comment">{{ review.comment }}</p>
+
+                        {# ===== เพิ่มเฉพาะส่วนนี้เท่านั้น (ไม่แก้ UI เดิม) ===== #}
+                        {% if review.reply %}
+                            <div class="review-reply">
+                                <strong>ร้านค้า:</strong>
+                                <p>{{ review.reply.message }}</p>
+                            </div>
+                        {% endif %}
+                        {# ====================================================== #}
+
                     </div>
                 {% empty %}
                     <p>ยังไม่มีรีวิวสำหรับสินค้าชิ้นนี้</p>
@@ -180,7 +193,7 @@
                 <button type="button"
                         class="btn-report"
                         onclick="openReportModal()"
-                        data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}"> <!-- ★ ADDED -->
+                        data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
                     <i class="fa-solid fa-flag"></i> รายงานปัญหาสินค้าชิ้นนี้
                 </button>
             </div>

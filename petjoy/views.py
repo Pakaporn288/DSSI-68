@@ -86,7 +86,14 @@ def register_view(request):
 # If you want to show reviews, use this version:
 def product_detail_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
-    reviews = product.reviews.all().order_by('-created_at')
+
+    reviews = (
+        product.reviews
+        .select_related('user')
+        .prefetch_related('reply')   # ✅ เพิ่มบรรทัดนี้
+        .order_by('-created_at')
+    )
+
     return render(request, 'petjoy/products/product_detail.html', {
         'product': product,
         'reviews': reviews

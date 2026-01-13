@@ -144,3 +144,39 @@
 .btn-report:hover i {
     color: #ffffff;
 }
+/* ===== ร้านค้าตอบรีวิว ===== */
+.review-reply {
+    margin-top: 10px;
+    margin-left: 12px;
+    padding: 10px 14px;
+    background-color: #f7f8fa;
+    border-left: 4px solid #ff8c42;
+    border-radius: 6px;
+    font-size: 0.95rem;
+}
+
+.review-reply strong {
+    color: #ff8c42;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.review-reply p {
+    margin: 0;
+    color: #333;
+    line-height: 1.5;
+}
+/* ===== ชื่อลูกค้าในรีวิว ===== */
+.review-user {
+    font-weight: 600;
+    color: #222;
+    font-size: 0.95rem;
+}
+
+/* วันที่รีวิว */
+.review-date {
+    font-size: 0.8rem;
+    color: #999;
+    margin-left: 6px;
+}

@@ -7,6 +7,119 @@
 
 <style>
     .navbar { display: none !important; }
+    
+    /* ===== เพิ่ม CSS ปรับธีมสีส้ม ===== */
+    :root {
+        --theme-orange: #FF6600; /* สีส้มหลัก */
+        --theme-orange-light: #FFF0E6; /* สีส้มอ่อนสำหรับพื้นหลัง */
+    }
+
+    /* ปุ่ม Filter ปกติ */
+    .filter-btn {
+        color: #666;
+        border: 1px solid #ddd;
+        background: #fff;
+        padding: 6px 15px;
+        border-radius: 20px;
+        text-decoration: none;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+    
+    /* ปุ่ม Filter เมื่อ Active (เป็นสีส้ม) */
+    .filter-btn.active {
+        background-color: var(--theme-orange);
+        color: white;
+        border-color: var(--theme-orange);
+        font-weight: 500;
+    }
+
+    .filter-btn:hover {
+        border-color: var(--theme-orange);
+        color: var(--theme-orange);
+    }
+    .filter-btn.active:hover {
+        color: white;
+    }
+
+    /* ปุ่มเปิดฟอร์มตอบกลับ */
+    .reply-toggle-btn {
+        background-color: white;
+        color: var(--theme-orange);
+        border: 1px solid var(--theme-orange);
+        padding: 8px 15px;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.9rem;
+        transition: 0.2s;
+    }
+    .reply-toggle-btn:hover {
+        background-color: var(--theme-orange);
+        color: white;
+    }
+
+    /* ปุ่มส่งคำตอบ */
+    .reply-submit-btn {
+        background-color: var(--theme-orange);
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    .reply-submit-btn:hover {
+        background-color: #e65c00;
+    }
+
+    /* กล่องข้อความตอบกลับ */
+    .review-reply-box {
+        background-color: #f9f9f9;
+        border-left: 4px solid var(--theme-orange);
+        padding: 15px;
+        margin-top: 15px;
+        border-radius: 4px;
+    }
+    
+    .reply-status-text {
+        color: #28a745; /* สีเขียวสำหรับสถานะ */
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .reply-header {
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    .reply-message {
+        color: #555;
+        font-size: 1rem;
+        line-height: 1.5;
+    }
+
+    .reply-date {
+        font-size: 0.8rem;
+        color: #999;
+        display: block;
+        margin-top: 8px;
+        text-align: right;
+    }
+
+    /* จัด Layout Footer ของรีวิวใหม่ให้ตรงตามรูป */
+    .review-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 10px;
+        color: #888;
+        font-size: 0.85rem;
+    }
 </style>
 
 <div class="seller-layout">
@@ -60,11 +173,19 @@
             </div>
         </section>
 
-        <!-- ===== FILTER BAR (เพิ่มใหม่) ===== -->
         <div class="review-filter-bar">
-            <a href="?filter=all" class="filter-btn">ทั้งหมด</a>
-            <a href="?filter=unreplied" class="filter-btn">ยังไม่ตอบ</a>
-            <a href="?filter=replied_latest" class="filter-btn">ตอบล่าสุด</a>
+            <a href="?filter=all" 
+               class="filter-btn {% if current_filter == 'all' or not current_filter %}active{% endif %}">
+               ทั้งหมด
+            </a>
+            <a href="?filter=unreplied" 
+               class="filter-btn {% if current_filter == 'unreplied' %}active{% endif %}">
+               ยังไม่ตอบ
+            </a>
+            <a href="?filter=replied_latest" 
+               class="filter-btn {% if current_filter == 'replied_latest' %}active{% endif %}">
+               ตอบล่าสุด
+            </a>
         </div>
 
         <section class="review-section">
@@ -74,15 +195,15 @@
                     {% for review in reviews %}
                         <div class="review-card">
 
-                            <div class="review-product-name">
+                            <div class="review-product-name" style="color: var(--theme-orange); font-weight: 600;">
                                 🛍️ {{ review.product.name }}
                             </div>
 
-                            <p class="review-rating">
+                            <p class="review-rating" style="color: #ffc107; font-weight: bold; margin: 5px 0;">
                                 ⭐ {{ review.rating }} / 5
                             </p>
 
-                            <p class="review-comment">
+                            <p class="review-comment" style="font-size: 1.1rem; color: #333;">
                                 {{ review.comment }}
                             </p>
 
@@ -92,35 +213,41 @@
                             </div>
 
                             {% if not review.reply %}
-                                <button class="reply-toggle-btn"
-                                        onclick="toggleReply('{{ review.id }}')">
-                                    💬 ตอบกลับรีวิว
-                                </button>
-
-                                <form method="post"
-                                      action="{% url 'petjoy:reply_review' review.id %}"
-                                      class="reply-form"
-                                      id="reply-form-{{ review.id }}">
-                                    {% csrf_token %}
-                                    <textarea name="reply"
-                                              placeholder="พิมพ์คำตอบจากร้าน..."
-                                              required></textarea>
-                                    <button type="submit" class="reply-submit-btn">
-                                        ส่งคำตอบ
+                                <div style="margin-top: 15px;">
+                                    <button class="reply-toggle-btn"
+                                            onclick="toggleReply('{{ review.id }}')">
+                                        💬 ตอบกลับรีวิว
                                     </button>
-                                </form>
+
+                                    <form method="post"
+                                          action="{% url 'petjoy:reply_review' review.id %}"
+                                          class="reply-form"
+                                          id="reply-form-{{ review.id }}"
+                                          style="display: none; margin-top: 10px;">
+                                        {% csrf_token %}
+                                        <textarea name="reply"
+                                                  rows="3"
+                                                  placeholder="พิมพ์คำตอบจากร้าน..."
+                                                  style="width: 100%; border: 1px solid #ddd; border-radius: 8px; padding: 10px;"
+                                                  required></textarea>
+                                        <button type="submit" class="reply-submit-btn">
+                                            ส่งคำตอบ
+                                        </button>
+                                    </form>
+                                </div>
                             {% endif %}
 
                             {% if review.reply %}
-                                <div class="reply-status">
-                                    ✅ ร้านตอบกลับแล้ว
-                                </div>
-
                                 <div class="review-reply-box">
-                                    <strong>💬 คำตอบจากร้าน</strong>
-                                    <p>{{ review.reply.message }}</p>
+                                    <span class="reply-status-text">✅ ร้านตอบกลับแล้ว</span>
+                                    <span class="reply-header">💬 คำตอบจากร้าน</span>
+                                    
+                                    <p class="reply-message">
+                                        {{ review.reply.message }}
+                                    </p>
+                                    
                                     <span class="reply-date">
-                                        {{ review.reply.created_at|date:"d M Y H:i" }}
+                                        ตอบเมื่อ: {{ review.reply.created_at|date:"d M Y H:i" }}
                                     </span>
                                 </div>
                             {% endif %}
@@ -129,7 +256,9 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="empty-text">😔 ยังไม่มีรีวิวจากลูกค้า</p>
+                <div style="text-align: center; padding: 50px; color: #999;">
+                    <p style="font-size: 1.2rem;">😔 ยังไม่มีรีวิวตามเงื่อนไขที่เลือก</p>
+                </div>
             {% endif %}
 
         </section>
@@ -141,7 +270,11 @@
 <script>
 function toggleReply(id) {
     const form = document.getElementById('reply-form-' + id);
-    form.classList.toggle('active');
+    if (form.style.display === "none" || form.style.display === "") {
+        form.style.display = "block";
+    } else {
+        form.style.display = "none";
+    }
 }
 </script>
 
