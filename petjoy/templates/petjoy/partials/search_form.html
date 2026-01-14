@@ -1,7 +1,305 @@
 {% load static %}
-<form method="get" action="{% url 'petjoy:search' %}" class="search-form">
-    <input name="q" type="search" class="search-input" placeholder="ค้นหาสินค้า..." value="{% if value %}{{ value }}{% elif request.GET.q %}{{ request.GET.q }}{% endif %}" aria-label="ค้นหา">
-    <button type="submit" class="search-button" aria-label="ค้นหา">
-        <img src="{% static 'images/search.png' %}" alt="Search" class="search-icon">
-    </button>
-</form>
+
+<style>
+    /* Container หลัก */
+    .search-wrapper {
+        position: relative;
+        width: 100%;
+        max-width: 600px;
+    }
+
+    /* กรอบฟอร์มค้นหา (Capsule Shape) */
+    .petjoy-search-form {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        background-color: #ffffff;
+        border-radius: 50px; 
+        padding: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
+        z-index: 20; /* ให้ลอยอยู่เหนือ Dropdown เสมอ */
+    }
+
+    .petjoy-search-form:focus-within {
+        box-shadow: 0 6px 15px rgba(255, 122, 0, 0.15); /* เงาสีส้มจางๆ */
+        border-color: #ffd2b8; /* ขอบสีส้มอ่อนเมื่อพิมพ์ */
+        transform: translateY(-1px);
+    }
+
+    .petjoy-search-input {
+        flex-grow: 1;
+        border: none;
+        outline: none;
+        padding: 0 20px;
+        font-size: 16px;
+        color: #333;
+        background: transparent;
+        border-radius: 50px;
+        height: 45px;
+        font-family: inherit;
+    }
+
+    .petjoy-search-input::placeholder {
+        color: #aaa;
+    }
+
+    /* ปุ่มค้นหา */
+    .petjoy-search-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        background-color: #ff7a00;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+        margin-right: 4px;
+        flex-shrink: 0;
+    }
+
+    .petjoy-search-btn:hover {
+        background-color: #e66a00;
+        transform: scale(1.05);
+    }
+
+    .petjoy-search-icon {
+        width: 20px;
+        height: 20px;
+        filter: brightness(0) invert(1); /* เปลี่ยนรูปสีดำเป็นขาว */
+        object-fit: contain;
+    }
+
+    /* --- ส่วนประวัติการค้นหา (Floating Dropdown) --- */
+    .search-history-dropdown {
+        position: absolute;
+        top: 100%; 
+        left: 10px;
+        right: 10px;
+        
+        background: #fff;
+        border-radius: 20px; /* โค้งมนทั้งกล่อง */
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15); /* เงาลอยๆ */
+        
+        margin-top: 12px; /* เว้นระยะห่างให้ดูเป็นกล่องลอย */
+        padding: 10px 0;
+        
+        z-index: 100;
+        display: none; /* ซ่อนไว้ก่อน */
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+    }
+
+    /* ลูกศรชี้ขึ้นเล็กๆ (Triangle) */
+    .search-history-dropdown::before {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: 30px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        transform: rotate(45deg);
+        border-top: 1px solid #f0f0f0;
+        border-left: 1px solid #f0f0f0;
+    }
+
+    /* รายการประวัติ */
+    .history-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 20px;
+        cursor: pointer;
+        color: #555;
+        font-size: 15px;
+        border-bottom: 1px solid #f9f9f9;
+        transition: background 0.1s;
+    }
+
+    .history-item:last-child {
+        border-bottom: none;
+    }
+
+    .history-item:hover {
+        background-color: #fff8f3; /* สีส้มจางๆ */
+        color: #ff7a00;
+    }
+
+    .history-text {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-grow: 1;
+    }
+
+    .history-clock-icon {
+        font-size: 18px;
+        color: #ddd;
+    }
+
+    /* ปุ่มลบรายการ */
+    .delete-history-btn {
+        background: none;
+        border: none;
+        color: #ddd;
+        cursor: pointer;
+        padding: 4px 8px;
+        font-size: 18px;
+        transition: all 0.2s;
+        border-radius: 4px;
+    }
+
+    .delete-history-btn:hover {
+        color: #ff4d4d;
+        background: #fff0f0;
+    }
+
+    /* ส่วนหัวของ Dropdown */
+    .history-header {
+        padding: 5px 20px 10px 20px;
+        font-size: 13px;
+        color: #aaa;
+        font-weight: 500;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .clear-all-btn {
+        cursor: pointer;
+        font-size: 12px;
+    }
+    .clear-all-btn:hover { 
+        color: #ff7a00; 
+        text-decoration: underline; 
+    }
+</style>
+
+
+<div class="search-wrapper">
+    
+    <form id="searchForm" method="get" action="{% url 'petjoy:search' %}" class="petjoy-search-form">
+        <input 
+            id="searchInput"
+            name="q" 
+            type="search" 
+            class="petjoy-search-input" 
+            placeholder="ค้นหาสินค้าเพื่อเจ้าตัวแสบ..." 
+            value="{% if value %}{{ value }}{% elif request.GET.q %}{{ request.GET.q }}{% endif %}" 
+            aria-label="ค้นหา"
+            autocomplete="off"
+        >
+        <button type="submit" class="petjoy-search-btn" aria-label="ค้นหา">
+            <img src="{% static 'images/search.png' %}" alt="Search" class="petjoy-search-icon">
+        </button>
+    </form>
+
+    <div id="historyDropdown" class="search-history-dropdown">
+        <div class="history-header">
+            <span>ค้นหาล่าสุด</span>
+            <span class="clear-all-btn" onclick="clearAllHistory()">ลบทั้งหมด</span>
+        </div>
+        <div id="historyList">
+            </div>
+    </div>
+
+</div>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const historyDropdown = document.getElementById('historyDropdown');
+        const historyList = document.getElementById('historyList');
+
+        // 1. แสดงประวัติเมื่อคลิกที่ช่องค้นหา
+        searchInput.addEventListener('focus', function() {
+            renderHistory();
+        });
+
+        // 2. ซ่อน dropdown เมื่อคลิกที่อื่น (Delay เพื่อให้กดเลือกรายการทัน)
+        searchInput.addEventListener('blur', function() {
+            setTimeout(() => {
+                historyDropdown.style.display = 'none';
+            }, 200);
+        });
+
+        // 3. บันทึกประวัติเมื่อกด Enter หรือ Submit
+        searchForm.addEventListener('submit', function() {
+            const query = searchInput.value.trim();
+            if (query) {
+                saveHistory(query);
+            }
+        });
+
+        // --- Logic จัดการ LocalStorage ---
+
+        function getHistory() {
+            return JSON.parse(localStorage.getItem('petjoy_search_history')) || [];
+        }
+
+        function saveHistory(keyword) {
+            let history = getHistory();
+            // ลบคำซ้ำออกก่อน แล้วใส่คำใหม่ไว้หน้าสุด
+            history = history.filter(item => item !== keyword);
+            history.unshift(keyword);
+            // เก็บแค่ 5 รายการล่าสุด
+            if (history.length > 5) history.pop();
+            localStorage.setItem('petjoy_search_history', JSON.stringify(history));
+        }
+
+        // --- Logic แสดงผล ---
+
+        window.renderHistory = function() {
+            const history = getHistory();
+            if (history.length === 0) {
+                historyDropdown.style.display = 'none';
+                return;
+            }
+
+            historyList.innerHTML = ''; // ล้างค่าเก่า
+            history.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.innerHTML = `
+                    <span class="history-text" onclick="selectHistory('${item}')">
+                        <i class="ri-time-line history-clock-icon"></i> 
+                        ${item}
+                    </span>
+                    <button class="delete-history-btn" onclick="deleteItem('${item}')" title="ลบรายการนี้">
+                        &times;
+                    </button>
+                `;
+                historyList.appendChild(div);
+            });
+
+            historyDropdown.style.display = 'block';
+        }
+
+        window.selectHistory = function(keyword) {
+            searchInput.value = keyword;
+            searchForm.submit();
+        }
+
+        window.deleteItem = function(keyword) {
+            let history = getHistory();
+            history = history.filter(item => item !== keyword);
+            localStorage.setItem('petjoy_search_history', JSON.stringify(history));
+            
+            // Re-render โดยใช้ Timeout เล็กน้อยเพื่อป้องกัน blur event ทำงานก่อน
+            setTimeout(renderHistory, 0); 
+            searchInput.focus();
+        }
+
+        window.clearAllHistory = function() {
+            localStorage.removeItem('petjoy_search_history');
+            historyDropdown.style.display = 'none';
+        }
+    });
+</script>

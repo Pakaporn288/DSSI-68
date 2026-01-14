@@ -28,6 +28,12 @@ from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
 from django.template.loader import render_to_string
 from petjoy.models import Order
 from .models import Review, ReviewReply
+from .models import QuickReply
+from django.utils import timezone
+from django.db.models import Sum
+from django.db.models.functions import TruncDate
+from django.db.models import Sum, Count
+from datetime import timedelta
 
 logger = logging.getLogger(__name__)
 
@@ -881,49 +887,75 @@ class ProductDeleteView(DeleteView):
         return ctx
 
 
+
+
 @login_required
 def entrepreneur_profile_settings(request):
+    entrepreneur = get_object_or_404(Entrepreneur, user=request.user)
+    profile, created = Profile.objects.get_or_create(user=request.user)
+    
+    # ดึง Quick Reply มาแสดง
+    quick_replies = QuickReply.objects.filter(entrepreneur=entrepreneur).order_by('-created_at')
 
-    entrepreneur = request.user.entrepreneur  # ดึงโปรไฟล์ร้านของ user
-
-    if request.method == "POST":
-
-        # หมวด 1: TAX
-        if "save_tax" in request.POST:
-            entrepreneur.tax_id = request.POST.get("tax_id")
+    if request.method == 'POST':
+        
+        # --- 1. บันทึกข้อมูลร้านค้า ---
+        if 'save_store_info' in request.POST:
+            entrepreneur.store_name = request.POST.get('store_name')
+            entrepreneur.description = request.POST.get('description')
+            entrepreneur.phone = request.POST.get('phone')
+            if request.FILES.get('profile_image'):
+                entrepreneur.profile_image = request.FILES['profile_image']
             entrepreneur.save()
-            messages.success(request, "บันทึกข้อมูลภาษีแล้ว", extra_tags="tax")
+            messages.success(request, "บันทึกข้อมูลร้านค้าเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-        # หมวด 2: Address
-        if "save_address" in request.POST:
-            entrepreneur.shop_address = request.POST.get("shop_address")
-            entrepreneur.save()
-            messages.success(request, "บันทึกที่อยู่ร้านแล้ว", extra_tags="address")
+        # --- 2. บันทึกที่อยู่ร้าน (ถ้ามี) ---
+        elif 'save_address' in request.POST:
+            # (ใส่ Logic บันทึกที่อยู่ตามที่คุณมีอยู่เดิมได้เลย หรือถ้าใช้ Model Address ก็เรียกใช้ตรงนี้)
+            # entrepreneur.address = request.POST.get('address')
+            # entrepreneur.save()
+            messages.success(request, "บันทึกที่อยู่เรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-        # หมวด 3: Bank Info
-        if "save_bank" in request.POST:
-            entrepreneur.bank_name = request.POST.get("bank_name")
-            entrepreneur.account_name = request.POST.get("account_name")
-            entrepreneur.account_number = request.POST.get("account_number")
+        # --- 3. บันทึกบัญชีธนาคาร ---
+        elif 'save_bank' in request.POST:
+            profile.bank_name = request.POST.get('bank_name')
+            profile.account_name = request.POST.get('account_name')
+            profile.account_number = request.POST.get('account_number')
+            if request.FILES.get('bank_book_copy'):
+                profile.bank_book_copy = request.FILES['bank_book_copy']
+            profile.save()
+            messages.success(request, "บันทึกข้อมูลบัญชีธนาคารเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-            if request.FILES.get("bank_book_copy"):
-                entrepreneur.bank_book_copy = request.FILES["bank_book_copy"]
+        # --- 4. บันทึกเอกสารยืนยันตัวตน ---
+        elif 'save_idcard' in request.POST:
+            if request.FILES.get('id_card_copy'):
+                profile.id_card_copy = request.FILES['id_card_copy']
+                profile.save()
+                messages.success(request, "บันทึกเอกสารยืนยันตัวตนเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-            entrepreneur.save()
-            messages.success(request, "บันทึกข้อมูลบัญชีธนาคารแล้ว", extra_tags="bank")
+        # --- 5. (ใหม่) เพิ่มข้อความตอบกลับด่วน ---
+        elif 'add_quick_reply' in request.POST:
+            message_text = request.POST.get('quick_message')
+            if message_text:
+                QuickReply.objects.create(entrepreneur=entrepreneur, message=message_text)
+                messages.success(request, "เพิ่มข้อความด่วนเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-        # หมวด 4: ID Card
-        if "save_idcard" in request.POST:
-            if request.FILES.get("id_card_copy"):
-                entrepreneur.id_card_copy = request.FILES["id_card_copy"]
-            entrepreneur.save()
-            messages.success(request, "บันทึกสำเนาบัตรประชาชนแล้ว", extra_tags="idcard")
+        # --- 5. (ใหม่) ลบข้อความตอบกลับด่วน ---
+        elif 'delete_quick_reply' in request.POST:
+            reply_id = request.POST.get('reply_id')
+            QuickReply.objects.filter(id=reply_id, entrepreneur=entrepreneur).delete()
+            messages.success(request, "ลบข้อความเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
 
-    # 🎯 ต้องส่ง entrepreneur เพิ่มเข้าไป
-    return render(request, "petjoy/entrepreneur/entrepreneur_profile_settings.html", {
-        "profile": entrepreneur,
-        "entrepreneur": entrepreneur,      # ⭐ สำคัญที่สุด
-        "is_entrepreneur": True,           # ใช้กับ sidebar ถ้าจำเป็น
+    return render(request, 'petjoy/entrepreneur/entrepreneur_profile_settings.html', {
+        'entrepreneur': entrepreneur,
+        'profile': profile,
+        'quick_replies': quick_replies,
     })
 
 @login_required(login_url=reverse_lazy('petjoy:login'))
@@ -935,9 +967,45 @@ def entrepreneur_reviews(request):
 
     entrepreneur = request.user.entrepreneur
 
-    # 👉 base queryset (ของเดิม)
+    # =========================
+    # 📝 ส่วนบันทึกคำตอบ (POST) - เพิ่มส่วนนี้เข้าไป
+    # =========================
+    if request.method == "POST":
+        review_id = request.POST.get('review_id')
+        reply_text = request.POST.get('message')
+        
+        try:
+            target_review = Review.objects.get(id=review_id)
+            
+            # บันทึกหรืออัปเดตการตอบกลับ
+            ReviewReply.objects.update_or_create(
+                review=target_review,
+                defaults={'message': reply_text}
+            )
+            
+            # เปิดการแจ้งเตือนให้ลูกค้าผ่าน Model Order
+            if target_review.order:
+                order_to_notify = target_review.order
+                order_to_notify.has_unread_status_update = True
+                order_to_notify.save()
+            
+            messages.success(request, "ส่งการตอบกลับเรียบร้อยแล้ว")
+            
+        except Review.DoesNotExist:
+            messages.error(request, "ไม่พบรีวิวที่ต้องการตอบกลับ")
+        except Exception as e:
+            messages.error(request, f"เกิดข้อผิดพลาด: {str(e)}")
+            
+        # รีโหลดหน้าเดิมเพื่อแสดงผลลัพธ์
+        return redirect('petjoy:entrepreneur_reviews')
+
+    # =========================
+    # 🔍 ส่วนดึงข้อมูล (GET) - ของเดิมของคุณ
+    # =========================
+    
+    # Base Queryset
     reviews = Review.objects.filter(
-        product__owner=entrepreneur
+        product__owner=entrepreneur  # แก้ตรงนี้ให้ตรงกับ Model Product ของคุณ (บางทีอาจใช้ entrepreneur=entrepreneur)
     ).select_related(
         'product',
         'user'
@@ -945,54 +1013,64 @@ def entrepreneur_reviews(request):
         'reply'
     )
 
-    # =========================
-    # 🔍 FILTER LOGIC (เพิ่ม)
-    # =========================
+    # Filter Logic
     filter_type = request.GET.get('filter', 'all')
 
     if filter_type == 'unreplied':
-        # ยังไม่ตอบ
         reviews = reviews.filter(reply__isnull=True).order_by('-created_at')
-
     elif filter_type == 'replied_latest':
-        # ตอบแล้ว เรียงตามเวลาตอบล่าสุด
         reviews = reviews.filter(reply__isnull=False).order_by('-reply__created_at')
-
     else:
-        # all (ค่า default)
         reviews = reviews.order_by('-created_at')
 
     return render(request, 'petjoy/entrepreneur/reviews.html', {
         'entrepreneur': entrepreneur,
         'reviews': reviews,
-        'current_filter': filter_type,  # (เผื่อเอาไปทำ active state)
+        'current_filter': filter_type,
     })
 
 
+from django.db.models import Sum
+
 @login_required(login_url=reverse_lazy('petjoy:login'))
 def entrepreneur_home(request):
-    from .models import Product, Review, Entrepreneur
-    # Ensure this user has an Entrepreneur profile
+    from .models import Product, Review, Order
+
     try:
         entrepreneur = request.user.entrepreneur
     except Exception:
         messages.info(request, 'กรุณาสมัครเป็นผู้ประกอบการก่อนเข้าหน้านี้')
         return redirect('petjoy:entrepreneur-register')
 
-    # Only show products that belong to this entrepreneur
     products = Product.objects.filter(owner=entrepreneur)
     product_count = products.count()
+
+    # ⭐ คะแนนเฉลี่ย
     all_reviews = Review.objects.filter(product__in=products)
-    if all_reviews.exists():
-        avg_score = round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
-    else:
-        avg_score = None
+    avg_score = (
+        round(all_reviews.aggregate(Avg('rating'))['rating__avg'], 2)
+        if all_reviews.exists()
+        else None
+    )
+
+    # ⭐⭐ เพิ่มตรงนี้: ยอดขายสะสม ⭐⭐
+    income_statuses = ["paid", "preparing", "delivering", "success"]
+
+    total_sales = (
+        Order.objects.filter(
+            entrepreneur=entrepreneur,
+            status__in=income_statuses
+        ).aggregate(total=Sum("total_price"))["total"] or 0
+    )
+
     return render(request, 'petjoy/entrepreneur/entrepreneur_home.html', {
         'product_count': product_count,
         'products': products,
         'avg_score': avg_score,
         'entrepreneur': entrepreneur,
+        'total_sales': total_sales,   # ⭐ ส่งไปหน้า HTML
     })
+
 
 def login_view(request):
     next_url = request.GET.get('next') or request.POST.get('next')
@@ -1069,7 +1147,53 @@ def entrepreneur_public(request, pk):
         'avg_score': avg_score,
     })
 
+@login_required
+def entrepreneur_income(request):
+    entrepreneur = request.user.entrepreneur
 
+    range_days = request.GET.get("range", "all")
+
+    income_statuses = ["paid", "preparing", "delivering", "success"]
+
+    qs = Order.objects.filter(
+        entrepreneur=entrepreneur,
+        status__in=income_statuses
+    )
+
+    if range_days != "all":
+        days = int(range_days)
+        start_date = timezone.now() - timedelta(days=days)
+        qs = qs.filter(created_at__gte=start_date)
+
+    daily = (
+        qs.annotate(day=TruncDate("created_at"))
+          .values("day")
+          .annotate(total=Sum("total_price"))
+          .order_by("day")
+    )
+
+    labels = [x["day"].strftime("%Y-%m-%d") for x in daily]
+    values = [float(x["total"] or 0) for x in daily]
+
+    total_income = qs.aggregate(total=Sum("total_price"))["total"] or 0
+    total_orders = qs.count()
+    avg_income = total_income / len(values) if values else 0
+
+    context = {
+        "entrepreneur": entrepreneur,
+        "labels_json": json.dumps(labels),
+        "values_json": json.dumps(values),
+        "total_income": total_income,
+        "total_orders": total_orders,
+        "avg_income": avg_income,
+        "range": range_days,
+    }
+
+    return render(
+        request,
+        "petjoy/entrepreneur/entrepreneur_income.html",
+        context
+    )
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)
@@ -1302,9 +1426,18 @@ def order_detail(request, order_id):
 
     if request.method == "POST":
         new_status = request.POST.get("status")
+        tracking_number = request.POST.get("tracking_number")
+
         order.status = new_status
-        order.has_unread_status_update = True  # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
+
+        # ✅ ถ้าสถานะเป็นกำลังจัดส่ง → บันทึกเลขพัสดุ
+        if new_status == "delivering" and tracking_number:
+            order.tracking_number = tracking_number
+
+        # 🔔 แจ้งเตือนลูกค้า
+        order.has_unread_status_update = True
         order.save()
+
         messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
         return redirect("petjoy:orders-detail", order_id=order.id)
 
@@ -1312,6 +1445,7 @@ def order_detail(request, order_id):
         "order": order,
         "entrepreneur": entrepreneur,
     })
+
 
 
 @login_required
@@ -1522,46 +1656,78 @@ def entrepreneur_chat_list(request):
 
 @login_required
 def entrepreneur_chat_room(request, room_id):
-    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับผู้ประกอบการเท่านั้น"""
-    # ดึงผู้ประกอบการที่ล็อกอิน และตรวจสอบว่าห้องแชทนี้เป็นของร้านตัวเอง
-    entrepreneur = get_object_or_404(Entrepreneur, user=request.user)
-    room = get_object_or_404(ChatRoom, id=room_id, entrepreneur=entrepreneur)
-    
-    # 2. จัดการการส่งข้อความ (POST) พร้อมรองรับไฟล์แนบ
-    if request.method == 'POST':
-        message_text = request.POST.get('message', '').strip()
-        uploaded_file = request.FILES.get('attachment') 
+    room = get_object_or_404(ChatRoom, id=room_id)
 
-        if message_text or uploaded_file: 
-            
-            if uploaded_file:
-                # Placeholder: สร้างข้อความแจ้งว่ามีการแนบไฟล์
-                file_info = f"[ไฟล์แนบ: {uploaded_file.name}]"
-                if message_text:
-                    message_text += f"\n{file_info}"
-                else:
-                    message_text = file_info
-                
+    # ป้องกันคนอื่นแอบเข้าห้องแชท
+    if request.user != room.entrepreneur.user:
+        return redirect('petjoy:entrepreneur-chat-list')
+
+    entrepreneur = room.entrepreneur
+
+    # Mark as read (อ่านแล้ว) เฉพาะข้อความที่คู่สนทนาส่งมา
+    ChatMessage.objects.filter(
+        room=room
+    ).exclude(sender=request.user).update(is_read=True)
+
+    if request.method == 'POST':
+        message_text = request.POST.get('message')
+        attachment = request.FILES.get('attachment')
+
+        if message_text or attachment:
             ChatMessage.objects.create(
                 room=room,
                 sender=request.user,
-                message=message_text
+                message=message_text,
+                attachment=attachment
             )
+
+            room.updated_at = timezone.now()
+            room.save()
+
             return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
 
-    # 3. ดึงข้อความเก่ามาแสดง
-    # ⭐ แก้ไขการเรียกใช้: ใช้ room.messages.all() ตาม related_name ใน models.py ⭐
-    messages_list = room.messages.all().order_by('id') 
-    
+    # -------------------------------
+    # 🔽 ส่วนที่เพิ่ม: Date Label
+    # -------------------------------
+    messages_list = room.messages.all().order_by('timestamp')
+
+    from datetime import timedelta
+
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
+
+    for msg in messages_list:
+        msg.local_date = msg.timestamp.astimezone(
+            timezone.get_current_timezone()
+        ).date()
+
+        if msg.local_date == today:
+            msg.date_label = "วันนี้"
+        elif msg.local_date == yesterday:
+            msg.date_label = "เมื่อวาน"
+        else:
+            diff = (today - msg.local_date).days
+            if diff <= 7:
+                msg.date_label = f"{diff} วันที่แล้ว"
+            else:
+                msg.date_label = msg.local_date.strftime("%d %b %Y")
+    # -------------------------------
+
+    quick_replies = entrepreneur.quick_replies.all().order_by('-created_at')
+
     context = {
         'room': room,
         'messages': messages_list,
         'current_user': request.user,
         'entrepreneur': entrepreneur,
+        'quick_replies': quick_replies,
     }
 
-    # ชี้ไปที่ Template ในโฟลเดอร์ entrepreneur/
-    return render(request, 'petjoy/entrepreneur/entrepreneur_chat_room.html', context)
+    return render(
+        request,
+        'petjoy/entrepreneur/entrepreneur_chat_room.html',
+        context
+    )
 
 @login_required
 def entrepreneur_chat_delete(request, room_id):

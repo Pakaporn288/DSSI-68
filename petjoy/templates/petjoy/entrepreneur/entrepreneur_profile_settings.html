@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
 
-    <!-- เพิ่มแค่สไตล์ของส่วนเนื้อหา (ไม่ยุ่งกับ sidebar / seller-main) -->
     <style>
         body {
             margin: 0;
@@ -30,7 +29,6 @@
             padding: 22px 28px;
             border-radius: 16px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
             box-shadow: 0 6px 18px rgba(0,0,0,0.08);
             margin-bottom: 24px;
@@ -67,7 +65,6 @@
         .settings-area {
             max-width: 950px;
             margin: 0 auto 30px;
-            width: 100%;
             display: flex;
             flex-direction: column;
             gap: 24px;
@@ -85,7 +82,7 @@
             font-size: 18px;
             font-weight: 700;
             color: #FF6A2E;
-            margin: 0 0 12px 0;
+            margin-bottom: 12px;
         }
 
         .form-field {
@@ -125,10 +122,32 @@
             border: 2px solid #FF6A2E;
         }
 
-        .feedback {
-            margin-top: 8px;
-            color: green;
+        /* ===== ข้อ 5: ข้อความตอบกลับด่วน ===== */
+        .quick-reply-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 12px;
+        }
+
+        .quick-reply-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #FFF7F2;
+            border: 1px solid #FFD6BF;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+        }
+
+        .quick-reply-delete {
+            background: #FFECEC;
+            border: none;
+            color: #D32F2F;
             font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
         }
     </style>
 </head>
@@ -137,9 +156,7 @@
 
 <div class="seller-layout">
 
-    <!-- 🔸 แทบซ้าย: ใช้โค้ดแบบเดียวกับ orders_list.html -->
     <aside class="seller-sidebar">
-
         <div class="seller-profile">
             {% if entrepreneur.profile_image %}
                 <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
@@ -157,20 +174,17 @@
             <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
             <a href="{% url 'petjoy:entrepreneur_profile_settings' %}" class="active">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
             <a href="{% url 'petjoy:entrepreneur_reviews' %}">📋 รีวิวสินค้า</a>
-            <a href="#">💰 รายได้</a>
+            <a href="{% url 'petjoy:entrepreneur-income' %}">💰 รายได้</a>
         </nav>
 
         <form method="post" action="{% url 'petjoy:logout' %}">
             {% csrf_token %}
             <button class="seller-logout">ออกจากระบบ</button>
         </form>
-
     </aside>
 
-    <!-- เนื้อหาหลัก -->
     <main class="seller-main">
 
-        <!-- หัวข้อบนสุด -->
         <section class="header-wrapper">
             <div class="seller-header-box">
                 <div class="header-left">
@@ -187,13 +201,12 @@
             </div>
         </section>
 
-        <!-- ฟอร์มตั้งค่าโปรไฟล์ -->
         <section class="settings-area">
 
-            <!-- 1. ข้อมูลภาษี -->
+            <!-- 1. ข้อมูลภาษีร้าน -->
             <div class="settings-section">
                 <h3 class="section-title">1. ข้อมูลภาษีร้าน</h3>
-                <form method="POST" enctype="multipart/form-data">
+                <form method="POST">
                     {% csrf_token %}
                     <div class="form-field">
                         <label>เลขประจำตัวผู้เสียภาษี</label>
@@ -221,31 +234,18 @@
                 <h3 class="section-title">3. ข้อมูลบัญชีธนาคาร</h3>
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
-
                     <div class="form-field">
                         <label>ชื่อธนาคาร</label>
                         <input type="text" name="bank_name" value="{{ profile.bank_name|default:'' }}">
                     </div>
-
                     <div class="form-field">
                         <label>ชื่อบัญชี</label>
                         <input type="text" name="account_name" value="{{ profile.account_name|default:'' }}">
                     </div>
-
                     <div class="form-field">
                         <label>เลขที่บัญชี</label>
                         <input type="text" name="account_number" value="{{ profile.account_number|default:'' }}">
                     </div>
-
-                    <div class="form-field">
-                        <label>สำเนาหน้าสมุดบัญชี (ภาพ)</label>
-                        <input type="file" name="bank_book_copy" accept="image/*">
-                    </div>
-
-                    {% if profile.bank_book_copy %}
-                        <img src="{{ profile.bank_book_copy.url }}" class="preview-img">
-                    {% endif %}
-
                     <button type="submit" name="save_bank" class="save-btn">บันทึก</button>
                 </form>
             </div>
@@ -256,16 +256,46 @@
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-field">
-                        <label>สำเนาบัตรประชาชน (ภาพ)</label>
-                        <input type="file" name="id_card_copy" accept="image/*">
+                        <label>สำเนาบัตรประชาชน</label>
+                        <input type="file" name="id_card_copy">
                     </div>
-
-                    {% if profile.id_card_copy %}
-                        <img src="{{ profile.id_card_copy.url }}" class="preview-img">
-                    {% endif %}
-
                     <button type="submit" name="save_idcard" class="save-btn">บันทึก</button>
                 </form>
+            </div>
+
+            <!-- 5. ข้อความสำหรับตอบกลับด่วน -->
+            <div class="settings-section">
+                <h3 class="section-title">5. ข้อความสำหรับตอบกลับด่วน</h3>
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label>เพิ่มข้อความตอบกลับด่วน</label>
+                        <input type="text" name="quick_message"
+                               placeholder="เช่น สวัสดีค่ะ ทางร้านยินดีให้บริการค่ะ">
+                    </div>
+                    <button type="submit" name="add_quick_reply" class="save-btn">
+                        เพิ่มข้อความ
+                    </button>
+                </form>
+
+                {% if quick_replies %}
+                    <ul class="quick-reply-list">
+                        {% for reply in quick_replies %}
+                            <li class="quick-reply-item">
+                                <span>{{ reply.message }}</span>
+                                <form method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="reply_id" value="{{ reply.id }}">
+                                    <button type="submit" name="delete_quick_reply"
+                                            class="quick-reply-delete">
+                                        ลบ
+                                    </button>
+                                </form>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
             </div>
 
         </section>

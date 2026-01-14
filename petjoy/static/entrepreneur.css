@@ -584,3 +584,56 @@
     background: #FF7043;
     color: #fff;
 }
+/* ===============================
+   CHAT LAYOUT FIX
+   =============================== */
+
+.chat-layout {
+    display: flex;
+    gap: 20px;
+    align-items: stretch;
+}
+
+/* กล่องแชทหลัก */
+.chat-card {
+    flex: 1;
+    background: #ffffff;
+    border-radius: 18px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* พื้นที่ข้อความ */
+.messages-area {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #FDF7F3;
+}
+
+/* ===============================
+   IMAGE IN CHAT FIX
+   =============================== */
+
+/* รูปที่ส่งในแชท */
+.messages-area img,
+.bubble img {
+    max-width: 220px;      /* << จุดสำคัญ */
+    max-height: 220px;
+    border-radius: 12px;
+    object-fit: cover;
+    display: block;
+}
+
+/* bubble ไม่ให้ยืด */
+.bubble {
+    max-width: 70%;
+    word-wrap: break-word;
+}
+
+/* bubble รูป */
+.bubble img {
+    margin-top: 6px;
+}

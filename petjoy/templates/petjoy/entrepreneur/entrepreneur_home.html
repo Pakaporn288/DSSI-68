@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 
@@ -31,7 +32,7 @@
                 <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
                 <a href="{% url 'petjoy:entrepreneur_profile_settings' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
                 <a href="{% url 'petjoy:entrepreneur_reviews' %}">📋 รีวิวสินค้า</a>
-                <a href="#">💰 รายได้</a>
+                <a href="{% url 'petjoy:entrepreneur-income' %}">💰 รายได้</a>
             </nav>
         
             <form method="post" action="{% url 'petjoy:logout' %}">
@@ -95,7 +96,9 @@
 
             <div class="stat-card">
                 <h4>ยอดขายสะสมทั้งหมด</h4>
-                <p class="stat-number">฿0</p>
+                <p class="stat-number">
+                    ฿{{ total_sales|floatformat:0|intcomma }}
+                </p>
             </div>
 
         </section>

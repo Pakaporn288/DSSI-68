@@ -27,52 +27,45 @@
 
     {% if orders %}
         {% for order in orders %}
-
-            <!-- =================================================
-                 ADD ONLY : แจ้งเตือนร้านตอบรีวิว (กดได้)
-                 ใช้ order.reviews (related_name จาก models.py ล่าสุด)
-            ================================================== -->
+            
             {% if order.has_unread_status_update and order.reviews.exists %}
-            <a href="{% url 'petjoy:my_reviews' %}"
-               style="text-decoration:none; color:inherit;">
-                <div style="
-                    background:#fff7ed;
-                    border-radius:16px;
-                    padding:20px 22px;
-                    margin-bottom:16px;
-                    box-shadow:0 6px 18px rgba(0,0,0,0.06);
-                ">
-                    <div>
-                        <strong>{{ order.display_title }}</strong><br>
-                        <span style="color:#c2410c;font-weight:600;">
-                            💬 ร้านค้าได้ตอบรีวิวสินค้าของคุณแล้ว
-                        </span><br>
-                        <small style="color:#aaa;">
-                            {{ order.updated_at|date:"d M Y • H:i" }}
-                        </small>
-                    </div>
-                </div>
-            </a>
+                {% for review in order.reviews.all %}
+                    {% if review.reply %}
+                    <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                        <div style="background:#fff3eb; border:1px solid #ffd2b8; padding:20px; border-radius:16px; margin-bottom:16px; box-shadow:0 4px 12px rgba(255,122,0,0.1);">
+                            <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                <div>
+                                    <strong style="color:#ff7a00; font-size:16px;">💬 ร้านค้าได้ตอบกลับรีวิวของคุณแล้ว</strong><br>
+                                    <span style="font-size:14px; color:#555;">สินค้า: {{ review.product.name }}</span><br>
+                                    <small style="color:#888;">ออเดอร์ ORD-{{ order.order_number|stringformat:"06d" }}</small>
+                                </div>
+                                <span style="background:#ff7a00; color:#fff; font-size:10px; padding:2px 8px; border-radius:10px;">ใหม่</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
             {% endif %}
-            <!-- =================== END ADD ONLY =================== -->
 
             {% if order.status == 'preparing' %}
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
-                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
+                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
                 <div>
                     <strong>{{ order.display_title }}</strong><br>
-                    <span style="color:#ff7a00;font-weight:600;">กำลังเตรียมสินค้า</span><br>
+                    <span style="color:#ffb000;font-weight:600;">กำลังเตรียมสินค้า</span><br>
                     <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
                 </div>
             </div>
 
             {% elif order.status == 'delivering' %}
             <div style="background:#fff;border-radius:16px;padding:20px 22px;margin-bottom:16px;
-                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;">
+                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
                 <div>
                     <strong>{{ order.display_title }}</strong><br>
-                    <span style="color:#2563eb;font-weight:600;">กำลังจัดส่ง</span><br>
-                    <small>เลขพัสดุ: <b>{{ order.tracking_number }}</b></small><br>
+                    <span style="color:#3b82f6;font-weight:600;">กำลังจัดส่ง</span><br>
+                    {% if order.tracking_number %}
+                        <small style="color:#555;">เลขพัสดุ: {{ order.tracking_number }}</small><br>
+                    {% endif %}
                     <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
                 </div>
             </div>
@@ -102,9 +95,11 @@
 
         {% endfor %}
     {% else %}
-        <div style="background:#fff;padding:60px;border-radius:16px;text-align:center;color:#999;">
-            🔔 ยังไม่มีการแจ้งเตือน
+        <div style="text-align:center; padding:60px 20px; background:#fff; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
+            <i class="ri-notification-off-line" style="font-size:48px; color:#ddd;"></i>
+            <p style="color:#999; margin-top:15px; font-size:16px;">ยังไม่มีการแจ้งเตือนในขณะนี้</p>
         </div>
     {% endif %}
+
 </div>
 {% endblock %}

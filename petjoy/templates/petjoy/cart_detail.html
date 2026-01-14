@@ -7,9 +7,27 @@
 
 <div class="cart-container">
 
-    <!-- 🔙 Back + Title -->
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:25px;">
-        <a href="{% url 'petjoy:homepage' %}" class="back-arrow">‹</a>
+    <div style="display:flex; align-items:center; gap:15px; margin-bottom:25px;">
+        <a href="{% url 'petjoy:homepage' %}"
+           style="
+               display:inline-flex;
+               align-items:center;
+               gap:6px;
+               padding:10px 16px;
+               background:#fff3eb;
+               color:#ff7a00;
+               border-radius:999px;
+               font-size:14px;
+               font-weight:600;
+               text-decoration:none;
+               border:1px solid #ffd2b8;
+               transition: all 0.2s;
+           "
+           onmouseover="this.style.background='#ff7a00'; this.style.color='white';"
+           onmouseout="this.style.background='#fff3eb'; this.style.color='#ff7a00';">
+            <i class="ri-arrow-left-line"></i>
+            กลับหน้าแรก
+        </a>
         <h1 class="cart-title" style="margin:0;">ตะกร้าสินค้าของคุณ</h1>
     </div>
 
@@ -19,7 +37,6 @@
         {% for item in cart_items %}
         <div class="cart-item-card">
 
-            <!-- Image -->
             <div class="cart-item-left">
                 <a href="{% url 'petjoy:product-detail' item.product.id %}" class="cart-img-link">
                     {% if item.product.image %}
@@ -30,7 +47,6 @@
                 </a>
             </div>
 
-            <!-- Info -->
             <div class="cart-item-right">
 
                 <h2 class="cart-item-name">
@@ -52,7 +68,6 @@
                     ราคา {{ item.product.price|floatformat:0|intcomma }} บาท
                 </p>
 
-                <!-- Quantity -->
                 <div class="qty-controls">
                     <form method="POST" action="{% url 'petjoy:update-cart' %}">
                         {% csrf_token %}
@@ -75,9 +90,7 @@
                     รวม <strong>{{ item.total_price|floatformat:0|intcomma }}</strong> บาท
                 </p>
 
-                <!-- Actions -->
                 <div class="cart-item-actions">
-                    <!-- ✅ แก้ตรงนี้อย่างเดียว -->
                     <a href="{% url 'petjoy:checkout' %}?selected_items={{ item.id }}"
                        class="btn-order-single">
                         สั่งซื้อสินค้านี้
@@ -93,7 +106,6 @@
         {% endfor %}
     </div>
 
-    <!-- SUMMARY -->
     <div class="cart-summary-new">
         <p class="summary-line">
             <strong>ยอดรวมทั้งหมด:</strong>
@@ -117,10 +129,6 @@
     {% endif %}
 
 </div>
-
-<!-- =======================
-     CHECKOUT POPUP 
-======================= -->
 
 <div id="checkoutPopup" class="popup-overlay">
     <div class="popup-box">
@@ -167,7 +175,6 @@
     </div>
 </div>
 
-<!-- SCRIPT (เดิมทั้งหมด) -->
 <script>
 function calculatePopupTotal() {
     let total = 0;

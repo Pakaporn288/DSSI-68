@@ -5,23 +5,270 @@
 
 {% block content %}
 
-<link rel="stylesheet" href="{% static 'search_results_new.css' %}">
+<style>
+    :root {
+        --primary-color: #ff7a00;
+        --primary-hover: #e66a00;
+        --bg-light: #fffcf8;
+        --text-dark: #333;
+        --text-gray: #666;
+        --border-radius: 12px;
+        --shadow-sm: 0 2px 8px rgba(0,0,0,0.05);
+        --shadow-md: 0 8px 16px rgba(0,0,0,0.1);
+    }
 
-<main class="search-page">
+    /* Page Layout */
+    .search-page-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        font-family: 'Prompt', sans-serif; /* หรือฟอนต์ที่เว็บใช้อยู่ */
+    }
 
-    <!-- HEADER -->
-    <div class="search-header">
-        <button class="back-btn" onclick="history.back()">‹</button>
-        <h2>ค้นหา</h2>
-        <div class="search-info">ผลการค้นหา: "<strong>{{ query }}</strong>"</div>
+    /* Header Section */
+    .search-header-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .btn-back {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        background-color: #fff;
+        color: var(--primary-color);
+        border: 1px solid var(--primary-color);
+        border-radius: 50px;
+        font-size: 14px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-back:hover {
+        background-color: var(--primary-color);
+        color: #fff;
+    }
+
+    .search-title {
+        font-size: 24px;
+        color: var(--text-dark);
+        margin: 0;
+    }
+
+    .highlight-text {
+        color: var(--primary-color);
+        font-weight: 700;
+    }
+
+    /* Main Grid Layout */
+    .search-content-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 280px; /* เนื้อหา | Sidebar */
+        gap: 30px;
+    }
+
+    /* Product Grid */
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 20px;
+    }
+
+    /* Product Card */
+    .product-card {
+        background: #fff;
+        border-radius: var(--border-radius);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        border: 1px solid #eee;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-md);
+        border-color: #ffd2b8;
+    }
+
+    .product-img-box {
+        position: relative;
+        width: 100%;
+        padding-top: 100%; /* 1:1 Aspect Ratio */
+        background: #f9f9f9;
+        overflow: hidden;
+    }
+
+    .product-img-box img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover; /* ทำให้รูปเต็มกรอบโดยไม่เสียสัดส่วน */
+        transition: transform 0.5s ease;
+    }
+
+    .product-card:hover .product-img-box img {
+        transform: scale(1.05);
+    }
+
+    .product-details {
+        padding: 15px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .product-name {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin: 0 0 8px 0;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2; /* ตัดคำถ้าเกิน 2 บรรทัด */
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-price {
+        font-size: 18px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 12px;
+    }
+
+    .add-cart-btn {
+        width: 100%;
+        padding: 10px;
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+
+    .add-cart-btn:hover {
+        background-color: var(--primary-hover);
+    }
+
+    /* Sidebar */
+    .sidebar-box {
+        background: #fff;
+        padding: 20px;
+        border-radius: var(--border-radius);
+        border: 1px solid #eee;
+        position: sticky; /* ให้ Sidebar ค้างไว้เวลาเลื่อนจอ */
+        top: 20px; 
+    }
+
+    .sidebar-title {
+        font-size: 18px;
+        margin-bottom: 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #fff3eb;
+        color: var(--text-dark);
+    }
+
+    .category-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .category-list li {
+        margin-bottom: 8px;
+    }
+
+    .category-tag {
+        display: block;
+        padding: 8px 12px;
+        background: #f8f9fa;
+        color: var(--text-gray);
+        border-radius: 6px;
+        font-size: 14px;
+        transition: all 0.2s;
+        cursor: default; /* ถ้าไม่ได้เป็นลิงก์ */
+    }
+
+    .category-tag:hover {
+        background: #fff3eb;
+        color: var(--primary-color);
+    }
+
+    /* Empty State */
+    .no-results {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 60px 20px;
+        background: #fff;
+        border-radius: var(--border-radius);
+        border: 2px dashed #eee;
+    }
+
+    .no-results img {
+        max-width: 150px;
+        margin-bottom: 20px;
+        opacity: 0.8;
+    }
+
+    .no-results p {
+        font-size: 18px;
+        color: var(--text-gray);
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .search-content-wrapper {
+            grid-template-columns: 1fr; /* Stack sidebar under products on mobile */
+        }
+        
+        .sidebar-box {
+            position: static;
+            margin-top: 30px;
+        }
+        
+        .search-header-group {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<main class="search-page-container">
+
+    <div class="search-header-group">
+        <a href="javascript:history.back()" class="btn-back">
+            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+            </svg>
+            ย้อนกลับ
+        </a>
+        <h2 class="search-title">ผลการค้นหา: "<span class="highlight-text">{{ query }}</span>"</h2>
     </div>
 
-    <div class="search-main-layout">
+    <div class="search-content-wrapper">
 
-        <!-- LEFT: PRODUCT LIST -->
         <section class="product-section">
-
-            <h3 class="section-title">สินค้าที่พบ ({{ products|length }})</h3>
+            <div style="margin-bottom: 20px; color: var(--text-gray);">
+                พบสินค้าทั้งหมด <strong>{{ products|length }}</strong> รายการ
+            </div>
 
             {% if products %}
             <div class="product-grid">
@@ -32,29 +279,32 @@
                         {% if product.image %}
                             <img src="{{ product.image.url }}" alt="{{ product.name }}">
                         {% else %}
-                            <img src="{% static 'images/Cat teaser.jpg' %}" alt="placeholder">
+                            <img src="{% static 'images/Cat teaser.jpg' %}" alt="Placeholder Image">
                         {% endif %}
                     </a>
 
                     <div class="product-details">
-
-                        <h4 class="product-name">{{ product.name }}</h4>
-
-                        {% if product.price %}
-                        <div class="product-price">฿{{ product.price }}</div>
-                        {% endif %}
+                        <div>
+                            <h4 class="product-name" title="{{ product.name }}">{{ product.name }}</h4>
+                            
+                            {% if product.price %}
+                            <div class="product-price">฿{{ product.price }}</div>
+                            {% endif %}
+                        </div>
 
                         <form method="post" action="{% url 'petjoy:cart-add' %}">
                             {% csrf_token %}
                             <input type="hidden" name="product_id" value="{{ product.id }}">
                             <input type="hidden" name="quantity" value="1">
-                            <button 
+                            <button type="button" 
                                 class="add-cart-btn"
                                 data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                </svg>
                                 เพิ่มลงตะกร้า
                             </button>
                         </form>
-
                     </div>
 
                 </article>
@@ -63,26 +313,28 @@
 
             {% else %}
             <div class="no-results">
-                <img src="{% static 'images/no-result.png' %}" alt="No results">
-                <p>ไม่พบสินค้า</p>
+                <img src="{% static 'images/no-result.png' %}" alt="No results found">
+                <p>ขออภัย ไม่พบสินค้าที่คุณค้นหา</p>
+                <a href="/" style="color: var(--primary-color); text-decoration: underline;">กลับไปหน้าแรก</a>
             </div>
             {% endif %}
 
         </section>
 
-        <!-- RIGHT: SIDEBAR -->
         <aside class="sidebar">
             <div class="sidebar-box">
-                <h4>หมวดหมู่ที่เกี่ยวข้อง</h4>
+                <h4 class="sidebar-title">หมวดหมู่ที่เกี่ยวข้อง</h4>
 
                 {% if categories %}
                 <ul class="category-list">
                     {% for cat in categories %}
-                    <li>{{ cat.display_name }}</li>
+                    <li>
+                        <span class="category-tag">{{ cat.display_name }}</span>
+                    </li>
                     {% endfor %}
                 </ul>
                 {% else %}
-                <p class="sidebar-empty">ไม่มีหมวดหมู่ที่เกี่ยวข้อง</p>
+                <p class="sidebar-empty" style="color: #999; text-align: center;">ไม่มีหมวดหมู่ที่เกี่ยวข้อง</p>
                 {% endif %}
             </div>
         </aside>
@@ -90,8 +342,19 @@
     </div>
 </main>
 
-<!-- SweetAlert + JS -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="{% static 'js/search_results.js' %}"></script>
+
+<script>
+    // ตรวจสอบว่าปุ่ม Add to Cart ทำงานถูกต้อง (Optional: Logic เสริม UI)
+    document.querySelectorAll('.add-cart-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            // ถ้าไฟล์ search_results.js เดิมมีการ handle event นี้อยู่แล้ว โค้ดส่วนนี้อาจไม่จำเป็น
+            // แต่ใส่ไว้เผื่อให้ปุ่ม submit form ได้จริง
+            const form = this.closest('form');
+            if(form) form.submit();
+        });
+    });
+</script>
 
 {% endblock %}

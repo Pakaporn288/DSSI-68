@@ -1,0 +1,43 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}ภาพรวมระบบ{% endblock %}
+
+{% block content %}
+
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <h4>👥 ผู้ใช้งานทั้งหมด</h4>
+        <p>{{ total_users|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h4>🏪 ร้านค้าทั้งหมด</h4>
+        <p>{{ total_shops|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h4>📦 คำสั่งซื้อทั้งหมด</h4>
+        <p>{{ total_orders|default:"0" }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h4>💰 รายได้รวมทั้งระบบ</h4>
+        <p>฿{{ total_income|default:"0" }}</p>
+    </div>
+
+</div>
+
+<div class="admin-content">
+    <h3 style="margin-top:0;">📈 สถิติและรายงาน</h3>
+    <p style="color:#6b7280;">
+        ส่วนนี้สามารถเพิ่มกราฟรายวัน / รายเดือน หรือสถิติอื่น ๆ ได้ในขั้นถัดไป
+    </p>
+
+    <div style="height:260px; display:flex; align-items:center; justify-content:center; color:#9ca3af;">
+        📊 Graph Placeholder
+    </div>
+</div>
+
+{% endblock %}

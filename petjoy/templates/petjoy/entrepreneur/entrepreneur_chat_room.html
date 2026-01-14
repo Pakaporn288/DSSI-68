@@ -61,6 +61,7 @@
         display: flex;
         flex-direction: column;
         height: 75vh;
+        overflow: hidden;
     }
 
     /* Header */
@@ -90,11 +91,6 @@
         font-size: 1.2rem;
         font-weight: 800;
         color: #E65100;
-    }
-
-    .subtext {
-        color: #777;
-        font-size: 0.85rem;
     }
 
     /* ปุ่มย้อนกลับ */
@@ -157,6 +153,14 @@
         background: #FFF8F5;
     }
 
+    /* วันที่คั่นข้อความ */
+    .chat-date {
+        text-align: center;
+        font-size: 0.8rem;
+        color: #777;
+        margin: 15px 0;
+    }
+
     .bubble {
         max-width: 70%;
         padding: 12px 18px;
@@ -185,6 +189,31 @@
         font-size: 0.75rem;
         opacity: 0.7;
         margin-top: 5px;
+        text-align: right;
+    }
+
+    /* 🔥 แก้ปัญหารูปไม่ยอมปรับ (บังคับชนะ inline) */
+    .message-content img,
+    .messages-area img {
+        max-width: 220px !important;
+        width: auto !important;
+        height: auto !important;
+        display: block !important;
+        margin: 8px 0 !important;
+        border-radius: 14px !important;
+    }
+
+    .message-content img[style],
+    .message-content img[width],
+    .message-content img[height] {
+        width: auto !important;
+        height: auto !important;
+        max-width: 220px !important;
+    }
+
+    .message-content * {
+        max-width: 100%;
+        box-sizing: border-box;
     }
 
     /* Input */
@@ -240,10 +269,14 @@
     <div class="quick-sidebar">
         <h3>ตอบกลับด่วน</h3>
 
-        <div class="quick-button" onclick="insertQuick('สวัสดีค่ะ 😊 ทางร้านพร้อมให้บริการค่ะ')">💬 ทักทายลูกค้า</div>
-        <div class="quick-button" onclick="insertQuick('รบกวนลูกค้าแนบรูป / รายละเอียดเพิ่มเติมให้หน่อยนะคะ')">📎 ขอรายละเอียดเพิ่มเติม</div>
-        <div class="quick-button" onclick="insertQuick('ทางร้านจัดส่งสินค้าให้แล้วนะคะ 🚚')">🚚 แจ้งจัดส่งแล้ว</div>
-        <div class="quick-button" onclick="insertQuick('ขอบคุณที่ใช้บริการค่ะ ❤️ มีอะไรให้ช่วยอีกแจ้งได้เลยค่ะ')">🙏 ขอบคุณลูกค้า</div>
+        {% if quick_replies %}
+            {% for qr in quick_replies %}
+                <div class="quick-button"
+                     onclick="insertQuick('{{ qr.message|escapejs }}')">
+                    {{ qr.message }}
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
 
     <!-- Chat Card -->
@@ -252,8 +285,6 @@
         <!-- Header -->
         <div class="chat-header">
             <div class="chat-user-info">
-
-                <!-- 🟧 ปุ่มย้อนกลับ -->
                 <a href="{% url 'petjoy:entrepreneur-chat-list' %}" class="back-btn">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
@@ -264,12 +295,9 @@
                     <img src="{% static 'images/customer_default.png' %}" class="chat-user-avatar">
                 {% endif %}
 
-                <div>
-                    <div class="chat-user-name">{{ room.customer.username }}</div>
-                </div>
+                <div class="chat-user-name">{{ room.customer.username }}</div>
             </div>
 
-            <!-- Menu -->
             <div class="chat-menu-btn" onclick="toggleMenu()">⋮</div>
             <div class="chat-menu" id="chatMenu">
                 <a href="{% url 'petjoy:entrepreneur-chat-delete' room.id %}">🗑️ ลบแชทนี้</a>
@@ -279,8 +307,16 @@
         <!-- Messages -->
         <div class="messages-area" id="messagesArea">
             {% for message in messages %}
+                {% ifchanged message.local_date %}
+                    <div class="chat-date">
+                        {{ message.date_label }}
+                    </div>
+                {% endifchanged %}
+
                 <div class="bubble {% if message.sender == current_user %}sent{% else %}received{% endif %}">
-                    {{ message.message }}
+                    <div class="message-content">
+                        {{ message.message|safe }}
+                    </div>
                     <div class="time">{{ message.timestamp|date:"H:i" }}</div>
                 </div>
             {% endfor %}

@@ -1,0 +1,153 @@
+{% load static humanize %}
+{% load static %}
+{% block content %}
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700;800;900&display=swap">
+<link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
+
+<style>
+    .navbar { display: none !important; }
+
+    .btn-filter {
+        padding: 6px 14px;
+        border-radius: 20px;
+        background: #FFEDE2;
+        color: #E65100;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .btn-filter.active {
+        background: #FF8A50;
+        color: white;
+    }
+</style>
+
+<div class="seller-layout">
+
+    <aside class="seller-sidebar">
+        <div>
+            <div class="seller-profile">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="seller-avatar">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="seller-avatar">
+                {% endif %}
+                <h3 class="seller-name">{{ entrepreneur.store_name }}</h3>
+                <p class="seller-username">@{{ entrepreneur.user.username }}</p>
+            </div>
+
+            <nav class="seller-menu">
+                <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
+                <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
+                <a href="{% url 'petjoy:product-list' %}">📦 รายการสินค้า</a>
+                <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
+                <a href="{% url 'petjoy:entrepreneur_profile_settings' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
+                <a href="{% url 'petjoy:entrepreneur_reviews' %}">📋 รีวิวสินค้า</a>
+                <a href="{% url 'petjoy:entrepreneur-income' %}" class="active">💰 รายได้</a>
+            </nav>
+
+            <form method="post" action="{% url 'petjoy:logout' %}">
+                {% csrf_token %}
+                <button class="seller-logout">ออกจากระบบ</button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="seller-main">
+
+        <section class="seller-header-box">
+            <div class="header-left">
+                {% if entrepreneur.profile_image %}
+                    <img src="{{ entrepreneur.profile_image.url }}" class="store-logo">
+                {% else %}
+                    <img src="{% static 'images/ร้าน.png' %}" class="store-logo">
+                {% endif %}
+                <div>
+                    <h2 class="store-title">รายได้ร้านค้า</h2>
+                    <p class="store-subtitle">
+                        สรุปรายได้ตามวัน 
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 🔹 การ์ดสรุป -->
+        <section class="stats-section">
+            <div class="stat-card">
+                <h4>💰 รายได้รวม</h4>
+                <p style="font-size:1.6rem; font-weight:800;">
+                    {{ total_income|floatformat:0|intcomma }} บาท
+
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <h4>📦 จำนวนออเดอร์</h4>
+                <p style="font-size:1.6rem; font-weight:800;">
+                    {{ total_orders }} รายการ
+                </p>
+            </div>
+
+            <div class="stat-card">
+                <h4>📈 รายได้เฉลี่ย / วัน</h4>
+                <p style="font-size:1.6rem; font-weight:800;">
+                    {{ avg_income|floatformat:0 }} บาท
+                </p>
+            </div>
+        </section>
+
+        <!-- 🔹 กราฟ -->
+        <section class="stats-section">
+            <div class="stat-card" style="grid-column: 1 / -1;">
+                <h4>กราฟรายได้</h4>
+
+                <div style="margin-bottom:12px; display:flex; gap:10px;">
+                    <a href="?range=7" class="btn-filter {% if range == '7' %}active{% endif %}">7 วัน</a>
+                    <a href="?range=30" class="btn-filter {% if range == '30' %}active{% endif %}">30 วัน</a>
+                    <a href="?range=all" class="btn-filter {% if range == 'all' %}active{% endif %}">ทั้งหมด</a>
+                </div>
+
+                <div style="background:#fff; border-radius:14px; padding:16px; margin-top:10px;">
+                    <canvas id="incomeChart" height="120"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const labels = JSON.parse('{{ labels_json|escapejs }}');
+    const values = JSON.parse('{{ values_json|escapejs }}');
+
+    const ctx = document.getElementById('incomeChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'รายได้ (บาท)',
+                data: values,
+                tension: 0.35,
+                fill: true,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: true }
+            },
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+
+{% endblock %}

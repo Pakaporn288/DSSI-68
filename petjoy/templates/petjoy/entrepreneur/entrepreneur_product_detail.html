@@ -114,7 +114,7 @@
             <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
             <a href="{% url 'petjoy:entrepreneur-profile-edit-home' %}">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
             <a href="{% url 'petjoy:entrepreneur_reviews' %}">📋 รีวิวสินค้า</a>
-            <a href="#">💰 รายได้</a>
+            <a href="{% url 'petjoy:entrepreneur-income' %}">💰 รายได้</a>
         </nav>
 
         <form method="post" action="{% url 'petjoy:logout' %}">

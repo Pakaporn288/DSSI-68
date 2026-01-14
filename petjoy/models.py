@@ -255,14 +255,30 @@ class ChatRoom(models.Model):
 class ChatMessage(models.Model):
     room = models.ForeignKey(ChatRoom, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    message = models.TextField()
+    message = models.TextField(blank=True, null=True) # 👈 แก้บรรทัดนี้: ใส่ blank=True, null=True (เผื่อส่งแค่รูป)
+    
+    # === 👉 เพิ่ม 2 บรรทัดนี้ครับ ===
+    attachment = models.FileField(upload_to='chat_attachments/', blank=True, null=True)
+    is_read = models.BooleanField(default=False)
+    # ==============================
+
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['timestamp']
 
     def __str__(self):
-        return f"{self.sender.username}: {self.message[:50]}"
+        return f"{self.sender.username}: {str(self.message)[:50]}"
+    
+# models.py
+
+class QuickReply(models.Model):
+    entrepreneur = models.ForeignKey(Entrepreneur, on_delete=models.CASCADE, related_name='quick_replies')
+    message = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.message[:50]
 
 class ProductReport(models.Model):
     REPORT_REASONS = [

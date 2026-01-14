@@ -25,8 +25,8 @@
             <a href="{% url 'petjoy:homepage' %}" class="logo">🐾 PetJoy</a>
         </div>
 
-        <div class="navbar-center">
-            <div class="search-bar">
+        <div class="navbar-center" style="flex-grow: 1; display: flex; justify-content: center;">
+            <div class="search-bar" style="background: transparent !important; box-shadow: none !important; padding: 0 !important; border: none !important; width: 100%; display: flex; justify-content: center;">
                 {% include 'petjoy/partials/search_form.html' %}
             </div>
         </div>
