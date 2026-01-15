@@ -2233,17 +2233,21 @@ def update_order_status(request, order_id):
 
 @login_required
 def delete_chat(request, room_id):
-    """ฟังก์ชันลบห้องแชท"""
+    """ฟังก์ชันลบห้องแชท (ฝั่งลูกค้า) - เปลี่ยนเป็นซ่อนแทน"""
     if request.method == 'POST':
         room = get_object_or_404(ChatRoom, id=room_id)
         
-        # ตรวจสอบสิทธิ์ว่าเป็นเจ้าของห้องจริงไหม
-        is_owner = (request.user == room.customer) or \
-                   (hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur)
-        
-        if is_owner:
-            room.delete()
-            messages.success(request, "ลบห้องแชทเรียบร้อยแล้ว")
+        # เช็คว่าเป็นลูกค้าเจ้าของห้อง
+        if request.user == room.customer:
+            # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
+            room.hidden_by_customer = True  
+            room.save()
+            
+            # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
+            if room.hidden_by_customer and room.hidden_by_entrepreneur:
+                room.delete()
+                
+            messages.success(request, "ลบแชทเรียบร้อยแล้ว")
         else:
             messages.error(request, "คุณไม่มีสิทธิ์ลบห้องแชทนี้")
             
@@ -2275,34 +2279,23 @@ def start_chat_view(request, entrepreneur_id):
 
 @login_required
 def chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมด"""
-    
-    # 1. ดึงห้องแชทที่ User เกี่ยวข้อง (เป็นลูกค้า หรือ เป็นเจ้าของร้าน)
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้า"""
+    if hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:entrepreneur-chat-list') 
+        
+    # ⭐ เพิ่มเงื่อนไข hidden_by_customer=False
     rooms = ChatRoom.objects.filter(
-        Q(customer=request.user) | 
-        Q(entrepreneur__user=request.user)
-    ).distinct().order_by('-id') # เรียงตามห้องล่าสุด
+        customer=request.user, 
+        hidden_by_customer=False 
+    ).order_by('-id')
     
-    # 2. ตรวจสอบว่าเป็นผู้ประกอบการหรือไม่
-    is_entrepreneur = hasattr(request.user, 'entrepreneur')
-
-    context = {
+    return render(request, 'petjoy/chat_list.html', {
         'rooms': rooms,
-        'current_user': request.user,
-        'is_entrepreneur': is_entrepreneur,
-        'entrepreneur': request.user.entrepreneur if is_entrepreneur else None,
-    }
-
-    # 3. เลือก Template ตามประเภทผู้ใช้
-    if is_entrepreneur:
-        # *** ชี้ไปที่พาธ Template สำหรับผู้ประกอบการโดยเฉพาะ ***
-        return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
-    else:
-        # ใช้ Template ของลูกค้าที่มีอยู่
-        return render(request, 'petjoy/chat_list.html', context)
+        'current_user': request.user
+    })
 
 
-# ... (delete_chat และ start_chat_view ไม่มีการเปลี่ยนแปลง)
+
 
 
 @login_required
@@ -2400,23 +2393,24 @@ def chat_room(request, room_id):
 
 @login_required
 def entrepreneur_chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมดสำหรับผู้ประกอบการเท่านั้น"""
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับผู้ประกอบการ"""
     if not hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:chat_list') # หากไม่ใช่ผู้ประกอบการ ให้ใช้หน้าของลูกค้า
+        return redirect('petjoy:chat_list')
 
     entrepreneur = request.user.entrepreneur
     
-    rooms = ChatRoom.objects.filter(entrepreneur=entrepreneur).order_by('-id')
+    # ⭐ เพิ่มเงื่อนไข hidden_by_entrepreneur=False
+    rooms = ChatRoom.objects.filter(
+        entrepreneur=entrepreneur, 
+        hidden_by_entrepreneur=False
+    ).order_by('-id')
 
     context = {
         'rooms': rooms,
         'current_user': request.user,
         'entrepreneur': entrepreneur,
     }
-
-    # ชี้ไปที่ Template ในโฟลเดอร์ entrepreneur/
     return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
-
 
 @login_required
 def entrepreneur_chat_room(request, room_id):
@@ -2495,20 +2489,23 @@ def entrepreneur_chat_room(request, room_id):
 
 @login_required
 def entrepreneur_chat_delete(request, room_id):
+    """ฟังก์ชันลบห้องแชท (ฝั่งร้านค้า) - เปลี่ยนเป็นซ่อนแทน"""
     room = get_object_or_404(ChatRoom, id=room_id)
 
-    # ป้องกันผู้ใช้ลบห้องของคนอื่น
-    if request.user != room.entrepreneur.user:
+    # เช็คว่าเป็นเจ้าของร้านจริง
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
+        # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
+        room.hidden_by_entrepreneur = True 
+        room.save()
+
+        # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
+        if room.hidden_by_customer and room.hidden_by_entrepreneur:
+            room.delete()
+
+        messages.success(request, "ลบแชทเรียบร้อยแล้ว")
+    else:
         messages.error(request, "คุณไม่มีสิทธิ์ลบแชทนี้")
-        return redirect('petjoy:entrepreneur-chat-list')
 
-    # ลบข้อความทั้งหมดในห้อง
-    ChatMessage.objects.filter(room=room).delete()
-
-    # ลบตัวห้องแชท
-    room.delete()
-
-    messages.success(request, "ลบแชทเรียบร้อยแล้ว")
     return redirect('petjoy:entrepreneur-chat-list')
 
 @login_required

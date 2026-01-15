@@ -6,6 +6,37 @@
 
 <link rel="stylesheet" href="{% static 'product_detail.css' %}">
 
+<style>
+    /* สไตล์สำหรับดาวรีวิว */
+    .star-rating i {
+        color: #FFC107; /* สีเหลืองทอง */
+        font-size: 0.9rem;
+        margin-right: 1px;
+    }
+    .star-rating i.empty {
+        color: #e0e0e0; /* สีเทาสำหรับดาวว่าง */
+    }
+
+    /* ปรับปุ่มหัวใจให้เห็นชัดๆ */
+    .favorite-toggle {
+        background: none;
+        border: none;
+        font-size: 1.8rem;
+        cursor: pointer;
+        transition: transform 0.2s;
+        color: #ccc; /* สีปกติ (ยังไม่กด) */
+    }
+    .favorite-toggle:hover {
+        transform: scale(1.1);
+    }
+    .fav-active {
+        color: #ff4081 !important; /* สีชมพูเมื่อกดแล้ว */
+    }
+    .fav-active i {
+        font-weight: 900; /* ทำให้เป็น Solid icon */
+    }
+</style>
+
 <div class="simple-detail-container">
 
     <div class="detail-header">
@@ -49,34 +80,46 @@
 
             <div class="reviews-section">
                 <h3>รีวิวจากลูกค้า ({{ reviews.count }})</h3>
+                
                 {% for review in reviews %}
                     <div class="review-item">
                         <div class="review-header">
-                            <span class="review-user">{{ review.user.profile.name|default:review.user.username }}</span>
+                            <span class="review-user">
+                                {{ review.user.profile.name|default:review.user.get_full_name|default:review.user.username }}
+                            </span>
                             <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
                         </div>
-                        <div class="star-rating">★ {{ review.rating }}/5</div>
+                        
+                        <div class="star-rating" data-rating="{{ review.rating }}">
+                            </div>
+
                         <p class="review-comment">{{ review.comment }}</p>
+                        
                         {% if review.reply %}
                             <div class="review-reply"><strong>ร้านค้า:</strong> {{ review.reply.message }}</div>
                         {% endif %}
                     </div>
                 {% empty %}
-                    <p>ยังไม่มีรีวิว</p>
+                    <p style="color:#777; font-style:italic;">ยังไม่มีรีวิวสำหรับสินค้านี้</p>
                 {% endfor %}
             </div>
         </div>
 
         <div class="detail-info-section">
 
-            <h2 class="detail-product-name">{{ product.name }}</h2>
-            <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
+            <div style="display:flex; justify-content:space-between; align-items:start;">
+                <div>
+                    <h2 class="detail-product-name">{{ product.name }}</h2>
+                    <p class="detail-product-category">หมวดหมู่: {{ product.category.display_name }}</p>
+                </div>
 
-            {% if user.is_authenticated %}
-                <button id="favoriteBtn" class="favorite-toggle favorite-heart {% if product in user.profile.favorites.all %}fav-active{% endif %}" data-product-id="{{ product.pk }}">
-                    <i class="{% if product in user.profile.favorites.all %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
+                <button id="favoriteBtn" 
+                        class="favorite-toggle {% if user.is_authenticated and product in user.profile.favorites.all %}fav-active{% endif %}" 
+                        data-product-id="{{ product.pk }}"
+                        data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
+                    <i class="{% if user.is_authenticated and product in user.profile.favorites.all %}fa-solid{% else %}fa-regular{% endif %} fa-heart"></i>
                 </button>
-            {% endif %}
+            </div>
 
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
 
@@ -162,6 +205,22 @@
 <script src="{% static 'js/favorites.js' %}"></script>
 
 <script>
+    // --- Logic สร้างดาวรีวิว (Render Stars) ---
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll('.star-rating').forEach(function(starContainer) {
+            const rating = parseInt(starContainer.dataset.rating) || 0;
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    html += '<i class="fa-solid fa-star"></i>'; // ดาวเต็ม
+                } else {
+                    html += '<i class="fa-regular fa-star empty"></i>'; // ดาวว่าง
+                }
+            }
+            starContainer.innerHTML = html;
+        });
+    });
+
     // --- Logic จัดการ Modal จำนวนสินค้า และ ปุ่มสั่งซื้อ ---
     const modal = document.getElementById('quantityModal');
     const cartForm = document.getElementById('cartForm');
@@ -170,17 +229,21 @@
     
     // URL ปลายทาง
     const urlAddToCart = "{% url 'petjoy:cart-add' %}";
-    const urlBuyNow = "{% url 'petjoy:buy_now' %}"; // URL ใหม่ที่เราเพิ่งสร้าง
+    const urlBuyNow = "{% url 'petjoy:buy_now' %}"; 
 
     function checkLogin(btn) {
         const loggedIn = btn.dataset.loggedIn === '1';
         if (!loggedIn) {
+            // ⭐ แก้ไข: เพิ่มปุ่มยกเลิก (Cancel Button)
             Swal.fire({
                 icon: 'warning',
                 title: 'กรุณาเข้าสู่ระบบ',
                 text: 'คุณต้องเข้าสู่ระบบก่อนทำรายการ',
+                showCancelButton: true, // ✅ เพิ่มบรรทัดนี้
                 confirmButtonText: 'ไปหน้าล็อกอิน',
-                confirmButtonColor: '#E65100'
+                cancelButtonText: 'ยกเลิก', // ✅ เพิ่มบรรทัดนี้
+                confirmButtonColor: '#E65100',
+                cancelButtonColor: '#757575'
             }).then((result) => {
                 if (result.isConfirmed) {
                     window.location.href = "{% url 'petjoy:login' %}?next={{ request.path }}";
@@ -206,7 +269,7 @@
     document.getElementById('btnAddToCart').addEventListener('click', function() {
         if(!checkLogin(this)) return;
         
-        cartForm.action = urlAddToCart; // ส่งไป API เพิ่มตะกร้า
+        cartForm.action = urlAddToCart; 
         modalTitle.innerText = "เพิ่มสินค้าลงตะกร้า";
         modalConfirmBtn.innerText = "ยืนยันการเพิ่ม";
         openQtyModal();
@@ -216,10 +279,21 @@
     document.getElementById('btnBuyNow').addEventListener('click', function() {
         if(!checkLogin(this)) return;
 
-        cartForm.action = urlBuyNow; // ส่งไป API สั่งซื้อเลย
+        cartForm.action = urlBuyNow; 
         modalTitle.innerText = "ระบุจำนวนที่ต้องการสั่งซื้อ";
         modalConfirmBtn.innerText = "ไปหน้าชำระเงิน";
         openQtyModal();
+    });
+
+    // Logic ปุ่มหัวใจ (Favorite) สำหรับคนยังไม่ล็อกอิน
+    document.getElementById('favoriteBtn').addEventListener('click', function(e) {
+        const loggedIn = this.dataset.loggedIn === '1';
+        if (!loggedIn) {
+            e.preventDefault();
+            e.stopPropagation();
+            checkLogin(this); // เรียกใช้ฟังก์ชันเช็ค Login ที่เราแก้แล้ว (มีปุ่มยกเลิก)
+        }
+        // ถ้าล็อกอินแล้ว ปล่อยให้ favorites.js ทำงานต่อ
     });
 
     // Logic บวกลบเลขใน Modal
@@ -237,7 +311,6 @@
     
     document.getElementById('qtyPlus').addEventListener('click', function(){
         let val = parseInt(qtyInput.value) || 1;
-        // เช็ค stock ได้ที่นี่ถ้าต้องการ
         val++;
         qtyInput.value = val;
         qtyHidden.value = val;
@@ -245,7 +318,6 @@
 
     // --- Logic Report Modal ---
     function openReportModal() {
-        // (Logic เดิม)
         const btn = document.querySelector('.btn-report');
         if(!checkLogin(btn)) return;
         document.getElementById('reportModal').style.display = 'flex';
@@ -254,7 +326,6 @@
         document.getElementById('reportModal').style.display = 'none';
     }
     function submitReportNew() {
-        // (Logic ส่ง Report เดิมของคุณ)
         const form = document.getElementById('reportForm');
         const url = form.getAttribute('data-report-url');
         const reason = document.getElementById('reportReason').value;

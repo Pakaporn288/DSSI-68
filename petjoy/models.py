@@ -193,7 +193,7 @@ class Order(models.Model):
     ]
     
     shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
-    
+
     # ⭐ เพิ่มฟิลด์นี้เพื่อให้ Order ผูกกับร้าน (ผู้ประกอบการ)
     entrepreneur = models.ForeignKey(
         "Entrepreneur",
@@ -263,6 +263,8 @@ class OrderItem(models.Model):
 class ChatRoom(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer_chatrooms')
     entrepreneur = models.ForeignKey('Entrepreneur', on_delete=models.CASCADE, related_name='entrepreneur_chatrooms')
+    hidden_by_customer = models.BooleanField(default=False)
+    hidden_by_entrepreneur = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ('customer', 'entrepreneur')
