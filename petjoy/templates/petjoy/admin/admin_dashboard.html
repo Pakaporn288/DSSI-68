@@ -5,6 +5,7 @@
 
 {% block content %}
 
+<!-- ====== SUMMARY CARDS ====== -->
 <div class="stats-grid">
 
     <div class="stat-card">
@@ -23,21 +24,94 @@
     </div>
 
     <div class="stat-card">
-        <h4>💰 รายได้รวมทั้งระบบ</h4>
-        <p>฿{{ total_income|default:"0" }}</p>
+        <h4>💰 รายได้รวมระบบ</h4>
+        <p>฿{{ total_income|default:"0"|floatformat:0 }}</p>
     </div>
 
 </div>
 
+<!-- ====== ORDER STATUS SUMMARY ====== -->
 <div class="admin-content">
-    <h3 style="margin-top:0;">📈 สถิติและรายงาน</h3>
-    <p style="color:#6b7280;">
-        ส่วนนี้สามารถเพิ่มกราฟรายวัน / รายเดือน หรือสถิติอื่น ๆ ได้ในขั้นถัดไป
-    </p>
+    <h3>📦 สถานะคำสั่งซื้อ</h3>
 
-    <div style="height:260px; display:flex; align-items:center; justify-content:center; color:#9ca3af;">
-        📊 Graph Placeholder
+    <div class="stats-grid">
+        <div class="stat-card">
+            <h4>⏳ รอชำระเงิน</h4>
+            <p>{{ order_waiting|default:"0" }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>🛠️ กำลังเตรียม</h4>
+            <p>{{ order_preparing|default:"0" }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>🚚 กำลังจัดส่ง</h4>
+            <p>{{ order_delivering|default:"0" }}</p>
+        </div>
+        <div class="stat-card">
+            <h4>✅ สำเร็จ</h4>
+            <p>{{ order_success|default:"0" }}</p>
+        </div>
     </div>
+</div>
+
+<!-- ====== RECENT SHOPS ====== -->
+<div class="admin-content">
+    <h3>🏪 ร้านค้าที่สมัครล่าสุด</h3>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>ชื่อร้าน</th>
+                <th>เจ้าของร้าน</th>
+                <th>วันที่สมัคร</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for shop in recent_shops %}
+            <tr>
+                <td>{{ shop.store_name }}</td>
+                <td>{{ shop.owner_name }}</td>
+                <td>{{ shop.created_at|date:"d/m/Y" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3" style="text-align:center;">ยังไม่มีข้อมูล</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- ====== RECENT ORDERS ====== -->
+<div class="admin-content">
+    <h3>🧾 คำสั่งซื้อล่าสุด</h3>
+
+    <table class="admin-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>ร้านค้า</th>
+                <th>ยอดรวม</th>
+                <th>สถานะ</th>
+                <th>วันที่</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in recent_orders %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.entrepreneur.store_name }}</td>
+                <td>฿{{ order.total_price|floatformat:0 }}</td>
+                <td>{{ order.status }}</td>
+                <td>{{ order.created_at|date:"d/m/Y H:i" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" style="text-align:center;">ยังไม่มีคำสั่งซื้อ</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 
 {% endblock %}

@@ -73,6 +73,13 @@ urlpatterns = [
     path('entrepreneur/review/<int:review_id>/reply/',views.reply_review,name='reply_review'),
     path("review/<int:order_id>/", views.review_product, name="review_product"),
     path("entrepreneur/income/", views.entrepreneur_income, name="entrepreneur-income"),
+    path("system/dashboard/", views.admin_dashboard, name="admin-dashboard"),
+    path("system/users/", views.admin_user_list, name="admin-users"),
+    path("system/users/<int:user_id>/",views.admin_user_detail,name="admin-user-detail"),
+
+
+
+
 
 
 

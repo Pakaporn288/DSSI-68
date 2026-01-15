@@ -1,0 +1,138 @@
+{% extends "petjoy/admin/admin_base.html" %}
+{% load static %}
+
+{% block title %}โปรไฟล์ผู้ใช้งาน{% endblock %}
+{% block page_title %}ดูโปรไฟล์ผู้ใช้งาน{% endblock %}
+
+{% block content %}
+
+<div class="admin-card">
+
+    <!-- Header -->
+    <div class="admin-card-header">
+        <h3>ข้อมูลผู้ใช้งาน</h3>
+
+        <a href="{% url 'petjoy:admin-users' %}"
+           class="btn-action view">
+            ← กลับหน้าจัดการผู้ใช้งาน
+        </a>
+    </div>
+
+    <!-- User Info -->
+    <div style="display:grid; grid-template-columns: 160px 1fr; gap:24px; align-items:start;">
+
+        <!-- Avatar -->
+        <div style="text-align:center;">
+            {% if profile_user.profile_image %}
+                <img src="{{ profile_user.profile_image.url }}"
+                     style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+            {% else %}
+                <img src="{% static 'images/user_default.png' %}"
+                     style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
+            {% endif %}
+        </div>
+
+        <!-- Basic Info -->
+        <div>
+            <table class="admin-table">
+                <tr>
+                    <th>Username</th>
+                    <td>{{ profile_user.username }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ profile_user.email|default:"-" }}</td>
+                </tr>
+                <tr>
+                    <th>ประเภทผู้ใช้</th>
+                    <td>
+                        {% if profile_user.is_superuser %}
+                            <span class="badge admin">แอดมิน</span>
+                        {% elif entrepreneur %}
+                            <span class="badge shop">ผู้ประกอบการ</span>
+                        {% else %}
+                            <span class="badge user">ผู้ใช้งานทั่วไป</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>สถานะบัญชี</th>
+                    <td>
+                        {% if profile_user.is_active %}
+                            <span class="status active">ใช้งาน</span>
+                        {% else %}
+                            <span class="status banned">ถูกระงับ</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>วันที่สมัคร</th>
+                    <td>{{ profile_user.date_joined|date:"d/m/Y H:i" }}</td>
+                </tr>
+                <tr>
+                    <th>เข้าใช้งานล่าสุด</th>
+                    <td>
+                        {% if profile_user.last_login %}
+                            {{ profile_user.last_login|date:"d/m/Y H:i" }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    {% if entrepreneur %}
+    <hr style="margin:30px 0;">
+
+    <!-- Entrepreneur Info -->
+    <h3 style="margin-bottom:15px;">ข้อมูลร้านค้า</h3>
+
+    <table class="admin-table">
+        <tr>
+            <th>ชื่อร้าน</th>
+            <td>{{ entrepreneur.store_name }}</td>
+        </tr>
+        <tr>
+            <th>เจ้าของร้าน</th>
+            <td>{{ entrepreneur.owner_name|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>เบอร์โทร</th>
+            <td>{{ entrepreneur.phone|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>ที่อยู่ร้าน</th>
+            <td>{{ entrepreneur.shop_address|default:"-" }}</td>
+        </tr>
+        <tr>
+            <th>เลขประจำตัวผู้เสียภาษี</th>
+            <td>{{ entrepreneur.tax_id|default:"-" }}</td>
+        </tr>
+    </table>
+    {% endif %}
+
+    <!-- Actions -->
+    <div style="margin-top:30px;" class="action-buttons">
+        {% if profile_user.is_active %}
+            <a href="#"
+               class="btn-action warn">
+               ระงับบัญชี
+            </a>
+        {% else %}
+            <a href="#"
+               class="btn-action view">
+               เปิดใช้งานบัญชี
+            </a>
+        {% endif %}
+
+        <a href="#"
+           class="btn-action danger">
+           ลบบัญชี
+        </a>
+    </div>
+
+</div>
+
+{% endblock %}

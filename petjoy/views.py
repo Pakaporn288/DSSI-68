@@ -34,6 +34,8 @@ from django.db.models import Sum
 from django.db.models.functions import TruncDate
 from django.db.models import Sum, Count
 from datetime import timedelta
+from django.shortcuts import render, redirect
+from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
 
@@ -1071,6 +1073,82 @@ def entrepreneur_home(request):
         'total_sales': total_sales,   # ⭐ ส่งไปหน้า HTML
     })
 
+@login_required
+def admin_dashboard(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    from django.contrib.auth import get_user_model
+    from .models import Entrepreneur, Order
+    from django.db.models import Sum
+
+    User = get_user_model()
+
+    context = {
+        # ตัวเลขหลัก
+        "total_users": User.objects.count(),
+        "total_shops": Entrepreneur.objects.count(),
+        "total_orders": Order.objects.count(),
+        "total_income": Order.objects.filter(
+            status__in=["paid", "preparing", "delivering", "success"]
+        ).aggregate(total=Sum("total_price"))["total"] or 0,
+
+        # สถานะคำสั่งซื้อ
+        "order_waiting": Order.objects.filter(status="waiting").count(),
+        "order_preparing": Order.objects.filter(status="preparing").count(),
+        "order_delivering": Order.objects.filter(status="delivering").count(),
+        "order_success": Order.objects.filter(status="success").count(),
+
+        # ล่าสุด (ใช้ id แทน created_at)
+        "recent_shops": Entrepreneur.objects.order_by("-id")[:5],
+        "recent_orders": Order.objects.order_by("-id")[:5],
+    }
+
+    return render(request, "petjoy/admin/admin_dashboard.html", context)
+
+@login_required
+def admin_user_list(request):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    User = get_user_model()
+
+    search = request.GET.get("q", "")
+
+    users = User.objects.all()
+
+    if search:
+        users = users.filter(
+            Q(username__icontains=search) |
+            Q(email__icontains=search)
+        )
+
+    context = {
+        "users": users,
+        "search": search,
+    }
+
+    return render(request, "petjoy/admin/admin_users.html", context)
+
+@login_required
+def admin_user_detail(request, user_id):
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    User = get_user_model()
+    user = get_object_or_404(User, id=user_id)
+
+    entrepreneur = None
+    if hasattr(user, "entrepreneur"):
+        entrepreneur = user.entrepreneur
+
+    context = {
+        "profile_user": user,
+        "entrepreneur": entrepreneur,
+    }
+
+    return render(request, "petjoy/admin/admin_user_detail.html", context)
+
 
 def login_view(request):
     next_url = request.GET.get('next') or request.POST.get('next')
@@ -1087,18 +1165,23 @@ def login_view(request):
                 login(request, user)
                 messages.info(request, f"ยินดีต้อนรับ, {username}!")
 
-                # If a next URL was provided, use it first.
+                # 1️⃣ ถ้ามี next ให้ไปก่อน
                 if next_url:
                     return redirect(next_url)
 
-                # Redirect entrepreneur users to entrepreneur_home, others to homepage
+                # 2️⃣ ✅ ถ้าเป็นแอดมิน → ไป admin dashboard
+                if user.is_staff or user.is_superuser:
+                    return redirect("petjoy:admin-dashboard")
+
+                # 3️⃣ ผู้ประกอบการ
                 if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
                     return redirect("petjoy:entrepreneur-home")
 
+                # 4️⃣ ผู้ใช้ทั่วไป
                 return redirect("petjoy:homepage")
+
             else:
-                # As a fallback, try to locate a user with a case-insensitive username
-                # (helps with users who typed different case or unicode normalization differences)
+                # fallback: case-insensitive username
                 User = get_user_model()
                 try:
                     found = User.objects.filter(username__iexact=username).first()
@@ -1106,28 +1189,41 @@ def login_view(request):
                     found = None
 
                 if found:
-                    logger.debug(f"Found user by iexact lookup: {found.username} (id={found.id}) - trying authenticate with found.username")
+                    logger.debug(
+                        f"Found user by iexact lookup: {found.username} (id={found.id}) - trying authenticate"
+                    )
                     user = authenticate(username=found.username, password=password)
                     if user is not None:
                         logger.debug(f"Fallback authenticate succeeded for user id={user.id}")
                         login(request, user)
                         messages.info(request, f"ยินดีต้อนรับ, {found.username}!")
+
                         if next_url:
                             return redirect(next_url)
+
+                        # ✅ ต้องเช็คแอดมินตรงนี้ด้วย (fallback)
+                        if user.is_staff or user.is_superuser:
+                            return redirect("petjoy:admin-dashboard")
+
                         if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
                             return redirect("petjoy:entrepreneur-home")
+
                         return redirect("petjoy:homepage")
 
                 logger.debug("authenticate() failed and fallback did not find valid credentials")
                 messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
         else:
-            # Keep the bound form so template can render specific form errors
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
     else:
         form = AuthenticationForm(request)
 
-    return render(request, "petjoy/login.html", context={"login_form": form, "auth_page": True, 'next': next_url})
+    return render(
+        request,
+        "petjoy/login.html",
+        context={"login_form": form, "auth_page": True, "next": next_url}
+    )
+
 
 
 def entrepreneur_public(request, pk):
