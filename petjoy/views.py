@@ -330,10 +330,48 @@ def order_history(request):
         "orders": orders
     })
 
+# views.py
+
 @login_required(login_url='petjoy:login')
 def checkout_view(request):
 
-    # STEP 1 — แสดงสินค้าในตะกร้าที่เลือก (เหมือนเดิม)
+    # ==================================================================
+    # 🛠️ Helper Function: ช่วยจัดกลุ่มสินค้าและคำนวณราคา (ใช้ซ้ำได้)
+    # ==================================================================
+    def prepare_checkout_data(cart_items):
+        checkout_shops = []
+        grand_total = 0
+        
+        # 1. จัดกลุ่มสินค้าตามร้านค้า
+        grouped = {}
+        for item in cart_items:
+            owner = item.product.owner
+            if owner:
+                if owner not in grouped:
+                    grouped[owner] = []
+                grouped[owner].append(item)
+        
+        # 2. คำนวณยอดเงินของแต่ละร้าน (ค่าสินค้า + ค่าส่ง)
+        for owner, items in grouped.items():
+            shop_subtotal = sum(item.total_price for item in items) # เฉพาะค่าสินค้า
+            shipping_cost = getattr(owner, 'shipping_cost', 0) or 0 # ค่าส่ง
+            
+            shop_total = float(shop_subtotal) + float(shipping_cost) # ยอดสุทธิร้านนี้
+            grand_total += shop_total # บวกเข้ายอดรวมทั้งหมด
+
+            checkout_shops.append({
+                'owner': owner,
+                'items': items,
+                'subtotal': shop_subtotal,
+                'shipping': shipping_cost,
+                'shop_total': shop_total
+            })
+            
+        return checkout_shops, grand_total
+
+    # ==================================================================
+    # STEP 1 — แสดงสินค้าและที่อยู่
+    # ==================================================================
     if request.method == 'GET' and 'selected_items' in request.GET:
         selected_item_ids = request.GET.getlist('selected_items')
 
@@ -347,35 +385,31 @@ def checkout_view(request):
             messages.error(request, 'ไม่พบสินค้าที่เลือกในตะกร้าของคุณ')
             return redirect('petjoy:cart-detail')
 
-        total_price = sum(item.total_price for item in cart_items)
+        # ⭐ เรียกใช้ฟังก์ชันคำนวณราคา ⭐
+        checkout_shops, grand_total = prepare_checkout_data(cart_items)
 
         addresses = Address.objects.filter(user=request.user).order_by('-is_default')
         if not addresses.exists():
             messages.warning(request, 'กรุณาเพิ่มที่อยู่จัดส่งก่อนดำเนินการสั่งซื้อ')
             return redirect('petjoy:address_add')
 
-        # แยกสินค้าเป็นร้าน ๆ
-        items_by_entrepreneur = {}
-        for item in cart_items:
-            owner = item.product.owner
-            if owner:
-                items_by_entrepreneur.setdefault(owner, []).append(item)
-
         # เก็บข้อมูลไว้ใน session
         request.session['checkout_items_data'] = {
             'item_ids': [str(x) for x in selected_item_ids],
-            'total_price': float(total_price),
+            'grand_total': grand_total, # เก็บยอดสุทธิ (รวมค่าส่งแล้ว)
         }
 
         return render(request, 'petjoy/checkout.html', {
             'step': 1,
-            'items_by_entrepreneur': items_by_entrepreneur,
-            'total_price': total_price,
+            'checkout_shops': checkout_shops, # ส่งโครงสร้างข้อมูลใหม่ไป
+            'total_price': grand_total,       # ยอดรวมจริงที่รวมค่าส่งแล้ว
             'addresses': addresses,
             'selected_item_ids_str': ','.join(selected_item_ids)
         })
 
-    # STEP 2 — เลือกที่อยู่และวิธีชำระเงิน (เหมือนเดิม)
+    # ==================================================================
+    # STEP 2 — เลือกวิธีชำระเงิน
+    # ==================================================================
     if request.method == 'POST' and request.POST.get('checkout_step') == "1":
 
         address_id = request.POST.get("address_id")
@@ -387,49 +421,42 @@ def checkout_view(request):
 
         address = get_object_or_404(Address, id=address_id, user=request.user)
 
+        # ตรวจสอบ Session
         checkout_data = request.session.get('checkout_items_data')
         if not checkout_data:
             messages.error(request, 'Session หมดอายุ กรุณาเริ่มใหม่')
             return redirect('petjoy:cart-detail')
 
-        if set(map(str, checkout_data['item_ids'])) != set(selected_item_ids_str.split(',')):
-            messages.error(request, 'เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อ')
-            return redirect('petjoy:cart-detail')
-
         request.session['checkout_address_id'] = address_id
 
+        # ดึงสินค้ามาคำนวณใหม่อีกรอบเพื่อความชัวร์
         item_ids = selected_item_ids_str.split(',')
         cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
-
-        items_by_entrepreneur = {}
-        for item in cart_items:
-            owner = item.product.owner
-            if owner:
-                items_by_entrepreneur.setdefault(owner, []).append(item)
+        
+        # ⭐ เรียกใช้ฟังก์ชันคำนวณราคา ⭐
+        checkout_shops, grand_total = prepare_checkout_data(cart_items)
 
         return render(request, "petjoy/checkout.html", {
             "step": 2,
-            "total_price": checkout_data["total_price"],
+            "total_price": grand_total,
             "address": address,
-            "items_by_entrepreneur": items_by_entrepreneur,
+            "checkout_shops": checkout_shops, # ส่งโครงสร้างข้อมูลใหม่ไป
         })
 
-    # STEP 3 — ยืนยันการสั่งซื้อและสร้าง Order จริง (⭐ แก้ไขส่วนนี้ ⭐)
-
+    # ==================================================================
+    # STEP 3 — ยืนยันการสั่งซื้อและสร้าง Order จริง
+    # ==================================================================
     if request.method == "POST" and request.POST.get("checkout_step") == "2":
 
         payment_method = request.POST.get("payment_method")
-        # ❌ ลบบรรทัดรับไฟล์เดียวออก: payment_slip = request.FILES.get("payment_slip")
 
         if not payment_method:
             messages.error(request, "กรุณาเลือกวิธีการชำระเงิน")
             return redirect("petjoy:cart-detail")
 
-        # (โหลดข้อมูล Session เหมือนเดิม)
         address_id = request.session.get("checkout_address_id")
         item_ids = request.session.get("checkout_items_data", {}).get("item_ids")
-        total_price_raw = request.session.get("checkout_items_data", {}).get("total_price")
-
+        
         if not address_id or not item_ids:
             messages.error(request, "Session หมดอายุ กรุณาเริ่มใหม่")
             return redirect("petjoy:cart-detail")
@@ -442,51 +469,53 @@ def checkout_view(request):
             return redirect("petjoy:cart-detail")
 
         try:
+            # ⭐ ใช้ฟังก์ชันคำนวณราคา เพื่อเอาข้อมูลมาวนลูปสร้าง Order ⭐
+            checkout_shops, grand_total = prepare_checkout_data(cart_items)
+
             with transaction.atomic():
-                # แยกร้าน
-                items_by_entrepreneur = {}
-                for item in cart_items:
-                    owner = item.product.owner
-                    if owner:
-                        items_by_entrepreneur.setdefault(owner, []).append(item)
-
-                # ⭐ ตรวจสอบสต๊อกและสลิปของทุกร้านก่อนสร้าง Order (Validation Loop)
+                
+                # Check Stock & Slips
                 if payment_method == "bank_transfer":
-                    for entrepreneur in items_by_entrepreneur.keys():
-                        # เช็คว่ามีไฟล์สลิปของร้านนี้ส่งมาไหม? (ชื่อ input: payment_slip_<id>)
-                        slip_key = f"payment_slip_{entrepreneur.id}"
+                    for shop_data in checkout_shops:
+                        owner = shop_data['owner']
+                        slip_key = f"payment_slip_{owner.id}"
                         if not request.FILES.get(slip_key):
-                            raise ValueError(f"กรุณาแนบสลิปการโอนเงินสำหรับร้าน: {entrepreneur.store_name}")
+                            raise ValueError(f"กรุณาแนบสลิปการโอนเงินสำหรับร้าน: {owner.store_name}")
 
-                # เช็คสต๊อก
                 for item in cart_items:
                     if item.product.stock < item.quantity:
                         raise ValueError(f"สินค้า '{item.product.name}' เหลือเพียง {item.product.stock} ชิ้น")
 
                 created_orders = []
 
-                # ⭐ เริ่มสร้าง Order (Creation Loop)
-                for entrepreneur, items in items_by_entrepreneur.items():
-                    shop_total_price = sum(item.total_price for item in items)
-                    order_status = "paid" if payment_method == "bank_transfer" else "waiting"
+                # ⭐ วนลูปสร้าง Order จากข้อมูลที่คำนวณไว้แล้ว ⭐
+                for shop_data in checkout_shops:
+                    owner = shop_data['owner']
+                    items = shop_data['items']
+                    final_shop_total = shop_data['shop_total'] # ยอดสุทธิรวมค่าส่งแล้ว
+                    shipping_cost = shop_data['shipping']
 
-                    # รับไฟล์สลิปเฉพาะของร้านนี้
+                    order_status = "paid" if payment_method == "bank_transfer" else "waiting"
+                    
                     shop_slip_image = None
                     if payment_method == "bank_transfer":
-                        shop_slip_image = request.FILES.get(f"payment_slip_{entrepreneur.id}")
+                        shop_slip_image = request.FILES.get(f"payment_slip_{owner.id}")
 
-                    # สร้าง Order
+                    # Create Order
                     order = Order.objects.create(
-                        entrepreneur=entrepreneur,
+                        entrepreneur=owner,
                         customer_name=address.full_name,
                         customer_phone=address.phone,
                         customer_address=f"{address.address_line} {address.subdistrict} {address.district} {address.province} {address.zipcode}",
-                        total_price=shop_total_price,
+                        
+                        total_price=final_shop_total,  # ยอดที่ถูกต้อง (สินค้า+ส่ง)
+                        shipping_cost=shipping_cost,   # บันทึกค่าส่งไว้ดูเล่น
+                        
                         status=order_status,
-                        slip_image=shop_slip_image, # ⭐ บันทึกสลิปที่ถูกต้อง
+                        slip_image=shop_slip_image,
                     )
 
-                    # สร้าง OrderItem และตัดสต๊อก
+                    # Create Order Items
                     for cart_item in items:
                         OrderItem.objects.create(
                             order=order,
@@ -494,14 +523,14 @@ def checkout_view(request):
                             quantity=cart_item.quantity,
                             price=cart_item.product.price
                         )
-                        # ตัดสต๊อก
+                        # Cut Stock
                         product = cart_item.product
                         product.stock = product.stock - cart_item.quantity
                         product.save()
 
                     created_orders.append(order)
 
-                # ลบสินค้าออกจากตะกร้าและเคลียร์ Session
+                # Clear Cart
                 cart_items.delete()
                 request.session.pop("checkout_items_data", None)
                 request.session.pop("checkout_address_id", None)
@@ -509,22 +538,18 @@ def checkout_view(request):
             return render(request, "petjoy/checkout.html", {
                 "step": 3,
                 "orders": created_orders,
-                "total_price": total_price_raw,
+                "total_price": grand_total, 
                 "address": address,
             })
 
         except ValueError as e:
             messages.error(request, str(e))
-            # ต้องส่งข้อมูลกลับไป render หน้า Step 2 ใหม่เพื่อให้ User ไม่ต้องเริ่มศูนย์ (แต่ในที่นี้ redirect ง่ายกว่าเพื่อ reset flow)
-            # แต่เพื่อให้ UX ดี ควร Redirect กลับไปหน้า Checkout Step 2 (ต้องทำ logic เพิ่ม) 
-            # เอาแบบง่ายก่อนคือกลับไป cart หรือ checkout หน้าแรก
             return redirect('petjoy:cart-detail') 
         
         except Exception as e:
             messages.error(request, f"เกิดข้อผิดพลาด: {str(e)}")
             return redirect('petjoy:cart-detail')
 
-    # Fallback
     messages.error(request, "การดำเนินการไม่ถูกต้อง")
     return redirect("petjoy:cart-detail")
 
@@ -1103,8 +1128,6 @@ class ProductDeleteView(DeleteView):
 @login_required
 def entrepreneur_profile_settings(request):
     entrepreneur = get_object_or_404(Entrepreneur, user=request.user)
-    # profile ไม่จำเป็นต้องใช้สำหรับเก็บข้อมูลธนาคารแล้ว เพราะ model Entrepreneur มีครบ
-    
     quick_replies = QuickReply.objects.filter(entrepreneur=entrepreneur).order_by('-created_at')
 
     if request.method == 'POST':
@@ -1125,7 +1148,6 @@ def entrepreneur_profile_settings(request):
 
         # --- 3. บันทึกบัญชีธนาคาร ---
         elif 'save_bank' in request.POST:
-            # แก้จาก profile เป็น entrepreneur
             entrepreneur.bank_name = request.POST.get('bank_name')
             entrepreneur.account_name = request.POST.get('account_name')
             entrepreneur.account_number = request.POST.get('account_number')
@@ -1140,7 +1162,6 @@ def entrepreneur_profile_settings(request):
         # --- 4. บันทึกเอกสารยืนยันตัวตน ---
         elif 'save_idcard' in request.POST:
             if request.FILES.get('id_card_copy'):
-                # แก้จาก profile เป็น entrepreneur
                 entrepreneur.id_card_copy = request.FILES['id_card_copy']
                 entrepreneur.save()
                 messages.success(request, "บันทึกเอกสารยืนยันตัวตนเรียบร้อยแล้ว")
@@ -1159,6 +1180,19 @@ def entrepreneur_profile_settings(request):
             reply_id = request.POST.get('reply_id')
             QuickReply.objects.filter(id=reply_id, entrepreneur=entrepreneur).delete()
             messages.success(request, "ลบข้อความเรียบร้อยแล้ว")
+            return redirect('petjoy:entrepreneur_profile_settings')
+
+        # --- ⭐ 7. (ใหม่) บันทึกค่าจัดส่ง ---
+        elif 'save_shipping' in request.POST:
+            cost = request.POST.get('shipping_cost')
+            try:
+                # แปลงเป็น float, ถ้าว่างให้เป็น 0
+                entrepreneur.shipping_cost = float(cost) if cost else 0.00
+            except ValueError:
+                entrepreneur.shipping_cost = 0.00
+            
+            entrepreneur.save()
+            messages.success(request, "บันทึกค่าจัดส่งเรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_settings.html', {
@@ -2049,14 +2083,35 @@ def food_products_view(request):
 
 
 def search_view(request):
+    # รับคำค้นหา
     q = request.GET.get('q', '').strip()
+    
+    # เริ่มต้นด้วย QuerySet ว่างๆ
     products = Product.objects.none()
     categories = Category.objects.none()
+    
     if q:
+        # 1. ค้นหาจากชื่อ, รายละเอียด, คุณสมบัติ
         products = Product.objects.filter(
-            Q(name__icontains=q) | Q(description__icontains=q) | Q(features__icontains=q)
+            Q(name__icontains=q) | 
+            Q(description__icontains=q) | 
+            Q(features__icontains=q)
         )
-        categories = Category.objects.filter(name__icontains=q) | Category.objects.filter(display_name__icontains=q)
+
+        # ⭐⭐ 2. เพิ่มส่วนกรอง: เอาเฉพาะร้านที่ Active จริงๆ เท่านั้น ⭐⭐
+        # (ป้องกันสินค้าจากร้านที่ถูกลบ หรือร้านผีโผล่ขึ้นมา)
+        products = products.filter(
+            owner__isnull=False,                        # สินค้าต้องมีเจ้าของ (ร้านค้า)
+            owner__verification_status='approved',      # ร้านต้องได้รับการอนุมัติแล้ว
+            owner__user__isnull=False,                  # User เจ้าของร้านต้องไม่ถูกลบ
+            owner__user__profile__is_banned=False       # User เจ้าของร้านต้องไม่โดนแบน
+        )
+
+        # 3. ค้นหาหมวดหมู่ (เผื่อลูกค้าค้นหาชื่อหมวดหมู่)
+        categories = Category.objects.filter(
+            Q(name__icontains=q) | 
+            Q(display_name__icontains=q)
+        )
 
     return render(request, 'petjoy/search_results.html', {
         'query': q,

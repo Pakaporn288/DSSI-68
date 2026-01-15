@@ -36,7 +36,7 @@
         color: #333;
     }
 
-    /* สไตล์ปุ่มย้อนกลับแบบใหม่ (สวยและเด่นขึ้น) */
+    /* สไตล์ปุ่มย้อนกลับแบบใหม่ */
     .back-btn-wrapper {
         margin-bottom: 25px;
     }
@@ -132,6 +132,15 @@
         align-items: center;
         font-weight: 600;
         color: #333;
+    }
+    
+    /* Summary Row Styles (เพิ่มใหม่) */
+    .summary-row td {
+        padding: 10px;
+        text-align: right;
+        color: #555;
+        font-weight: 600;
+        border-bottom: none;
     }
     .final-total-row td {
         border-top: 2px solid #333;
@@ -281,6 +290,19 @@
                 {% endfor %}
             </tbody>
             <tfoot>
+                <tr class="summary-row">
+                    <td colspan="3">ยอดรวมสินค้า</td>
+                    <td>
+                        {% widthratio order.shipping_cost 1 -1 as negative_shipping %}
+                        ฿{{ order.total_price|add:negative_shipping|floatformat:2|intcomma }}
+                    </td>
+                </tr>
+
+                <tr class="summary-row">
+                    <td colspan="3" style="color:#666;">+ ค่าจัดส่ง</td>
+                    <td style="color:#666;">฿{{ order.shipping_cost|default:0|floatformat:2|intcomma }}</td>
+                </tr>
+
                 <tr class="final-total-row">
                     <td colspan="3">ยอดรวมสุทธิ</td>
                     <td>฿{{ order.total_price|floatformat:2|intcomma }}</td>

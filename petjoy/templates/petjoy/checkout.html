@@ -18,7 +18,7 @@
   }
   body {background: linear-gradient(180deg, #f7f9fb 0%, #ffffff 100%);} 
 
-  /* ⭐ 1. เพิ่มบรรทัดนี้: ลบขีดเส้นใต้ทั้งหมดในหน้านี้ ⭐ */
+  /* ⭐ 1. ลบขีดเส้นใต้ลิงก์ทั้งหมดตามที่ขอ ⭐ */
   a { text-decoration: none !important; }
 
   .checkout-wrap{max-width:var(--max-width); margin:32px auto; padding:20px; box-sizing:border-box}
@@ -35,15 +35,14 @@
   .section-title{font-weight:800; font-size:1.05rem}
   .muted{color:var(--muted); font-size:0.95rem}
 
-  /* Step indicator */
+  /* Steps */
   .steps{display:flex; gap:12px; align-items:center; margin-bottom:14px}
   .step{display:flex; align-items:center; gap:10px}
   .circle{width:36px; height:36px; border-radius:50%; display:grid; place-items:center; font-weight:700; color:#fff}
-  .circle.inactive{background:#ddd; color:#333}
-  .circle.active{background:var(--brand)}
+  .circle.inactive{background:#ddd; color:#333} .circle.active{background:var(--brand)}
   .step-label{font-size:0.88rem}
 
-  /* Address area */
+  /* Address */
   .current-address{display:flex; flex-direction:column; gap:6px}
   .change-link{background:none; border:1px solid var(--brand); color:var(--brand); padding:6px 10px; border-radius:6px; font-weight:700; text-decoration:none}
 
@@ -62,7 +61,7 @@
   .summary-total{font-size:1.2rem; color:var(--brand); font-weight:900}
 
   /* Buttons */
-  .btn{display:inline-flex; align-items:center; gap:8px; justify-content:center; border-radius:10px; padding:10px 16px; font-weight:800; cursor:pointer}
+  .btn{display:inline-flex; align-items:center; gap:8px; justify-content:center; border-radius:10px; padding:10px 16px; font-weight:800; cursor:pointer; border:0;}
   .btn-primary{background:var(--brand); color:#fff; border:0}
   .btn-ghost{background:#fff; color:#333; border:1px solid #ddd}
 
@@ -70,26 +69,15 @@
   .payment-list{display:flex; flex-direction:column; gap:10px}
   .payment-card{border:1px solid #ececec; padding:14px; border-radius:8px; display:flex; gap:12px; align-items:flex-start}
   .payment-card input{margin-top:3px}
+  .bank-details{font-size:0.95rem; color:var(--muted); width: 100%;}
   
-  /* ⭐ Styles สำหรับกล่องแยกสลิปร้านค้า */
-  .bank-details-wrapper { margin-top: 15px; width: 100%; }
-  .shop-transfer-group {
-      background: #f8f9fa;
-      border: 1px solid #eee;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 15px;
-  }
+  /* Shop Group Styles */
+  .shop-group { border: 1px solid #eee; border-radius: 8px; margin-bottom: 20px; overflow: hidden; background: white; }
+  .shop-header { background: #fff8f0; padding: 10px 15px; font-weight: 700; color: #d35400; border-bottom: 1px solid #ffe0b2; display: flex; align-items: center; gap: 8px; }
+  .shop-transfer-group { background: #f9f9f9; border: 1px solid #eee; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
   .shop-title { font-weight: 700; color: #333; margin-bottom: 8px; border-bottom: 1px solid #ddd; padding-bottom: 5px; }
-  .bank-info-text { font-size: 0.9rem; color: #555; margin-bottom: 10px; line-height: 1.5; }
-  .file-upload-zone { 
-      border: 2px dashed #ccc; 
-      padding: 10px; 
-      border-radius: 6px; 
-      background: white; 
-      text-align: center;
-  }
-  .file-upload-zone input { width: 100%; }
+  .price-summary-row { display: flex; justify-content: space-between; padding: 5px 15px; font-size: 0.9rem; color: #555; }
+  .price-summary-row.total { border-top: 1px dashed #ddd; padding-top: 10px; margin-top: 5px; padding-bottom: 15px; font-weight: 800; color: #333; font-size: 1rem; }
 
   /* Modal */
   .modal-overlay{position:fixed; inset:0; display:none; background:rgba(2,6,23,0.5); align-items:center; justify-content:center; z-index:1000}
@@ -166,24 +154,45 @@
           <div class="muted">ตรวจสอบสินค้าและจำนวนก่อนยืนยัน</div>
 
           <div class="items-list" style="margin-top:12px">
-            {% for owner, items in items_by_entrepreneur.items %}
-              <div style="font-weight:800; padding:8px 10px; background:#ffffff; border-radius:8px; border: 1px solid #eee;">
-                  <i class="fa-solid fa-store" style="color: var(--brand);"></i> ร้าน: {{ owner.store_name }}
-              </div>
-              {% for item in items %}
-                <div class="item-row" aria-label="สินค้า {{ item.product.name }}">
-                  <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="รูปสินค้า {{ item.product.name }}" class="item-img">
-                  <div class="item-meta">
-                    <div style="font-weight:700">{{ item.product.name }}</div>
-                    <div class="muted">รหัสสินค้า: {{ item.product.id }}</div>
+            
+            {% for shop_data in checkout_shops %}
+              <div class="shop-group">
+                  <div class="shop-header">
+                      <i class="fa-solid fa-store"></i> ร้าน: {{ shop_data.owner.store_name }}
                   </div>
-                  <div class="item-price">฿{{ item.product.price|floatformat:2|intcomma }} &times; {{ item.quantity }} = <div style="font-weight:900;">฿{{ item.total_price|floatformat:2|intcomma }}</div></div>
-                </div>
-              {% endfor %}
+                  
+                  {% for item in shop_data.items %}
+                    <div class="item-row" aria-label="สินค้า {{ item.product.name }}">
+                      <img src="{% if item.product.image %}{{ item.product.image.url }}{% else %}{% static 'images/no-image.png' %}{% endif %}" alt="รูปสินค้า {{ item.product.name }}" class="item-img">
+                      <div class="item-meta">
+                        <div style="font-weight:700">{{ item.product.name }}</div>
+                        <div class="muted">รหัสสินค้า: {{ item.product.id }}</div>
+                      </div>
+                      <div class="item-price">฿{{ item.product.price|floatformat:2|intcomma }} &times; {{ item.quantity }} = <div style="font-weight:900;">฿{{ item.total_price|floatformat:2|intcomma }}</div></div>
+                    </div>
+                  {% endfor %}
+
+                  <div style="background:#fff;">
+                      <div class="price-summary-row" style="margin-top:10px;">
+                          <span>ค่าสินค้าในร้านนี้:</span>
+                          <span>฿{{ shop_data.subtotal|intcomma }}</span>
+                      </div>
+                      <div class="price-summary-row">
+                          <span>ค่าส่งเหมาจ่าย:</span>
+                          <span>฿{{ shop_data.shipping|intcomma }}</span>
+                      </div>
+                      <div class="price-summary-row total">
+                          <span>รวมสุทธิร้านนี้:</span>
+                          <span style="color:var(--brand); font-size: 1rem;">
+                              ฿{{ shop_data.shop_total|intcomma }}
+                          </span>
+                      </div>
+                  </div>
+              </div>
             {% endfor %}
 
             <div class="total-line">
-              <div class="muted">รวมยอดสุทธิ</div>
+              <div class="muted">รวมยอดสุทธิ (สินค้า + ค่าส่งทั้งหมด)</div>
               <div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div>
             </div>
           </div>
@@ -208,12 +217,12 @@
               <strong>{{ address.full_name }} | {{ address.phone }}</strong>
               <div class="muted">{{ address.address_line }} ต.{{ address.subdistrict }} อ.{{ address.district }} จ.{{ address.province }} {{ address.zipcode }}</div>
             </div>
-            </div>
+          </div>
         </div>
 
         <div style="margin-top:14px">
-          <div class="section-title">สรุปยอดที่ต้องชำระ</div>
-          <div class="muted">รวมทุกคำสั่งซื้อจากร้านค้าที่เลือก</div>
+          <div class="section-title">สรุปยอดที่ต้องชำระ (Net Total)</div>
+          <div class="muted">รวมทุกคำสั่งซื้อและค่าจัดส่งทั้งหมดแล้ว</div>
           <div style="text-align:right; margin-top:6px; font-weight:900; font-size:1.4rem; color:var(--brand)">฿{{ total_price|floatformat:2|intcomma }}</div>
         </div>
 
@@ -230,50 +239,61 @@
           <div class="section-title" style="margin-bottom:8px">เลือกวิธีการชำระเงิน</div>
 
           <div class="payment-list">
-            
             <label class="payment-card">
-              <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" required>
+              <input type="radio" id="bank_transfer" name="payment_method" value="bank_transfer" required onclick="togglePaymentSection()">
               <div style="flex:1">
                 <div style="font-weight:800; font-size:1.1rem;">โอนเงินผ่านบัญชีธนาคาร</div>
                 
-                <div id="bankDetailsContainer" class="bank-details-wrapper" style="display:none;">
-                  <div style="background-color: #fff3e0; border: 1px dashed #ffb74d; padding: 10px; border-radius: 5px; margin-bottom: 15px; color: #ef6c00; font-size: 0.9rem;">
-                    ⚠️ เนื่องจากสั่งซื้อจากหลายร้าน กรุณาโอนเงินแยกตามยอดและแนบสลิปให้ตรงกับแต่ละร้าน
+                <div id="bankDetailsContainer" class="bank-details" style="margin-top:15px; display:none;">
+                  
+                  <div style="background-color: #fff3e0; padding: 10px; border-radius: 8px; margin-bottom: 15px; border: 1px dashed #ffb74d;">
+                    <i class="fa-solid fa-triangle-exclamation" style="color: #ef6c00;"></i> 
+                    <span style="color: #ef6c00; font-weight: 600;">กรุณาโอนเงินแยกตามยอดของแต่ละร้าน (รวมค่าส่งแล้ว) และแนบสลิปให้ครบถ้วน</span>
                   </div>
 
-                  {% for owner, items in items_by_entrepreneur.items %}
-                  <div class="shop-transfer-group">
+                  {% for shop_data in checkout_shops %}
+                    <div class="shop-transfer-group">
                       <div class="shop-title">
-                          <i class="fa-solid fa-store"></i> ร้าน: {{ owner.store_name }}
+                        <i class="fa-solid fa-store"></i> ร้าน: {{ shop_data.owner.store_name }}
                       </div>
                       
-                      <div class="bank-info-text">
-                          {% if owner.bank_name %}
-                              ธนาคาร: <strong>{{ owner.bank_name }}</strong><br>
-                              เลขบัญชี: <strong>{{ owner.account_number }}</strong><br>
-                              ชื่อบัญชี: {{ owner.account_name }}
-                          {% else %}
-                              <span style="color:red;">*ร้านนี้ยังไม่ระบุเลขบัญชี*</span>
-                          {% endif %}
+                      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-top: 8px;">
+                          <div style="line-height: 1.6;">
+                              {% if shop_data.owner.bank_name %}
+                                <div style="font-weight: bold; color: var(--brand);">{{ shop_data.owner.bank_name }}</div>
+                                <div>เลขบัญชี: <strong>{{ shop_data.owner.account_number }}</strong></div>
+                                <div>ชื่อ: {{ shop_data.owner.account_name }}</div>
+                              {% else %}
+                                <div style="color:red; font-weight:600">*ร้านนี้ยังไม่ระบุเลขบัญชี*</div>
+                              {% endif %}
+                          </div>
+                          
+                          <div style="text-align: right; font-size: 0.9rem; color: #666;">
+                              <div>ค่าสินค้า: ฿{{ shop_data.subtotal|intcomma }}</div>
+                              <div>ค่าส่ง: ฿{{ shop_data.shipping|intcomma }}</div>
+                              <div style="margin-top: 5px; font-weight: bold; color: #333; font-size: 1.1rem;">
+                                  ยอดโอน: <span style="color:#e65100;">฿{{ shop_data.shop_total|intcomma }}</span>
+                              </div>
+                          </div>
                       </div>
 
-                      <div class="file-upload-zone">
-                          <label style="font-size:0.9rem; font-weight:600; display:block; margin-bottom:5px;">
-                              📎 แนบสลิปโอนเงิน (สำหรับร้านนี้):
+                      <div style="margin-top: 15px; border-top: 1px dashed #ddd; padding-top: 10px;">
+                          <label style="font-size: 0.9rem; font-weight: 600; display: block; margin-bottom: 5px;">
+                              📎 แนบสลิปโอนเงิน (สำหรับยอด ฿{{ shop_data.shop_total|intcomma }}):
                           </label>
-                          <input type="file" name="payment_slip_{{ owner.id }}" accept="image/*,.pdf" class="shop-slip-input">
+                          <input type="file" name="payment_slip_{{ shop_data.owner.id }}" accept="image/*,.pdf" class="shop-slip-input" style="width: 100%;">
                       </div>
-                  </div>
+                    </div>
                   {% endfor %}
                 </div>
-                </div>
+              </div>
             </label>
 
             <label class="payment-card">
-              <input type="radio" id="cod" name="payment_method" value="cod">
+              <input type="radio" id="cod" name="payment_method" value="cod" onclick="togglePaymentSection()">
               <div style="flex:1">
                 <div style="font-weight:800">เก็บเงินปลายทาง (COD)</div>
-                <div class="muted">ชำระเงินกับพนักงานส่งของเมื่อรับพัสดุ</div>
+                <div class="muted">ชำระเงินกับพนักงานส่งของเมื่อรับพัสดุ (ยอดรวมค่าส่งแล้ว)</div>
               </div>
             </label>
           </div>
@@ -303,7 +323,10 @@
           <div class="section-title">รายการคำสั่งซื้อที่ถูกสร้าง</div>
           {% for order in orders %}
             <div style="display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid #f0f0f0">
-              <div><strong>Order #{{ order.id }}</strong> (จากร้าน: {{ order.entrepreneur.store_name }})</div>
+              <div>
+                  <strong>Order #{{ order.id }}</strong> (ร้าน: {{ order.entrepreneur.store_name }})<br>
+                  <small style="color: #777;">(ค่าส่ง ฿{{ order.shipping_cost|default:0 }})</small>
+              </div>
               <div style="font-weight:800">฿{{ order.total_price|floatformat:2|intcomma }}</div>
             </div>
           {% endfor %}
@@ -331,20 +354,24 @@
         </div>
 
         <div style="margin-top:12px">
-          {% for owner, items in items_by_entrepreneur.items %}
-            <div style="font-weight:700; margin-bottom:6px">{{ owner.store_name }}</div>
-            {% for item in items %}
-              <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0">
-                <div style="max-width:65%">{{ item.product.name }} <span class="muted">x{{ item.quantity }}</span></div>
-                <div style="font-weight:800">฿{{ item.total_price|floatformat:2|intcomma }}</div>
-              </div>
-            {% endfor %}
-            <hr style="border:none; border-top:1px dashed #f0f0f0; margin:8px 0">
-          {% endfor %}
+          {% if step == 3 %}
+             <div class="summary-row"><div class="muted">ยอดสุทธิ</div><div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div></div>
+          {% else %}
+             {% for shop_data in checkout_shops %}
+                <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 0">
+                  <div style="max-width:65%">
+                      {{ shop_data.owner.store_name }}<br>
+                      <small class="muted">สินค้า {{ shop_data.subtotal|intcomma }} + ส่ง {{ shop_data.shipping|intcomma }}</small>
+                  </div>
+                  <div style="font-weight:800">฿{{ shop_data.shop_total|floatformat:2|intcomma }}</div>
+                </div>
+             {% endfor %}
+             
+             <hr style="border:none; border-top:1px dashed #f0f0f0; margin:8px 0">
 
-          <div class="summary-row"><div class="muted">รวม</div><div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div></div>
-
-          </div>
+             <div class="summary-row"><div class="muted">รวมทั้งหมด</div><div class="summary-total">฿{{ total_price|floatformat:2|intcomma }}</div></div>
+          {% endif %}
+        </div>
       </div>
     </aside>
 
@@ -552,7 +579,7 @@
     if(codRadio){ codRadio.addEventListener('change', togglePaymentDisplay); }
     
     // Run once on load
-    togglePaymentDisplay();
+    try { togglePaymentDisplay(); } catch(e){}
 
     if(step2Form){
       step2Form.addEventListener('submit', function(e){

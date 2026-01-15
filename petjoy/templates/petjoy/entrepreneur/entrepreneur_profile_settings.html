@@ -214,7 +214,7 @@
         <nav class="seller-menu">
             <a href="{% url 'petjoy:entrepreneur-home' %}">🏠 หน้าหลักร้าน</a>
             <a href="{% url 'petjoy:orders-list' %}">📦 รายการคำสั่งซื้อ</a>
-            <a href="{% url 'petjoy:product-list' %}">📦 รายการสินค้า</a>
+            <a href="{% url 'petjoy:product-list' %}">🛍️ รายการสินค้า</a>
             <a href="{% url 'petjoy:entrepreneur-chat-list' %}">💬 ข้อความ</a>
             <a href="{% url 'petjoy:entrepreneur_profile_settings' %}" class="active">⚙️ ตั้งค่าโปรไฟล์ร้าน</a>
             <a href="{% url 'petjoy:entrepreneur_reviews' %}">📋 รีวิวสินค้า</a>
@@ -352,7 +352,25 @@
             </div>
 
             <div class="settings-section">
-                <h3 class="section-title">5. ข้อความสำหรับตอบกลับด่วน</h3>
+                <h3 class="section-title">5. ตั้งค่าการจัดส่ง</h3>
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="form-field">
+                        <label>ค่าจัดส่งเหมาจ่าย (บาท)</label>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <input type="number" name="shipping_cost" step="0.01" min="0"
+                                   value="{{ entrepreneur.shipping_cost|default:0 }}"
+                                   style="width: 150px;">
+                            <span style="color: #666;">บาท / ออเดอร์</span>
+                        </div>
+                        <small style="color: #888; margin-top: 4px;">* ระบบจะนำค่าส่งนี้ไปรวมกับยอดสุทธิของลูกค้าตอนชำระเงิน</small>
+                    </div>
+                    <button type="submit" name="save_shipping" class="save-btn">บันทึกค่าส่ง</button>
+                </form>
+            </div>
+
+            <div class="settings-section">
+                <h3 class="section-title">6. ข้อความสำหรับตอบกลับด่วน</h3>
 
                 <form method="POST">
                     {% csrf_token %}

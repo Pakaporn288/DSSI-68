@@ -125,6 +125,8 @@ class Entrepreneur(models.Model):
     # หากมีเอกสารพาณิชย์เพิ่มเติม
     commerce_doc = models.ImageField(upload_to='commerce_docs/', blank=True, null=True) 
 
+    shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00, help_text="ค่าจัดส่งเหมาจ่ายของร้าน")
+
     # ⭐ ส่วนที่เพิ่ม: สถานะการตรวจสอบร้านค้า ⭐
     VERIFICATION_CHOICES = [
         ('pending', 'รอตรวจสอบ'),
@@ -189,7 +191,9 @@ class Order(models.Model):
         ("success", "สำเร็จ"),
         ("cancel", "ยกเลิก"),
     ]
-
+    
+    shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    
     # ⭐ เพิ่มฟิลด์นี้เพื่อให้ Order ผูกกับร้าน (ผู้ประกอบการ)
     entrepreneur = models.ForeignKey(
         "Entrepreneur",
