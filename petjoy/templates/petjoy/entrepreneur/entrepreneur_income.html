@@ -93,7 +93,8 @@
             <div class="stat-card">
                 <h4>📈 รายได้เฉลี่ย / วัน</h4>
                 <p style="font-size:1.6rem; font-weight:800;">
-                    {{ avg_income|floatformat:0 }} บาท
+                    {{ avg_income|floatformat:0|intcomma }} บาท
+
                 </p>
             </div>
         </section>

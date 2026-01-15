@@ -11,7 +11,20 @@
             <a href="{% url 'petjoy:admin-chat-list' %}" style="text-decoration: none; color: #555; font-size: 1.2rem;">←</a>
             <h3 style="margin: 0; color: #333;">{{ room.entrepreneur.store_name }}</h3>
         </div>
-        <a href="{% url 'petjoy:admin-delete-user' room.entrepreneur.user.id %}" onclick="return confirm('ต้องการลบบัญชีร้านค้านี้?')" class="btn-action danger" style="padding: 6px 12px; font-size: 0.8rem;">🚨 ลบบัญชีร้านนี้</a>
+
+        {% if room.entrepreneur.user %}
+            <a href="{% url 'petjoy:admin-delete-user' room.entrepreneur.user.id %}" 
+               onclick="return confirm('ต้องการลบบัญชีร้านค้านี้?')" 
+               class="btn-action danger" 
+               style="padding: 6px 12px; font-size: 0.8rem;">
+               🚨 ลบบัญชีร้านนี้
+            </a>
+        {% else %}
+            <button class="btn-action" 
+                    style="padding: 6px 12px; font-size: 0.8rem; background: #ccc; cursor: not-allowed; border:none; color:white;">
+               🚫 บัญชีถูกลบแล้ว
+            </button>
+        {% endif %}
     </div>
 
     <div id="chatBox" style="flex: 1; overflow-y: auto; padding: 20px; background: #fff; display: flex; flex-direction: column; gap: 10px;">
@@ -31,17 +44,22 @@
     </div>
 
     <div style="padding: 15px; border-top: 1px solid #eee; background: #fff; border-radius: 0 0 16px 16px;">
-        <form method="post" style="display: flex; gap: 10px;">
-            {% csrf_token %}
-            <input type="text" name="message" placeholder="พิมพ์ข้อความเตือน หรือแจ้งปัญหา..." autocomplete="off" required
-                   style="flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none;">
-            <button type="submit" style="background: #E65100; color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">ส่ง</button>
-        </form>
+        {% if room.entrepreneur.user %}
+            <form method="post" style="display: flex; gap: 10px;">
+                {% csrf_token %}
+                <input type="text" name="message" placeholder="พิมพ์ข้อความเตือน หรือแจ้งปัญหา..." autocomplete="off" required
+                       style="flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none;">
+                <button type="submit" style="background: #E65100; color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">ส่ง</button>
+            </form>
+        {% else %}
+            <div style="text-align: center; color: #999; padding: 10px; background: #f9f9f9; border-radius: 12px; border: 1px dashed #ccc;">
+                🚫 ไม่สามารถส่งข้อความได้ เนื่องจากบัญชีร้านค้านี้ถูกลบออกจากระบบแล้ว
+            </div>
+        {% endif %}
     </div>
 </div>
 
 <script>
-    // เลื่อนแชทลงล่างสุดเสมอ
     var chatBox = document.getElementById("chatBox");
     chatBox.scrollTop = chatBox.scrollHeight;
 </script>

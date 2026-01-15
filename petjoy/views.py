@@ -37,6 +37,7 @@ from django.shortcuts import render, redirect
 from .models import Entrepreneur, Order
 from django.db.models.functions import Coalesce
 from .models import ProductReport
+from django.urls import reverse
 
 
 
@@ -125,7 +126,12 @@ def add_to_cart(request):
         product=product
     )
 
-    if not created:
+    # ⭐⭐ แก้ไขตรงนี้ครับ ⭐⭐
+    if created:
+        # ถ้าเป็นการเพิ่มครั้งแรก ให้ใช้จำนวนที่ลูกค้าเลือกเลย
+        cart_item.quantity = quantity
+    else:
+        # ถ้ามีของเดิมอยู่แล้ว ให้บวกเพิ่ม
         cart_item.quantity += quantity
 
     cart_item.save()
@@ -327,7 +333,7 @@ def order_history(request):
 @login_required(login_url='petjoy:login')
 def checkout_view(request):
 
-    # STEP 1 — แสดงสินค้าในตะกร้าที่เลือก
+    # STEP 1 — แสดงสินค้าในตะกร้าที่เลือก (เหมือนเดิม)
     if request.method == 'GET' and 'selected_items' in request.GET:
         selected_item_ids = request.GET.getlist('selected_items')
 
@@ -369,7 +375,7 @@ def checkout_view(request):
             'selected_item_ids_str': ','.join(selected_item_ids)
         })
 
-    # STEP 2 — เลือกที่อยู่และวิธีชำระเงิน
+    # STEP 2 — เลือกที่อยู่และวิธีชำระเงิน (เหมือนเดิม)
     if request.method == 'POST' and request.POST.get('checkout_step') == "1":
 
         address_id = request.POST.get("address_id")
@@ -386,14 +392,12 @@ def checkout_view(request):
             messages.error(request, 'Session หมดอายุ กรุณาเริ่มใหม่')
             return redirect('petjoy:cart-detail')
 
-        # ตรวจสอบความตรงกันของสินค้า
         if set(map(str, checkout_data['item_ids'])) != set(selected_item_ids_str.split(',')):
             messages.error(request, 'เกิดข้อผิดพลาดในการประมวลผลคำสั่งซื้อ')
             return redirect('petjoy:cart-detail')
 
         request.session['checkout_address_id'] = address_id
 
-        # โหลดสินค้าใหม่
         item_ids = selected_item_ids_str.split(',')
         cart_items = CartItem.objects.filter(id__in=item_ids, user=request.user)
 
@@ -410,21 +414,18 @@ def checkout_view(request):
             "items_by_entrepreneur": items_by_entrepreneur,
         })
 
-    # STEP 3 — ยืนยันการสั่งซื้อและสร้าง Order จริง
+    # STEP 3 — ยืนยันการสั่งซื้อและสร้าง Order จริง (⭐ แก้ไขส่วนนี้ ⭐)
+
     if request.method == "POST" and request.POST.get("checkout_step") == "2":
 
         payment_method = request.POST.get("payment_method")
-        payment_slip = request.FILES.get("payment_slip")
+        # ❌ ลบบรรทัดรับไฟล์เดียวออก: payment_slip = request.FILES.get("payment_slip")
 
         if not payment_method:
             messages.error(request, "กรุณาเลือกวิธีการชำระเงิน")
             return redirect("petjoy:cart-detail")
 
-        # ถ้าชำระด้วยโอนเงิน ต้องมีสลิป
-        if payment_method == "bank_transfer" and not payment_slip:
-            messages.error(request, "กรุณาแนบสลิปการโอนเงิน")
-            return redirect("petjoy:cart-detail")
-
+        # (โหลดข้อมูล Session เหมือนเดิม)
         address_id = request.session.get("checkout_address_id")
         item_ids = request.session.get("checkout_items_data", {}).get("item_ids")
         total_price_raw = request.session.get("checkout_items_data", {}).get("total_price")
@@ -440,63 +441,92 @@ def checkout_view(request):
             messages.error(request, "ไม่พบสินค้าในตะกร้าที่เลือก")
             return redirect("petjoy:cart-detail")
 
-        with transaction.atomic():
+        try:
+            with transaction.atomic():
+                # แยกร้าน
+                items_by_entrepreneur = {}
+                for item in cart_items:
+                    owner = item.product.owner
+                    if owner:
+                        items_by_entrepreneur.setdefault(owner, []).append(item)
 
-            # แยกร้าน
-            items_by_entrepreneur = {}
-            for item in cart_items:
-                owner = item.product.owner
-                if owner:
-                    items_by_entrepreneur.setdefault(owner, []).append(item)
+                # ⭐ ตรวจสอบสต๊อกและสลิปของทุกร้านก่อนสร้าง Order (Validation Loop)
+                if payment_method == "bank_transfer":
+                    for entrepreneur in items_by_entrepreneur.keys():
+                        # เช็คว่ามีไฟล์สลิปของร้านนี้ส่งมาไหม? (ชื่อ input: payment_slip_<id>)
+                        slip_key = f"payment_slip_{entrepreneur.id}"
+                        if not request.FILES.get(slip_key):
+                            raise ValueError(f"กรุณาแนบสลิปการโอนเงินสำหรับร้าน: {entrepreneur.store_name}")
 
-            created_orders = []
+                # เช็คสต๊อก
+                for item in cart_items:
+                    if item.product.stock < item.quantity:
+                        raise ValueError(f"สินค้า '{item.product.name}' เหลือเพียง {item.product.stock} ชิ้น")
 
-            for entrepreneur, items in items_by_entrepreneur.items():
+                created_orders = []
 
-                shop_total_price = sum(item.total_price for item in items)
+                # ⭐ เริ่มสร้าง Order (Creation Loop)
+                for entrepreneur, items in items_by_entrepreneur.items():
+                    shop_total_price = sum(item.total_price for item in items)
+                    order_status = "paid" if payment_method == "bank_transfer" else "waiting"
 
-                order_status = "paid" if payment_method == "bank_transfer" else "waiting"
+                    # รับไฟล์สลิปเฉพาะของร้านนี้
+                    shop_slip_image = None
+                    if payment_method == "bank_transfer":
+                        shop_slip_image = request.FILES.get(f"payment_slip_{entrepreneur.id}")
 
-                # ⭐ สร้างคำสั่งซื้อ
-                order = Order.objects.create(
-                    entrepreneur=entrepreneur,
-                    customer_name=address.full_name,
-                    customer_phone=address.phone,
-                    customer_address=f"{address.address_line} {address.subdistrict} {address.district} {address.province} {address.zipcode}",
-                    total_price=shop_total_price,
-                    status=order_status,
-                    slip_image=payment_slip if payment_method == "bank_transfer" else None,  # ⭐ บันทึกสลิป
-                )
-
-                # ⭐ สร้าง OrderItem
-                for cart_item in items:
-                    OrderItem.objects.create(
-                        order=order,
-                        product=cart_item.product,
-                        quantity=cart_item.quantity,
-                        price=cart_item.product.price
+                    # สร้าง Order
+                    order = Order.objects.create(
+                        entrepreneur=entrepreneur,
+                        customer_name=address.full_name,
+                        customer_phone=address.phone,
+                        customer_address=f"{address.address_line} {address.subdistrict} {address.district} {address.province} {address.zipcode}",
+                        total_price=shop_total_price,
+                        status=order_status,
+                        slip_image=shop_slip_image, # ⭐ บันทึกสลิปที่ถูกต้อง
                     )
 
-                created_orders.append(order)
+                    # สร้าง OrderItem และตัดสต๊อก
+                    for cart_item in items:
+                        OrderItem.objects.create(
+                            order=order,
+                            product=cart_item.product,
+                            quantity=cart_item.quantity,
+                            price=cart_item.product.price
+                        )
+                        # ตัดสต๊อก
+                        product = cart_item.product
+                        product.stock = product.stock - cart_item.quantity
+                        product.save()
 
-            # ลบสินค้าในตะกร้า
-            cart_items.delete()
+                    created_orders.append(order)
 
-            # ล้าง session
-            request.session.pop("checkout_items_data", None)
-            request.session.pop("checkout_address_id", None)
+                # ลบสินค้าออกจากตะกร้าและเคลียร์ Session
+                cart_items.delete()
+                request.session.pop("checkout_items_data", None)
+                request.session.pop("checkout_address_id", None)
 
-        return render(request, "petjoy/checkout.html", {
-            "step": 3,
-            "orders": created_orders,
-            "total_price": total_price_raw,
-            "address": address,
-        })
+            return render(request, "petjoy/checkout.html", {
+                "step": 3,
+                "orders": created_orders,
+                "total_price": total_price_raw,
+                "address": address,
+            })
 
-    # fallback
-    messages.error(request, "กรุณาเลือกสินค้าที่ต้องการสั่งซื้อจากตะกร้า")
+        except ValueError as e:
+            messages.error(request, str(e))
+            # ต้องส่งข้อมูลกลับไป render หน้า Step 2 ใหม่เพื่อให้ User ไม่ต้องเริ่มศูนย์ (แต่ในที่นี้ redirect ง่ายกว่าเพื่อ reset flow)
+            # แต่เพื่อให้ UX ดี ควร Redirect กลับไปหน้า Checkout Step 2 (ต้องทำ logic เพิ่ม) 
+            # เอาแบบง่ายก่อนคือกลับไป cart หรือ checkout หน้าแรก
+            return redirect('petjoy:cart-detail') 
+        
+        except Exception as e:
+            messages.error(request, f"เกิดข้อผิดพลาด: {str(e)}")
+            return redirect('petjoy:cart-detail')
+
+    # Fallback
+    messages.error(request, "การดำเนินการไม่ถูกต้อง")
     return redirect("petjoy:cart-detail")
-
 
 @login_required
 def entrepreneur_profile_edit_home(request):
@@ -804,13 +834,15 @@ def admin_report_list(request):
 
 @login_required
 def admin_delete_product_reported(request, product_id):
-    """ลบสินค้าที่มีปัญหา (กดจากหน้ารายงาน)"""
+    # เช็คสิทธิ์แอดมิน
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect("petjoy:homepage")
 
     product = get_object_or_404(Product, id=product_id)
     product_name = product.name
-    product.delete() # การลบสินค้าจะลบ Report ที่ผูกอยู่ด้วยอัตโนมัติ (Cascade)
+    
+    # ลบแค่สินค้าตัวนี้ (ร้านค้า และ สินค้าชิ้นอื่น ยังอยู่ครบ)
+    product.delete()
     
     messages.success(request, f"ลบสินค้า '{product_name}' ออกจากระบบแล้ว")
     return redirect('petjoy:admin-report-list')
@@ -888,6 +920,26 @@ class EntrepreneurProductDetailView(View):
             "product": product,
             "entrepreneur": request.user.entrepreneur
         })
+    
+@login_required
+def admin_cleanup_orphans(request):
+    """ฟังก์ชันล้างบาง: ลบร้านค้าและสินค้าที่ไม่มีเจ้าของ (User หาย)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+    
+    # หา Entrepreneur ที่ field 'user' เป็น Null (คือเจ้าของบัญชีโดนลบไปแล้ว)
+    orphaned_shops = Entrepreneur.objects.filter(user__isnull=True)
+    count = orphaned_shops.count()
+    
+    # ลบร้านพวกนั้นทิ้ง (สินค้าที่ผูกกับร้านพวกนี้จะหายไปด้วยถ้าตั้ง Cascade ไว้ หรือต้องสั่งลบเอง)
+    for shop in orphaned_shops:
+        # ลบสินค้าของร้านนี้ก่อน
+        Product.objects.filter(owner=shop).delete()
+        # ลบร้าน
+        shop.delete()
+        
+    messages.success(request, f"ล้างข้อมูลขยะเรียบร้อย! ลบร้านค้าที่ไม่มีเจ้าของไป {count} ร้าน")
+    return redirect("petjoy:admin-dashboard")
 
 class ProductListView(ListView):
     model = Product
@@ -1242,40 +1294,47 @@ def admin_dashboard(request):
         return redirect("petjoy:homepage")
 
     from django.contrib.auth import get_user_model
-    # ⭐ เพิ่ม ProductReport ตรงนี้ครับ
     from .models import Entrepreneur, Order, ProductReport 
     from django.db.models import Sum
 
     User = get_user_model()
 
-    # --- 1. ข้อมูลสรุปบนการ์ด ---
-    total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
-    pending_shops_count = Entrepreneur.objects.filter(verification_status='pending').count()
+    # --- 1. ข้อมูลสรุปบนการ์ด (นับสดๆ จาก DB) ---
+    # นับเฉพาะ User ทั่วไป (ไม่รวม Admin และ ร้านค้า)
     total_general_users = User.objects.filter(is_superuser=False, entrepreneur__isnull=True).count()
     
-    # --- 2. ดึงรายงานล่าสุด 5 รายการ (ส่วนสำคัญที่ขาดไป) ---
-    recent_reports = ProductReport.objects.select_related('product', 'user').order_by('-created_at')[:5]
+    # ร้านค้าที่อนุมัติแล้ว
+    total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
+    
+    # ร้านค้าที่รออนุมัติ
+    pending_shops_count = Entrepreneur.objects.filter(verification_status='pending').count()
+    
+    # ⭐ แก้ไข: รายได้รวม (เฉพาะออเดอร์ที่สำเร็จ + ร้านต้อง Active อยู่) ⭐
+    total_income = Order.objects.filter(
+        status__in=["paid", "preparing", "delivering", "success"], # สถานะออเดอร์ปกติ
+        entrepreneur__isnull=False,                   # ร้านต้องมีอยู่จริง
+        entrepreneur__verification_status='approved', # ร้านต้องอนุมัติแล้ว
+        entrepreneur__user__isnull=False,             # User เจ้าของต้องไม่ถูกลบ
+        entrepreneur__user__profile__is_banned=False  # User ต้องไม่โดนแบน
+    ).aggregate(total=Sum("total_price"))["total"] or 0
+
+    # --- 2. ดึงรายงานล่าสุด 10 รายการ ---
+    # ใช้ select_related เพื่อลด Query และดึงข้อมูล User/Product ทันที
+    recent_reports = ProductReport.objects.select_related('product', 'product__owner', 'user').order_by('-created_at')[:10]
+
+    # --- 3. ร้านค้าล่าสุด ---
+    recent_shops = Entrepreneur.objects.filter(verification_status='approved').order_by("-id")[:5]
 
     context = {
         "total_users": total_general_users, 
         "total_shops": total_shops,
         "pending_shops": pending_shops_count,
-        
-        # รายได้รวม
-        "total_income": Order.objects.filter(
-            status__in=["paid", "preparing", "delivering", "success"]
-        ).aggregate(total=Sum("total_price"))["total"] or 0,
-
-        # ⭐ ส่งข้อมูลรายงานล่าสุดไปที่ HTML
+        "total_income": total_income,
         "recent_reports": recent_reports,
-
-        # รายการอื่นๆ
-        "recent_shops": Entrepreneur.objects.filter(verification_status='approved').order_by("-id")[:5],
-        "recent_orders": Order.objects.order_by("-id")[:5],
+        "recent_shops": recent_shops,
     }
 
     return render(request, "petjoy/admin/admin_dashboard.html", context)
-
 
 @login_required
 def admin_user_list(request):
@@ -1377,27 +1436,52 @@ def admin_toggle_ban(request, user_id):
 
     return redirect(request.META.get('HTTP_REFERER', 'petjoy:admin-users'))
 
+
+
 @login_required
 def admin_delete_user(request, user_id):
-    # เช็คสิทธิ์ (ต้องเป็น Admin หรือ Staff เท่านั้น)
+    # เช็คสิทธิ์แอดมิน
     if not (request.user.is_staff or request.user.is_superuser):
         return redirect("petjoy:homepage")
 
     User = get_user_model()
-    user = get_object_or_404(User, id=user_id)
+    target_user = get_object_or_404(User, id=user_id)
 
-    # 🛡️ ป้องกันการลบตัวเอง (Admin กดลบตัวเองไม่ได้)
-    if user == request.user:
+    # ป้องกันลบตัวเอง
+    if target_user == request.user:
         messages.error(request, "ไม่สามารถลบบัญชีของตนเองได้")
         return redirect("petjoy:admin-users")
 
-    # ลบบัญชี
-    username = user.username
-    user.delete()
-    
-    messages.success(request, f"ลบบัญชี {username} เรียบร้อยแล้ว")
-    return redirect("petjoy:admin-users")
+    username = target_user.username
 
+    try:
+        with transaction.atomic():
+            # ถ้าเป็นร้านค้า -> ลบสินค้าและข้อมูลร้านทิ้งทั้งหมด (แก้ปัญหา SET_NULL ที่ทำให้สินค้าค้าง)
+            if hasattr(target_user, 'entrepreneur'):
+                shop = target_user.entrepreneur
+                
+                # 1. ลบสินค้าทั้งหมดของร้านนี้
+                Product.objects.filter(owner=shop).delete()
+                
+                # 2. ลบห้องแชทของร้านนี้
+                ChatRoom.objects.filter(entrepreneur=shop).delete()
+                
+                # 3. ลบข้อมูลร้านค้า
+                shop.delete()
+
+            # 4. ลบโปรไฟล์ (ถ้ามี)
+            if hasattr(target_user, 'profile'):
+                target_user.profile.delete()
+
+            # 5. สุดท้ายลบ User
+            target_user.delete()
+
+        messages.success(request, f"ลบบัญชี {username} และข้อมูลร้านค้า/สินค้าทั้งหมด เรียบร้อยแล้ว")
+        
+    except Exception as e:
+        messages.error(request, f"เกิดข้อผิดพลาด: {str(e)}")
+
+    return redirect("petjoy:admin-users")
 
 
 @login_required
@@ -1508,6 +1592,20 @@ def admin_start_chat_from_report(request, report_id):
     # ส่งไปที่ห้องแชท
     return redirect('petjoy:admin-chat-room', room_id=room.id)
 
+@login_required
+def admin_delete_chat(request, room_id):
+    # เช็คสิทธิ์แอดมิน
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+    
+    room = get_object_or_404(ChatRoom, id=room_id)
+    
+    # ลบแค่ห้องแชท (User และ ร้านค้า ไม่ได้รับผลกระทบ)
+    room.delete()
+    
+    messages.success(request, "ลบประวัติการสนทนาเรียบร้อยแล้ว")
+    return redirect('petjoy:admin-chat-list')
+
 
 @login_required
 def admin_product_detail(request, product_id):
@@ -1534,48 +1632,92 @@ def admin_delete_report(request, report_id):
 
 @staff_member_required
 def admin_order_analytics(request):
-    # --- ส่วนที่ 1: ตัวเลขสรุป (Key Metrics) ---
-    total_products_count = Product.objects.count()
-    out_of_stock_count = Product.objects.filter(stock=0).count()
-    total_orders_count = Order.objects.count()
+    # ตรวจสอบการ import ให้ครบก่อนใช้งานนะครับ (ไว้ด้านบนไฟล์)
+    # from django.db.models import Sum
+    # from django.db.models.functions import TruncDate
+    
+    # =========================================================
+    # 🔍 1. สร้าง QuerySet กลาง: กรองเฉพาะร้านที่ "Active" เท่านั้น
+    # =========================================================
+    
+    # สินค้าที่นับ: มีเจ้าของ + ร้านอนุมัติแล้ว + ไม่โดนแบน + เจ้าของยังมีตัวตน
+    valid_products = Product.objects.filter(
+        owner__isnull=False,
+        owner__verification_status='approved',
+        owner__user__isnull=False,
+        owner__user__profile__is_banned=False
+    )
 
-    # --- ส่วนที่ 2: กราฟสินค้าขายดี 5 อันดับ (Top 5 Products) ---
-    top_products = OrderItem.objects.values('product__name') \
+    # คำสั่งซื้อที่นับ: มาจากร้านที่ยังมีตัวตน + อนุมัติแล้ว + ไม่โดนแบน
+    valid_orders = Order.objects.filter(
+        entrepreneur__isnull=False,
+        entrepreneur__verification_status='approved',
+        entrepreneur__user__isnull=False,
+        entrepreneur__user__profile__is_banned=False
+    )
+
+    # =========================================================
+    # 📊 2. ส่วนตัวเลขสรุป (Summary Cards)
+    # =========================================================
+    total_products_count = valid_products.count()
+    total_orders_count = valid_orders.count()
+    
+    # คำนวณรายได้รวมทั้งหมด (จากทุกออเดอร์ที่ Valid)
+    total_revenue_all = valid_orders.aggregate(total=Sum('total_price'))['total'] or 0
+
+    # =========================================================
+    # 🏆 3. กราฟสินค้าขายดี (Top 5 Products) - Bar Chart
+    # =========================================================
+    top_products = OrderItem.objects.filter(order__in=valid_orders) \
+        .values('product__name') \
         .annotate(total_qty=Sum('quantity')) \
         .order_by('-total_qty')[:5]
 
     product_labels = [item['product__name'] for item in top_products]
     product_data = [item['total_qty'] for item in top_products]
 
-    # --- ส่วนที่ 3: กราฟหมวดหมู่ขายดี (Top Categories) ---
-    top_categories = OrderItem.objects.values('product__category__display_name') \
+    # =========================================================
+    # 🍩 4. กราฟหมวดหมู่ยอดนิยม - Doughnut Chart
+    # =========================================================
+    top_categories = OrderItem.objects.filter(order__in=valid_orders) \
+        .values('product__category__display_name') \
         .annotate(total_qty=Sum('quantity')) \
         .order_by('-total_qty')
 
     category_labels = [item['product__category__display_name'] for item in top_categories]
     category_data = [item['total_qty'] for item in top_categories]
 
-    # --- ส่วนที่ 4: ตารางสินค้าทั้งหมด ---
-    all_products = Product.objects.all().select_related('category', 'owner').order_by('-id')
+    # =========================================================
+    # 📈 5. กราฟรายได้รายวัน (Revenue Trend) - Line Chart (ส่วนใหม่)
+    # =========================================================
+    # ตัดเวลาออกเหลือแค่วันที่ (TruncDate) แล้วรวมยอดขายตามวัน
+    daily_income = valid_orders.annotate(date=TruncDate('created_at')) \
+        .values('date') \
+        .annotate(total=Sum('total_price')) \
+        .order_by('date')
 
+    # แปลงข้อมูลเป็น List เพื่อส่งให้ Chart.js
+    revenue_labels = [item['date'].strftime('%d/%m/%Y') for item in daily_income]
+    revenue_data = [float(item['total']) for item in daily_income]
+
+    # =========================================================
+    # 📦 ส่งข้อมูลเข้า Template
+    # =========================================================
     context = {
-        # ตัวเลขสรุป
         'total_products_count': total_products_count,
-        'out_of_stock_count': out_of_stock_count,
         'total_orders_count': total_orders_count,
+        'total_revenue_all': total_revenue_all,
         
-        # ข้อมูลกราฟ
+        # ข้อมูลสำหรับกราฟ
         'product_labels': product_labels,
         'product_data': product_data,
         'category_labels': category_labels,
         'category_data': category_data,
-        
-        # ข้อมูลตาราง
-        'all_products': all_products,
+        'revenue_labels': revenue_labels,
+        'revenue_data': revenue_data,
     }
 
     return render(request, 'petjoy/admin/admin_orders_analytics.html', context)
-
 def banned_view(request):
     """แสดงหน้าแจ้งเตือนเมื่อบัญชีถูกระงับ"""
     return render(request, 'petjoy/banned.html')
@@ -1750,96 +1892,151 @@ def profile_view(request):
 # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
 def cat_products_view(request):
     cat_category = Category.objects.filter(name__iexact='cat').first()
-    products = Product.objects.filter(category=cat_category) if cat_category else Product.objects.none()
-    # paginate 15 per page
+    
+    # ⭐ กรองสินค้า: หมวดแมว + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
+    if cat_category:
+        products = Product.objects.filter(
+            category=cat_category,
+            owner__user__isnull=False,
+            owner__user__profile__is_banned=False,
+            owner__verification_status='approved'
+        )
+    else:
+        products = Product.objects.none()
+
+    # --- Pagination ---
     per_page = 15
     paginator = Paginator(products, per_page)
     page_number = request.GET.get('page') or 1
     page_obj = paginator.get_page(page_number)
-    # If partial requested (AJAX), return only the grid fragment so JS can update
+
+    # AJAX
     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         from django.template.loader import render_to_string
+        from django.http import HttpResponse
         html = render_to_string('petjoy/partials/food_products_grid.html', {
             'products': page_obj,
             'page_obj': page_obj,
             'paginator': paginator,
             'selected_type': 'cat',
         })
-        from django.http import HttpResponse
         return HttpResponse(html)
 
-    return render(request, 'petjoy/cat_products.html', {'products': page_obj, 'page_obj': page_obj, 'paginator': paginator})
+    return render(request, 'petjoy/cat_products.html', {
+        'products': page_obj, 
+        'page_obj': page_obj, 
+        'paginator': paginator
+    })
+
 # สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
 def dog_products_view(request):
     dog_category = Category.objects.filter(name__iexact='dog').first()
-    products = Product.objects.filter(category=dog_category) if dog_category else Product.objects.none()
-    # paginate 15 per page
+    
+    # ⭐ กรองสินค้า: หมวดหมา + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
+    if dog_category:
+        products = Product.objects.filter(
+            category=dog_category,
+            owner__user__isnull=False,
+            owner__user__profile__is_banned=False,
+            owner__verification_status='approved'
+        )
+    else:
+        products = Product.objects.none()
+
+    # --- Pagination ---
     per_page = 15
     paginator = Paginator(products, per_page)
     page_number = request.GET.get('page') or 1
     page_obj = paginator.get_page(page_number)
-    # If partial requested (AJAX), return only the grid fragment so JS can update
+
+    # AJAX
     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         from django.template.loader import render_to_string
+        from django.http import HttpResponse
         html = render_to_string('petjoy/partials/food_products_grid.html', {
             'products': page_obj,
             'page_obj': page_obj,
             'paginator': paginator,
             'selected_type': 'dog',
         })
-        from django.http import HttpResponse
         return HttpResponse(html)
 
-    return render(request, 'petjoy/dog_products.html', {'products': page_obj, 'page_obj': page_obj, 'paginator': paginator})
+    return render(request, 'petjoy/dog_products.html', {
+        'products': page_obj, 
+        'page_obj': page_obj, 
+        'paginator': paginator
+    })
 
 
 def food_products_view(request):
     typ_raw = request.GET.get('type', '').strip()
     typ = typ_raw.lower()
-    products = Product.objects.none()
-
     
-    map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'สุนัข': 'dog', 'แมว': 'cat'}
+    # ⭐ เริ่มต้น Query: ดึงสินค้าทั้งหมด
+    # เงื่อนไข: 
+    # 1. เจ้าของต้องมีตัวตน (ไม่เป็น Null)
+    # 2. ไม่โดนแบน (is_banned=False)
+    # 3. ร้านต้องได้รับการอนุมัติแล้ว (approved) เท่านั้น!
+    products = Product.objects.filter(
+        owner__user__isnull=False,
+        owner__user__profile__is_banned=False,
+        owner__verification_status='approved' 
+    )
+
+    # แปลงคำค้นหาภาษาไทยเป็น key
+    map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'แมว': 'cat'}
     if typ in map_th:
         typ = map_th[typ]
 
-    # Primary: if a subtype is requested, prefer filtering by Product.food_type
+    # กรณีเลือกประเภทย่อย (หมา/แมว)
     if typ in ('dog', 'cat'):
-        products = Product.objects.filter(food_type=typ)
+        # กรองจาก products ที่เรา clean มาแล้วข้างบน
+        products = products.filter(food_type=typ)
 
-        # If none found, try category names like 'food-dog' or fallback to 'food' category
+        # หากไม่เจอสินค้า ให้ลองหาจากหมวดหมู่ (Backup Logic)
         if not products.exists():
             cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
             if cat:
-                products = Product.objects.filter(category=cat)
+                # ต้องกรองซ้ำอีกรอบสำหรับ backup logic
+                products = Product.objects.filter(
+                    category=cat,
+                    owner__user__isnull=False,
+                    owner__user__profile__is_banned=False,
+                    owner__verification_status='approved'
+                )
             else:
                 food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
                 if food_cat:
-                    products = Product.objects.filter(category=food_cat).filter(
+                    products = Product.objects.filter(
+                        category=food_cat,
+                        owner__user__isnull=False,
+                        owner__user__profile__is_banned=False,
+                        owner__verification_status='approved'
+                    ).filter(
                         Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
                     )
     else:
-        # No subtype: return products in 'food' category (try english name or thai display)
+        # กรณีดูทั้งหมด (ไม่ระบุประเภท) -> ดึงหมวดอาหารทั้งหมด
         food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
         if food_cat:
-            products = Product.objects.filter(category=food_cat)
+            products = products.filter(category=food_cat)
 
-    # Paginate results: show ~3 rows worth of items per page (assume 4 columns per row)
+    # --- ส่วน Pagination (หน้าละ 15 ชิ้น) ---
     per_page = 15
     paginator = Paginator(products, per_page)
     page_number = request.GET.get('page') or 1
     page_obj = paginator.get_page(page_number)
 
-    # If partial requested (AJAX), return only the grid fragment
+    # รองรับ AJAX (Partial Load)
     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         from django.template.loader import render_to_string
+        from django.http import HttpResponse
         html = render_to_string('petjoy/partials/food_products_grid.html', {
             'products': page_obj,
             'page_obj': page_obj,
             'paginator': paginator,
             'selected_type': typ_raw,
         })
-        from django.http import HttpResponse
         return HttpResponse(html)
 
     return render(request, 'petjoy/food_products.html', {
@@ -2278,3 +2475,32 @@ def report_product(request, product_id):
     )
 
     return JsonResponse({'success': True, 'message': 'ส่งรายงานให้เจ้าหน้าที่เรียบร้อยแล้ว'})
+
+@login_required(login_url='petjoy:login')
+def buy_now(request):
+    """ฟังก์ชันสั่งซื้อทันที: เพิ่มลงตะกร้าแล้วไปหน้า Checkout เลย"""
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity') or 1)
+        
+        product = get_object_or_404(Product, id=product_id)
+
+        # 1. เพิ่มลงตะกร้า
+        cart_item, created = CartItem.objects.get_or_create(
+            user=request.user,
+            product=product
+        )
+        
+        if not created:
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
+        cart_item.save()
+
+        # 2. Redirect ไปหน้า Checkout
+        # ⭐⭐⭐ แก้บรรทัดนี้ครับ (เปลี่ยน checkout_view -> checkout) ⭐⭐⭐
+        checkout_url = reverse('petjoy:checkout') 
+        
+        return redirect(f"{checkout_url}?selected_items={cart_item.id}&checkout_step=1")
+
+    return redirect('petjoy:product-list')

@@ -16,7 +16,7 @@
                 <tr>
                     <th>ร้านค้า</th>
                     <th>ข้อความล่าสุด</th>
-                    <th>จัดการ</th>
+                    <th style="width: 180px;">จัดการ</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,7 +46,16 @@
                         {% endwith %}
                     </td>
                     <td>
-                        <a href="{% url 'petjoy:admin-chat-room' room.id %}" class="btn-action view">เปิดแชท</a>
+                        <div style="display: flex; gap: 5px;">
+                            <a href="{% url 'petjoy:admin-chat-room' room.id %}" class="btn-action view" style="flex:1; text-align:center;">เปิดแชท</a>
+                            
+                            <form method="post" action="{% url 'petjoy:admin-delete-chat' room.id %}" onsubmit="return confirm('ยืนยันที่จะลบประวัติแชทนี้? (ข้อมูลจะหายไปถาวร)');" style="margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action danger" style="padding: 6px 10px;">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
                 {% empty %}

@@ -2,7 +2,7 @@
 {% load humanize %}
 
 {% block title %}Product & Sales Analytics{% endblock %}
-{% block page_title %}📦 คำสั่งซื้อ{% endblock %}
+{% block page_title %}📦 วิเคราะห์ยอดขาย{% endblock %}
 
 {% block nav_orders %}active{% endblock %}
 
@@ -10,7 +10,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-    /* CSS สำหรับกล่องตัวเลขสรุป */
     .stats-summary-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -29,43 +28,20 @@
         transition: transform 0.2s;
     }
 
-    .summary-card:hover {
-        transform: translateY(-5px);
-    }
+    .summary-card:hover { transform: translateY(-5px); }
 
     .summary-card .icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5rem;
+        width: 60px; height: 60px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center; font-size: 1.5rem;
     }
 
-    /* สีไอคอนของแต่ละกล่อง */
     .summary-card.blue .icon { background: #e3f2fd; color: #1976d2; }
-    .summary-card.red .icon { background: #ffebee; color: #c62828; }
     .summary-card.green .icon { background: #e8f5e9; color: #2e7d32; }
+    .summary-card.orange .icon { background: #fff3e0; color: #ef6c00; }
 
-    .summary-card .info h3 {
-        margin: 0;
-        font-size: 0.9rem;
-        color: #666;
-        font-weight: normal;
-    }
-
-    .summary-card .info .number {
-        margin: 5px 0;
-        font-size: 1.8rem;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .summary-card .info small {
-        color: #999;
-        font-size: 0.8rem;
-    }
+    .summary-card .info h3 { margin: 0; font-size: 0.9rem; color: #666; font-weight: normal; }
+    .summary-card .info .number { margin: 5px 0; font-size: 1.8rem; font-weight: bold; color: #333; }
+    .summary-card .info small { color: #999; font-size: 0.8rem; }
 </style>
 
 <div class="stats-summary-grid">
@@ -74,16 +50,7 @@
         <div class="info">
             <h3>สินค้าทั้งหมด</h3>
             <p class="number">{{ total_products_count|intcomma }}</p>
-            <small>รายการในระบบ</small>
-        </div>
-    </div>
-
-    <div class="summary-card red">
-        <div class="icon">⚠️</div>
-        <div class="info">
-            <h3>สินค้าหมดสต็อก</h3>
-            <p class="number">{{ out_of_stock_count|intcomma }}</p>
-            <small>ต้องเติมของทันที</small>
+            <small>รายการที่มีขายในระบบ</small>
         </div>
     </div>
 
@@ -95,15 +62,22 @@
             <small>ออเดอร์ที่สำเร็จ</small>
         </div>
     </div>
+
+    <div class="summary-card orange">
+        <div class="icon">💰</div>
+        <div class="info">
+            <h3>รายได้รวมทั้งหมด</h3>
+            <p class="number">฿{{ total_revenue_all|intcomma }}</p>
+            <small>ยอดขายรวมจากทุกร้าน</small>
+        </div>
+    </div>
 </div>
 
 <div class="stats-grid" style="grid-template-columns: 2fr 1fr; margin-bottom: 30px;">
-    
     <div class="stat-card">
         <h4>🏆 5 อันดับสินค้าขายดี</h4>
         <canvas id="topProductsChart"></canvas>
     </div>
-
     <div class="stat-card">
         <h4>📊 หมวดหมู่ยอดนิยม</h4>
         <div style="height: 250px; display: flex; justify-content: center;">
@@ -112,71 +86,17 @@
     </div>
 </div>
 
-<div class="admin-content">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-        <h3>📦 รายการสินค้าทั้งหมด</h3>
-        <span style="font-size: 0.9rem; color: #666;">ข้อมูล ณ ปัจจุบัน</span>
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3>📈 สรุปรายได้รายวัน (Revenue Trend)</h3>
     </div>
-
-    <table class="admin-table">
-        <thead>
-            <tr>
-                <th>รูปภาพ</th>
-                <th>ชื่อสินค้า</th>
-                <th>หมวดหมู่</th>
-                <th>ร้านค้า</th>
-                <th>ราคา</th>
-                <th>สต็อก</th>
-                <th>สถานะ</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for product in all_products %}
-            <tr>
-                <td>
-                    {% if product.image %}
-                        <img src="{{ product.image.url }}" alt="img" style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
-                    {% else %}
-                        <div style="width: 40px; height: 40px; background: #eee; border-radius: 4px;"></div>
-                    {% endif %}
-                </td>
-                <td>
-                    <strong>{{ product.name }}</strong><br>
-                    <small style="color: #888;">ID: {{ product.id }}</small>
-                </td>
-                <td>
-                    <span class="badge" style="background: #e3f2fd; color: #0d47a1; padding: 3px 8px; border-radius: 10px; font-size: 0.8rem;">
-                        {{ product.category.display_name }}
-                    </span>
-                </td>
-                <td>{{ product.owner.store_name }}</td>
-                <td>฿{{ product.price|intcomma }}</td>
-                <td>
-                    {% if product.stock == 0 %}
-                        <span style="color: red; font-weight: bold;">0 (หมด)</span>
-                    {% else %}
-                        {{ product.stock }}
-                    {% endif %}
-                </td>
-                <td>
-                    {% if product.stock > 0 %}
-                        <span class="badge" style="background: #d4edda; color: #155724; padding: 4px 8px; border-radius: 4px;">วางขาย</span>
-                    {% else %}
-                        <span class="badge" style="background: #f8d7da; color: #721c24; padding: 4px 8px; border-radius: 4px;">สินค้าหมด</span>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="7" style="text-align:center; padding: 20px; color: #999;">ไม่พบข้อมูลสินค้าในระบบ</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div style="padding: 20px; height: 400px;">
+        <canvas id="revenueChart"></canvas>
+    </div>
 </div>
 
 <script>
-    // Config กราฟแท่ง (Bar Chart)
+    // 1. กราฟสินค้าขายดี (Bar)
     const ctxProduct = document.getElementById('topProductsChart').getContext('2d');
     new Chart(ctxProduct, {
         type: 'bar',
@@ -193,16 +113,11 @@
         },
         options: {
             responsive: true,
-            scales: {
-                y: { 
-                    beginAtZero: true,
-                    ticks: { stepSize: 1 } // ให้แกน Y เป็นจำนวนเต็ม
-                }
-            }
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
         }
     });
 
-    // Config กราฟโดนัท (Doughnut Chart)
+    // 2. กราฟหมวดหมู่ (Doughnut)
     const ctxCategory = document.getElementById('categoryChart').getContext('2d');
     new Chart(ctxCategory, {
         type: 'doughnut',
@@ -210,17 +125,55 @@
             labels: {{ category_labels|safe }},
             datasets: [{
                 data: {{ category_data|safe }},
-                backgroundColor: [
-                    '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'
-                ],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'],
                 hoverOffset: 4
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } }
+        }
+    });
+
+    // 3. ⭐ กราฟรายได้ (Line Chart)
+    const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctxRevenue, {
+        type: 'line',
+        data: {
+            labels: {{ revenue_labels|safe }},
+            datasets: [{
+                label: 'รายได้ (บาท)',
+                data: {{ revenue_data|safe }},
+                borderColor: '#28a745', // สีเขียว
+                backgroundColor: 'rgba(40, 167, 69, 0.1)',
+                borderWidth: 3,
+                pointBackgroundColor: '#fff',
+                pointBorderColor: '#28a745',
+                pointRadius: 5,
+                fill: true,
+                tension: 0.3 // ทำให้เส้นโค้งมนสวยงาม
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return '฿' + value.toLocaleString(); }
+                    }
+                }
+            },
             plugins: {
-                legend: { position: 'bottom' }
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ' รายได้: ฿' + context.raw.toLocaleString();
+                        }
+                    }
+                }
             }
         }
     });

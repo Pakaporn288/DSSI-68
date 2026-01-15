@@ -96,9 +96,12 @@ urlpatterns = [
     path("system/product/<int:product_id>/detail/", views.admin_product_detail, name="admin-product-detail"),
     path('system/orders/analytics/', views.admin_order_analytics, name='admin-orders-analytics'),
     path('system/reports/<int:report_id>/delete/', views.admin_delete_report, name='admin-delete-report'),
+    path("system/chat/delete/<int:room_id>/", views.admin_delete_chat, name="admin-delete-chat"),
+    path("system/cleanup/", views.admin_cleanup_orphans, name="admin-cleanup"),
+    path('buy-now/', views.buy_now, name='buy_now'),
+
+
+
+
+
 ]
-
-
-
-
-
