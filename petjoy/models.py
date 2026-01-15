@@ -47,6 +47,8 @@ class Profile(models.Model):
     image = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
     favorites = models.ManyToManyField('Product', blank=True, related_name='favorited_by')
 
+    is_banned = models.BooleanField(default=False)
+
     def __str__(self):
         return f'{self.user.username} Profile'
 
@@ -92,7 +94,8 @@ class ChatHistory(models.Model):
         return f"Chat by {self.user.username if self.user else 'Anonymous'} at {self.created_at}"
 
 
-# ✅ โมเดลผู้ประกอบการ (ใช้สำหรับหน้า Settings)
+# models.py
+
 class Entrepreneur(models.Model):
     user = models.OneToOneField(
         settings.AUTH_USER_MODEL,
@@ -107,16 +110,32 @@ class Entrepreneur(models.Model):
     phone = models.CharField(max_length=20)
     profile_image = models.ImageField(upload_to='entrepreneur_profiles/', blank=True, null=True)
 
-    # ⭐ เพิ่มฟิลด์สำหรับหน้า "การตั้งค่าโปรไฟล์ร้าน"
+    # ข้อมูลสำหรับหน้าตั้งค่าและข้อมูลตอนสมัคร
     tax_id = models.CharField(max_length=20, blank=True, null=True)
     shop_address = models.TextField(blank=True, null=True)
 
+    # ข้อมูลบัญชีธนาคาร
     bank_name = models.CharField(max_length=100, blank=True, null=True)
     account_name = models.CharField(max_length=100, blank=True, null=True)
     account_number = models.CharField(max_length=50, blank=True, null=True)
 
+    # ⭐ ฟิลด์สำหรับเอกสารประกอบการสมัคร ⭐
     bank_book_copy = models.ImageField(upload_to='bankbooks/', blank=True, null=True)
     id_card_copy = models.ImageField(upload_to='idcards/', blank=True, null=True)
+    # หากมีเอกสารพาณิชย์เพิ่มเติม
+    commerce_doc = models.ImageField(upload_to='commerce_docs/', blank=True, null=True) 
+
+    # ⭐ ส่วนที่เพิ่ม: สถานะการตรวจสอบร้านค้า ⭐
+    VERIFICATION_CHOICES = [
+        ('pending', 'รอตรวจสอบ'),
+        ('approved', 'อนุมัติแล้ว'),
+        ('rejected', 'ปฏิเสธ'),
+    ]
+    verification_status = models.CharField(
+        max_length=20, 
+        choices=VERIFICATION_CHOICES, 
+        default='pending'
+    )
 
     def __str__(self):
         return self.store_name

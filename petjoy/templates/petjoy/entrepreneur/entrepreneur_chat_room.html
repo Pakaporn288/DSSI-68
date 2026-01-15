@@ -163,6 +163,7 @@
 
     .bubble {
         max-width: 70%;
+        width: fit-content; 
         padding: 12px 18px;
         border-radius: 18px;
         margin-bottom: 12px;
@@ -192,28 +193,15 @@
         text-align: right;
     }
 
-    /* 🔥 แก้ปัญหารูปไม่ยอมปรับ (บังคับชนะ inline) */
-    .message-content img,
-    .messages-area img {
-        max-width: 220px !important;
-        width: auto !important;
-        height: auto !important;
-        display: block !important;
-        margin: 8px 0 !important;
-        border-radius: 14px !important;
-    }
-
-    .message-content img[style],
-    .message-content img[width],
-    .message-content img[height] {
-        width: auto !important;
-        height: auto !important;
-        max-width: 220px !important;
-    }
-
-    .message-content * {
+    /* ⭐ CSS สำหรับรูปภาพในแชท */
+    .chat-image {
         max-width: 100%;
-        box-sizing: border-box;
+        width: auto;
+        height: auto;
+        border-radius: 12px;
+        margin-bottom: 5px;
+        display: block;
+        cursor: pointer;
     }
 
     /* Input */
@@ -265,7 +253,6 @@
 
 <div class="chat-layout">
 
-    <!-- Sidebar Quick Reply -->
     <div class="quick-sidebar">
         <h3>ตอบกลับด่วน</h3>
 
@@ -279,23 +266,33 @@
         {% endif %}
     </div>
 
-    <!-- Chat Card -->
     <div class="chat-card">
 
-        <!-- Header -->
         <div class="chat-header">
             <div class="chat-user-info">
                 <a href="{% url 'petjoy:entrepreneur-chat-list' %}" class="back-btn">
                     <i class="fa-solid fa-arrow-left"></i>
                 </a>
 
-                {% if room.customer.profile.image %}
-                    <img src="{{ room.customer.profile.image.url }}" class="chat-user-avatar">
+                {% if room.customer.is_superuser %}
+                    <div style="width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; background: #FFC107; border-radius: 50%; border: 2px solid #FFA000;">
+                        <i class="fa-solid fa-headset" style="font-size: 24px; color: #fff;"></i>
+                    </div>
                 {% else %}
-                    <img src="{% static 'images/customer_default.png' %}" class="chat-user-avatar">
+                    {% if room.customer.profile.image %}
+                        <img src="{{ room.customer.profile.image.url }}" class="chat-user-avatar">
+                    {% else %}
+                        <img src="{% static 'images/customer_default.png' %}" class="chat-user-avatar">
+                    {% endif %}
                 {% endif %}
 
-                <div class="chat-user-name">{{ room.customer.username }}</div>
+                <div class="chat-user-name">
+                    {% if room.customer.is_superuser %}
+                        เจ้าหน้าที่ดูแลระบบ (PetJoy Support)
+                    {% else %}
+                        {{ room.customer.username }}
+                    {% endif %}
+                </div>
             </div>
 
             <div class="chat-menu-btn" onclick="toggleMenu()">⋮</div>
@@ -304,7 +301,6 @@
             </div>
         </div>
 
-        <!-- Messages -->
         <div class="messages-area" id="messagesArea">
             {% for message in messages %}
                 {% ifchanged message.local_date %}
@@ -315,18 +311,25 @@
 
                 <div class="bubble {% if message.sender == current_user %}sent{% else %}received{% endif %}">
                     <div class="message-content">
-                        {{ message.message|safe }}
+                        {% if message.attachment %}
+                            <a href="{{ message.attachment.url }}" target="_blank">
+                                <img src="{{ message.attachment.url }}" class="chat-image" alt="sent image">
+                            </a>
+                        {% endif %}
+
+                        {% if message.message %}
+                            {{ message.message|safe }}
+                        {% endif %}
                     </div>
                     <div class="time">{{ message.timestamp|date:"H:i" }}</div>
                 </div>
             {% endfor %}
         </div>
 
-        <!-- Input -->
-        <form method="post" class="chat-input-area" enctype="multipart/form-data">
+        <form method="post" class="chat-input-area" enctype="multipart/form-data" id="chatForm">
             {% csrf_token %}
 
-            <input type="file" id="fileAttachment" name="attachment" hidden>
+            <input type="file" id="fileAttachment" name="attachment" hidden accept="image/*">
 
             <button type="button" class="attach-btn"
                     onclick="document.getElementById('fileAttachment').click();">
@@ -364,6 +367,14 @@ window.onload = function() {
     let box = document.getElementById("messagesArea");
     box.scrollTop = box.scrollHeight;
 };
+
+// ⭐ สคริปต์ส่งรูปภาพทันทีที่เลือกไฟล์ ⭐
+document.getElementById('fileAttachment').addEventListener('change', function() {
+    if (this.files && this.files[0]) {
+        // Submit Form ทันที
+        document.getElementById('chatForm').submit();
+    }
+});
 </script>
 
 {% endblock %}

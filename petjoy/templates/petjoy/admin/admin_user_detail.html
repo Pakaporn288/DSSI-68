@@ -8,7 +8,6 @@
 
 <div class="admin-card">
 
-    <!-- Header -->
     <div class="admin-card-header">
         <h3>ข้อมูลผู้ใช้งาน</h3>
 
@@ -18,25 +17,24 @@
         </a>
     </div>
 
-    <!-- User Info -->
-    <div style="display:grid; grid-template-columns: 160px 1fr; gap:24px; align-items:start;">
+    <div style="padding: 10px 0;">
 
-        <!-- Avatar -->
-        <div style="text-align:center;">
-            {% if profile_user.profile_image %}
-                <img src="{{ profile_user.profile_image.url }}"
-                     style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-            {% else %}
-                <img src="{% static 'images/user_default.png' %}"
-                     style="width:120px;height:120px;border-radius:50%;object-fit:cover;">
-            {% endif %}
-        </div>
+        {% if not profile_user.is_superuser and not entrepreneur %}
+            <div style="text-align:center; margin-bottom: 25px;">
+                {% if user_profile.image %}
+                    <img src="{{ user_profile.image.url }}"
+                         style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 4px solid #f0f0f0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                {% else %}
+                    <img src="{% static 'images/user_default.png' %}"
+                         style="width:140px; height:140px; border-radius:50%; object-fit:cover; border: 4px solid #f0f0f0; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                {% endif %}
+            </div>
+        {% endif %}
 
-        <!-- Basic Info -->
         <div>
             <table class="admin-table">
                 <tr>
-                    <th>Username</th>
+                    <th style="width: 250px;">Username</th>
                     <td>{{ profile_user.username }}</td>
                 </tr>
                 <tr>
@@ -58,10 +56,12 @@
                 <tr>
                     <th>สถานะบัญชี</th>
                     <td>
-                        {% if profile_user.is_active %}
+                        {% if user_profile.is_banned %}
+                            <span class="status banned">ถูกระงับ</span>
+                        {% elif profile_user.is_active %}
                             <span class="status active">ใช้งาน</span>
                         {% else %}
-                            <span class="status banned">ถูกระงับ</span>
+                            <span class="status banned">Inactive</span>
                         {% endif %}
                     </td>
                 </tr>
@@ -84,51 +84,63 @@
     </div>
 
     {% if entrepreneur %}
-    <hr style="margin:30px 0;">
+    <hr style="margin:30px 0; border-top: 1px solid #eee;">
 
-    <!-- Entrepreneur Info -->
-    <h3 style="margin-bottom:15px;">ข้อมูลร้านค้า</h3>
+    <h3 style="margin-bottom:20px; color: #FF6A2E;">ข้อมูลร้านค้า</h3>
 
-    <table class="admin-table">
-        <tr>
-            <th>ชื่อร้าน</th>
-            <td>{{ entrepreneur.store_name }}</td>
-        </tr>
-        <tr>
-            <th>เจ้าของร้าน</th>
-            <td>{{ entrepreneur.owner_name|default:"-" }}</td>
-        </tr>
-        <tr>
-            <th>เบอร์โทร</th>
-            <td>{{ entrepreneur.phone|default:"-" }}</td>
-        </tr>
-        <tr>
-            <th>ที่อยู่ร้าน</th>
-            <td>{{ entrepreneur.shop_address|default:"-" }}</td>
-        </tr>
-        <tr>
-            <th>เลขประจำตัวผู้เสียภาษี</th>
-            <td>{{ entrepreneur.tax_id|default:"-" }}</td>
-        </tr>
-    </table>
+    <div style="display: flex; align-items: flex-start; gap: 20px;">
+        {% if entrepreneur.profile_image %}
+            <div style="flex-shrink: 0;">
+                <img src="{{ entrepreneur.profile_image.url }}" 
+                     style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; border: 1px solid #ddd;">
+            </div>
+        {% else %}
+             <div style="flex-shrink: 0;">
+                <img src="{% static 'images/ร้าน.png' %}" 
+                     style="width: 100px; height: 100px; border-radius: 12px; object-fit: cover; border: 1px solid #ddd;">
+            </div>
+        {% endif %}
+
+        <table class="admin-table" style="flex-grow: 1;">
+            <tr>
+                <th style="width: 250px;">ชื่อร้าน</th>
+                <td>{{ entrepreneur.store_name }}</td>
+            </tr>
+            <tr>
+                <th>เจ้าของร้าน</th>
+                <td>{{ entrepreneur.owner_name|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>เบอร์โทร</th>
+                <td>{{ entrepreneur.phone|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>ที่อยู่ร้าน</th>
+                <td>{{ entrepreneur.shop_address|default:"-" }}</td>
+            </tr>
+            <tr>
+                <th>เลขประจำตัวผู้เสียภาษี</th>
+                <td>{{ entrepreneur.tax_id|default:"-" }}</td>
+            </tr>
+        </table>
+    </div>
     {% endif %}
 
-    <!-- Actions -->
-    <div style="margin-top:30px;" class="action-buttons">
-        {% if profile_user.is_active %}
-            <a href="#"
-               class="btn-action warn">
-               ระงับบัญชี
+    <div style="margin-top:40px; text-align: right;" class="action-buttons">
+        
+        {% if user_profile.is_banned %}
+            <a href="{% url 'petjoy:admin-toggle-ban' profile_user.id %}" class="btn-action success" style="background-color: #28a745; color: white;">
+               ปลดระงับบัญชี
             </a>
         {% else %}
-            <a href="#"
-               class="btn-action view">
-               เปิดใช้งานบัญชี
+            <a href="{% url 'petjoy:admin-toggle-ban' profile_user.id %}" class="btn-action warn">
+               ระงับบัญชี
             </a>
         {% endif %}
 
-        <a href="#"
-           class="btn-action danger">
+        <a href="{% url 'petjoy:admin-delete-user' profile_user.id %}" 
+           class="btn-action danger"
+           onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบบัญชีนี้? ข้อมูลทั้งหมดรวมถึงร้านค้า (ถ้ามี) จะหายไปถาวร');">
            ลบบัญชี
         </a>
     </div>

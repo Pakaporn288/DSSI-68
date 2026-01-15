@@ -1,0 +1,64 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+
+{% block title %}อนุมัติร้านค้า{% endblock %}
+{% block page_title %}อนุมัติร้านค้า{% endblock %}
+
+{% block content %}
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3>รายการคำขอเปิดร้านค้า</h3>
+        
+        <form method="get" class="filter-form" style="display: flex; gap: 10px;">
+            <select name="status" onchange="this.form.submit()" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
+                <option value="">ทุกสถานะ</option>
+                <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>รอตรวจสอบ</option>
+                <option value="approved" {% if current_status == 'approved' %}selected{% endif %}>อนุมัติแล้ว</option>
+                <option value="rejected" {% if current_status == 'rejected' %}selected{% endif %}>ปฏิเสธ</option>
+            </select>
+            <input type="text" name="q" placeholder="ค้นหาชื่อร้าน, เจ้าของ" value="{{ search }}" style="padding:8px 14px; border-radius:10px; border:1px solid #ddd; width:240px;">
+        </form>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ชื่อร้าน</th>
+                    <th>เจ้าของร้าน</th>
+                    <th>วันที่สมัคร</th>
+                    <th>สถานะ</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for shop in shops %}
+                <tr>
+                    <td>{{ shop.store_name }}</td>
+                    <td>{{ shop.owner_name }}</td>
+                    <td>
+                        {{ shop.user.date_joined|date:"d/m/Y" }}
+                    </td>
+                    <td>
+                        {% if shop.verification_status == 'approved' %}
+                            <span class="status active">อนุมัติแล้ว</span>
+                        {% elif shop.verification_status == 'rejected' %}
+                            <span class="status banned">ปฏิเสธ</span>
+                        {% else %}
+                            <span class="status pending" style="background:#fff3cd; color:#856404; padding:4px 8px; border-radius:4px;">รอตรวจสอบ</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'petjoy:admin-shop-detail' shop.pk %}" class="btn-action view">ตรวจสอบ</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="empty">ไม่พบรายการคำขอ</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

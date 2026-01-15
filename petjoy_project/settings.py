@@ -54,6 +54,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'petjoy.middleware.BanCheckMiddleware',
 ]
 
 ROOT_URLCONF = 'petjoy_project.urls'

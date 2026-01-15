@@ -1,0 +1,35 @@
+{% extends "petjoy/base.html" %}
+{% block title %}รอการอนุมัติ - PetJoy{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm p-5 border-0 rounded-4">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <i class="fas fa-clock text-warning" style="font-size: 5rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-3">ได้รับข้อมูลการสมัครเรียบร้อยแล้ว</h2>
+                    <p class="lead text-muted">
+                        ขอบคุณที่สมัครเป็นผู้ประกอบการกับ PetJoy<br>
+                        ระบบกำลังดำเนินการตรวจสอบข้อมูลร้านค้าและเอกสารของคุณ
+                    </p>
+                    
+                    <div class="alert alert-info mt-4 mb-4" role="alert">
+                        <i class="fas fa-info-circle"></i> 
+                        เจ้าหน้าที่จะใช้เวลาตรวจสอบและอนุมัติภายใน 24 ชั่วโมง
+                    </div>
+
+                    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                        <a href="{% url 'petjoy:homepage' %}" class="btn btn-primary btn-lg px-4 gap-3">
+                            กลับสู่หน้าหลัก
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

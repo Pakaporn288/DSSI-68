@@ -1,0 +1,142 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+{% load humanize %}
+
+{% block title %}ตรวจสอบสินค้า: {{ product.name }}{% endblock %}
+{% block page_title %}🔎 รายละเอียดและการตรวจสอบสินค้า{% endblock %}
+
+{% block nav_reports %}active{% endblock %}
+
+{% block content %}
+
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'petjoy:admin-report-list' %}" class="btn-action view" style="text-decoration: none; display: inline-flex; align-items: center; gap: 5px;">
+        ⬅️ ย้อนกลับไปหน้ารายการ
+    </a>
+</div>
+
+<div style="display: flex; gap: 20px; align-items: flex-start; flex-wrap: wrap;">
+    
+    <div class="admin-card" style="flex: 1; min-width: 300px;">
+        <div class="admin-card-header">
+            <h3>📦 ข้อมูลสินค้า</h3>
+            <span class="badge" style="background: #e3f2fd; color: #0d47a1;">ID: {{ product.id }}</span>
+        </div>
+        
+        <div style="padding: 20px;">
+            <div style="text-align: center; margin-bottom: 20px;">
+                {% if product.image %}
+                    <img src="{{ product.image.url }}" 
+                         style="max-width: 100%; height: 250px; object-fit: contain; border-radius: 8px; border: 1px solid #eee;">
+                {% else %}
+                    <div style="height: 200px; background: #f8f9fa; display: flex; align-items: center; justify-content: center; color: #999; border-radius: 8px;">
+                        🚫 ไม่มีรูปภาพ
+                    </div>
+                {% endif %}
+            </div>
+
+            <table style="width: 100%; border-collapse: collapse; font-size: 0.95rem;">
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; font-weight: bold; width: 120px; color: #555;">ชื่อสินค้า:</td>
+                    <td style="padding: 10px;">{{ product.name }}</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; font-weight: bold; color: #555;">หมวดหมู่:</td>
+                    <td style="padding: 10px;">
+                        <span class="badge" style="background: #e0f7fa; color: #006064;">
+                            {{ product.category.display_name }}
+                        </span>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; font-weight: bold; color: #555;">ร้านค้า:</td>
+                    <td style="padding: 10px;">
+                        {{ product.owner.store_name }}
+                        <br>
+                        <small style="color: #888;">(เจ้าของ: {{ product.owner.user.username }})</small>
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; font-weight: bold; color: #555;">ราคา:</td>
+                    <td style="padding: 10px; font-size: 1.1rem; color: #2e7d32; font-weight: bold;">
+                        ฿{{ product.price|intcomma }}
+                    </td>
+                </tr>
+                <tr style="border-bottom: 1px solid #eee;">
+                    <td style="padding: 10px; font-weight: bold; color: #555;">สต็อก:</td>
+                    <td style="padding: 10px;">
+                        {% if product.stock > 0 %}
+                            {{ product.stock }} ชิ้น
+                        {% else %}
+                            <span style="color: red;">สินค้าหมด</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding: 10px; font-weight: bold; color: #555; vertical-align: top;">รายละเอียด:</td>
+                    <td style="padding: 10px; color: #666; line-height: 1.5;">
+                        {{ product.description|default:"-"|linebreaks }}
+                    </td>
+                </tr>
+            </table>
+
+            <div style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; display: flex; gap: 10px; justify-content: flex-end;">
+                <a href="{% url 'petjoy:admin-start-chat' product.owner.id %}" class="btn-action view" style="text-decoration: none;">
+                    💬 ติดต่อร้านค้า
+                </a>
+                
+                <a href="{% url 'petjoy:admin-delete-product-reported' product.id %}" 
+                   class="btn-action danger" 
+                   onclick="return confirm('⚠️ ยืนยันการลบสินค้าชิ้นนี้? ข้อมูลจะถูกลบถาวร');"
+                   style="text-decoration: none;">
+                    🗑️ ลบสินค้า
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card" style="flex: 1; min-width: 300px;">
+        <div class="admin-card-header" style="background: #fff3e0;">
+            <h3 style="color: #e65100;">🚨 ประวัติการรายงานปัญหา ({{ reports.count }})</h3>
+        </div>
+
+        <div class="admin-table-wrapper">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th style="width: 20%;">วันที่</th>
+                        <th style="width: 25%;">ผู้แจ้ง</th>
+                        <th style="width: 20%;">ข้อหา</th>
+                        <th style="width: 35%;">รายละเอียด</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in reports %}
+                    <tr>
+                        <td style="vertical-align: top;">{{ report.created_at|date:"d/m/y" }}</td>
+                        <td style="vertical-align: top;">
+                            {{ report.user.username }}
+                        </td>
+                        <td style="vertical-align: top;">
+                            <span class="badge" style="background: #dc3545; color: white; font-size: 0.75rem; white-space: nowrap;">
+                                {{ report.get_reason_display }}
+                            </span>
+                        </td>
+                        <td style="vertical-align: top; word-break: break-word; color: #555;">
+                            {{ report.details|default:"-" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 30px; color: #999;">
+                            ✅ สินค้านี้ยังไม่มีประวัติการรายงานอื่น
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

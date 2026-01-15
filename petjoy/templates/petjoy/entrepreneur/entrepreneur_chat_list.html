@@ -30,15 +30,15 @@
         margin-bottom: 25px;
     }
 
-    /* รายการแชท */
+    /* รายการแชทปกติ */
     .chat-item-wrapper {
         background: white;
         margin-bottom: 12px;
         border-radius: 14px;
-        border: none !important;
+        border: 1px solid #eee; /* เพิ่มขอบจางๆ */
         transition: 0.2s;
         position: relative;
-        box-shadow: 0 3px 10px rgba(255,138,80,0.15);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         padding-right: 40px;
     }
 
@@ -47,11 +47,44 @@
         box-shadow: 0 4px 12px rgba(255,138,80,0.3);
     }
 
+    /* ⭐ CSS สำหรับแชทของ Admin โดยเฉพาะ ⭐ */
+    .chat-item-wrapper.admin-highlight {
+        background: linear-gradient(to right, #fff9c4, #fff); /* ไล่สีเหลืองอ่อน */
+        border: 2px solid #FFC107; /* ขอบสีทอง */
+        box-shadow: 0 4px 10px rgba(255, 193, 7, 0.2);
+    }
+    
+    .chat-item-wrapper.admin-highlight:hover {
+        background: #fff59d;
+        box-shadow: 0 6px 15px rgba(255, 193, 7, 0.3);
+    }
+
+    .chat-item-wrapper.admin-highlight .chat-name {
+        color: #d32f2f; /* ชื่อสีแดงเข้ม */
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* Badge คำว่า ADMIN */
+    .admin-badge {
+        background-color: #d32f2f;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+    }
+
+    /* ------------------------------ */
+
     .chat-item {
         display: flex;
         padding: 15px;
         text-decoration: none;
         color: #333;
+        align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
     }
 
     .chat-avatar {
@@ -61,6 +94,13 @@
         object-fit: cover;
         margin-right: 15px;
         border: 2px solid #FF8A50;
+    }
+
+    /* Avatar ของ Admin */
+    .chat-avatar.admin-avatar {
+        border: 2px solid #FFC107;
+        padding: 2px;
+        background: white;
     }
 
     .chat-info {
@@ -100,7 +140,7 @@
     }
 
     .chat-more-btn:hover {
-        background: #FFEDE2;
+        background: rgba(0,0,0,0.05);
         color: #E65100;
     }
 
@@ -176,30 +216,41 @@
 
             <section class="chat-list">
                 {% for room in rooms %}
-                    <div class="chat-item-wrapper">
+                    <div class="chat-item-wrapper {% if room.customer.is_superuser %}admin-highlight{% endif %}">
 
-                        <!-- ปุ่ม 3 จุด -->
                         <div class="chat-more-btn" onclick="toggleMenu({{ room.id }})">
                             ⋮
                         </div>
 
-                        <!-- เมนู -->
                         <div class="chat-more-menu" id="menu-{{ room.id }}">
                             <a href="{% url 'petjoy:entrepreneur-chat-delete' room.id %}">🗑️ ลบแชท</a>
                         </div>
 
                         <a href="{% url 'petjoy:entrepreneur-chat-room' room.id %}" class="chat-item">
                             
-                            {% with room.customer.profile as customer_profile %}
-                                {% if customer_profile.image %}
-                                    <img src="{{ customer_profile.image.url }}" class="chat-avatar">
-                                {% else %}
-                                    <img src="{% static 'images/customer_default.png' %}" class="chat-avatar">
-                                {% endif %}
-                            {% endwith %}
+                            {% if room.customer.is_superuser %}
+                                <div style="width: 55px; height: 55px; display: flex; align-items: center; justify-content: center; background: #FFC107; border-radius: 50%; margin-right: 15px; border: 2px solid #FFA000;">
+                                    <i class="fa-solid fa-headset" style="font-size: 24px; color: #fff;"></i>
+                                </div>
+                            {% else %}
+                                {% with room.customer.profile as customer_profile %}
+                                    {% if customer_profile.image %}
+                                        <img src="{{ customer_profile.image.url }}" class="chat-avatar">
+                                    {% else %}
+                                        <img src="{% static 'images/customer_default.png' %}" class="chat-avatar">
+                                    {% endif %}
+                                {% endwith %}
+                            {% endif %}
                             
                             <div class="chat-info">
-                                <div class="chat-name">ลูกค้า: {{ room.customer.username }}</div>
+                                <div class="chat-name">
+                                    {% if room.customer.is_superuser %}
+                                        <span>เจ้าหน้าที่ดูแลระบบ (PetJoy Support)</span>
+                                        <span class="admin-badge">ADMIN</span>
+                                    {% else %}
+                                        ลูกค้า: {{ room.customer.username }}
+                                    {% endif %}
+                                </div>
                                 
                                 <div class="chat-last-message">
                                     {% with room.messages.last as last_message %}

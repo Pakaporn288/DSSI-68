@@ -1,0 +1,61 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+{% load static %}
+{% block nav_chat %}active{% endblock %}
+{% block title %}แชทกับร้านค้า{% endblock %}
+{% block page_title %}💬 แชทกับร้านค้า{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3>รายการสนทนา</h3>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ร้านค้า</th>
+                    <th>ข้อความล่าสุด</th>
+                    <th>จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for room in rooms %}
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            {% if room.entrepreneur.profile_image %}
+                                <img src="{{ room.entrepreneur.profile_image.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            {% else %}
+                                <div style="width:40px; height:40px; border-radius:50%; background:#ddd;"></div>
+                            {% endif %}
+                            <div>
+                                <strong>{{ room.entrepreneur.store_name }}</strong><br>
+                                <small style="color:#777;">{{ room.entrepreneur.owner_name }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        {% with room.messages.last as last_msg %}
+                            {% if last_msg %}
+                                {{ last_msg.message|truncatechars:50 }} 
+                                <span style="color:#999; font-size:0.8em;">({{ last_msg.timestamp|timesince }})</span>
+                            {% else %}
+                                -
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <a href="{% url 'petjoy:admin-chat-room' room.id %}" class="btn-action view">เปิดแชท</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="empty">ยังไม่มีการสนทนา</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

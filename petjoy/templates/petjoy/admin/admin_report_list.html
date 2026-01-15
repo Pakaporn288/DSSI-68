@@ -1,0 +1,116 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+{% block nav_reports %}active{% endblock %}
+{% block title %}การรายงานปัญหา{% endblock %}
+{% block page_title %}🚨 รายการแจ้งปัญหา{% endblock %}
+
+{% block content %}
+<style>
+    /* สไตล์ปุ่มแบบกะทัดรัด (Compact) */
+    .btn-compact {
+        padding: 4px 8px;       /* ลดช่องว่างในปุ่ม */
+        font-size: 0.85rem;     /* ลดขนาดตัวอักษรนิดนึง */
+        border-radius: 4px;
+        text-decoration: none;
+        color: white;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        border: none;
+        transition: filter 0.2s;
+        font-weight: 500;
+        white-space: nowrap;    /* ห้ามข้อความในปุ่มตัดบรรทัด */
+    }
+    .btn-compact:hover {
+        filter: brightness(90%); /* เอฟเฟกต์ตอนเอาเมาส์ชี้ */
+        color: white;
+    }
+
+    /* สีปุ่มแยกตามหน้าที่ */
+    .btn-dismiss { background-color: #28a745; } /* สีเขียว: ยกฟ้อง/ลบรายงาน */
+    .btn-chat    { background-color: #17a2b8; } /* สีฟ้า: แชท */
+    .btn-ban     { background-color: #dc3545; } /* สีแดง: แบน/ลบสินค้า */
+
+    /* บังคับคอลัมน์ไม่ให้ตัดบรรทัดมั่ว */
+    .nowrap-col { white-space: nowrap; }
+</style>
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3>รายการสินค้าที่ถูกรายงาน</h3>
+    </div>
+
+    <div class="admin-table-wrapper">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 12%;">วันที่</th>
+                    <th style="width: 20%;">สินค้า</th>
+                    <th style="width: 15%;">ร้านค้า</th>
+                    <th style="width: 15%;">เหตุผล</th>
+                    <th style="width: 18%;">รายละเอียด</th>
+                    <th style="width: 10%;">ผู้แจ้ง</th>
+                    <th style="text-align: right; min-width: 200px;">จัดการ</th> </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td class="nowrap-col" style="color: #666; font-size: 0.9rem;">
+                        {{ report.created_at|date:"d/m/y H:i" }}
+                    </td>
+                    <td>
+                        <a href="{% url 'petjoy:admin-product-detail' report.product.id %}" target="_blank" 
+                           style="font-weight:600; color:#E65100; text-decoration: none;">
+                            {{ report.product.name|truncatechars:20 }}
+                        </a>
+                    </td>
+                    <td>{{ report.product.owner.store_name|truncatechars:15 }}</td>
+                    
+                    <td>
+                        <span class="badge" 
+                              style="background:#dc3545; color:white; white-space: nowrap; display: inline-block; font-size: 0.8rem;">
+                            {{ report.get_reason_display }}
+                        </span>
+                    </td>
+                    
+                    <td style="font-size: 0.9rem; color: #555;">
+                        {{ report.details|default:"-"|truncatechars:20 }}
+                    </td>
+                    <td>{{ report.user.username }}</td>
+                    
+                    <td style="text-align: right;">
+                        <div style="display: flex; gap: 5px; justify-content: flex-end; align-items: center;">
+                            
+                            <a href="{% url 'petjoy:admin-delete-report' report.id %}" 
+                               class="btn-compact btn-dismiss" 
+                               onclick="return confirm('✅ ยืนยันลบรายงานนี้? (สินค้าจะไม่หาย)');"
+                               title="ลบรายงานนี้ทิ้ง">
+                                ✅ ยกฟ้อง
+                            </a>
+
+                            <a href="{% url 'petjoy:admin-start-chat-report' report.id %}" 
+                               class="btn-compact btn-chat" 
+                               title="ติดต่อร้านค้า">
+                                💬 แชท
+                            </a>
+
+                            <a href="{% url 'petjoy:admin-delete-product-reported' report.product.id %}" 
+                               class="btn-compact btn-ban"
+                               onclick="return confirm('⚠️ ยืนยันการลบสินค้า {{ report.product.name }}?');"
+                               title="ลบสินค้าออกจากระบบ">
+                                🗑️ ลบสินค้า
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" class="empty" style="text-align: center; padding: 30px;">
+                        ✅ ไม่มีรายงานปัญหาในขณะนี้
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

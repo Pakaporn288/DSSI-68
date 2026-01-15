@@ -1,0 +1,111 @@
+{% extends 'petjoy/admin/admin_base.html' %}
+{% load static %}
+
+{% block title %}รายละเอียดร้านค้า{% endblock %}
+{% block page_title %}ตรวจสอบร้านค้า{% endblock %}
+
+{% block content %}
+
+<div class="admin-card">
+    <div class="admin-card-header">
+        <h3>ข้อมูลร้านค้า: {{ shop.store_name }}</h3>
+        <a href="{% url 'petjoy:admin-shop-list' %}" class="btn-action view">← กลับ</a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+        
+        <div>
+            <h4 style="border-bottom: 2px solid #FF6A2E; padding-bottom: 10px; margin-bottom: 20px;">ข้อมูลทั่วไป</h4>
+            <table class="admin-table">
+                <tr>
+                    <th style="width: 150px;">เจ้าของร้าน</th>
+                    <td>{{ shop.owner_name }}</td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td>{{ shop.email }}</td>
+                </tr>
+                <tr>
+                    <th>เบอร์โทร</th>
+                    <td>{{ shop.phone }}</td>
+                </tr>
+                <tr>
+                    <th>ที่อยู่ร้าน</th>
+                    <td>{{ shop.shop_address|default:"-" }}</td>
+                </tr>
+                <tr>
+                    <th>เลขผู้เสียภาษี</th>
+                    <td>{{ shop.tax_id|default:"-" }}</td>
+                </tr>
+                <tr>
+                    <th>สถานะปัจจุบัน</th>
+                    <td>
+                        {% if shop.verification_status == 'approved' %}
+                            <span class="status active" style="font-size: 1.1em;">✅ อนุมัติแล้ว</span>
+                        {% elif shop.verification_status == 'rejected' %}
+                            <span class="status banned" style="font-size: 1.1em;">❌ ปฏิเสธ</span>
+                        {% else %}
+                            <span class="status pending" style="background:#fff3cd; color:#856404; padding:4px 8px; border-radius:4px; font-size: 1.1em;">⏳ รอตรวจสอบ</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div>
+            <h4 style="border-bottom: 2px solid #FF6A2E; padding-bottom: 10px; margin-bottom: 20px;">เอกสารประกอบ</h4>
+            
+            <div style="margin-bottom: 20px;">
+                <p><strong>สำเนาบัตรประชาชน:</strong></p>
+                {% if shop.id_card_copy %}
+                    <a href="{{ shop.id_card_copy.url }}" target="_blank">
+                        <img src="{{ shop.id_card_copy.url }}" style="max-width: 100%; height: 150px; object-fit: cover; border: 1px solid #ddd; border-radius: 8px;">
+                        <br><small>คลิกเพื่อดูรูปใหญ่</small>
+                    </a>
+                {% else %}
+                    <p style="color: #999;">- ยังไม่อัปโหลด -</p>
+                {% endif %}
+            </div>
+
+            <div>
+                <p><strong>หน้าสมุดบัญชี:</strong></p>
+                {% if shop.bank_book_copy %}
+                    <a href="{{ shop.bank_book_copy.url }}" target="_blank">
+                        <img src="{{ shop.bank_book_copy.url }}" style="max-width: 100%; height: 150px; object-fit: cover; border: 1px solid #ddd; border-radius: 8px;">
+                        <br><small>คลิกเพื่อดูรูปใหญ่</small>
+                    </a>
+                {% else %}
+                    <p style="color: #999;">- ยังไม่อัปโหลด -</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; text-align: right;">
+        
+        {% if shop.verification_status == 'pending' %}
+            <a href="{% url 'petjoy:admin-reject-shop' shop.pk %}" 
+               class="btn-action danger" 
+               style="padding: 12px 24px; font-size: 1rem;"
+               onclick="return confirm('ยืนยันที่จะปฏิเสธร้านค้านี้?');">
+               ❌ ปฏิเสธ
+            </a>
+            
+            <a href="{% url 'petjoy:admin-approve-shop' shop.pk %}" 
+               class="btn-action success" 
+               style="background-color: #28a745; color: white; padding: 12px 24px; font-size: 1rem; margin-left: 10px;"
+               onclick="return confirm('ยืนยันที่จะอนุมัติร้านค้านี้?');">
+               ✅ อนุมัติร้านค้า
+            </a>
+        {% elif shop.verification_status == 'rejected' %}
+             <span style="color: red; margin-right: 15px;">ร้านนี้ถูกปฏิเสธแล้ว</span>
+             <a href="{% url 'petjoy:admin-approve-shop' shop.pk %}" class="btn-action view">เปลี่ยนเป็นอนุมัติ</a>
+        {% else %}
+             <span style="color: green; margin-right: 15px;">ร้านนี้ได้รับการอนุมัติแล้ว</span>
+             <a href="{% url 'petjoy:admin-reject-shop' shop.pk %}" class="btn-action warn" onclick="return confirm('ต้องการระงับ/ปฏิเสธร้านนี้หรือไม่?');">เปลี่ยนเป็นปฏิเสธ</a>
+        {% endif %}
+
+    </div>
+
+</div>
+{% endblock %}

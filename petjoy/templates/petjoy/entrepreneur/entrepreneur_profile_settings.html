@@ -6,7 +6,6 @@
     <meta charset="UTF-8">
     <title>ตั้งค่าโปรไฟล์ร้าน</title>
 
-    <!-- ใช้ CSS เดียวกับหน้าต่าง ๆ ของผู้ประกอบการ -->
     <link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
 
@@ -76,13 +75,36 @@
             border-radius: 14px;
             border: 1px solid #ffd2b7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: relative;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
         }
 
         .section-title {
             font-size: 18px;
             font-weight: 700;
             color: #FF6A2E;
-            margin-bottom: 12px;
+            margin: 0;
+        }
+
+        .edit-toggle-btn {
+            background: none;
+            border: 1px solid #ddd;
+            color: #777;
+            font-size: 0.85rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .edit-toggle-btn:hover {
+            background: #f0f0f0;
+            color: #333;
         }
 
         .form-field {
@@ -102,6 +124,15 @@
             border-radius: 8px;
             border: 1px solid #ddd;
             font-family: 'Kanit', sans-serif;
+            transition: background-color 0.3s;
+        }
+
+        /* สีเทาเมื่อมีข้อมูลแล้ว */
+        .filled-field {
+            background-color: #EBEBEB !important; 
+            color: #666;
+            cursor: not-allowed;
+            border-color: #dcdcdc;
         }
 
         .save-btn {
@@ -115,14 +146,10 @@
             margin-top: 12px;
         }
 
-        .preview-img {
-            width: 180px;
-            border-radius: 10px;
-            margin-top: 8px;
-            border: 2px solid #FF6A2E;
+        .save-btn:hover {
+            background-color: #e66a41;
         }
 
-        /* ===== ข้อ 5: ข้อความตอบกลับด่วน ===== */
         .quick-reply-list {
             list-style: none;
             padding: 0;
@@ -148,6 +175,23 @@
             padding: 6px 10px;
             border-radius: 6px;
             cursor: pointer;
+        }
+        
+        /* Message alert style */
+        .messages {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 20px;
+        }
+        .messages li {
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 5px;
+        }
+        .messages li.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
     </style>
 </head>
@@ -199,58 +243,96 @@
                     </div>
                 </div>
             </div>
+
+            {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                        <li class="{{ message.tags }}">{{ message }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
         </section>
 
         <section class="settings-area">
 
-            <!-- 1. ข้อมูลภาษีร้าน -->
-            <div class="settings-section">
-                <h3 class="section-title">1. ข้อมูลภาษีร้าน</h3>
+            <div class="settings-section" id="section-tax">
+                <div class="section-header">
+                    <h3 class="section-title">1. ข้อมูลภาษีร้าน</h3>
+                    {% if entrepreneur.tax_id %}
+                        <button type="button" class="edit-toggle-btn" onclick="enableEdit('section-tax')">✏️ แก้ไข</button>
+                    {% endif %}
+                </div>
                 <form method="POST">
                     {% csrf_token %}
                     <div class="form-field">
                         <label>เลขประจำตัวผู้เสียภาษี</label>
-                        <input type="text" name="tax_id" value="{{ profile.tax_id|default:'' }}">
+                        <input type="text" name="tax_id" 
+                               value="{{ entrepreneur.tax_id|default:'' }}"
+                               class="{% if entrepreneur.tax_id %}filled-field{% endif %}"
+                               {% if entrepreneur.tax_id %}readonly{% endif %}>
                     </div>
                     <button type="submit" name="save_tax" class="save-btn">บันทึก</button>
                 </form>
             </div>
 
-            <!-- 2. ที่อยู่ร้าน -->
             <div class="settings-section">
                 <h3 class="section-title">2. ที่อยู่ร้านโดยละเอียด</h3>
                 <form method="POST">
                     {% csrf_token %}
                     <div class="form-field">
                         <label>ที่อยู่ร้าน</label>
-                        <textarea name="shop_address" rows="3">{{ profile.shop_address|default:'' }}</textarea>
+                        <textarea name="shop_address" rows="3">{{ entrepreneur.shop_address|default:'' }}</textarea>
                     </div>
                     <button type="submit" name="save_address" class="save-btn">บันทึก</button>
                 </form>
             </div>
 
-            <!-- 3. ข้อมูลบัญชีธนาคาร -->
-            <div class="settings-section">
-                <h3 class="section-title">3. ข้อมูลบัญชีธนาคาร</h3>
+            <div class="settings-section" id="section-bank">
+                <div class="section-header">
+                    <h3 class="section-title">3. ข้อมูลบัญชีธนาคาร</h3>
+                    {% if entrepreneur.bank_name %}
+                        <button type="button" class="edit-toggle-btn" onclick="enableEdit('section-bank')">✏️ แก้ไข</button>
+                    {% endif %}
+                </div>
                 <form method="POST" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-field">
                         <label>ชื่อธนาคาร</label>
-                        <input type="text" name="bank_name" value="{{ profile.bank_name|default:'' }}">
+                        <input type="text" name="bank_name" 
+                               value="{{ entrepreneur.bank_name|default:'' }}"
+                               class="{% if entrepreneur.bank_name %}filled-field{% endif %}"
+                               {% if entrepreneur.bank_name %}readonly{% endif %}>
                     </div>
                     <div class="form-field">
                         <label>ชื่อบัญชี</label>
-                        <input type="text" name="account_name" value="{{ profile.account_name|default:'' }}">
+                        <input type="text" name="account_name" 
+                               value="{{ entrepreneur.account_name|default:'' }}"
+                               class="{% if entrepreneur.account_name %}filled-field{% endif %}"
+                               {% if entrepreneur.account_name %}readonly{% endif %}>
                     </div>
                     <div class="form-field">
                         <label>เลขที่บัญชี</label>
-                        <input type="text" name="account_number" value="{{ profile.account_number|default:'' }}">
+                        <input type="text" name="account_number" 
+                               value="{{ entrepreneur.account_number|default:'' }}"
+                               class="{% if entrepreneur.account_number %}filled-field{% endif %}"
+                               {% if entrepreneur.account_number %}readonly{% endif %}>
                     </div>
+                    
+                    {% if entrepreneur.bank_book_copy %}
+                        <div style="margin-top: 10px;">
+                            <small style="color: green;">✔ มีไฟล์สมุดบัญชีแล้ว: <a href="{{ entrepreneur.bank_book_copy.url }}" target="_blank">ดูรูปภาพ</a></small>
+                        </div>
+                    {% endif %}
+                    
+                    <div class="form-field">
+                         <label>อัปโหลดสมุดบัญชี (ถ้าต้องการเปลี่ยน)</label>
+                         <input type="file" name="bank_book_copy">
+                    </div>
+
                     <button type="submit" name="save_bank" class="save-btn">บันทึก</button>
                 </form>
             </div>
 
-            <!-- 4. เอกสารยืนยันตัวตน -->
             <div class="settings-section">
                 <h3 class="section-title">4. เอกสารยืนยันตัวตน</h3>
                 <form method="POST" enctype="multipart/form-data">
@@ -258,12 +340,17 @@
                     <div class="form-field">
                         <label>สำเนาบัตรประชาชน</label>
                         <input type="file" name="id_card_copy">
+                        
+                        {% if entrepreneur.id_card_copy %}
+                            <div style="margin-top: 5px;">
+                                <small style="color: green;">✔ มีไฟล์บัตรประชาชนแล้ว: <a href="{{ entrepreneur.id_card_copy.url }}" target="_blank">ดูรูปภาพ</a></small>
+                            </div>
+                        {% endif %}
                     </div>
                     <button type="submit" name="save_idcard" class="save-btn">บันทึก</button>
                 </form>
             </div>
 
-            <!-- 5. ข้อความสำหรับตอบกลับด่วน -->
             <div class="settings-section">
                 <h3 class="section-title">5. ข้อความสำหรับตอบกลับด่วน</h3>
 
@@ -303,6 +390,18 @@
     </main>
 
 </div>
+
+<script>
+    function enableEdit(sectionId) {
+        const section = document.getElementById(sectionId);
+        const inputs = section.querySelectorAll('input[type="text"]');
+        
+        inputs.forEach(input => {
+            input.removeAttribute('readonly');
+            input.classList.remove('filled-field');
+        });
+    }
+</script>
 
 </body>
 </html>

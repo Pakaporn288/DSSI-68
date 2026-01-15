@@ -76,13 +76,26 @@ urlpatterns = [
     path("system/dashboard/", views.admin_dashboard, name="admin-dashboard"),
     path("system/users/", views.admin_user_list, name="admin-users"),
     path("system/users/<int:user_id>/",views.admin_user_detail,name="admin-user-detail"),
-
-
-
-
-
-
-
+    path('system/users/<int:user_id>/ban/', views.admin_toggle_ban, name='admin-toggle-ban'),
+    path('banned/', views.banned_view, name='banned-page'),
+    path('system/users/<int:user_id>/delete/', views.admin_delete_user, name='admin-delete-user'),
+    path('system/shops/', views.admin_shop_list, name='admin-shop-list'),
+    path('system/shops/<int:pk>/', views.admin_shop_detail, name='admin-shop-detail'),
+    path('system/shops/<int:pk>/approve/', views.admin_approve_shop, name='admin-approve-shop'),
+    path('system/shops/<int:pk>/reject/', views.admin_reject_shop, name='admin-reject-shop'),
+    # --- ระบบรายงานและการจัดการ ---
+    path("system/reports/", views.admin_report_list, name="admin-report-list"),
+    path("system/product/<int:product_id>/delete/", views.admin_delete_product_reported, name="admin-delete-product-reported"),
+    # --- ระบบแชทของแอดมิน ---
+    path("system/chat/", views.admin_chat_list, name="admin-chat-list"),
+    path("system/chat/start/<int:entrepreneur_id>/", views.admin_start_chat, name="admin-start-chat"),
+    path("system/chat/room/<int:room_id>/", views.admin_chat_room, name="admin-chat-room"),
+    # แถมหน้ารายการคำสั่งซื้อของแอดมิน (เผื่อคลิกจาก Sidebar)
+    path("system/orders/", views.admin_orders_list, name="admin-orders-list"),
+    path("system/reports/chat/<int:report_id>/", views.admin_start_chat_from_report, name="admin-start-chat-report"),
+    path("system/product/<int:product_id>/detail/", views.admin_product_detail, name="admin-product-detail"),
+    path('system/orders/analytics/', views.admin_order_analytics, name='admin-orders-analytics'),
+    path('system/reports/<int:report_id>/delete/', views.admin_delete_report, name='admin-delete-report'),
 ]
 
 

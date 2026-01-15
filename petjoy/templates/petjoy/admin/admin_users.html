@@ -6,35 +6,21 @@
 {% block content %}
 
 <div class="admin-card">
-
-    <!-- Header + Filter -->
     <div class="admin-card-header">
         <h3>รายชื่อผู้ใช้งานในระบบ</h3>
-
-        <form method="get" class="filter-form">
-            <select name="type" onchange="this.form.submit()">
+        
+        <form method="get" class="filter-form" style="display: flex; gap: 10px;">
+            <select name="type" onchange="this.form.submit()" style="padding: 8px; border-radius: 8px; border: 1px solid #ddd;">
                 <option value="">ทั้งหมด</option>
-                <option value="admin" {% if request.GET.type == 'admin' %}selected{% endif %}>แอดมิน</option>
-                <option value="entrepreneur" {% if request.GET.type == 'entrepreneur' %}selected{% endif %}>ผู้ประกอบการ</option>
-                <option value="user" {% if request.GET.type == 'user' %}selected{% endif %}>ผู้ใช้งานทั่วไป</option>
+                <option value="admin" {% if current_type == 'admin' %}selected{% endif %}>แอดมิน</option>
+                <option value="entrepreneur" {% if current_type == 'entrepreneur' %}selected{% endif %}>ผู้ประกอบการ</option>
+                <option value="user" {% if current_type == 'user' %}selected{% endif %}>ผู้ใช้งานทั่วไป</option>
             </select>
-        </form>
-        <form method="get" class="filter-form">
-            <input type="text"
-                     name="q"
-                     placeholder="ค้นหา username หรือ email"
-                     value="{{ search }}"
-                     style="
-                     padding:8px 14px;
-                     border-radius:10px;
-                     border:1px solid #ddd;
-                     width:240px;
-                    ">
-
+            <input type="text" name="q" placeholder="ค้นหา username หรือ email" value="{{ search }}" style="padding:8px 14px; border-radius:10px; border:1px solid #ddd; width:240px;">
+            <button type="submit" style="display:none;"></button>
         </form>
     </div>
 
-    <!-- Table -->
     <div class="admin-table-wrapper">
         <table class="admin-table">
             <thead>
@@ -51,7 +37,6 @@
                 <tr>
                     <td>{{ user.username }}</td>
                     <td>{{ user.email|default:"-" }}</td>
-
                     <td>
                         {% if user.is_superuser %}
                             <span class="badge admin">แอดมิน</span>
@@ -61,21 +46,35 @@
                             <span class="badge user">ผู้ใช้งานทั่วไป</span>
                         {% endif %}
                     </td>
-
                     <td>
-                        {% if user.is_active %}
+                        {% if user.profile.is_banned %}
+                            <span class="status banned">ถูกระงับ</span>
+                        {% elif user.is_active %}
                             <span class="status active">ใช้งาน</span>
                         {% else %}
-                            <span class="status banned">ถูกระงับ</span>
+                            <span class="status banned">Inactive</span>
                         {% endif %}
                     </td>
-
                     <td>
                         <div class="action-buttons">
                             <a href="{% url 'petjoy:admin-user-detail' user.id %}" class="btn-action view">ดูโปรไฟล์</a>
-                            <a href="#" class="btn-action warn">ระงับ</a>
+                            
+                            {% if user.profile.is_banned %}
+                                <a href="{% url 'petjoy:admin-toggle-ban' user.id %}" class="btn-action success" style="background-color: #28a745; color: white;">
+                                    ปลดระงับ
+                                </a>
+                            {% else %}
+                                <a href="{% url 'petjoy:admin-toggle-ban' user.id %}" class="btn-action warn">
+                                    ระงับ
+                                </a>
+                            {% endif %}
+                            
                             {% if request.user.is_superuser %}
-                                <a href="#" class="btn-action danger">ลบ</a>
+                                <a href="{% url 'petjoy:admin-delete-user' user.id %}" 
+                                   class="btn-action danger"
+                                   onclick="return confirm('คุณแน่ใจหรือไม่ที่จะลบบัญชี {{ user.username }}? การกระทำนี้ไม่สามารถย้อนกลับได้');">
+                                   ลบ
+                                </a>
                             {% endif %}
                         </div>
                     </td>
@@ -88,7 +87,6 @@
             </tbody>
         </table>
     </div>
-
 </div>
 
 {% endblock %}

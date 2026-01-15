@@ -1,0 +1,80 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บัญชีถูกระงับ</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap">
+    <style>
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: rgba(0, 0, 0, 0.85); /* พื้นหลังทึบ */
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .banned-box {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            border-top: 6px solid #ff4d4d;
+        }
+        .icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        h1 { margin: 0 0 10px; color: #ff4d4d; }
+        p { color: #555; font-size: 1.1rem; line-height: 1.6; }
+        .contact-box {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+            color: #333;
+            border: 1px dashed #ccc;
+        }
+        .logout-btn {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 10px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            margin-top: 10px;
+            transition: 0.2s;
+            border: none;
+            font-family: 'Kanit', sans-serif;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        .logout-btn:hover { background: #555; }
+    </style>
+</head>
+<body>
+
+    <div class="banned-box">
+        <div class="icon">🚫</div>
+        <h1>บัญชีของคุณถูกระงับ</h1>
+        <p>ขออภัย บัญชีของคุณถูกระงับการใช้งานชั่วคราว<br>เนื่องจากทำผิดกฎการใช้งานของระบบ</p>
+        
+        <div class="contact-box">
+            โปรดติดต่อผู้ดูแลระบบ<br>
+            📧 admin@petjoy.com
+        </div>
+
+        <form method="post" action="{% url 'petjoy:logout' %}">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">ออกจากระบบ</button>
+        </form>
+    </div>
+
+</body>
+</html>

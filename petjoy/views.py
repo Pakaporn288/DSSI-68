@@ -30,12 +30,15 @@ from petjoy.models import Order
 from .models import Review, ReviewReply
 from .models import QuickReply
 from django.utils import timezone
-from django.db.models import Sum
 from django.db.models.functions import TruncDate
-from django.db.models import Sum, Count
+from django.db.models import Sum, Count, F
 from datetime import timedelta
 from django.shortcuts import render, redirect
-from django.contrib.auth import get_user_model
+from .models import Entrepreneur, Order
+from django.db.models.functions import Coalesce
+from .models import ProductReport
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -538,31 +541,42 @@ def entrepreneur_profile_edit_home(request):
         {"entrepreneur": entrepreneur}
     )
 
-def entrepreneur_register(request):
-    # Two modes:
-    # - If user is authenticated: attach Entrepreneur to request.user
-    # - If anonymous: allow creating user+entrepreneur in one flow
-    from .models import Entrepreneur
-    from django.contrib.auth.forms import UserCreationForm
 
+def entrepreneur_register(request):
+    """
+    หน้าลงทะเบียนผู้ประกอบการ
+    รองรับทั้งคนที่เป็นสมาชิกแล้ว (Authenticated) และยังไม่เป็นสมาชิก (Anonymous)
+    """
+    
+    # ========================================================
+    # กรณีที่ 1: เป็นสมาชิกแล้ว (Logged in User)
+    # ========================================================
     if request.user.is_authenticated:
         if hasattr(request.user, 'entrepreneur'):
-            messages.info(request, 'คุณมีโปรไฟล์ผู้ประกอบการแล้ว')
+            messages.info(request, 'คุณมีโปรไฟล์ผู้ประกอบการอยู่แล้ว')
             return redirect('petjoy:entrepreneur-home')
 
         if request.method == 'POST':
+            # รับข้อมูลทั่วไป
             store_name = request.POST.get('store_name')
             owner_name = request.POST.get('owner_name')
             email = request.POST.get('email') or request.user.email
             phone = request.POST.get('phone')
+            tax_id = request.POST.get('tax_id')
+            shop_address = request.POST.get('shop_address')
+            
+            # รับข้อมูลธนาคาร
+            bank_name = request.POST.get('bank_name')
+            account_name = request.POST.get('account_name')
+            account_number = request.POST.get('account_number')
+            
+            # รับไฟล์เอกสาร
+            id_card_copy = request.FILES.get('id_card_copy')
+            bank_book_copy = request.FILES.get('bank_book_copy')
+            commerce_doc = request.FILES.get('commerce_doc')
 
-            if not store_name or not owner_name or not email:
-                messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
-                return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
-
-            # Prevent duplicate shop by email
-            if Entrepreneur.objects.filter(email__iexact=email).exists():
-                messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้ว')
+            if not store_name or not owner_name:
+                messages.error(request, 'กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน')
                 return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
             Entrepreneur.objects.create(
@@ -570,67 +584,96 @@ def entrepreneur_register(request):
                 store_name=store_name,
                 owner_name=owner_name,
                 email=email,
-                phone=phone or ''
+                phone=phone,
+                tax_id=tax_id,
+                shop_address=shop_address,
+                bank_name=bank_name,
+                account_name=account_name,
+                account_number=account_number,
+                id_card_copy=id_card_copy,
+                bank_book_copy=bank_book_copy,
+                commerce_doc=commerce_doc,
+                verification_status='pending'  # ⭐ ระบุสถานะรอตรวจสอบชัดเจน
             )
-            messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว')
+            
+            messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว โปรดรอการตรวจสอบจากเจ้าหน้าที่')
             return redirect('petjoy:entrepreneur-home')
-
+            
         return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-    # Anonymous flow: create User and Entrepreneur in one form
+    # ========================================================
+    # กรณีที่ 2: ยังไม่เป็นสมาชิก (Anonymous Flow) -> สมัคร User + ร้านค้าพร้อมกัน
+    # ========================================================
     if request.method == 'POST':
+        # ข้อมูล User
         username = request.POST.get('username')
         password = request.POST.get('password')
         password2 = request.POST.get('password2')
+        
+        # ข้อมูลร้านค้า (เพิ่มส่วนนี้ให้ครบเหมือนด้านบน)
         email = request.POST.get('email')
         store_name = request.POST.get('store_name')
         owner_name = request.POST.get('owner_name')
         phone = request.POST.get('phone')
+        tax_id = request.POST.get('tax_id')
+        shop_address = request.POST.get('shop_address')
+        
+        # รับข้อมูลธนาคารและไฟล์ (ส่วนที่ของเดิมของคุณขาดไป)
+        bank_name = request.POST.get('bank_name')
+        account_name = request.POST.get('account_name')
+        account_number = request.POST.get('account_number')
+        id_card_copy = request.FILES.get('id_card_copy')
+        bank_book_copy = request.FILES.get('bank_book_copy')
+        commerce_doc = request.FILES.get('commerce_doc')
 
-        # Basic validation
+        # Validation เบื้องต้น
         if not username or not password or not email or not store_name or not owner_name:
             messages.error(request, 'กรุณากรอกข้อมูลให้ครบถ้วน')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-        # confirm password
         if password2 is None or password != password2:
             messages.error(request, 'รหัสผ่านทั้งสองช่องต้องตรงกัน')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-        # strip whitespace from username/email to avoid accidental spaces
-        username = username.strip()
-        if email:
-            email = email.strip()
-
-        # Check duplicate entrepreneur email
+        # เช็คชื่อซ้ำ
         if Entrepreneur.objects.filter(email__iexact=email).exists():
             messages.error(request, 'มีร้านค้าที่ใช้อีเมลนี้อยู่แล้ว')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
-        # Create user
+        from django.contrib.auth import get_user_model
         User = get_user_model()
         if User.objects.filter(username__iexact=username).exists():
             messages.error(request, 'มีชื่อผู้ใช้นี้ในระบบแล้ว')
             return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
 
+        # 1. สร้าง User ใหม่
         new_user = User.objects.create_user(username=username, email=email, password=password)
-        # Create entrepreneur tied to new_user
+        
+        # 2. สร้าง Entrepreneur ผูกกับ User ใหม่ (พร้อมเอกสารครบถ้วน)
         Entrepreneur.objects.create(
             user=new_user,
             store_name=store_name,
             owner_name=owner_name,
             email=email,
-            phone=phone or ''
+            phone=phone or '',
+            tax_id=tax_id,
+            shop_address=shop_address,
+            bank_name=bank_name,
+            account_name=account_name,
+            account_number=account_number,
+            id_card_copy=id_card_copy,
+            bank_book_copy=bank_book_copy,
+            commerce_doc=commerce_doc,
+            verification_status='pending' # ⭐ ระบุสถานะรอตรวจสอบชัดเจน
         )
 
-        # Log the user in immediately so they can manage their shop
+        # Log in อัตโนมัติ แล้วพาไปหน้า Home ร้านค้า
         try:
             login(request, new_user)
-            messages.success(request, 'สมัครและเข้าสู่ระบบเรียบร้อยแล้ว')
+            messages.success(request, 'สมัครสมาชิกและส่งคำขอเปิดร้านเรียบร้อยแล้ว โปรดรอการอนุมัติ')
             return redirect('petjoy:entrepreneur-home')
         except Exception:
-            # If automatic login fails for any reason, ask user to login manually
-            messages.success(request, 'สมัครเป็นผู้ประกอบการเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ')
+            messages.success(request, 'สมัครเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ')
             return redirect('petjoy:login')
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_register.html')
@@ -740,6 +783,99 @@ def address_edit(request, id):
         return redirect("petjoy:address_list")
 
     return render(request, "petjoy/address_form.html", {"address": address})
+
+# views.py
+
+# ==========================================
+# 🚨 ADMIN REPORT & CHAT SYSTEM
+# ==========================================
+
+@login_required
+def admin_report_list(request):
+    """หน้ารายการสินค้าที่ถูกรายงาน"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+    
+    # ดึงข้อมูลการรายงานทั้งหมด (เรียงจากใหม่สุด)
+    from .models import ProductReport
+    reports = ProductReport.objects.all().order_by('-created_at')
+    
+    return render(request, 'petjoy/admin/admin_report_list.html', {'reports': reports})
+
+@login_required
+def admin_delete_product_reported(request, product_id):
+    """ลบสินค้าที่มีปัญหา (กดจากหน้ารายงาน)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    product = get_object_or_404(Product, id=product_id)
+    product_name = product.name
+    product.delete() # การลบสินค้าจะลบ Report ที่ผูกอยู่ด้วยอัตโนมัติ (Cascade)
+    
+    messages.success(request, f"ลบสินค้า '{product_name}' ออกจากระบบแล้ว")
+    return redirect('petjoy:admin-report-list')
+
+@login_required
+def admin_start_chat(request, entrepreneur_id):
+    """เริ่มแชทกับร้านค้า (กดจากปุ่ม 'ติดต่อร้านค้า' ในหน้ารายงาน)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    entrepreneur = get_object_or_404(Entrepreneur, id=entrepreneur_id)
+    
+    # แอดมินจะทำตัวเป็น 'Customer' ในตาราง ChatRoom เพื่อคุยกับร้านค้า
+    room, created = ChatRoom.objects.get_or_create(
+        customer=request.user,
+        entrepreneur=entrepreneur
+    )
+    
+    return redirect('petjoy:admin-chat-room', room_id=room.id)
+
+@login_required
+def admin_chat_list(request):
+    """หน้ารายการแชททั้งหมดของแอดมิน"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    # ดึงห้องแชทที่แอดมิน (ในฐานะ customer) คุยกับร้านต่างๆ
+    rooms = ChatRoom.objects.filter(customer=request.user).order_by('-id')
+    
+    return render(request, 'petjoy/admin/admin_chat_list.html', {'rooms': rooms})
+
+@login_required
+def admin_chat_room(request, room_id):
+    """หน้าห้องแชทของแอดมิน (หน้าตาเหมือน Admin Panel)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
+
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        if message_text:
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text
+            )
+            return redirect('petjoy:admin-chat-room', room_id=room.id)
+
+    messages_list = room.messages.all().order_by('id')
+    
+    return render(request, 'petjoy/admin/admin_chat_room.html', {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user
+    })
+
+@login_required
+def admin_orders_list(request):
+    """หน้ารายการคำสั่งซื้อรวม (Placeholder)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+    
+    orders = Order.objects.all().order_by('-created_at')
+    return render(request, 'petjoy/admin/admin_orders_list.html', {'orders': orders})
 
 class EntrepreneurProductDetailView(View):
     def get(self, request, pk):
@@ -860,18 +996,33 @@ class ProductUpdateView(UpdateView):
 
 
 
+# views.py
+
 class ProductDeleteView(DeleteView):
     model = Product
     template_name = 'petjoy/products/product_confirm_delete.html'
-    success_url = reverse_lazy('petjoy:product-list')
+    
+    # ไม่ใช้ success_url แบบ static แล้ว เพราะเราจะใช้ get_success_url แทน
+    # success_url = reverse_lazy('petjoy:product-list') 
 
+    # ---------------------------------------------------------
+    # 1. กำหนดให้เด้งไปหน้า "จัดการร้านค้า" หลังลบเสร็จ
+    # ---------------------------------------------------------
+    def get_success_url(self):
+        from django.urls import reverse_lazy
+        # ✅ เปลี่ยนตรงนี้: ให้กลับไปหน้า Dashboard ร้านค้า (จะได้ไม่เจอ 404)
+        return reverse_lazy('petjoy:entrepreneur-home')
+
+    # ---------------------------------------------------------
+    # 2. ตรวจสอบสิทธิ์ก่อนอนุญาตให้ลบ
+    # ---------------------------------------------------------
     def dispatch(self, request, *args, **kwargs):
-        # ตรวจสอบสิทธิ์: ต้องเป็นผู้ประกอบการเท่านั้น
+        # A. ต้องล็อกอินและเป็นผู้ประกอบการ
         if not request.user.is_authenticated or not hasattr(request.user, 'entrepreneur'):
             messages.error(request, 'คุณต้องเป็นผู้ประกอบการและล็อกอินก่อนลบสินค้า')
             return redirect('petjoy:login')
 
-        # ตรวจสอบว่าเป็นเจ้าของสินค้าหรือไม่
+        # B. สินค้านี้ต้องเป็นของร้านเราจริงๆ (ห้ามลบของคนอื่น)
         obj = self.get_object()
         if obj.owner is None or obj.owner.user_id != request.user.id:
             messages.error(request, 'คุณไม่มีสิทธิ์ลบสินค้านี้')
@@ -879,14 +1030,20 @@ class ProductDeleteView(DeleteView):
 
         return super().dispatch(request, *args, **kwargs)
 
+    # ---------------------------------------------------------
+    # 3. ส่งข้อมูลร้านค้าไปที่ Template (เพื่อให้เมนู Sidebar ไม่หาย)
+    # ---------------------------------------------------------
     def get_context_data(self, **kwargs):
-        """
-        ส่งข้อมูล entrepreneur เข้า template ด้วย
-        เพื่อให้ Sidebar แสดงชื่อร้าน รูปโปรไฟล์ และเมนูด้านซ้ายได้ถูกต้อง
-        """
         ctx = super().get_context_data(**kwargs)
         ctx['entrepreneur'] = self.request.user.entrepreneur
         return ctx
+
+    # ---------------------------------------------------------
+    # 4. เพิ่มข้อความแจ้งเตือน "ลบสำเร็จ"
+    # ---------------------------------------------------------
+    def form_valid(self, form):
+        messages.success(self.request, "🗑️ ลบสินค้าเรียบร้อยแล้ว")
+        return super().form_valid(form)
 
 
 
@@ -894,52 +1051,50 @@ class ProductDeleteView(DeleteView):
 @login_required
 def entrepreneur_profile_settings(request):
     entrepreneur = get_object_or_404(Entrepreneur, user=request.user)
-    profile, created = Profile.objects.get_or_create(user=request.user)
+    # profile ไม่จำเป็นต้องใช้สำหรับเก็บข้อมูลธนาคารแล้ว เพราะ model Entrepreneur มีครบ
     
-    # ดึง Quick Reply มาแสดง
     quick_replies = QuickReply.objects.filter(entrepreneur=entrepreneur).order_by('-created_at')
 
     if request.method == 'POST':
         
-        # --- 1. บันทึกข้อมูลร้านค้า ---
-        if 'save_store_info' in request.POST:
-            entrepreneur.store_name = request.POST.get('store_name')
-            entrepreneur.description = request.POST.get('description')
-            entrepreneur.phone = request.POST.get('phone')
-            if request.FILES.get('profile_image'):
-                entrepreneur.profile_image = request.FILES['profile_image']
+        # --- 1. บันทึกข้อมูลภาษี (Tax ID) ---
+        if 'save_tax' in request.POST:
+            entrepreneur.tax_id = request.POST.get('tax_id')
             entrepreneur.save()
-            messages.success(request, "บันทึกข้อมูลร้านค้าเรียบร้อยแล้ว")
+            messages.success(request, "บันทึกข้อมูลภาษีเรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
-        # --- 2. บันทึกที่อยู่ร้าน (ถ้ามี) ---
+        # --- 2. บันทึกที่อยู่ร้าน ---
         elif 'save_address' in request.POST:
-            # (ใส่ Logic บันทึกที่อยู่ตามที่คุณมีอยู่เดิมได้เลย หรือถ้าใช้ Model Address ก็เรียกใช้ตรงนี้)
-            # entrepreneur.address = request.POST.get('address')
-            # entrepreneur.save()
+            entrepreneur.shop_address = request.POST.get('shop_address')
+            entrepreneur.save()
             messages.success(request, "บันทึกที่อยู่เรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
         # --- 3. บันทึกบัญชีธนาคาร ---
         elif 'save_bank' in request.POST:
-            profile.bank_name = request.POST.get('bank_name')
-            profile.account_name = request.POST.get('account_name')
-            profile.account_number = request.POST.get('account_number')
+            # แก้จาก profile เป็น entrepreneur
+            entrepreneur.bank_name = request.POST.get('bank_name')
+            entrepreneur.account_name = request.POST.get('account_name')
+            entrepreneur.account_number = request.POST.get('account_number')
+            
             if request.FILES.get('bank_book_copy'):
-                profile.bank_book_copy = request.FILES['bank_book_copy']
-            profile.save()
+                entrepreneur.bank_book_copy = request.FILES['bank_book_copy']
+                
+            entrepreneur.save()
             messages.success(request, "บันทึกข้อมูลบัญชีธนาคารเรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
         # --- 4. บันทึกเอกสารยืนยันตัวตน ---
         elif 'save_idcard' in request.POST:
             if request.FILES.get('id_card_copy'):
-                profile.id_card_copy = request.FILES['id_card_copy']
-                profile.save()
+                # แก้จาก profile เป็น entrepreneur
+                entrepreneur.id_card_copy = request.FILES['id_card_copy']
+                entrepreneur.save()
                 messages.success(request, "บันทึกเอกสารยืนยันตัวตนเรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
-        # --- 5. (ใหม่) เพิ่มข้อความตอบกลับด่วน ---
+        # --- 5. เพิ่มข้อความด่วน ---
         elif 'add_quick_reply' in request.POST:
             message_text = request.POST.get('quick_message')
             if message_text:
@@ -947,7 +1102,7 @@ def entrepreneur_profile_settings(request):
                 messages.success(request, "เพิ่มข้อความด่วนเรียบร้อยแล้ว")
             return redirect('petjoy:entrepreneur_profile_settings')
 
-        # --- 5. (ใหม่) ลบข้อความตอบกลับด่วน ---
+        # --- 6. ลบข้อความด่วน ---
         elif 'delete_quick_reply' in request.POST:
             reply_id = request.POST.get('reply_id')
             QuickReply.objects.filter(id=reply_id, entrepreneur=entrepreneur).delete()
@@ -956,7 +1111,6 @@ def entrepreneur_profile_settings(request):
 
     return render(request, 'petjoy/entrepreneur/entrepreneur_profile_settings.html', {
         'entrepreneur': entrepreneur,
-        'profile': profile,
         'quick_replies': quick_replies,
     })
 
@@ -1036,7 +1190,7 @@ from django.db.models import Sum
 
 @login_required(login_url=reverse_lazy('petjoy:login'))
 def entrepreneur_home(request):
-    from .models import Product, Review, Order
+    from .models import Product, Review, Order, Entrepreneur # ตรวจสอบการ import
 
     try:
         entrepreneur = request.user.entrepreneur
@@ -1044,6 +1198,16 @@ def entrepreneur_home(request):
         messages.info(request, 'กรุณาสมัครเป็นผู้ประกอบการก่อนเข้าหน้านี้')
         return redirect('petjoy:entrepreneur-register')
 
+    # ⭐ ส่วนที่เพิ่ม: ดักจับสถานะการอนุมัติ ⭐
+    if entrepreneur.verification_status == 'pending':
+        # ถ้ายังรอการตรวจสอบ ให้แสดงหน้า "รออนุมัติ"
+        return render(request, 'petjoy/entrepreneur/entrepreneur_waiting.html', {'entrepreneur': entrepreneur})
+    
+    elif entrepreneur.verification_status == 'rejected':
+        # ถ้าถูกปฏิเสธ ให้แสดงหน้า "ถูกปฏิเสธ"
+        return render(request, 'petjoy/entrepreneur/entrepreneur_rejected.html', {'entrepreneur': entrepreneur})
+
+    # --- กรณีได้รับอนุมัติแล้ว (approved) ให้ทำงานตามปกติด้านล่าง ---
     products = Product.objects.filter(owner=entrepreneur)
     product_count = products.count()
 
@@ -1055,9 +1219,8 @@ def entrepreneur_home(request):
         else None
     )
 
-    # ⭐⭐ เพิ่มตรงนี้: ยอดขายสะสม ⭐⭐
+    # ⭐⭐ ยอดขายสะสม ⭐⭐
     income_statuses = ["paid", "preparing", "delivering", "success"]
-
     total_sales = (
         Order.objects.filter(
             entrepreneur=entrepreneur,
@@ -1070,7 +1233,7 @@ def entrepreneur_home(request):
         'products': products,
         'avg_score': avg_score,
         'entrepreneur': entrepreneur,
-        'total_sales': total_sales,   # ⭐ ส่งไปหน้า HTML
+        'total_sales': total_sales,
     })
 
 @login_required
@@ -1079,32 +1242,40 @@ def admin_dashboard(request):
         return redirect("petjoy:homepage")
 
     from django.contrib.auth import get_user_model
-    from .models import Entrepreneur, Order
+    # ⭐ เพิ่ม ProductReport ตรงนี้ครับ
+    from .models import Entrepreneur, Order, ProductReport 
     from django.db.models import Sum
 
     User = get_user_model()
 
+    # --- 1. ข้อมูลสรุปบนการ์ด ---
+    total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
+    pending_shops_count = Entrepreneur.objects.filter(verification_status='pending').count()
+    total_general_users = User.objects.filter(is_superuser=False, entrepreneur__isnull=True).count()
+    
+    # --- 2. ดึงรายงานล่าสุด 5 รายการ (ส่วนสำคัญที่ขาดไป) ---
+    recent_reports = ProductReport.objects.select_related('product', 'user').order_by('-created_at')[:5]
+
     context = {
-        # ตัวเลขหลัก
-        "total_users": User.objects.count(),
-        "total_shops": Entrepreneur.objects.count(),
-        "total_orders": Order.objects.count(),
+        "total_users": total_general_users, 
+        "total_shops": total_shops,
+        "pending_shops": pending_shops_count,
+        
+        # รายได้รวม
         "total_income": Order.objects.filter(
             status__in=["paid", "preparing", "delivering", "success"]
         ).aggregate(total=Sum("total_price"))["total"] or 0,
 
-        # สถานะคำสั่งซื้อ
-        "order_waiting": Order.objects.filter(status="waiting").count(),
-        "order_preparing": Order.objects.filter(status="preparing").count(),
-        "order_delivering": Order.objects.filter(status="delivering").count(),
-        "order_success": Order.objects.filter(status="success").count(),
+        # ⭐ ส่งข้อมูลรายงานล่าสุดไปที่ HTML
+        "recent_reports": recent_reports,
 
-        # ล่าสุด (ใช้ id แทน created_at)
-        "recent_shops": Entrepreneur.objects.order_by("-id")[:5],
+        # รายการอื่นๆ
+        "recent_shops": Entrepreneur.objects.filter(verification_status='approved').order_by("-id")[:5],
         "recent_orders": Order.objects.order_by("-id")[:5],
     }
 
     return render(request, "petjoy/admin/admin_dashboard.html", context)
+
 
 @login_required
 def admin_user_list(request):
@@ -1112,11 +1283,25 @@ def admin_user_list(request):
         return redirect("petjoy:homepage")
 
     User = get_user_model()
-
+    
+    # รับค่าจาก Parameter
     search = request.GET.get("q", "")
+    user_type = request.GET.get("type", "")
 
-    users = User.objects.all()
+    users = User.objects.all().order_by('-date_joined') # เรียงตามสมัครล่าสุด
 
+    # --- ส่วนที่เพิ่ม: Logic สำหรับ Filter ---
+    if user_type == 'admin':
+        users = users.filter(is_superuser=True)
+    elif user_type == 'entrepreneur':
+        # กรองคนที่มีข้อมูลในตาราง Entrepreneur
+        users = users.filter(entrepreneur__isnull=False)
+    elif user_type == 'user':
+        # กรองคนที่ไม่ใช่ admin และไม่ใช่ entrepreneur
+        users = users.filter(is_superuser=False, entrepreneur__isnull=True)
+    # ------------------------------------
+
+    # Logic สำหรับค้นหา (เดิม)
     if search:
         users = users.filter(
             Q(username__icontains=search) |
@@ -1126,6 +1311,7 @@ def admin_user_list(request):
     context = {
         "users": users,
         "search": search,
+        "current_type": user_type, # ส่งค่ากลับไปเพื่อให้ Dropdown เลือกค่าเดิมไว้
     }
 
     return render(request, "petjoy/admin/admin_users.html", context)
@@ -1138,17 +1324,261 @@ def admin_user_detail(request, user_id):
     User = get_user_model()
     user = get_object_or_404(User, id=user_id)
 
+    # ดึง Profile แบบปลอดภัย (กัน Error)
+    profile = None
+    if hasattr(user, 'profile'):
+        profile = user.profile
+
     entrepreneur = None
     if hasattr(user, "entrepreneur"):
         entrepreneur = user.entrepreneur
 
     context = {
         "profile_user": user,
+        "user_profile": profile, # ⭐ ส่งตัวนี้ไปใช้ใน HTML แทน
         "entrepreneur": entrepreneur,
     }
 
     return render(request, "petjoy/admin/admin_user_detail.html", context)
 
+@login_required
+def admin_toggle_ban(request, user_id):
+    # เช็คสิทธิ์แอดมิน
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    User = get_user_model()
+    target_user = get_object_or_404(User, id=user_id)
+    
+    # สร้าง Profile หากยังไม่มี
+    profile, created = Profile.objects.get_or_create(user=target_user)
+
+    # ป้องกันแบนตัวเอง
+    if target_user.id == request.user.id:
+        messages.error(request, "ไม่สามารถระงับบัญชีของตนเองได้")
+        return redirect(request.META.get('HTTP_REFERER', 'petjoy:admin-users'))
+
+    # สลับสถานะ Ban
+    profile.is_banned = not profile.is_banned
+    profile.save()
+
+    # ⭐ แก้ไข: บังคับให้ User Active เสมอ (เพื่อให้ล็อกอินเข้ามาเจอหน้าแจ้งเตือนได้) ⭐
+    if not target_user.is_active:
+        target_user.is_active = True
+        target_user.save()
+
+    if profile.is_banned:
+        # ถ้าระงับ -> เตะออกจากระบบทันที (เผื่อเขาออนไลน์อยู่)
+        from django.contrib.sessions.models import Session
+        # (โค้ดส่วนนี้อาจจะซับซ้อนไป ให้ระบบ Middleware จัดการดีดออกเองตอนเขากดเปลี่ยนหน้าก็ได้ครับ)
+        messages.warning(request, f"ระงับบัญชี {target_user.username} เรียบร้อยแล้ว")
+    else:
+        messages.success(request, f"ปลดการระงับบัญชี {target_user.username} เรียบร้อยแล้ว")
+
+    return redirect(request.META.get('HTTP_REFERER', 'petjoy:admin-users'))
+
+@login_required
+def admin_delete_user(request, user_id):
+    # เช็คสิทธิ์ (ต้องเป็น Admin หรือ Staff เท่านั้น)
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    User = get_user_model()
+    user = get_object_or_404(User, id=user_id)
+
+    # 🛡️ ป้องกันการลบตัวเอง (Admin กดลบตัวเองไม่ได้)
+    if user == request.user:
+        messages.error(request, "ไม่สามารถลบบัญชีของตนเองได้")
+        return redirect("petjoy:admin-users")
+
+    # ลบบัญชี
+    username = user.username
+    user.delete()
+    
+    messages.success(request, f"ลบบัญชี {username} เรียบร้อยแล้ว")
+    return redirect("petjoy:admin-users")
+
+
+
+@login_required
+def admin_shop_list(request):
+    """หน้ารายการคำขอเปิดร้านค้า"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    status_filter = request.GET.get('status', '') # รับค่า filter
+    search_query = request.GET.get('q', '')
+
+    shops = Entrepreneur.objects.all().order_by('-id') # เรียงจากใหม่ไปเก่า
+
+    # Filter ตามสถานะ
+    if status_filter:
+        shops = shops.filter(verification_status=status_filter)
+
+    # Search
+    if search_query:
+        shops = shops.filter(
+            Q(store_name__icontains=search_query) |
+            Q(owner_name__icontains=search_query) |
+            Q(email__icontains=search_query)
+        )
+
+    context = {
+        'shops': shops,
+        'current_status': status_filter,
+        'search': search_query
+    }
+    return render(request, 'petjoy/admin/admin_shop_list.html', context)
+
+@login_required
+def admin_shop_detail(request, pk):
+    """หน้าดูรายละเอียดร้านค้าเพื่อพิจารณา"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    shop = get_object_or_404(Entrepreneur, pk=pk)
+    return render(request, 'petjoy/admin/admin_shop_detail.html', {'shop': shop})
+
+@login_required
+def admin_approve_shop(request, pk):
+    """ฟังก์ชันกดอนุมัติ"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+        
+    shop = get_object_or_404(Entrepreneur, pk=pk)
+    shop.verification_status = 'approved'
+    shop.save()
+    
+    messages.success(request, f"อนุมัติร้าน {shop.store_name} เรียบร้อยแล้ว")
+    return redirect('petjoy:admin-shop-detail', pk=pk)
+
+@login_required
+def admin_reject_shop(request, pk):
+    """ฟังก์ชันกดปฏิเสธ"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+        
+    shop = get_object_or_404(Entrepreneur, pk=pk)
+    shop.verification_status = 'rejected'
+    shop.save()
+    
+    messages.error(request, f"ปฏิเสธคำขอร้าน {shop.store_name} แล้ว")
+    return redirect('petjoy:admin-shop-detail', pk=pk)
+
+# views.py
+
+@login_required
+def admin_start_chat_from_report(request, report_id):
+    """
+    เริ่มแชทกับร้านค้าจากหน้ารายงานปัญหา พร้อมส่งข้อความเตือนอัตโนมัติ
+    """
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+
+    # ⭐ เพิ่มบรรทัดนี้เพื่อแก้ NameError ครับ ⭐
+    from .models import ProductReport, ChatRoom, ChatMessage
+
+    # ดึงข้อมูลรายงาน
+    report = get_object_or_404(ProductReport, id=report_id)
+    entrepreneur = report.product.owner
+    
+    # สร้างหรือดึงห้องแชท
+    room, created = ChatRoom.objects.get_or_create(
+        customer=request.user,
+        entrepreneur=entrepreneur
+    )
+    
+    # ข้อความแจ้งเตือนอัตโนมัติ
+    warning_message = (
+        f"⚠️ แจ้งเตือนจากแอดมิน: สินค้าของคุณ '{report.product.name}' ถูกรายงาน\n"
+        f"หัวข้อ: {report.get_reason_display()}\n"
+        f"รายละเอียด: {report.details or '-'}\n"
+        f"กรุณาตรวจสอบความถูกต้องหรือแก้ไขสินค้า หากพบการละเมิดจะถูกลบออกจากระบบ"
+    )
+
+    # ตรวจสอบเพื่อไม่ให้ส่งข้อความซ้ำ (ถ้าข้อความล่าสุดเหมือนกันเป๊ะจะไม่ส่ง)
+    last_msg = room.messages.last()
+    if not last_msg or last_msg.message != warning_message:
+        ChatMessage.objects.create(
+            room=room,
+            sender=request.user,
+            message=warning_message
+        )
+    
+    # ส่งไปที่ห้องแชท
+    return redirect('petjoy:admin-chat-room', room_id=room.id)
+
+
+@login_required
+def admin_product_detail(request, product_id):
+    """หน้าดูรายละเอียดสินค้าฉบับแอดมิน (เห็นข้อมูล + รายงาน)"""
+    if not (request.user.is_staff or request.user.is_superuser):
+        return redirect("petjoy:homepage")
+    
+    product = get_object_or_404(Product, id=product_id)
+    # ดึงรายงานทั้งหมดของสินค้านี้มาแสดงด้วย
+    reports = product.reports.all().order_by('-created_at')
+
+    return render(request, 'petjoy/admin/admin_product_detail.html', {
+        'product': product,
+        'reports': reports
+    })
+
+@staff_member_required
+def admin_delete_report(request, report_id):
+    report = get_object_or_404(ProductReport, id=report_id)
+    report.delete()
+    messages.success(request, "ลบรายงานเรียบร้อยแล้ว")
+    return redirect('petjoy:admin-report-list')
+
+
+@staff_member_required
+def admin_order_analytics(request):
+    # --- ส่วนที่ 1: ตัวเลขสรุป (Key Metrics) ---
+    total_products_count = Product.objects.count()
+    out_of_stock_count = Product.objects.filter(stock=0).count()
+    total_orders_count = Order.objects.count()
+
+    # --- ส่วนที่ 2: กราฟสินค้าขายดี 5 อันดับ (Top 5 Products) ---
+    top_products = OrderItem.objects.values('product__name') \
+        .annotate(total_qty=Sum('quantity')) \
+        .order_by('-total_qty')[:5]
+
+    product_labels = [item['product__name'] for item in top_products]
+    product_data = [item['total_qty'] for item in top_products]
+
+    # --- ส่วนที่ 3: กราฟหมวดหมู่ขายดี (Top Categories) ---
+    top_categories = OrderItem.objects.values('product__category__display_name') \
+        .annotate(total_qty=Sum('quantity')) \
+        .order_by('-total_qty')
+
+    category_labels = [item['product__category__display_name'] for item in top_categories]
+    category_data = [item['total_qty'] for item in top_categories]
+
+    # --- ส่วนที่ 4: ตารางสินค้าทั้งหมด ---
+    all_products = Product.objects.all().select_related('category', 'owner').order_by('-id')
+
+    context = {
+        # ตัวเลขสรุป
+        'total_products_count': total_products_count,
+        'out_of_stock_count': out_of_stock_count,
+        'total_orders_count': total_orders_count,
+        
+        # ข้อมูลกราฟ
+        'product_labels': product_labels,
+        'product_data': product_data,
+        'category_labels': category_labels,
+        'category_data': category_data,
+        
+        # ข้อมูลตาราง
+        'all_products': all_products,
+    }
+
+    return render(request, 'petjoy/admin/admin_orders_analytics.html', context)
+
+def banned_view(request):
+    """แสดงหน้าแจ้งเตือนเมื่อบัญชีถูกระงับ"""
+    return render(request, 'petjoy/banned.html')
 
 def login_view(request):
     next_url = request.GET.get('next') or request.POST.get('next')
@@ -1157,61 +1587,46 @@ def login_view(request):
         form = AuthenticationForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
-            logger.debug(f"Login attempt for username (raw): '{username}'")
             password = form.cleaned_data.get('password')
+            
+            # 1. ลอง Login แบบปกติ
             user = authenticate(username=username, password=password)
+            
             if user is not None:
-                logger.debug(f"authenticate() returned user id={user.id} username={user.username}")
                 login(request, user)
                 messages.info(request, f"ยินดีต้อนรับ, {username}!")
+                
+                # ⭐ พอ Login ผ่าน Middleware จะทำงานอัตโนมัติ 
+                # ถ้าโดนแบนอยู่ จะถูกดีดไปหน้า banned เองทันที
 
-                # 1️⃣ ถ้ามี next ให้ไปก่อน
-                if next_url:
-                    return redirect(next_url)
-
-                # 2️⃣ ✅ ถ้าเป็นแอดมิน → ไป admin dashboard
-                if user.is_staff or user.is_superuser:
-                    return redirect("petjoy:admin-dashboard")
-
-                # 3️⃣ ผู้ประกอบการ
-                if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
-                    return redirect("petjoy:entrepreneur-home")
-
-                # 4️⃣ ผู้ใช้ทั่วไป
+                if next_url: return redirect(next_url)
+                if user.is_staff or user.is_superuser: return redirect("petjoy:admin-dashboard")
+                if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'): return redirect("petjoy:entrepreneur-home")
                 return redirect("petjoy:homepage")
 
             else:
-                # fallback: case-insensitive username
+                # 2. Fallback: กรณีพิมพ์ User ผิด Case (ตัวเล็ก/ใหญ่)
                 User = get_user_model()
-                try:
-                    found = User.objects.filter(username__iexact=username).first()
-                except Exception:
-                    found = None
+                target_user = User.objects.filter(username__iexact=username).first()
 
-                if found:
-                    logger.debug(
-                        f"Found user by iexact lookup: {found.username} (id={found.id}) - trying authenticate"
-                    )
-                    user = authenticate(username=found.username, password=password)
+                if target_user and target_user.check_password(password):
+                    # Login ใหม่อีกรอบด้วยชื่อที่ถูกต้อง
+                    user = authenticate(username=target_user.username, password=password)
+                    
                     if user is not None:
-                        logger.debug(f"Fallback authenticate succeeded for user id={user.id}")
                         login(request, user)
-                        messages.info(request, f"ยินดีต้อนรับ, {found.username}!")
-
-                        if next_url:
-                            return redirect(next_url)
-
-                        # ✅ ต้องเช็คแอดมินตรงนี้ด้วย (fallback)
-                        if user.is_staff or user.is_superuser:
-                            return redirect("petjoy:admin-dashboard")
-
-                        if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'):
-                            return redirect("petjoy:entrepreneur-home")
-
+                        messages.info(request, f"ยินดีต้อนรับ, {target_user.username}!")
+                        
+                        # Redirect Logic (เหมือนด้านบน)
+                        if next_url: return redirect(next_url)
+                        if user.is_staff or user.is_superuser: return redirect("petjoy:admin-dashboard")
+                        if hasattr(user, 'entrepreneur') or hasattr(user, 'entrepreneur_profile'): return redirect("petjoy:entrepreneur-home")
                         return redirect("petjoy:homepage")
+                    else:
+                         messages.error(request, "เกิดข้อผิดพลาดในการเข้าสู่ระบบ")
+                else:
+                    messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
-                logger.debug("authenticate() failed and fallback did not find valid credentials")
-                messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
         else:
             messages.error(request, "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง")
 
@@ -1223,7 +1638,6 @@ def login_view(request):
         "petjoy/login.html",
         context={"login_form": form, "auth_page": True, "next": next_url}
     )
-
 
 
 def entrepreneur_public(request, pk):
@@ -1290,6 +1704,8 @@ def entrepreneur_income(request):
         "petjoy/entrepreneur/entrepreneur_income.html",
         context
     )
+
+
 @login_required
 def profile_view(request):
     profile, created = Profile.objects.get_or_create(user=request.user)

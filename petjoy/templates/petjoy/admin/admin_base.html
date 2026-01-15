@@ -31,17 +31,22 @@
                 👥 จัดการผู้ใช้งาน
             </a>
 
-            <a href="#"
+            <a href="{% url 'petjoy:admin-shop-list' %}"
                class="{% block nav_shops %}{% endblock %}">
                 🏪 อนุมัติร้านค้า
             </a>
 
-            <a href="#"
+            <a href="{% url 'petjoy:admin-chat-list' %}" 
+               class="{% block nav_chat %}{% endblock %}">
+                💬 แชทกับร้านค้า
+            </a>
+
+            <a href="{% url 'petjoy:admin-orders-analytics' %}"
                class="{% block nav_orders %}{% endblock %}">
                 📦 คำสั่งซื้อ
             </a>
 
-            <a href="#"
+            <a href="{% url 'petjoy:admin-report-list' %}"
                class="{% block nav_reports %}{% endblock %}">
                 🚨 การรายงาน
             </a>

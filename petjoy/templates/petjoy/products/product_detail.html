@@ -104,14 +104,12 @@
 
                         <p class="review-comment">{{ review.comment }}</p>
 
-                        {# ===== เพิ่มเฉพาะส่วนนี้เท่านั้น (ไม่แก้ UI เดิม) ===== #}
                         {% if review.reply %}
                             <div class="review-reply">
                                 <strong>ร้านค้า:</strong>
                                 <p>{{ review.reply.message }}</p>
                             </div>
                         {% endif %}
-                        {# ====================================================== #}
 
                     </div>
                 {% empty %}
@@ -203,7 +201,7 @@
                     <h3>รายงานสินค้า</h3>
                     <p style="font-size: 0.9rem; color: #666; margin-bottom: 15px;">กรุณาระบุเหตุผลที่ต้องการรายงาน</p>
                     
-                    <form id="reportForm">
+                    <form id="reportForm" data-report-url="{% url 'petjoy:report_product' product.id %}">
                         {% csrf_token %}
                         <select name="reason" id="reportReason" style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ddd; font-family: inherit;">
                             <option value="inappropriate">เนื้อหาไม่เหมาะสม</option>
@@ -214,7 +212,7 @@
                         <textarea name="details" id="reportDetails" placeholder="รายละเอียดเพิ่มเติม (ถ้ามี)" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #ddd; min-height: 100px; font-family: inherit; resize: vertical;"></textarea>
                         
                         <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                            <button type="button" onclick="submitReport()" class="modal-confirm-btn" style="background: #d93535; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">ส่งรายงาน</button>
+                            <button type="button" onclick="submitReportNew()" class="modal-confirm-btn" style="background: #d93535; color: white; padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer;">ส่งรายงาน</button>
                             <button type="button" onclick="closeReportModal()" class="modal-cancel-btn" style="background: #eee; padding: 12px; border-radius: 10px; border: none; cursor: pointer;">ยกเลิก</button>
                         </div>
                     </form>
@@ -232,4 +230,90 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/js/all.min.js"></script>
 <script src="{% static 'js/product_detail.js' %}?v=login-check"></script>
 <script src="{% static 'js/favorites.js' %}"></script>
+
+<script>
+    function openReportModal() {
+        // เช็คก่อนว่าล็อกอินหรือยัง
+        const loggedIn = document.querySelector('.btn-report').dataset.loggedIn === '1';
+        if (!loggedIn) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'กรุณาเข้าสู่ระบบ',
+                text: 'คุณต้องเข้าสู่ระบบก่อนรายงานสินค้า',
+                confirmButtonText: 'ตกลง'
+            }).then(() => {
+                window.location.href = "{% url 'petjoy:login' %}?next={{ request.path }}";
+            });
+            return;
+        }
+        document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function closeReportModal() {
+        document.getElementById('reportModal').style.display = 'none';
+    }
+
+    // ฟังก์ชันส่งรายงาน (ใช้ชื่อใหม่ submitReportNew เพื่อไม่ชนของเก่า)
+    function submitReportNew() {
+        const form = document.getElementById('reportForm');
+        const url = form.getAttribute('data-report-url'); // รับ URL จาก data attribute
+        const reason = document.getElementById('reportReason').value;
+        const details = document.getElementById('reportDetails').value;
+        const csrfToken = form.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        if(!reason) {
+            Swal.fire('แจ้งเตือน', 'กรุณาเลือกเหตุผล', 'warning');
+            return;
+        }
+
+        // ส่งข้อมูลด้วย Fetch API
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'X-CSRFToken': csrfToken
+            },
+            body: new URLSearchParams({
+                'reason': reason,
+                'details': details
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'ส่งรายงานเรียบร้อย',
+                    text: 'ขอบคุณที่ช่วยแจ้งปัญหา เจ้าหน้าที่จะตรวจสอบโดยเร็วที่สุด',
+                    confirmButtonText: 'ตกลง',
+                    confirmButtonColor: '#28a745'
+                }).then(() => {
+                    closeReportModal();
+                    // รีเซ็ตฟอร์ม
+                    document.getElementById('reportReason').value = 'inappropriate';
+                    document.getElementById('reportDetails').value = '';
+                });
+            } else {
+                Swal.fire('เกิดข้อผิดพลาด', data.error || 'ไม่สามารถส่งรายงานได้', 'error');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อกับเซิร์ฟเวอร์ได้', 'error');
+        });
+    }
+
+    // ปิด Modal เมื่อคลิกพื้นที่ว่าง
+    window.onclick = function(event) {
+        const modal = document.getElementById('reportModal');
+        if (event.target == modal) {
+            closeReportModal();
+        }
+    }
+</script>
 {% endblock %}
