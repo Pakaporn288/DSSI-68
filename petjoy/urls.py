@@ -32,9 +32,9 @@ urlpatterns = [
     # alias with underscore because some templates use 'favorites_list'
     path('favorites/', views.favorites_list, name='favorites_list'),
     path('favorites/toggle/', views.toggle_favorite, name='favorites-toggle'),
-    path('dog-products/', views.dog_products_view, name='dog-products'),
-    path('cat-products/', views.cat_products_view, name='cat-products'),
-    path('food-products/', views.food_products_view, name='food-products'),
+    #path('dog-products/', views.dog_products_view, name='dog-products'),
+    #path('cat-products/', views.cat_products_view, name='cat-products'),
+    #path('food-products/', views.food_products_view, name='food-products'),
     path('profile/', views.profile_view, name='profile'),
     path('profile/address/', views.address_list, name='address_list'),
     path('profile/address/add/', views.address_add, name='address_add'),
@@ -99,7 +99,8 @@ urlpatterns = [
     path("system/chat/delete/<int:room_id>/", views.admin_delete_chat, name="admin-delete-chat"),
     path("system/cleanup/", views.admin_cleanup_orphans, name="admin-cleanup"),
     path('buy-now/', views.buy_now, name='buy_now'),
-
+    path("system/settings/categories/",views.admin_category_settings,name="admin-category-settings"),
+    path("category/<int:category_id>/",views.category_products,name="category-products"),
 
 
 

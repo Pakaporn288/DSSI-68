@@ -51,6 +51,11 @@
                 🚨 การรายงาน
             </a>
 
+            <a href="{% url 'petjoy:admin-category-settings' %}"
+               class="{% block nav_settings %}{% endblock %}">
+                ⚙️ การตั้งค่า
+            </a>
+
         </nav>
 
         <div class="admin-logout">
@@ -59,6 +64,7 @@
                 <button type="submit">🚪 ออกจากระบบ</button>
             </form>
         </div>
+
     </aside>
 
     <!-- ===== Main ===== -->

@@ -21,33 +21,28 @@
     <!-- ============================
          CATEGORY
     ================================ -->
-    <section class="pet-selection">
-        <h3>เลือกแก๊งของคุณ</h3>
-        <div class="pet-options">
+<section class="pet-selection">
+    <h3>เลือกแก๊งของคุณ</h3>
+    <div class="pet-options">
 
-            <a href="{% url 'petjoy:dog-products' %}" class="pet-card">
+        {% for cat in categories %}
+            <a href="{% url 'petjoy:category-products' cat.id %}" class="pet-card">
+
                 <div class="pet-image-container">
-                    <img src="{% static 'images/DOG.jpg' %}">
+                    {% if cat.image %}
+                        <img src="{{ cat.image.url }}">
+                    {% else %}
+                        <img src="{% static 'images/default.png' %}">
+                    {% endif %}
                 </div>
-                <span>สุนัข</span>
-            </a>
 
-            <a href="{% url 'petjoy:cat-products' %}" class="pet-card">
-                <div class="pet-image-container">
-                    <img src="{% static 'images/CAT.jpg' %}">
-                </div>
-                <span>แมว</span>
+                <span>{{ cat.display_name }}</span>
             </a>
+        {% endfor %}
 
-            <a href="{% url 'petjoy:food-products' %}" class="pet-card">
-                <div class="pet-image-container">
-                    <img src="{% static 'images/food.png' %}">
-                </div>
-                <span>อาหารสัตว์</span>
-            </a>
+    </div>
+</section>
 
-        </div>
-    </section>
 
     <!-- ============================
          RECOMMENDED PRODUCTS

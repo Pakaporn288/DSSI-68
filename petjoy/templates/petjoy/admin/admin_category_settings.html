@@ -1,0 +1,179 @@
+{% extends "petjoy/admin/admin_base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        margin-bottom: 25px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    label {
+        font-weight: 600;
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    input, select {
+        width: 100%;
+        padding: 8px 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    button {
+        padding: 8px 14px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+    }
+
+    .btn-primary {
+        background: #4e73df;
+        color: #fff;
+    }
+
+    .btn-danger {
+        background: #e74a3b;
+        color: #fff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid #eee;
+        vertical-align: middle;
+    }
+
+    .img-preview {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+</style>
+
+<h2>⚙️ การตั้งค่าแอดมิน - หมวดหมู่สินค้า</h2>
+
+<!-- =======================
+     เพิ่มหมวดหมู่
+======================= -->
+<div class="card">
+    <h4>➕ เพิ่มหมวดหมู่</h4>
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="add">
+
+        <div class="form-group">
+            <label>Key หมวดหมู่</label>
+            <input type="text" name="name" placeholder="เช่น dog, cat, food" required>
+        </div>
+
+        <div class="form-group">
+            <label>ชื่อที่แสดง</label>
+            <input type="text" name="display_name" placeholder="เช่น สุนัข, แมว, อาหารสัตว์" required>
+        </div>
+
+        <div class="form-group" id="food-type-box" style="display:none;">
+            <label>ประเภทอาหาร</label>
+            <select name="food_type">
+                <option value="">-- เลือกประเภท --</option>
+                <option value="dog">อาหารสุนัข</option>
+                <option value="cat">อาหารแมว</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>รูปหมวดหมู่</label>
+            <input type="file" name="image" accept="image/*">
+        </div>
+
+        <button type="submit" class="btn-primary">เพิ่มหมวดหมู่</button>
+    </form>
+</div>
+
+<!-- =======================
+     ตารางหมวดหมู่ทั้งหมด
+======================= -->
+<div class="card">
+    <h4>📋 หมวดหมู่ทั้งหมด</h4>
+
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Key</th>
+            <th>ชื่อที่แสดง</th>
+            <th>รูป</th>
+            <th>จัดการ</th>
+        </tr>
+
+        {% for cat in categories %}
+        <tr>
+            <td>{{ cat.id }}</td>
+            <td>{{ cat.name }}</td>
+
+            <!-- ฟอร์มแก้ไข -->
+            <td colspan="3">
+                <form method="post" enctype="multipart/form-data" style="display:flex; gap:10px; align-items:center;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="id" value="{{ cat.id }}">
+
+                    <input type="text" name="display_name" value="{{ cat.display_name }}" style="width:200px;">
+
+                    {% if cat.image %}
+                        <img src="{{ cat.image.url }}" class="img-preview">
+                    {% else %}
+                        <img src="{% static 'images/default.png' %}" class="img-preview">
+                    {% endif %}
+
+                    <input type="file" name="image" accept="image/*">
+
+                    <button class="btn-primary">บันทึก</button>
+                </form>
+            </td>
+
+            <!-- ลบ -->
+            <td>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="id" value="{{ cat.id }}">
+                    <button class="btn-danger" onclick="return confirm('ลบหมวดหมู่นี้?')">
+                        ลบ
+                    </button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<script>
+    const nameInput = document.querySelector('input[name="name"]');
+    const foodBox = document.getElementById('food-type-box');
+
+    if (nameInput) {
+        nameInput.addEventListener('input', function () {
+            if (this.value.toLowerCase().includes('food')) {
+                foodBox.style.display = 'block';
+            } else {
+                foodBox.style.display = 'none';
+            }
+        });
+    }
+</script>
+
+{% endblock %}

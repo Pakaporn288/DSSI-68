@@ -38,15 +38,19 @@ from .models import Entrepreneur, Order
 from django.db.models.functions import Coalesce
 from .models import ProductReport
 from django.urls import reverse
+from django.contrib.auth.models import User
 
 
 
 logger = logging.getLogger(__name__)
 
 def homepage(request):
-    products = Product.objects.order_by('?')[:4]  # 👈 สุ่ม 6 ชิ้น
+    products = Product.objects.order_by('?')[:4]  # 👈 สุ่ม 6 ชิ้น (ตามคอมเมนต์เดิมในไฟล์)
+    categories = Category.objects.all().order_by('id')
+
     return render(request, 'petjoy/homepage.html', {
         'products': products,
+        'categories': categories,
     })
 
 def ask_ai_view(request):
@@ -1583,7 +1587,7 @@ def admin_reject_shop(request, pk):
     messages.error(request, f"ปฏิเสธคำขอร้าน {shop.store_name} แล้ว")
     return redirect('petjoy:admin-shop-detail', pk=pk)
 
-# views.py
+
 
 @login_required
 def admin_start_chat_from_report(request, report_id):
@@ -1666,92 +1670,153 @@ def admin_delete_report(request, report_id):
 
 @staff_member_required
 def admin_order_analytics(request):
-    # ตรวจสอบการ import ให้ครบก่อนใช้งานนะครับ (ไว้ด้านบนไฟล์)
-    # from django.db.models import Sum
-    # from django.db.models.functions import TruncDate
-    
-    # =========================================================
-    # 🔍 1. สร้าง QuerySet กลาง: กรองเฉพาะร้านที่ "Active" เท่านั้น
-    # =========================================================
-    
-    # สินค้าที่นับ: มีเจ้าของ + ร้านอนุมัติแล้ว + ไม่โดนแบน + เจ้าของยังมีตัวตน
-    valid_products = Product.objects.filter(
-        owner__isnull=False,
-        owner__verification_status='approved',
-        owner__user__isnull=False,
-        owner__user__profile__is_banned=False
-    )
-
-    # คำสั่งซื้อที่นับ: มาจากร้านที่ยังมีตัวตน + อนุมัติแล้ว + ไม่โดนแบน
-    valid_orders = Order.objects.filter(
+    # --- 1. สรุปภาพรวม ---
+    valid_statuses = ['paid', 'preparing', 'delivering', 'success']
+    orders = Order.objects.filter(
+        status__in=valid_statuses,
         entrepreneur__isnull=False,
         entrepreneur__verification_status='approved',
         entrepreneur__user__isnull=False,
         entrepreneur__user__profile__is_banned=False
     )
 
-    # =========================================================
-    # 📊 2. ส่วนตัวเลขสรุป (Summary Cards)
-    # =========================================================
-    total_products_count = valid_products.count()
-    total_orders_count = valid_orders.count()
     
-    # คำนวณรายได้รวมทั้งหมด (จากทุกออเดอร์ที่ Valid)
-    total_revenue_all = valid_orders.aggregate(total=Sum('total_price'))['total'] or 0
+    total_revenue = orders.aggregate(total=Sum('total_price'))['total'] or 0
+    total_orders_count = orders.count()
+    
+    # นับร้านค้าที่อนุมัติแล้ว
+    total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
 
-    # =========================================================
-    # 🏆 3. กราฟสินค้าขายดี (Top 5 Products) - Bar Chart
-    # =========================================================
-    top_products = OrderItem.objects.filter(order__in=valid_orders) \
-        .values('product__name') \
-        .annotate(total_qty=Sum('quantity')) \
-        .order_by('-total_qty')[:5]
+    # --- 2.1 5 อันดับสินค้าขายดี (เฉพาะจากร้านที่อนุมัติแล้ว) ---
+    top_products_query = OrderItem.objects.filter(
+        order__in=orders,
+        product__owner__verification_status='approved'  # ✅ กรองเฉพาะร้านที่อนุมัติ
+    ).values('product__name') \
+     .annotate(total_sold=Sum('quantity')) \
+     .order_by('-total_sold')[:5]
+    
+    top_products_labels = [item['product__name'] for item in top_products_query]
+    top_products_data = [item['total_sold'] for item in top_products_query]
 
-    product_labels = [item['product__name'] for item in top_products]
-    product_data = [item['total_qty'] for item in top_products]
+    # --- 2.2 5 อันดับร้านค้าขายดี (เฉพาะร้านที่อนุมัติแล้ว) ---
+    top_shops_query = OrderItem.objects.filter(
+        order__in=orders,
+        product__owner__verification_status='approved'  # ✅ กรองเฉพาะร้านที่อนุมัติ
+    ).values('product__owner__store_name') \
+     .annotate(total_sold=Sum('quantity')) \
+     .order_by('-total_sold')[:5]
+    
+    top_shops_labels = [item['product__owner__store_name'] or 'ไม่ระบุชื่อร้าน' for item in top_shops_query]
+    top_shops_data = [item['total_sold'] for item in top_shops_query]
 
-    # =========================================================
-    # 🍩 4. กราฟหมวดหมู่ยอดนิยม - Doughnut Chart
-    # =========================================================
-    top_categories = OrderItem.objects.filter(order__in=valid_orders) \
+    # --- 3. หมวดหมู่ยอดนิยม ---
+    category_sales = OrderItem.objects.filter(order__in=orders) \
         .values('product__category__display_name') \
-        .annotate(total_qty=Sum('quantity')) \
-        .order_by('-total_qty')
+        .annotate(total_sold=Sum('quantity')) \
+        .order_by('-total_sold')
+    
+    category_labels = [item['product__category__display_name'] for item in category_sales]
+    category_data = [item['total_sold'] for item in category_sales]
 
-    category_labels = [item['product__category__display_name'] for item in top_categories]
-    category_data = [item['total_qty'] for item in top_categories]
+    # ข้อมูลแยกประเภทอาหาร
+    food_type_sales = OrderItem.objects.filter(order__in=orders, product__category__name='food') \
+        .values('product__food_type') \
+        .annotate(total_sold=Sum('quantity'))
+    
+    food_type_labels = []
+    food_type_data = []
+    for item in food_type_sales:
+        label = "อาหารสุนัข" if item['product__food_type'] == 'dog' else "อาหารแมว" if item['product__food_type'] == 'cat' else "อื่นๆ"
+        food_type_labels.append(label)
+        food_type_data.append(item['total_sold'])
 
-    # =========================================================
-    # 📈 5. กราฟรายได้รายวัน (Revenue Trend) - Line Chart (ส่วนใหม่)
-    # =========================================================
-    # ตัดเวลาออกเหลือแค่วันที่ (TruncDate) แล้วรวมยอดขายตามวัน
-    daily_income = valid_orders.annotate(date=TruncDate('created_at')) \
-        .values('date') \
-        .annotate(total=Sum('total_price')) \
-        .order_by('date')
+    # --- 4. สถิติรายได้ย้อนหลัง 7 วัน ---
+    last_7_days = []
+    revenue_data = []
+    for i in range(6, -1, -1):
+        date = timezone.now().date() - timedelta(days=i)
+        daily_revenue = orders.filter(created_at__date=date).aggregate(total=Sum('total_price'))['total'] or 0
+        last_7_days.append(date.strftime('%d %b'))
+        revenue_data.append(float(daily_revenue))
 
-    # แปลงข้อมูลเป็น List เพื่อส่งให้ Chart.js
-    revenue_labels = [item['date'].strftime('%d/%m/%Y') for item in daily_income]
-    revenue_data = [float(item['total']) for item in daily_income]
-
-    # =========================================================
-    # 📦 ส่งข้อมูลเข้า Template
-    # =========================================================
     context = {
-        'total_products_count': total_products_count,
+        'total_revenue': total_revenue,
         'total_orders_count': total_orders_count,
-        'total_revenue_all': total_revenue_all,
+        'total_shops': total_shops,
         
-        # ข้อมูลสำหรับกราฟ
-        'product_labels': product_labels,
-        'product_data': product_data,
-        'category_labels': category_labels,
-        'category_data': category_data,
-        'revenue_labels': revenue_labels,
-        'revenue_data': revenue_data,
+        # ✅ แปลงเป็น JSON String ทั้งหมด แก้ปัญหากราฟไม่ขึ้น
+        'top_products_labels': json.dumps(top_products_labels),
+        'top_products_data': json.dumps(top_products_data),
+        'top_shops_labels': json.dumps(top_shops_labels),
+        'top_shops_data': json.dumps(top_shops_data),
+        'category_labels': json.dumps(category_labels),
+        'category_data': json.dumps(category_data),
+        'food_type_labels': json.dumps(food_type_labels),
+        'food_type_data': json.dumps(food_type_data),
+        'revenue_labels': json.dumps(last_7_days),
+        'revenue_data': json.dumps(revenue_data),
     }
-
     return render(request, 'petjoy/admin/admin_orders_analytics.html', context)
+
+@staff_member_required
+def admin_category_settings(request):
+    categories = Category.objects.all().order_by('id')
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+
+        # =====================
+        # เพิ่มหมวดหมู่
+        # =====================
+        if action == "add":
+            name = request.POST.get("name")
+            display_name = request.POST.get("display_name")
+            image = request.FILES.get("image")
+
+            if name and display_name:
+                Category.objects.create(
+                    name=name.strip().lower(),
+                    display_name=display_name.strip(),
+                    image=image
+                )
+
+        # =====================
+        # แก้ไขหมวดหมู่ (ชื่อ / รูป)
+        # =====================
+        elif action == "edit":
+            cat_id = request.POST.get("id")
+            display_name = request.POST.get("display_name")
+            image = request.FILES.get("image")
+
+            category = get_object_or_404(Category, id=cat_id)
+
+            if display_name:
+                category.display_name = display_name.strip()
+
+            # ถ้าอัปโหลดรูปใหม่ → แทนรูปเดิม
+            if image:
+                category.image = image
+
+            category.save()
+
+        # =====================
+        # ลบหมวดหมู่
+        # =====================
+        elif action == "delete":
+            cat_id = request.POST.get("id")
+            if cat_id:
+                Category.objects.filter(id=cat_id).delete()
+
+        return redirect("petjoy:admin-category-settings")
+
+    return render(
+        request,
+        "petjoy/admin/admin_category_settings.html",
+        {
+            "categories": categories
+        }
+    )
+
 def banned_view(request):
     """แสดงหน้าแจ้งเตือนเมื่อบัญชีถูกระงับ"""
     return render(request, 'petjoy/banned.html')
@@ -1815,6 +1880,31 @@ def login_view(request):
         context={"login_form": form, "auth_page": True, "next": next_url}
     )
 
+def category_products(request, category_id):
+    category = get_object_or_404(Category, id=category_id)
+
+    # ⭐ แสดงเฉพาะสินค้าของร้านที่ "อนุมัติแล้ว"
+    products = Product.objects.filter(
+        category=category,
+        owner__verification_status='approved'
+    )
+
+    # 🔹 กรณีหมวดอาหาร แยก dog / cat
+    selected_type = request.GET.get("type")
+    if "อาหาร" in category.display_name and selected_type in ["dog", "cat"]:
+        products = products.filter(food_type=selected_type)
+
+    # 🔹 pagination
+    paginator = Paginator(products, 15)  # 15 สินค้าต่อหน้า
+    page_number = request.GET.get("page")
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, "petjoy/category_products.html", {
+        "category": category,
+        "products": page_obj,
+        "page_obj": page_obj,
+        "selected_type": selected_type
+    })
 
 def entrepreneur_public(request, pk):
     from .models import Entrepreneur, Product, Review
@@ -1923,162 +2013,162 @@ def profile_view(request):
         'editing': request.GET.get('edit') == '1'
     })
 
-# สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
-def cat_products_view(request):
-    cat_category = Category.objects.filter(name__iexact='cat').first()
+# # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
+# def cat_products_view(request):
+#     cat_category = Category.objects.filter(name__iexact='cat').first()
     
-    # ⭐ กรองสินค้า: หมวดแมว + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
-    if cat_category:
-        products = Product.objects.filter(
-            category=cat_category,
-            owner__user__isnull=False,
-            owner__user__profile__is_banned=False,
-            owner__verification_status='approved'
-        )
-    else:
-        products = Product.objects.none()
+#     # ⭐ กรองสินค้า: หมวดแมว + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
+#     if cat_category:
+#         products = Product.objects.filter(
+#             category=cat_category,
+#             owner__user__isnull=False,
+#             owner__user__profile__is_banned=False,
+#             owner__verification_status='approved'
+#         )
+#     else:
+#         products = Product.objects.none()
 
-    # --- Pagination ---
-    per_page = 15
-    paginator = Paginator(products, per_page)
-    page_number = request.GET.get('page') or 1
-    page_obj = paginator.get_page(page_number)
+#     # --- Pagination ---
+#     per_page = 15
+#     paginator = Paginator(products, per_page)
+#     page_number = request.GET.get('page') or 1
+#     page_obj = paginator.get_page(page_number)
 
-    # AJAX
-    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.template.loader import render_to_string
-        from django.http import HttpResponse
-        html = render_to_string('petjoy/partials/food_products_grid.html', {
-            'products': page_obj,
-            'page_obj': page_obj,
-            'paginator': paginator,
-            'selected_type': 'cat',
-        })
-        return HttpResponse(html)
+#     # AJAX
+#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#         from django.template.loader import render_to_string
+#         from django.http import HttpResponse
+#         html = render_to_string('petjoy/partials/food_products_grid.html', {
+#             'products': page_obj,
+#             'page_obj': page_obj,
+#             'paginator': paginator,
+#             'selected_type': 'cat',
+#         })
+#         return HttpResponse(html)
 
-    return render(request, 'petjoy/cat_products.html', {
-        'products': page_obj, 
-        'page_obj': page_obj, 
-        'paginator': paginator
-    })
+#     return render(request, 'petjoy/cat_products.html', {
+#         'products': page_obj, 
+#         'page_obj': page_obj, 
+#         'paginator': paginator
+#     })
 
-# สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
-def dog_products_view(request):
-    dog_category = Category.objects.filter(name__iexact='dog').first()
+# # สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
+# def dog_products_view(request):
+#     dog_category = Category.objects.filter(name__iexact='dog').first()
     
-    # ⭐ กรองสินค้า: หมวดหมา + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
-    if dog_category:
-        products = Product.objects.filter(
-            category=dog_category,
-            owner__user__isnull=False,
-            owner__user__profile__is_banned=False,
-            owner__verification_status='approved'
-        )
-    else:
-        products = Product.objects.none()
+#     # ⭐ กรองสินค้า: หมวดหมา + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
+#     if dog_category:
+#         products = Product.objects.filter(
+#             category=dog_category,
+#             owner__user__isnull=False,
+#             owner__user__profile__is_banned=False,
+#             owner__verification_status='approved'
+#         )
+#     else:
+#         products = Product.objects.none()
 
-    # --- Pagination ---
-    per_page = 15
-    paginator = Paginator(products, per_page)
-    page_number = request.GET.get('page') or 1
-    page_obj = paginator.get_page(page_number)
+#     # --- Pagination ---
+#     per_page = 15
+#     paginator = Paginator(products, per_page)
+#     page_number = request.GET.get('page') or 1
+#     page_obj = paginator.get_page(page_number)
 
-    # AJAX
-    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.template.loader import render_to_string
-        from django.http import HttpResponse
-        html = render_to_string('petjoy/partials/food_products_grid.html', {
-            'products': page_obj,
-            'page_obj': page_obj,
-            'paginator': paginator,
-            'selected_type': 'dog',
-        })
-        return HttpResponse(html)
+#     # AJAX
+#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#         from django.template.loader import render_to_string
+#         from django.http import HttpResponse
+#         html = render_to_string('petjoy/partials/food_products_grid.html', {
+#             'products': page_obj,
+#             'page_obj': page_obj,
+#             'paginator': paginator,
+#             'selected_type': 'dog',
+#         })
+#         return HttpResponse(html)
 
-    return render(request, 'petjoy/dog_products.html', {
-        'products': page_obj, 
-        'page_obj': page_obj, 
-        'paginator': paginator
-    })
+#     return render(request, 'petjoy/dog_products.html', {
+#         'products': page_obj, 
+#         'page_obj': page_obj, 
+#         'paginator': paginator
+#     })
 
 
-def food_products_view(request):
-    typ_raw = request.GET.get('type', '').strip()
-    typ = typ_raw.lower()
+# def food_products_view(request):
+#     typ_raw = request.GET.get('type', '').strip()
+#     typ = typ_raw.lower()
     
-    # ⭐ เริ่มต้น Query: ดึงสินค้าทั้งหมด
-    # เงื่อนไข: 
-    # 1. เจ้าของต้องมีตัวตน (ไม่เป็น Null)
-    # 2. ไม่โดนแบน (is_banned=False)
-    # 3. ร้านต้องได้รับการอนุมัติแล้ว (approved) เท่านั้น!
-    products = Product.objects.filter(
-        owner__user__isnull=False,
-        owner__user__profile__is_banned=False,
-        owner__verification_status='approved' 
-    )
+#     # ⭐ เริ่มต้น Query: ดึงสินค้าทั้งหมด
+#     # เงื่อนไข: 
+#     # 1. เจ้าของต้องมีตัวตน (ไม่เป็น Null)
+#     # 2. ไม่โดนแบน (is_banned=False)
+#     # 3. ร้านต้องได้รับการอนุมัติแล้ว (approved) เท่านั้น!
+#     products = Product.objects.filter(
+#         owner__user__isnull=False,
+#         owner__user__profile__is_banned=False,
+#         owner__verification_status='approved' 
+#     )
 
-    # แปลงคำค้นหาภาษาไทยเป็น key
-    map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'แมว': 'cat'}
-    if typ in map_th:
-        typ = map_th[typ]
+#     # แปลงคำค้นหาภาษาไทยเป็น key
+#     map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'แมว': 'cat'}
+#     if typ in map_th:
+#         typ = map_th[typ]
 
-    # กรณีเลือกประเภทย่อย (หมา/แมว)
-    if typ in ('dog', 'cat'):
-        # กรองจาก products ที่เรา clean มาแล้วข้างบน
-        products = products.filter(food_type=typ)
+#     # กรณีเลือกประเภทย่อย (หมา/แมว)
+#     if typ in ('dog', 'cat'):
+#         # กรองจาก products ที่เรา clean มาแล้วข้างบน
+#         products = products.filter(food_type=typ)
 
-        # หากไม่เจอสินค้า ให้ลองหาจากหมวดหมู่ (Backup Logic)
-        if not products.exists():
-            cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
-            if cat:
-                # ต้องกรองซ้ำอีกรอบสำหรับ backup logic
-                products = Product.objects.filter(
-                    category=cat,
-                    owner__user__isnull=False,
-                    owner__user__profile__is_banned=False,
-                    owner__verification_status='approved'
-                )
-            else:
-                food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
-                if food_cat:
-                    products = Product.objects.filter(
-                        category=food_cat,
-                        owner__user__isnull=False,
-                        owner__user__profile__is_banned=False,
-                        owner__verification_status='approved'
-                    ).filter(
-                        Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
-                    )
-    else:
-        # กรณีดูทั้งหมด (ไม่ระบุประเภท) -> ดึงหมวดอาหารทั้งหมด
-        food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
-        if food_cat:
-            products = products.filter(category=food_cat)
+#         # หากไม่เจอสินค้า ให้ลองหาจากหมวดหมู่ (Backup Logic)
+#         if not products.exists():
+#             cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
+#             if cat:
+#                 # ต้องกรองซ้ำอีกรอบสำหรับ backup logic
+#                 products = Product.objects.filter(
+#                     category=cat,
+#                     owner__user__isnull=False,
+#                     owner__user__profile__is_banned=False,
+#                     owner__verification_status='approved'
+#                 )
+#             else:
+#                 food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
+#                 if food_cat:
+#                     products = Product.objects.filter(
+#                         category=food_cat,
+#                         owner__user__isnull=False,
+#                         owner__user__profile__is_banned=False,
+#                         owner__verification_status='approved'
+#                     ).filter(
+#                         Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
+#                     )
+#     else:
+#         # กรณีดูทั้งหมด (ไม่ระบุประเภท) -> ดึงหมวดอาหารทั้งหมด
+#         food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
+#         if food_cat:
+#             products = products.filter(category=food_cat)
 
-    # --- ส่วน Pagination (หน้าละ 15 ชิ้น) ---
-    per_page = 15
-    paginator = Paginator(products, per_page)
-    page_number = request.GET.get('page') or 1
-    page_obj = paginator.get_page(page_number)
+#     # --- ส่วน Pagination (หน้าละ 15 ชิ้น) ---
+#     per_page = 15
+#     paginator = Paginator(products, per_page)
+#     page_number = request.GET.get('page') or 1
+#     page_obj = paginator.get_page(page_number)
 
-    # รองรับ AJAX (Partial Load)
-    if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        from django.template.loader import render_to_string
-        from django.http import HttpResponse
-        html = render_to_string('petjoy/partials/food_products_grid.html', {
-            'products': page_obj,
-            'page_obj': page_obj,
-            'paginator': paginator,
-            'selected_type': typ_raw,
-        })
-        return HttpResponse(html)
+#     # รองรับ AJAX (Partial Load)
+#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+#         from django.template.loader import render_to_string
+#         from django.http import HttpResponse
+#         html = render_to_string('petjoy/partials/food_products_grid.html', {
+#             'products': page_obj,
+#             'page_obj': page_obj,
+#             'paginator': paginator,
+#             'selected_type': typ_raw,
+#         })
+#         return HttpResponse(html)
 
-    return render(request, 'petjoy/food_products.html', {
-        'products': page_obj,
-        'selected_type': typ_raw,
-        'page_obj': page_obj,
-        'paginator': paginator,
-    })
+#     return render(request, 'petjoy/food_products.html', {
+#         'products': page_obj,
+#         'selected_type': typ_raw,
+#         'page_obj': page_obj,
+#         'paginator': paginator,
+#     })
 
 
 
@@ -2315,50 +2405,6 @@ def chat_list(request):
 @login_required
 def chat_room(request, room_id):
     """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
-    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
-    
-    # ถ้าเป็นเจ้าของร้านเข้ามา ให้ redirect ไปใช้หน้าของเจ้าของร้าน
-    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
-         return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
-
-    if request.method == 'POST':
-        message_text = request.POST.get('message', '').strip()
-        # ไม่มี file attachment สำหรับลูกค้าในหน้าเดิมนี้
-        if message_text:
-            ChatMessage.objects.create(
-                room=room,
-                sender=request.user,
-                message=message_text
-            )
-        return redirect('petjoy:chat_room', room_id=room.id)
-
-    messages_list = room.chatmessage_set.all().order_by('id')
-    
-    return render(request, 'petjoy/chat_room.html', {
-        'room': room,
-        'messages': messages_list,
-        'current_user': request.user
-    })
-
-
-
-@login_required
-def chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้าเท่านั้น"""
-    # ถ้าเป็นผู้ประกอบการเข้ามา ให้ส่งไปยังหน้าของผู้ประกอบการ
-    if hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:entrepreneur-chat-list') 
-        
-    rooms = ChatRoom.objects.filter(customer=request.user).order_by('-id')
-    
-    return render(request, 'petjoy/chat_list.html', {
-        'rooms': rooms,
-        'current_user': request.user
-    })
-
-@login_required
-def chat_room(request, room_id):
-    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
     # ดึงห้องแชทโดยตรวจสอบว่าเป็นลูกค้าในห้องนี้หรือไม่
     room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
     
@@ -2385,6 +2431,7 @@ def chat_room(request, room_id):
         'messages': messages_list,
         'current_user': request.user
     })
+
 
 
 # ==========================================================

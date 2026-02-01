@@ -1,0 +1,207 @@
+{% extends "petjoy/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+    .top-bar {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        margin: 1.5rem 0;
+    }
+
+    /* 🔙 Back button (NEW) */
+    .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 16px;
+        border-radius: 999px;
+        background: #ffffff;
+        color: #111;
+        font-weight: 600;
+        text-decoration: none;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        cursor: pointer;
+        transition: all .15s ease;
+    }
+
+    .back-btn span {
+        font-size: 1.1rem;
+        line-height: 1;
+    }
+
+    .back-btn:hover {
+        background: #fb923c;
+        color: #fff;
+        transform: translateX(-3px);
+    }
+
+    .food-filter {
+        display: flex;
+        gap: 10px;
+        margin: 1rem 0 1.5rem;
+    }
+
+    .food-filter a {
+        padding: 8px 16px;
+        border-radius: 999px;
+        text-decoration: none;
+        background: #f3f4f6;
+        color: #111;
+        font-weight: 600;
+    }
+
+    .food-filter a.active {
+        background: #fb923c;
+        color: #fff;
+    }
+
+    .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 24px;
+    }
+
+    .product-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 14px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+        text-align: center;
+        transition: transform .15s ease;
+    }
+
+    .product-card:hover {
+        transform: translateY(-4px);
+    }
+
+    .product-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-radius: 12px;
+    }
+
+    .product-card h4 {
+        margin: 10px 0 4px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .product-card p {
+        color: #ef4444;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .detail-btn {
+        display: inline-block;
+        padding: 8px 14px;
+        border-radius: 999px;
+        background: #fb923c;
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.9rem;
+    }
+
+    .detail-btn:hover {
+        opacity: 0.9;
+    }
+
+    .pagination {
+        margin: 2.5rem 0;
+        display: flex;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .pagination a, .pagination span {
+        padding: 8px 14px;
+        border-radius: 8px;
+        background: #f3f4f6;
+        text-decoration: none;
+        color: #111;
+        font-weight: 600;
+    }
+
+    .pagination .active {
+        background: #fb923c;
+        color: #fff;
+    }
+
+    .empty-box {
+        margin: 4rem auto;
+        text-align: center;
+        color: #555;
+    }
+
+    .empty-box img {
+        width: 160px;
+        margin-bottom: 1rem;
+    }
+</style>
+
+<!-- 🔙 Back -->
+<div class="top-bar">
+    <a class="back-btn" onclick="history.back()">
+        <span>←</span> กลับ
+    </a>
+    <h2>{{ category.display_name }}</h2>
+</div>
+
+<!-- 🍖 Food Filter -->
+{% if "อาหาร" in category.display_name %}
+<div class="food-filter">
+    <a href="?" class="{% if not selected_type %}active{% endif %}">ทั้งหมด</a>
+    <a href="?type=dog" class="{% if selected_type == 'dog' %}active{% endif %}">อาหารสุนัข</a>
+    <a href="?type=cat" class="{% if selected_type == 'cat' %}active{% endif %}">อาหารแมว</a>
+</div>
+{% endif %}
+
+<!-- 🛒 Products -->
+{% if products %}
+    <div class="products-grid">
+        {% for product in products %}
+            <div class="product-card">
+                <img src="{{ product.image.url }}">
+                <h4>{{ product.name }}</h4>
+                <p>{{ product.price }} บาท</p>
+                <a href="{% url 'petjoy:product-detail' product.id %}" class="detail-btn">
+                    ดูรายละเอียด
+                </a>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">ก่อนหน้า</a>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+            {% if page_obj.number == num %}
+                <span class="active">{{ num }}</span>
+            {% else %}
+                <a href="?page={{ num }}{% if selected_type %}&type={{ selected_type }}{% endif %}">{{ num }}</a>
+            {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if selected_type %}&type={{ selected_type }}{% endif %}">ถัดไป</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% else %}
+    <div class="empty-box">
+        <img src="{% static 'images/empty-box.png' %}">
+        <p>ยังไม่มีสินค้าในหมวดนี้</p>
+        <small>ร้านค้าจะเพิ่มสินค้าเข้ามาเร็ว ๆ นี้</small>
+    </div>
+{% endif %}
+
+{% endblock %}
