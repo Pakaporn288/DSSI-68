@@ -5,7 +5,6 @@
 {% block title %}PetJoy{% endblock %}
 
 {% block content %}
-<main class="content">
 
     <!-- ============================
          GREETING
@@ -21,28 +20,25 @@
     <!-- ============================
          CATEGORY
     ================================ -->
-<section class="pet-selection">
-    <h3>เลือกแก๊งของคุณ</h3>
-    <div class="pet-options">
+    <section class="pet-selection">
+        <h3>เลือกแก๊งของคุณ</h3>
+        <div class="pet-options">
 
-        {% for cat in categories %}
-            <a href="{% url 'petjoy:category-products' cat.id %}" class="pet-card">
+            {% for cat in categories %}
+                <a href="{% url 'petjoy:category-products' cat.id %}" class="pet-card">
+                    <div class="pet-image-container">
+                        {% if cat.image %}
+                            <img src="{{ cat.image.url }}">
+                        {% else %}
+                            <img src="{% static 'images/default.png' %}">
+                        {% endif %}
+                    </div>
+                    <span>{{ cat.display_name }}</span>
+                </a>
+            {% endfor %}
 
-                <div class="pet-image-container">
-                    {% if cat.image %}
-                        <img src="{{ cat.image.url }}">
-                    {% else %}
-                        <img src="{% static 'images/default.png' %}">
-                    {% endif %}
-                </div>
-
-                <span>{{ cat.display_name }}</span>
-            </a>
-        {% endfor %}
-
-    </div>
-</section>
-
+        </div>
+    </section>
 
     <!-- ============================
          RECOMMENDED PRODUCTS
@@ -71,7 +67,6 @@
                     {{ product.price|floatformat:0|intcomma }} บาท
                 </div>
 
-                <!-- ปุ่ม -->
                 <div class="product-actions">
                     <form method="POST" action="{% url 'petjoy:cart-add' %}">
                         {% csrf_token %}
@@ -98,23 +93,170 @@
         </div>
     </section>
 
-</main>
-
 <!-- ============================
      CHATBOT
 =============================== -->
-<div id="chatbot-container" class="chatbot-popup hidden">
-    <div class="chatbot-header">
-        <span class="chatbot-header-title">🐾 PetJoy</span>
+<style>
+        /* ปุ่มเปิดแชท: จัดไอคอนกึ่งกลางเป๊ะๆ ด้วย Flexbox */
+        .chatbot-toggle-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ffffff, #ff6b00);
+            border: none;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            cursor: pointer;
+            z-index: 9999;
+            /* Flexbox เพื่อดึงไอคอนให้อยู่ตรงกลาง */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            transition: transform 0.2s;
+            padding: 0; /* ลบ padding กันเบี้ยว */
+        }
+        .chatbot-toggle-button:hover { transform: scale(1.1); }
+
+        /* กล่องแชท */
+        .chatbot-popup {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 340px;
+            height: 480px;
+            background: #fff;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 9998;
+            font-family: 'Sarabun', sans-serif;
+            border: 1px solid #eee;
+        }
+        .hidden { display: none !important; }
+
+        .chatbot-header {
+            background: linear-gradient(135deg, #ff6b00, #FECFEF);
+            padding: 15px;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #fcfcfc;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        /* กล่องข้อความและการจัดวาง */
+        .msg-wrapper {
+            display: flex;
+            align-items: flex-start; /* ให้ Avatar อยู่เสมอขอบบนของข้อความ */
+            gap: 10px;
+            width: 100%;
+        }
+        .msg-wrapper.user { justify-content: flex-end; }
+        
+        /* Avatar จัดกึ่งกลางตัวอักษรข้างใน */
+        .chat-avatar {
+            width: 35px; height: 35px;
+            background: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            margin-top: 2px; /* ดันลงนิดนึงให้พอดีกับบรรทัดแรก */
+        }
+
+        .bot-msg, .user-msg {
+            padding: 10px 14px;
+            border-radius: 15px;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            max-width: 75%;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .bot-msg {
+            background: #fff; color: #333;
+            border-radius: 0 15px 15px 15px; /* มุมซ้ายบนแหลมชี้ไปหา Avatar */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+        }
+
+        .user-msg {
+            background: #e6819a; color: white;
+            border-radius: 15px 0 15px 15px; /* มุมขวาบนแหลมชี้ไปหา Avatar เรา */
+            box-shadow: 0 2px 5px rgba(255, 143, 163, 0.4);
+        }
+
+        /* จัด Format ภายใน */
+        .bot-msg strong { color: #d63384; font-weight: 700; }
+        .chat-list { padding-left: 20px; margin: 5px 0; }
+        
+        /* ช่องพิมพ์ */
+        .chatbot-input-area {
+            padding: 10px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 8px;
+            background: #fff;
+            align-items: center;
+        }
+        #chatbot-input {
+            flex: 1;
+            padding: 10px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            outline: none;
+        }
+        #chatbot-input:focus { border-color: #FF9A9E; }
+        #chatbot-send {
+            background: #FF9A9E; color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* Animation จุด ... */
+        .typing-indicator span {
+            display: inline-block; width: 5px; height: 5px;
+            background-color: #aaa; border-radius: 50%;
+            animation: typing 1s infinite; margin: 0 2px;
+        }
+        @keyframes typing { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    </style>
+
+    <div id="chatbot-container" class="chatbot-popup hidden">
+        <div class="chatbot-header">
+            <span>🐾 น้อง Joy ผู้ช่วยอัจฉริยะ</span>
+        </div>
+        <div class="chatbot-body" id="chat-response">
+            <div class="msg-wrapper bot">
+                <div class="chat-avatar">🐶</div>
+                <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้น้อง Joy ช่วยแนะนำไหมคะ?</div>
+            </div>
+        </div>
+        <div class="chatbot-input-area">
+            <input type="text" id="chatbot-input" placeholder="ถามเกี่ยวกับสินค้า..." autocomplete="off"/>
+            <button id="chatbot-send">ส่ง</button>
+        </div>
     </div>
-    <div class="chatbot-body" id="chat-response">
-        <div class="bot-msg">สวัสดีค่ะ 👋 มีอะไรให้ Joy ช่วยแนะนำไหมคะ?</div>
-    </div>
-    <div class="chatbot-input-area">
-        <input type="text" id="chatbot-input" placeholder="พิมพ์ข้อความ..." />
-        <button id="chatbot-send">ส่ง</button>
-    </div>
-</div>
-<button class="chatbot-toggle-button">💬</button>
+
+    <button class="chatbot-toggle-button">💬</button>
 
 {% endblock %}

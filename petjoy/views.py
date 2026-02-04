@@ -55,23 +55,41 @@ def homepage(request):
 
 def ask_ai_view(request):
     if request.method == 'POST':
-        data = json.loads(request.body)
-        user_message = data.get('message')
+        try:
+            data = json.loads(request.body)
+            user_message = data.get('message')
 
-        if not user_message:
-            return JsonResponse({'error': 'No message provided'}, status=400)
+            if not user_message:
+                return JsonResponse({'error': 'No message provided'}, status=400)
 
-        ai_reply = get_ai_response(user_message)
+            # --- เงื่อนไขใหม่: เช็คว่าเป็นสมาชิกหรือไม่ ---
+            if request.user.is_authenticated:
+                # ถ้า Login -> ส่ง ID ไปให้ AI จำประวัติ
+                user_id = str(request.user.id)
+            else:
+                # ถ้าไม่ Login -> ส่ง None (AI จะไม่จำประวัติ)
+                user_id = None
 
-        # Save chat history
-        from .models import ChatHistory
-        ChatHistory.objects.create(
-            user=request.user if request.user.is_authenticated else None,
-            user_message=user_message,
-            ai_response=ai_reply
-        )
+            # เรียก AI
+            ai_reply = get_ai_response(user_message, user_id)
 
-        return JsonResponse({'reply': ai_reply})
+            # --- การบันทึก Database ---
+            # บันทึกเฉพาะคนที่ Login แล้วเท่านั้น (ตามที่คุณขอ)
+            if request.user.is_authenticated:
+                # ตรวจสอบว่า Model คุณชื่อ ChatMessage หรือ ChatHistory
+                # อันนี้อ้างอิงจากที่คุณเคยส่งไฟล์ models.py มา
+                ChatMessage.objects.create(
+                    sender=request.user, # หรือ user=request.user แล้วแต่ชื่อ field
+                    message=user_message,
+                    # ถ้า Model คุณไม่มี field เก็บคำตอบ AI ให้ลบบรรทัดล่างทิ้ง หรือต้องเพิ่ม field ใน models.py
+                    # response=ai_reply 
+                )
+
+            return JsonResponse({'reply': ai_reply})
+
+        except Exception as e:
+            print(f"Error in ask_ai_view: {e}")
+            return JsonResponse({'reply': 'ขออภัยค่ะ ระบบมีปัญหาเล็กน้อย ลองใหม่อีกครั้งนะคะ'}, status=500)
 
     return JsonResponse({'error': 'Invalid request method'}, status=405)
 

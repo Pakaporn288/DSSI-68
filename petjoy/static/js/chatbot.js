@@ -1,94 +1,133 @@
-
 document.addEventListener('DOMContentLoaded', () => {
-    // ดึง Element ต่างๆ จากหน้า HTML มาเก็บในตัวแปร
     const chatContainer = document.getElementById('chatbot-container');
-    const toggleButton = document.querySelector('.chatbot-toggle-button'); // เปลี่ยนเป็น class ของปุ่ม toggle
+    const toggleButton = document.querySelector('.chatbot-toggle-button');
     const sendButton = document.getElementById('chatbot-send');
     const inputField = document.getElementById('chatbot-input');
     const chatBody = document.getElementById('chat-response');
-    // ดึงบัตรผ่าน (CSRF Token) ที่เราใส่ไว้ใน HTML -- guard in case it's not present
+    
     const csrfElem = document.querySelector('[name=csrfmiddlewaretoken]');
-    const csrfToken = csrfElem ? csrfElem.value : null;
+    const csrfToken = csrfElem ? csrfElem.value : '';
 
-    // --- ฟังก์ชันควบคุมการทำงาน ---
-
-    // 1. ฟังก์ชันเปิด-ปิดหน้าต่างแชท
+    // ปุ่มเปิด-ปิด
     if (toggleButton && chatContainer) {
         toggleButton.addEventListener('click', () => {
             chatContainer.classList.toggle('hidden');
-        });
-    } else {
-        // If elements are missing, skip wiring but do not throw.
-        console.warn('Chatbot elements not found; toggle unavailable.');
-        return; // nothing more to do
-    }
-
-    // 2. ฟังก์ชันส่งข้อความ (เมื่อกดปุ่ม "ส่ง")
-    if (sendButton) {
-        sendButton.addEventListener('click', () => {
-            sendMessage();
-        });
-    }
-
-    // 3. ฟังก์ชันส่งข้อความ (เมื่อกดปุ่ม "Enter" บนคีย์บอร์ด)
-    if (inputField) {
-        inputField.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                event.preventDefault(); // ไม่ให้ฟอร์มขึ้นบรรทัดใหม่
-                sendMessage();
+            if (!chatContainer.classList.contains('hidden')) {
+                scrollToBottom();
+                setTimeout(() => inputField.focus(), 100);
             }
         });
     }
 
-    // --- ฟังก์ชันหลักในการส่งและรับข้อความ ---
+    // ปุ่มส่ง และ Enter
+    if (sendButton && inputField) {
+        sendButton.addEventListener('click', sendMessage);
+        inputField.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+    }
 
     async function sendMessage() {
         const userMessage = inputField.value.trim();
-        if (userMessage === '') return; // ไม่ส่งถ้าข้อความว่าง
+        if (!userMessage) return;
 
-        // แสดงข้อความของผู้ใช้บนหน้าจอ
+        inputField.value = '';
         addMessage(userMessage, 'user');
-        inputField.value = ''; // เคลียร์ช่องพิมพ์
+
+        const loadingId = showLoading();
+        scrollToBottom();
 
         try {
-            // ส่งข้อความไปหา Django ที่ URL '/ask-ai/'
             const response = await fetch('/ask-ai/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrfToken // แนบบัตรผ่านไปด้วย
+                    'X-CSRFToken': csrfToken
                 },
                 body: JSON.stringify({ message: userMessage })
             });
 
+            if (!response.ok) throw new Error('Network response was not ok');
             const data = await response.json();
 
-            // แสดงคำตอบจาก AI บนหน้าจอ
+            removeLoading(loadingId);
             addMessage(data.reply, 'bot');
 
         } catch (error) {
-            console.error('Error:', error);
-            addMessage('ขออภัยค่ะ, ระบบขัดข้อง โปรดลองอีกครั้ง', 'bot');
+            removeLoading(loadingId);
+            console.error('Chat Error:', error);
+            addMessage('ระบบขัดข้องชั่วคราว ลองใหม่อีกครั้งนะคะ 😢', 'bot');
         }
     }
 
-    // --- ฟังก์ชันช่วยแสดงผล ---
-
-    // ฟังก์ชันสร้างและเพิ่มกล่องข้อความลงในแชท
     function addMessage(message, sender) {
+        const messageWrapper = document.createElement('div');
+        messageWrapper.className = `msg-wrapper ${sender}`;
+
+        const avatar = document.createElement('div');
+        avatar.className = 'chat-avatar';
+        avatar.innerHTML = sender === 'bot' ? '🐶' : '👤';
+
         const messageDiv = document.createElement('div');
+        messageDiv.className = sender === 'bot' ? 'bot-msg' : 'user-msg';
         
-        if (sender === 'user') {
-            // สไตล์สำหรับข้อความผู้ใช้
-            messageDiv.className = 'user-msg';
-            messageDiv.textContent = message;
+        // ใช้ฟังก์ชัน formatText ใหม่ที่แก้เรื่อง ##
+        messageDiv.innerHTML = formatText(message);
+
+        if (sender === 'bot') {
+            messageWrapper.appendChild(avatar);
+            messageWrapper.appendChild(messageDiv);
         } else {
-            // สไตล์สำหรับข้อความบอท
-            messageDiv.className = 'bot-msg'; // ใช้คลาส bot-msg สำหรับข้อความทั่วไปของบอท
-            messageDiv.textContent = message;
+            messageWrapper.appendChild(messageDiv);
+            messageWrapper.appendChild(avatar); // คนส่ง Avatar อยู่ขวา
         }
 
-        chatBody.appendChild(messageDiv);
-        chatBody.scrollTop = chatBody.scrollHeight; // เลื่อนไปที่ข้อความล่าสุดเสมอ
+        chatBody.appendChild(messageWrapper);
+        scrollToBottom();
+    }
+
+    // --- แก้ไขจุดสำคัญตรงนี้ (จัดการ ## และตัวหนา) ---
+    function formatText(text) {
+        if (!text) return '';
+        
+        let formatted = text
+            // 1. ลบ ## ออกแล้วทำเป็นตัวหนาแทน
+            .replace(/##\s*(.*?)(?:\n|$)/g, '<strong>$1</strong><br>') 
+            // 2. แปลง Markdown ตัวหนา **คำ** เป็น <b>คำ</b>
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            // 3. แปลง Markdown รายการ - เป็น bullet point
+            .replace(/- (.*?)(?=\n|$)/g, '<li>$1</li>')
+            // 4. แปลงบรรทัดใหม่
+            .replace(/\n/g, '<br>');
+
+        // ห่อ list ด้วย <ul>
+        if (formatted.includes('<li>')) {
+            formatted = formatted.replace(/((<li>.*<\/li>\s*)+)/g, '<ul class="chat-list">$1</ul>');
+        }
+        return formatted;
+    }
+
+    function showLoading() {
+        const id = 'loading-' + Date.now();
+        const wrapper = document.createElement('div');
+        wrapper.className = 'msg-wrapper bot';
+        wrapper.id = id;
+        wrapper.innerHTML = `
+            <div class="chat-avatar">🐶</div>
+            <div class="bot-msg typing-indicator">
+                <span></span><span></span><span></span>
+            </div>
+        `;
+        chatBody.appendChild(wrapper);
+        return id;
+    }
+
+    function removeLoading(id) {
+        const element = document.getElementById(id);
+        if (element) element.remove();
+    }
+
+    function scrollToBottom() {
+        chatBody.scrollTop = chatBody.scrollHeight;
     }
 });
