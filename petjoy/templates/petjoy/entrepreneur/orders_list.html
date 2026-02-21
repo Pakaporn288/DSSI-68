@@ -93,6 +93,8 @@
     .status-preparing { background: #D1ECF1; color: #0C5460; }
     .status-delivering { background: #CCE5FF; color: #004085; }
     .status-success { background: #C3E6CB; color: #155724; }
+    /* เพิ่มสีป้ายสถานะยกเลิก */
+    .status-cancelled { background: #F8D7DA; color: #721C24; }
 
     .btn-view {
         padding: 6px 14px;
@@ -118,7 +120,6 @@
 
 <div class="seller-layout">
 
-    <!-- SIDEBAR -->
     <aside class="seller-sidebar">
 
         <div class="seller-profile">
@@ -148,10 +149,8 @@
 
     </aside>
 
-    <!-- MAIN -->
     <main class="seller-main">
 
-        <!-- MESSAGES -->
         {% if messages %}
         <div class="dashboard-messages">
             {% for message in messages %}
@@ -162,7 +161,6 @@
 
         <h2 class="section-title">📦 รายการคำสั่งซื้อ</h2>
 
-        <!-- ▶ สรุปสถิติคำสั่งซื้อ -->
         <div style="display: flex; gap: 20px; margin-bottom: 25px; flex-wrap: wrap;">
 
             <div class="stat-box">
@@ -187,7 +185,6 @@
 
         </div>
 
-        <!-- ▶ ออเดอร์ 5 รายการล่าสุด -->
         <h3 class="orders-section-title">🆕 คำสั่งซื้อ 5 รายการล่าสุด</h3>
 
         <div class="recent-orders-box">
@@ -203,7 +200,6 @@
             {% endif %}
         </div>
 
-        <!-- ▶ ตารางทั้งหมด -->
         <div class="orders-table">
 
             <table>
@@ -222,7 +218,6 @@
                     {% for order in orders %}
                     <tr>
 
-                        <!-- NEW formatted order code -->
                         <td>
                             <span class="order-code">ORD-{{ order.order_number|stringformat:"06d" }}</span>
                         </td>
@@ -241,6 +236,8 @@
                                 <span class="status-badge status-delivering">กำลังจัดส่ง</span>
                             {% elif order.status == "success" %}
                                 <span class="status-badge status-success">สำเร็จ</span>
+                            {% elif order.status == "cancelled" %}
+                                <span class="status-badge status-cancelled">ยกเลิกแล้ว</span>
                             {% endif %}
                         </td>
 

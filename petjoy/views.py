@@ -883,484 +883,37 @@ def address_edit(request, id):
     return render(request, "petjoy/address_form.html", {"address": address})
 
 @login_required
-def profile_view(request):
-    profile, created = Profile.objects.get_or_create(user=request.user)
-
-    # If editing (via ?edit=1) show forms and accept POST
-    if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
-        if user_form.is_valid() and profile_form.is_valid():
-            user = user_form.save(commit=False)
-            password = user_form.cleaned_data.get('password')
-            if password:
-                user.set_password(password)
-            user.save()
-            profile_form.save()
-            messages.success(request, 'อัปเดตข้อมูลสำเร็จ')
-            # If password changed we need to re-authenticate; redirect to login
-            if password:
-                # Update the session auth hash so the user stays logged in after password change
-                try:
-                    update_session_auth_hash(request, user)
-                    logger.debug(f"update_session_auth_hash called for user {user.username} (id={user.id})")
-                    messages.info(request, 'เข้าสู่ระบบใหม่เรียบร้อยหลังการเปลี่ยนรหัสผ่าน')
-                except Exception as e:
-                    logger.exception('update_session_auth_hash failed')
-                    # If update fails for any reason, fallback to asking user to log in again
-                    return redirect('petjoy:login')
-            return redirect('petjoy:profile')
-        else:
-            messages.error(request, 'มีข้อผิดพลาดในการกรอกข้อมูล')
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileUpdateForm(instance=profile)
-
-    return render(request, 'petjoy/profile.html', {
-        'profile': profile,
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'editing': request.GET.get('edit') == '1'
-    })
-
-
-def search_view(request):
-    # รับคำค้นหา
-    q = request.GET.get('q', '').strip()
-    
-    # เริ่มต้นด้วย QuerySet ว่างๆ
-    products = Product.objects.none()
-    categories = Category.objects.none()
-    
-    if q:
-        # 1. ค้นหาจากชื่อ, รายละเอียด, คุณสมบัติ
-        products = Product.objects.filter(
-            Q(name__icontains=q) | 
-            Q(description__icontains=q) | 
-            Q(features__icontains=q)
-        )
-
-        # ⭐⭐ 2. เพิ่มส่วนกรอง: เอาเฉพาะร้านที่ Active จริงๆ เท่านั้น ⭐⭐
-        # (ป้องกันสินค้าจากร้านที่ถูกลบ หรือร้านผีโผล่ขึ้นมา)
-        products = products.filter(
-            owner__isnull=False,                        # สินค้าต้องมีเจ้าของ (ร้านค้า)
-            owner__verification_status='approved',      # ร้านต้องได้รับการอนุมัติแล้ว
-            owner__user__isnull=False,                  # User เจ้าของร้านต้องไม่ถูกลบ
-            owner__user__profile__is_banned=False       # User เจ้าของร้านต้องไม่โดนแบน
-        )
-
-        # 3. ค้นหาหมวดหมู่ (เผื่อลูกค้าค้นหาชื่อหมวดหมู่)
-        categories = Category.objects.filter(
-            Q(name__icontains=q) | 
-            Q(display_name__icontains=q)
-        )
-
-    return render(request, 'petjoy/search_results.html', {
-        'query': q,
-        'products': products,
-        'categories': categories,
-    })
-
-
-@login_required
-def toggle_favorite(request):
-    """AJAX endpoint to toggle favorite for the logged-in user.
-    Expects POST with JSON: {"product_id": <id>} or form-encoded product_id.
-    Returns JSON {"status": "added"|"removed", "favorites_count": <int>}.
-    """
-    if request.method != 'POST':
-        return JsonResponse({'error': 'POST required'}, status=405)
-
-    # Try to parse JSON body first, fall back to POST data
-    try:
-        data = json.loads(request.body.decode('utf-8')) if request.body else {}
-    except Exception:
-        data = {}
-
-    product_id = data.get('product_id') or request.POST.get('product_id')
-    if not product_id:
-        return JsonResponse({'error': 'product_id required'}, status=400)
-
-    product = get_object_or_404(Product, id=product_id)
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-
-    if product in profile.favorites.all():
-        profile.favorites.remove(product)
-        status = 'removed'
-    else:
-        profile.favorites.add(product)
-        status = 'added'
-
-    return JsonResponse({'status': status, 'favorites_count': profile.favorites.count()})
-
-
-@login_required
-def favorites_list(request):
-    profile, _ = Profile.objects.get_or_create(user=request.user)
-    products = profile.favorites.all()
-    return render(request, 'petjoy/favorites_list.html', {'products': products})
-
-@login_required
-def orders_list(request):
-    entrepreneur = request.user.entrepreneur
-
-    orders = Order.objects.filter(
-        entrepreneur=entrepreneur
-    ).order_by('-created_at')
-
-    context = {
-        "entrepreneur": entrepreneur,
-        "orders": orders,
-
-        # ค่าไว้ใช้ในส่วนสรุปบนสุด
-        "shipping_count": orders.filter(status="delivering").count(),
-        "success_count": orders.filter(status="success").count(),
-        "canceled_count": orders.filter(status="canceled").count() if hasattr(Order, 'canceled') else 0,
-
-        # - 5 orders ล่าสุด
-        "recent_orders": orders[:5],
-    }
-
-    return render(request, "petjoy/entrepreneur/orders_list.html", context)
-
-@login_required
-def order_detail(request, order_id):
-    entrepreneur = request.user.entrepreneur
-
-    # ป้องกันไม่ให้ร้านอื่นเข้ามาดู order ของร้านนี้
-    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
-
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        tracking_number = request.POST.get("tracking_number")
-
-        order.status = new_status
-
-        # ✅ ถ้าสถานะเป็นกำลังจัดส่ง → บันทึกเลขพัสดุ
-        if new_status == "delivering" and tracking_number:
-            order.tracking_number = tracking_number
-
-        # 🔔 แจ้งเตือนลูกค้า
-        order.has_unread_status_update = True
-        order.save()
-
-        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
-        return redirect("petjoy:orders-detail", order_id=order.id)
-
-    return render(request, "petjoy/entrepreneur/orders_detail.html", {
-        "order": order,
-        "entrepreneur": entrepreneur,
-    })
-
-
-
-@login_required
-def update_order_status(request, order_id):
-    entrepreneur = request.user.entrepreneur
-    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
-
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        order.status = new_status
-
-        # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
-        order.has_unread_status_update = True
-
-        order.save()
-        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
-        return redirect("petjoy:orders-detail", order_id=order_id)
-
-    return redirect("petjoy:orders-list")
-
-
-
-@login_required
-def start_chat_customer(request, user_id, order_id):
-    from django.contrib.auth.models import User
-    from .models import Order
-
-    customer = get_object_or_404(User, id=user_id)
+def update_order_status(request, order_id): # ชื่อฟังก์ชันอาจแตกต่างกันไปตามระบบของคุณ
     order = get_object_or_404(Order, id=order_id)
-
-    # ดึงร้านจาก order โดยตรง
-    entrepreneur = order.entrepreneur
-
-    room, created = ChatRoom.objects.get_or_create(
-        customer=customer,
-        entrepreneur=entrepreneur
-    )
-
-    return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
-
-
-
-@login_required
-def start_chat_view(request, entrepreneur_id):
-    """ฟังก์ชันสำหรับเริ่มแชท (กดปุ่ม 'แชทเลย' จากหน้าสินค้า)"""
-    from .models import Entrepreneur # import เฉพาะจุดเพื่อเลี่ยง circular import
     
-    # 1. หาผู้ประกอบการเป้าหมาย
-    entrepreneur = get_object_or_404(Entrepreneur, id=entrepreneur_id)
-    
-    # 2. ป้องกันไม่ให้แชทกับตัวเอง (กรณี Login เป็นเจ้าของร้านนั้นอยู่)
-    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur.id == entrepreneur_id:
-        messages.error(request, "คุณไม่สามารถแชทกับร้านค้าของตัวเองได้")
-        return redirect('petjoy:homepage') # หรือ redirect กลับไปหน้าเดิม
-
-    # 3. หาห้องแชทเดิม หรือ สร้างใหม่ถ้ายังไม่มี
-    room, created = ChatRoom.objects.get_or_create(
-        customer=request.user,
-        entrepreneur=entrepreneur
-    )
-    
-    # 4. ส่งไปที่หน้าห้องแชท
-    return redirect('petjoy:chat_room', room_id=room.id)
-
-
-@login_required
-def delete_chat(request, room_id):
-    """ฟังก์ชันลบห้องแชท (ฝั่งลูกค้า) - เปลี่ยนเป็นซ่อนแทน"""
-    if request.method == 'POST':
-        room = get_object_or_404(ChatRoom, id=room_id)
+    if request.method == "POST":
+        new_status = request.POST.get('status')
+        cancel_reason = request.POST.get('cancel_reason')
         
-        # เช็คว่าเป็นลูกค้าเจ้าของห้อง
-        if request.user == room.customer:
-            # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
-            room.hidden_by_customer = True  
-            room.save()
-            
-            # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
-            if room.hidden_by_customer and room.hidden_by_entrepreneur:
-                room.delete()
+        # ป้องกันการคืนสต๊อกซ้ำ (ถ้ายกเลิกไปแล้วไม่ต้องคืนอีก)
+        if new_status == 'cancelled' and order.status != 'cancelled':
+            with transaction.atomic():
+                # คืนสต๊อกสินค้า
+                for item in order.items.all():
+                    product = item.product
+                    product.stock += item.quantity
+                    product.save()
                 
-            messages.success(request, "ลบแชทเรียบร้อยแล้ว")
+                # บันทึกสถานะและเหตุผล
+                order.status = new_status
+                order.cancel_reason = cancel_reason
+                order.save()
+                
+                messages.success(request, "ยกเลิกคำสั่งซื้อและคืนสินค้าเข้าสต๊อกเรียบร้อยแล้ว")
         else:
-            messages.error(request, "คุณไม่มีสิทธิ์ลบห้องแชทนี้")
+            # อัปเดตสถานะปกติอื่นๆ
+            order.status = new_status
+            order.save()
+            messages.success(request, "อัปเดตสถานะเรียบร้อยแล้ว")
             
-    return redirect('petjoy:chat_list')
+        return redirect('petjoy:orders-detail', order_id=order.id)
 
-@login_required
-def chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้าเท่านั้น"""
-    
-    if hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:entrepreneur-chat-list')
-        
-    rooms = ChatRoom.objects.filter(
-        customer=request.user,
-        hidden_by_customer=False   # ⭐ เพิ่มตรงนี้
-    ).order_by('-id')
-    
-    return render(request, 'petjoy/chat_list.html', {
-        'rooms': rooms,
-        'current_user': request.user
-    })
-
-@login_required
-def chat_room(request, room_id):
-    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
-    # ดึงห้องแชทโดยตรวจสอบว่าเป็นลูกค้าในห้องนี้หรือไม่
-    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
-    
-    # ถ้าเป็นเจ้าของร้านเข้ามา (แม้จะผ่าน URL ของลูกค้า) ให้ redirect ไปใช้หน้าของเจ้าของร้าน
-    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
-         return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
-
-    if request.method == 'POST':
-        message_text = request.POST.get('message', '').strip()
-        attachment_file = request.FILES.get('attachment')
-        
-        if message_text or attachment_file:
-            ChatMessage.objects.create(
-                room=room,
-                sender=request.user,
-                message=message_text if message_text else None,
-                attachment=attachment_file
-            )
-        return redirect('petjoy:chat_room', room_id=room.id)
-
-    # ⭐ แก้ไขการเรียกใช้: ใช้ room.messages.all() ตาม related_name ใน models.py ⭐
-    messages_list = room.messages.all().order_by('id') 
-    
-    return render(request, 'petjoy/chat_room.html', {
-        'room': room,
-        'messages': messages_list,
-        'current_user': request.user
-    })
-
-
-
-# ==========================================================
-# ⭐ CHAT FUNCTIONS: ENTREPRENEUR (ฟังก์ชันสำหรับผู้ประกอบการ) ⭐
-# ==========================================================
-
-@login_required
-def entrepreneur_chat_list(request):
-    """แสดงรายชื่อห้องแชททั้งหมดสำหรับผู้ประกอบการ"""
-    if not hasattr(request.user, 'entrepreneur'):
-        return redirect('petjoy:chat_list')
-
-    entrepreneur = request.user.entrepreneur
-    
-    # ⭐ เพิ่มเงื่อนไข hidden_by_entrepreneur=False
-    rooms = ChatRoom.objects.filter(
-        entrepreneur=entrepreneur, 
-        hidden_by_entrepreneur=False
-    ).order_by('-id')
-
-    context = {
-        'rooms': rooms,
-        'current_user': request.user,
-        'entrepreneur': entrepreneur,
-    }
-    return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
-
-@login_required
-def entrepreneur_chat_room(request, room_id):
-    room = get_object_or_404(ChatRoom, id=room_id)
-
-    # ป้องกันคนอื่นแอบเข้าห้องแชท
-    if request.user != room.entrepreneur.user:
-        return redirect('petjoy:entrepreneur-chat-list')
-
-    entrepreneur = room.entrepreneur
-
-    # Mark as read (อ่านแล้ว) เฉพาะข้อความที่คู่สนทนาส่งมา
-    ChatMessage.objects.filter(
-        room=room
-    ).exclude(sender=request.user).update(is_read=True)
-
-    if request.method == 'POST':
-        message_text = request.POST.get('message')
-        attachment = request.FILES.get('attachment')
-
-        if message_text or attachment:
-            ChatMessage.objects.create(
-                room=room,
-                sender=request.user,
-                message=message_text,
-                attachment=attachment
-            )
-
-            room.updated_at = timezone.now()
-            room.save()
-
-            return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
-
-    # -------------------------------
-    # 🔽 ส่วนที่เพิ่ม: Date Label
-    # -------------------------------
-    messages_list = room.messages.all().order_by('timestamp')
-
-    from datetime import timedelta
-
-    today = timezone.localdate()
-    yesterday = today - timedelta(days=1)
-
-    for msg in messages_list:
-        msg.local_date = msg.timestamp.astimezone(
-            timezone.get_current_timezone()
-        ).date()
-
-        if msg.local_date == today:
-            msg.date_label = "วันนี้"
-        elif msg.local_date == yesterday:
-            msg.date_label = "เมื่อวาน"
-        else:
-            diff = (today - msg.local_date).days
-            if diff <= 7:
-                msg.date_label = f"{diff} วันที่แล้ว"
-            else:
-                msg.date_label = msg.local_date.strftime("%d %b %Y")
-    # -------------------------------
-
-    quick_replies = entrepreneur.quick_replies.all().order_by('-created_at')
-
-    context = {
-        'room': room,
-        'messages': messages_list,
-        'current_user': request.user,
-        'entrepreneur': entrepreneur,
-        'quick_replies': quick_replies,
-    }
-
-    return render(
-        request,
-        'petjoy/entrepreneur/entrepreneur_chat_room.html',
-        context
-    )
-
-@login_required
-def entrepreneur_chat_delete(request, room_id):
-    """ฟังก์ชันลบห้องแชท (ฝั่งร้านค้า) - เปลี่ยนเป็นซ่อนแทน"""
-    room = get_object_or_404(ChatRoom, id=room_id)
-
-    # เช็คว่าเป็นเจ้าของร้านจริง
-    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
-        # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
-        room.hidden_by_entrepreneur = True 
-        room.save()
-
-        # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
-        if room.hidden_by_customer and room.hidden_by_entrepreneur:
-            room.delete()
-
-        messages.success(request, "ลบแชทเรียบร้อยแล้ว")
-    else:
-        messages.error(request, "คุณไม่มีสิทธิ์ลบแชทนี้")
-
-    return redirect('petjoy:entrepreneur-chat-list')
-
-
-
-@login_required
-@require_POST
-def report_product(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
-    reason = request.POST.get('reason')
-    details = request.POST.get('details', '')
-
-    if not reason:
-        return JsonResponse({'success': False, 'error': 'กรุณาระบุเหตุผล'}, status=400)
-
-    from .models import ProductReport
-    ProductReport.objects.create(
-        user=request.user,
-        product=product,
-        reason=reason,
-        details=details
-    )
-
-    return JsonResponse({'success': True, 'message': 'ส่งรายงานให้เจ้าหน้าที่เรียบร้อยแล้ว'})
-
-@login_required(login_url='petjoy:login')
-def buy_now(request):
-    """ฟังก์ชันสั่งซื้อทันที: เพิ่มลงตะกร้าแล้วไปหน้า Checkout เลย"""
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        quantity = int(request.POST.get('quantity') or 1)
-        
-        product = get_object_or_404(Product, id=product_id)
-
-        # 1. เพิ่มลงตะกร้า
-        cart_item, created = CartItem.objects.get_or_create(
-            user=request.user,
-            product=product
-        )
-        
-        if not created:
-            cart_item.quantity += quantity
-        else:
-            cart_item.quantity = quantity
-        cart_item.save()
-
-        # 2. Redirect ไปหน้า Checkout
-        # ⭐⭐⭐ แก้บรรทัดนี้ครับ (เปลี่ยน checkout_view -> checkout) ⭐⭐⭐
-        checkout_url = reverse('petjoy:checkout') 
-        
-        return redirect(f"{checkout_url}?selected_items={cart_item.id}&checkout_step=1")
-
-    return redirect('petjoy:product-list')
+# views.py
 
 # ==========================================
 # 🚨 ADMIN REPORT & CHAT SYSTEM
@@ -1592,6 +1145,9 @@ class ProductUpdateView(UpdateView):
         ctx['product'] = self.get_object()
         return ctx
 
+
+
+# views.py
 
 class ProductDeleteView(DeleteView):
     model = Product
@@ -2486,7 +2042,492 @@ def entrepreneur_income(request):
     )
 
 
+@login_required
+def profile_view(request):
+    profile, created = Profile.objects.get_or_create(user=request.user)
 
+    # If editing (via ?edit=1) show forms and accept POST
+    if request.method == 'POST':
+        user_form = UserUpdateForm(request.POST, instance=request.user)
+        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=profile)
+        if user_form.is_valid() and profile_form.is_valid():
+            user = user_form.save(commit=False)
+            password = user_form.cleaned_data.get('password')
+            if password:
+                user.set_password(password)
+            user.save()
+            profile_form.save()
+            messages.success(request, 'อัปเดตข้อมูลสำเร็จ')
+            # If password changed we need to re-authenticate; redirect to login
+            if password:
+                # Update the session auth hash so the user stays logged in after password change
+                try:
+                    update_session_auth_hash(request, user)
+                    logger.debug(f"update_session_auth_hash called for user {user.username} (id={user.id})")
+                    messages.info(request, 'เข้าสู่ระบบใหม่เรียบร้อยหลังการเปลี่ยนรหัสผ่าน')
+                except Exception as e:
+                    logger.exception('update_session_auth_hash failed')
+                    # If update fails for any reason, fallback to asking user to log in again
+                    return redirect('petjoy:login')
+            return redirect('petjoy:profile')
+        else:
+            messages.error(request, 'มีข้อผิดพลาดในการกรอกข้อมูล')
+    else:
+        user_form = UserUpdateForm(instance=request.user)
+        profile_form = ProfileUpdateForm(instance=profile)
+
+    return render(request, 'petjoy/profile.html', {
+        'profile': profile,
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'editing': request.GET.get('edit') == '1'
+    })
+
+
+def search_view(request):
+    # รับคำค้นหา
+    q = request.GET.get('q', '').strip()
+    
+    # เริ่มต้นด้วย QuerySet ว่างๆ
+    products = Product.objects.none()
+    categories = Category.objects.none()
+    
+    if q:
+        # 1. ค้นหาจากชื่อ, รายละเอียด, คุณสมบัติ
+        products = Product.objects.filter(
+            Q(name__icontains=q) | 
+            Q(description__icontains=q) | 
+            Q(features__icontains=q)
+        )
+
+        # ⭐⭐ 2. เพิ่มส่วนกรอง: เอาเฉพาะร้านที่ Active จริงๆ เท่านั้น ⭐⭐
+        # (ป้องกันสินค้าจากร้านที่ถูกลบ หรือร้านผีโผล่ขึ้นมา)
+        products = products.filter(
+            owner__isnull=False,                        # สินค้าต้องมีเจ้าของ (ร้านค้า)
+            owner__verification_status='approved',      # ร้านต้องได้รับการอนุมัติแล้ว
+            owner__user__isnull=False,                  # User เจ้าของร้านต้องไม่ถูกลบ
+            owner__user__profile__is_banned=False       # User เจ้าของร้านต้องไม่โดนแบน
+        )
+
+        # 3. ค้นหาหมวดหมู่ (เผื่อลูกค้าค้นหาชื่อหมวดหมู่)
+        categories = Category.objects.filter(
+            Q(name__icontains=q) | 
+            Q(display_name__icontains=q)
+        )
+
+    return render(request, 'petjoy/search_results.html', {
+        'query': q,
+        'products': products,
+        'categories': categories,
+    })
+
+
+@login_required
+def toggle_favorite(request):
+    """AJAX endpoint to toggle favorite for the logged-in user.
+    Expects POST with JSON: {"product_id": <id>} or form-encoded product_id.
+    Returns JSON {"status": "added"|"removed", "favorites_count": <int>}.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'error': 'POST required'}, status=405)
+
+    # Try to parse JSON body first, fall back to POST data
+    try:
+        data = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except Exception:
+        data = {}
+
+    product_id = data.get('product_id') or request.POST.get('product_id')
+    if not product_id:
+        return JsonResponse({'error': 'product_id required'}, status=400)
+
+    product = get_object_or_404(Product, id=product_id)
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+
+    if product in profile.favorites.all():
+        profile.favorites.remove(product)
+        status = 'removed'
+    else:
+        profile.favorites.add(product)
+        status = 'added'
+
+    return JsonResponse({'status': status, 'favorites_count': profile.favorites.count()})
+
+
+@login_required
+def favorites_list(request):
+    profile, _ = Profile.objects.get_or_create(user=request.user)
+    products = profile.favorites.all()
+    return render(request, 'petjoy/favorites_list.html', {'products': products})
+
+@login_required
+def orders_list(request):
+    entrepreneur = request.user.entrepreneur
+
+    orders = Order.objects.filter(
+        entrepreneur=entrepreneur
+    ).order_by('-created_at')
+
+    context = {
+        "entrepreneur": entrepreneur,
+        "orders": orders,
+
+        # ค่าไว้ใช้ในส่วนสรุปบนสุด
+        "shipping_count": orders.filter(status="delivering").count(),
+        "success_count": orders.filter(status="success").count(),
+        "canceled_count": orders.filter(status="cancelled").count(),
+
+        # - 5 orders ล่าสุด
+        "recent_orders": orders[:5],
+    }
+
+    return render(request, "petjoy/entrepreneur/orders_list.html", context)
+
+@login_required
+def order_detail(request, order_id): 
+    # ดึงข้อมูลออเดอร์ของร้านนี้
+    entrepreneur = request.user.entrepreneur
+    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        tracking_number = request.POST.get("tracking_number")
+        cancel_reason = request.POST.get("cancel_reason")
+
+        # 🟢 เพิ่มเงื่อนไขคืนสต๊อกตรงนี้:
+        # ถ้าสถานะใหม่คือ 'cancelled' และสถานะเดิมยังไม่ได้เป็น 'cancelled' (ป้องกันการคืนสต๊อกซ้ำ)
+        if new_status == 'cancelled' and order.status != 'cancelled':
+            # วนลูปสินค้าทุกชิ้นในออเดอร์นี้ เพื่อบวกสต๊อกกลับคืน
+            for item in order.items.all():
+                item.product.stock += item.quantity
+                item.product.save() # บันทึกสต๊อกใหม่ลงฐานข้อมูล
+
+        # อัปเดตข้อมูลออเดอร์
+        order.status = new_status
+        if new_status == 'delivering':
+            order.tracking_number = tracking_number
+        if new_status == 'cancelled':
+            order.cancel_reason = cancel_reason
+
+        order.has_unread_status_update = True
+
+        order.save()
+        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว")
+        return redirect("petjoy:orders-detail", order_id=order.id)
+
+    # 🟢 แก้ไขบรรทัดนี้: เพิ่ม "entrepreneur": entrepreneur เข้าไปในปีกกาค่ะ
+    return render(request, "petjoy/entrepreneur/orders_detail.html", {
+        "order": order,
+        "entrepreneur": entrepreneur
+    })
+
+
+
+@login_required
+def update_order_status(request, order_id):
+    entrepreneur = request.user.entrepreneur
+    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
+
+    if request.method == "POST":
+        new_status = request.POST.get("status")
+        order.status = new_status
+
+        # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
+        order.has_unread_status_update = True
+
+        order.save()
+        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
+        return redirect("petjoy:orders-detail", order_id=order_id)
+
+    return redirect("petjoy:orders-list")
+
+
+
+@login_required
+def start_chat_customer(request, user_id, order_id):
+    from django.contrib.auth.models import User
+    from .models import Order
+
+    customer = get_object_or_404(User, id=user_id)
+    order = get_object_or_404(Order, id=order_id)
+
+    # ดึงร้านจาก order โดยตรง
+    entrepreneur = order.entrepreneur
+
+    room, created = ChatRoom.objects.get_or_create(
+        customer=customer,
+        entrepreneur=entrepreneur
+    )
+
+    return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
+
+
+
+@login_required
+def start_chat_view(request, entrepreneur_id):
+    """ฟังก์ชันสำหรับเริ่มแชท (กดปุ่ม 'แชทเลย' จากหน้าสินค้า)"""
+    from .models import Entrepreneur # import เฉพาะจุดเพื่อเลี่ยง circular import
+    
+    # 1. หาผู้ประกอบการเป้าหมาย
+    entrepreneur = get_object_or_404(Entrepreneur, id=entrepreneur_id)
+    
+    # 2. ป้องกันไม่ให้แชทกับตัวเอง (กรณี Login เป็นเจ้าของร้านนั้นอยู่)
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur.id == entrepreneur_id:
+        messages.error(request, "คุณไม่สามารถแชทกับร้านค้าของตัวเองได้")
+        return redirect('petjoy:homepage') # หรือ redirect กลับไปหน้าเดิม
+
+    # 3. หาห้องแชทเดิม หรือ สร้างใหม่ถ้ายังไม่มี
+    room, created = ChatRoom.objects.get_or_create(
+        customer=request.user,
+        entrepreneur=entrepreneur
+    )
+    
+    # 4. ส่งไปที่หน้าห้องแชท
+    return redirect('petjoy:chat_room', room_id=room.id)
+
+
+@login_required
+def delete_chat(request, room_id):
+    """ฟังก์ชันลบห้องแชท (ฝั่งลูกค้า) - เปลี่ยนเป็นซ่อนแทน"""
+    if request.method == 'POST':
+        room = get_object_or_404(ChatRoom, id=room_id)
+        
+        # เช็คว่าเป็นลูกค้าเจ้าของห้อง
+        if request.user == room.customer:
+            # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
+            room.hidden_by_customer = True  
+            room.save()
+            
+            # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
+            if room.hidden_by_customer and room.hidden_by_entrepreneur:
+                room.delete()
+                
+            messages.success(request, "ลบแชทเรียบร้อยแล้ว")
+        else:
+            messages.error(request, "คุณไม่มีสิทธิ์ลบห้องแชทนี้")
+            
+    return redirect('petjoy:chat_list')
+
+@login_required
+def chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับลูกค้าเท่านั้น"""
+    
+    if hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:entrepreneur-chat-list')
+        
+    rooms = ChatRoom.objects.filter(
+        customer=request.user,
+        hidden_by_customer=False   # ⭐ เพิ่มตรงนี้
+    ).order_by('-id')
+    
+    return render(request, 'petjoy/chat_list.html', {
+        'rooms': rooms,
+        'current_user': request.user
+    })
+
+@login_required
+def chat_room(request, room_id):
+    """ฟังก์ชันแสดงหน้าห้องแชทสำหรับลูกค้าเท่านั้น"""
+    # ดึงห้องแชทโดยตรวจสอบว่าเป็นลูกค้าในห้องนี้หรือไม่
+    room = get_object_or_404(ChatRoom, id=room_id, customer=request.user)
+    
+    # ถ้าเป็นเจ้าของร้านเข้ามา (แม้จะผ่าน URL ของลูกค้า) ให้ redirect ไปใช้หน้าของเจ้าของร้าน
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
+         return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
+
+    if request.method == 'POST':
+        message_text = request.POST.get('message', '').strip()
+        attachment_file = request.FILES.get('attachment')
+        
+        if message_text or attachment_file:
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text if message_text else None,
+                attachment=attachment_file
+            )
+        return redirect('petjoy:chat_room', room_id=room.id)
+
+    # ⭐ แก้ไขการเรียกใช้: ใช้ room.messages.all() ตาม related_name ใน models.py ⭐
+    messages_list = room.messages.all().order_by('id') 
+    
+    return render(request, 'petjoy/chat_room.html', {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user
+    })
+
+
+
+# ==========================================================
+# ⭐ CHAT FUNCTIONS: ENTREPRENEUR (ฟังก์ชันสำหรับผู้ประกอบการ) ⭐
+# ==========================================================
+
+@login_required
+def entrepreneur_chat_list(request):
+    """แสดงรายชื่อห้องแชททั้งหมดสำหรับผู้ประกอบการ"""
+    if not hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:chat_list')
+
+    entrepreneur = request.user.entrepreneur
+    
+    # ⭐ เพิ่มเงื่อนไข hidden_by_entrepreneur=False
+    rooms = ChatRoom.objects.filter(
+        entrepreneur=entrepreneur, 
+        hidden_by_entrepreneur=False
+    ).order_by('-id')
+
+    context = {
+        'rooms': rooms,
+        'current_user': request.user,
+        'entrepreneur': entrepreneur,
+    }
+    return render(request, 'petjoy/entrepreneur/entrepreneur_chat_list.html', context)
+
+@login_required
+def entrepreneur_chat_room(request, room_id):
+    room = get_object_or_404(ChatRoom, id=room_id)
+
+    # ป้องกันคนอื่นแอบเข้าห้องแชท
+    if request.user != room.entrepreneur.user:
+        return redirect('petjoy:entrepreneur-chat-list')
+
+    entrepreneur = room.entrepreneur
+
+    # Mark as read (อ่านแล้ว) เฉพาะข้อความที่คู่สนทนาส่งมา
+    ChatMessage.objects.filter(
+        room=room
+    ).exclude(sender=request.user).update(is_read=True)
+
+    if request.method == 'POST':
+        message_text = request.POST.get('message')
+        attachment = request.FILES.get('attachment')
+
+        if message_text or attachment:
+            ChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=message_text,
+                attachment=attachment
+            )
+
+            room.updated_at = timezone.now()
+            room.save()
+
+            return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
+
+    # -------------------------------
+    # 🔽 ส่วนที่เพิ่ม: Date Label
+    # -------------------------------
+    messages_list = room.messages.all().order_by('timestamp')
+
+    from datetime import timedelta
+
+    today = timezone.localdate()
+    yesterday = today - timedelta(days=1)
+
+    for msg in messages_list:
+        msg.local_date = msg.timestamp.astimezone(
+            timezone.get_current_timezone()
+        ).date()
+
+        if msg.local_date == today:
+            msg.date_label = "วันนี้"
+        elif msg.local_date == yesterday:
+            msg.date_label = "เมื่อวาน"
+        else:
+            diff = (today - msg.local_date).days
+            if diff <= 7:
+                msg.date_label = f"{diff} วันที่แล้ว"
+            else:
+                msg.date_label = msg.local_date.strftime("%d %b %Y")
+    # -------------------------------
+
+    quick_replies = entrepreneur.quick_replies.all().order_by('-created_at')
+
+    context = {
+        'room': room,
+        'messages': messages_list,
+        'current_user': request.user,
+        'entrepreneur': entrepreneur,
+        'quick_replies': quick_replies,
+    }
+
+    return render(
+        request,
+        'petjoy/entrepreneur/entrepreneur_chat_room.html',
+        context
+    )
+
+@login_required
+def entrepreneur_chat_delete(request, room_id):
+    """ฟังก์ชันลบห้องแชท (ฝั่งร้านค้า) - เปลี่ยนเป็นซ่อนแทน"""
+    room = get_object_or_404(ChatRoom, id=room_id)
+
+    # เช็คว่าเป็นเจ้าของร้านจริง
+    if hasattr(request.user, 'entrepreneur') and request.user.entrepreneur == room.entrepreneur:
+        # ⭐ เปลี่ยนจาก room.delete() เป็นการซ่อนแทน
+        room.hidden_by_entrepreneur = True 
+        room.save()
+
+        # (Option) ถ้าทั้งคู่ซ่อนแล้ว ค่อยลบจริง
+        if room.hidden_by_customer and room.hidden_by_entrepreneur:
+            room.delete()
+
+        messages.success(request, "ลบแชทเรียบร้อยแล้ว")
+    else:
+        messages.error(request, "คุณไม่มีสิทธิ์ลบแชทนี้")
+
+    return redirect('petjoy:entrepreneur-chat-list')
+
+@login_required
+@require_POST
+def report_product(request, product_id):
+    product = get_object_or_404(Product, id=product_id)
+    reason = request.POST.get('reason')
+    details = request.POST.get('details', '')
+
+    if not reason:
+        return JsonResponse({'success': False, 'error': 'กรุณาระบุเหตุผล'}, status=400)
+
+    from .models import ProductReport
+    ProductReport.objects.create(
+        user=request.user,
+        product=product,
+        reason=reason,
+        details=details
+    )
+
+    return JsonResponse({'success': True, 'message': 'ส่งรายงานให้เจ้าหน้าที่เรียบร้อยแล้ว'})
+
+@login_required(login_url='petjoy:login')
+def buy_now(request):
+    """ฟังก์ชันสั่งซื้อทันที: เพิ่มลงตะกร้าแล้วไปหน้า Checkout เลย"""
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        quantity = int(request.POST.get('quantity') or 1)
+        
+        product = get_object_or_404(Product, id=product_id)
+
+        # 1. เพิ่มลงตะกร้า
+        cart_item, created = CartItem.objects.get_or_create(
+            user=request.user,
+            product=product
+        )
+        
+        if not created:
+            cart_item.quantity += quantity
+        else:
+            cart_item.quantity = quantity
+        cart_item.save()
+
+        # 2. Redirect ไปหน้า Checkout
+        # ⭐⭐⭐ แก้บรรทัดนี้ครับ (เปลี่ยน checkout_view -> checkout) ⭐⭐⭐
+        checkout_url = reverse('petjoy:checkout') 
+        
+        return redirect(f"{checkout_url}?selected_items={cart_item.id}&checkout_step=1")
+
+    return redirect('petjoy:product-list')
 
 # # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
 # def cat_products_view(request):

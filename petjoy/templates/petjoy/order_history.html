@@ -107,6 +107,7 @@
     .status-delivering { background: #33a7d2; }
     .status-success { background: #2E7D32; }
     .status-other { background: #757575; }
+    .status-cancelled { background: #b91c1c; }
 
     .btn-detail {
         background: #ff8c00;
@@ -166,6 +167,14 @@
                     </div>
                     <p class="order-shop">หมายเลขคำสั่งซื้อ: PETJ-{{ order.id|stringformat:"05d" }}</p>
                 </div>
+
+                    <div class="order-total-wrapper">
+                        <strong>ร้าน: {{ order.entrepreneur.store_name }}</strong>
+                        <p class="order-shop">สั่งเมื่อ: {{ order.created_at|date:"d M Y H:i" }}</p>
+                        {% if order.status == 'cancelled' %}
+                            <span class="cancelled-alert">❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว</span>
+                        {% endif %}
+                    </div>
                 
                 <div class="order-status-wrapper">
                     <span class="status-badge status-{{ order.status }}">

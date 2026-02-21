@@ -196,8 +196,9 @@ class Order(models.Model):
         ("preparing", "กำลังเตรียมของ"),
         ("delivering", "กำลังจัดส่ง"),
         ("success", "สำเร็จ"),
-
+        ("cancelled", "ยกเลิกสินค้า"),
     ]
+
     # 🔹 ผูกกับลูกค้า (จำเป็นมากสำหรับระบบแชท)
     customer = models.ForeignKey(
         User,
@@ -220,7 +221,7 @@ class Order(models.Model):
     customer_name = models.CharField(max_length=255)
     customer_phone = models.CharField(max_length=20, null=True, blank=True)
     customer_address = models.TextField(null=True, blank=True)
-
+    cancel_reason = models.TextField(blank=True, null=True, help_text="เหตุผลที่ยกเลิกคำสั่งซื้อ")
 
     shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
