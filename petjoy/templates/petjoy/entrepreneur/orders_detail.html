@@ -82,7 +82,6 @@
         font-weight: 700;
     }
     
-    /* เพิ่มเติมสำหรับการแจ้งเตือนเมื่อสำเร็จ */
     .success-badge {
         background: #E8F5E9;
         color: #2E7D32;
@@ -149,6 +148,13 @@
 
             <div class="order-row">
                 <strong>วันที่สั่งซื้อ:</strong> <span>{{ order.created_at|date:"d/m/Y H:i" }}</span>
+            </div>
+
+            <!-- ✅ เพิ่มปุ่มทักหาลูกค้า (ไม่แตะ UI เดิม) -->
+            <div style="margin-top:15px;">
+                <a href="{% url 'petjoy:start_chat_customer' order.customer.id order.id %}" class="save-btn" style="text-decoration:none; display:inline-block;">
+                    💬 ทักหาลูกค้า
+                </a>
             </div>
 
             <hr style="margin: 20px 0;">
@@ -247,21 +253,18 @@
         function updateVisibility() {
             const status = statusSelect.value;
 
-            // 1. เงื่อนไขการซ่อนสลิป: ซ่อนเมื่อเลือก "เตรียมของ", "กำลังจัดส่ง" หรือ "สำเร็จ"
             if (status === 'preparing' || status === 'delivering' || status === 'success') {
                 slipContainer.style.display = 'none';
             } else {
                 slipContainer.style.display = 'block';
             }
 
-            // 2. เงื่อนไขเลขพัสดุ: โชว์ช่องกรอกเมื่อเลือก "กำลังจัดส่ง"
             if (status === 'delivering') {
                 trackingContainer.style.display = 'block';
             } else {
                 trackingContainer.style.display = 'none';
             }
 
-            // 3. เงื่อนไขแสดงข้อความเมื่อสำเร็จ:
             if (status === 'success') {
                 successMessage.style.display = 'block';
             } else {
@@ -269,10 +272,7 @@
             }
         }
 
-        // ตรวจสอบสถานะทันทีที่โหลดหน้า
         updateVisibility();
-
-        // ตรวจสอบเมื่อมีการเปลี่ยนค่าใน Select
         statusSelect.addEventListener('change', updateVisibility);
     });
 </script>

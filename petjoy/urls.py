@@ -63,6 +63,7 @@ urlpatterns = [
     path('chat/delete/<int:room_id>/', views.delete_chat, name='delete_chat'),
     path('entrepreneur/chat/', entrepreneur_chat_list, name='entrepreneur-chat-list'),
     path('entrepreneur/chat/room/<int:room_id>/', entrepreneur_chat_room, name='entrepreneur-chat-room'),
+    path('entrepreneur/chat/start/customer/<int:user_id>/<int:order_id>/',views.start_chat_customer,name='start_chat_customer'),
     path('entrepreneur/chat/delete/<int:room_id>/', entrepreneur_chat_delete, name='entrepreneur-chat-delete'),
     path("entrepreneur/profile/settings/", views.entrepreneur_profile_settings, name="entrepreneur_profile_settings"),
     path("orders/<int:order_id>/", views.order_detail, name="orders-detail"),

@@ -7,23 +7,15 @@
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
 
 <style>
-    .chat-layout {
-        display: flex;
-        max-width: 1200px;
-        margin: 40px auto;
-        gap: 30px;
-        padding: 0 20px;
-    }
-
-    .chat-main-card {
+    .profile-main-card {
         flex: 1;
         background: #fff;
         border-radius: 16px;
-        padding: 20px;
+        padding: 26px;
         box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         display: flex;
         flex-direction: column;
-        height: 600px; /* กำหนดความสูงเพื่อให้ Scroll ได้ */
+        height: 600px;
     }
 
     .chat-header {
@@ -48,43 +40,40 @@
     }
     .back-link:hover { text-decoration: underline; }
 
-    /* ส่วนแสดงข้อความ */
     .messages-area {
         flex: 1;
         overflow-y: auto;
-        padding: 10px;
+        padding: 15px;
         background-color: #f9f9f9;
-        border-radius: 8px;
+        border-radius: 12px;
         margin-bottom: 15px;
         display: flex;
         flex-direction: column;
-        gap: 10px;
+        gap: 12px;
     }
 
     .message-bubble {
         max-width: 70%;
-        padding: 10px 15px;
-        border-radius: 12px;
+        padding: 12px 16px;
+        border-radius: 16px;
         position: relative;
         font-size: 0.95rem;
         line-height: 1.4;
         word-wrap: break-word;
     }
 
-    /* ข้อความของเรา (ขวา) */
     .message-bubble.sent {
         align-self: flex-end;
-        background-color: #ffb0bd; /* สีธีม PetJoy (ชมพู) */
+        background-color: #ff6b3d;
         color: #fff;
-        border-bottom-right-radius: 2px;
+        border-bottom-right-radius: 4px;
     }
 
-    /* ข้อความของอีกฝ่าย (ซ้าย) */
     .message-bubble.received {
         align-self: flex-start;
         background-color: #e0e0e0;
         color: #333;
-        border-bottom-left-radius: 2px;
+        border-bottom-left-radius: 4px;
     }
 
     .message-time {
@@ -94,46 +83,80 @@
         text-align: right;
     }
 
-    /* ฟอร์มส่งข้อความ */
     .chat-input-area {
         display: flex;
         gap: 10px;
         padding-top: 10px;
         border-top: 1px solid #eee;
+        align-items: center;
     }
 
     .chat-input {
         flex: 1;
-        padding: 12px;
+        height: 42px;
+        padding: 0 16px;
         border: 1px solid #ddd;
         border-radius: 25px;
         outline: none;
         transition: border-color 0.2s;
     }
+
     .chat-input:focus {
-        border-color: #ffb0bd;
+        border-color: #ff6b3d;
     }
 
     .send-btn {
-        background-color: #ffb0bd;
-        color: white;
-        border: none;
-        padding: 0 20px;
+        height: 42px;
+        padding: 0 22px;
         border-radius: 25px;
+        background-color: #ff6b3d;
+        color: #fff;
+        border: none;
         cursor: pointer;
         font-weight: 600;
-        transition: background-color 0.2s;
+        font-size: 0.95rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
     }
+
     .send-btn:hover {
-        background-color: #ff8fa0;
+        background-color: #e85c30;
+        transform: translateY(-1px);
+    }
+
+    .file-input {
+        display: none;
+    }
+
+    .attach-btn {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: 1px solid #ddd;
+        background-color: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        transition: all 0.2s ease;
+    }
+
+    .attach-btn:hover {
+        background-color: #ff6b3d;
+        color: #fff;
+        border-color: #ff6b3d;
     }
 </style>
 
-<div class="chat-layout">
-    
+<!-- ✅ ใช้โครงสร้างเดียวกับ chat_list -->
+<div class="profile-container">
+
     {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
 
-    <div class="chat-main-card">
+    <section class="profile-main-card">
         
         <div class="chat-header">
             <div class="chat-title">
@@ -149,7 +172,17 @@
         <div class="messages-area" id="messagesArea">
             {% for message in messages %}
                 <div class="message-bubble {% if message.sender == user %}sent{% else %}received{% endif %}">
-                    {{ message.message }}
+                    
+                    {% if message.message %}
+                        {{ message.message }}
+                    {% endif %}
+
+                    {% if message.attachment %}
+                        <div style="margin-top:8px;">
+                            <img src="{{ message.attachment.url }}" style="max-width:200px; border-radius:8px;">
+                        </div>
+                    {% endif %}
+
                     <div class="message-time">
                         {% if message.timestamp %}
                             {{ message.timestamp|date:"H:i" }}
@@ -161,17 +194,20 @@
             {% endfor %}
         </div>
 
-        <form method="post" class="chat-input-area">
+        <form method="post" enctype="multipart/form-data" class="chat-input-area">
             {% csrf_token %}
-            <input type="text" name="message" class="chat-input" placeholder="พิมพ์ข้อความ..." required autocomplete="off">
+
+            <label for="attachment" class="attach-btn">📎</label>
+            <input type="file" id="attachment" name="attachment" accept="image/*" class="file-input">
+
+            <input type="text" name="message" class="chat-input" placeholder="พิมพ์ข้อความ..." autocomplete="off">
             <button type="submit" class="send-btn">ส่ง</button>
         </form>
 
-    </div>
+    </section>
 </div>
 
 <script>
-    // สคริปต์เพื่อให้เลื่อนลงมาข้อความล่าสุดเสมอเมื่อโหลดหน้า
     window.onload = function() {
         var chatBox = document.getElementById("messagesArea");
         chatBox.scrollTop = chatBox.scrollHeight;

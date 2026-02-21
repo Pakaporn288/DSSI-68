@@ -189,18 +189,23 @@ class Address(models.Model):
 
 
 class Order(models.Model):
+
     STATUS_CHOICES = [
         ("waiting", "รอชำระเงิน"),
         ("paid", "ชำระเงินแล้ว"),
         ("preparing", "กำลังเตรียมของ"),
         ("delivering", "กำลังจัดส่ง"),
         ("success", "สำเร็จ"),
-        ("cancel", "ยกเลิก"),
-    ]
-    
-    shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
-    # ⭐ เพิ่มฟิลด์นี้เพื่อให้ Order ผูกกับร้าน (ผู้ประกอบการ)
+    ]
+    # 🔹 ผูกกับลูกค้า (จำเป็นมากสำหรับระบบแชท)
+    customer = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name="orders"
+    )
+
+    # 🔹 ผูกกับร้านค้า
     entrepreneur = models.ForeignKey(
         "Entrepreneur",
         on_delete=models.CASCADE,
@@ -208,27 +213,44 @@ class Order(models.Model):
         null=True,
         blank=True
     )
+
+    order_number = models.IntegerField()
+
+    # 🔹 ข้อมูลจัดส่ง (เก็บ snapshot กันกรณีลูกค้าแก้ไขโปรไฟล์ทีหลัง)
+    customer_name = models.CharField(max_length=255)
+    customer_phone = models.CharField(max_length=20, null=True, blank=True)
+    customer_address = models.TextField(null=True, blank=True)
+
+
+    shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+
+    total_price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default="waiting"
+    )
+
+    slip_image = models.ImageField(
+        upload_to="slips/",
+        null=True,
+        blank=True
+    )
+
     tracking_number = models.CharField(
         max_length=100,
         blank=True,
         null=True
     )
 
-    order_number = models.IntegerField()
-    customer_name = models.CharField(max_length=255)
-    customer_phone = models.CharField(max_length=20, null=True, blank=True)
-    customer_address = models.TextField(null=True, blank=True)
-
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="waiting")
-    slip_image = models.ImageField(upload_to="slips/", null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     has_unread_status_update = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
 
-        # ⭐ แก้ save() ให้ทำงานปกติในกรณีมีร้าน
+        # 🔹 สร้างเลข order แยกตามร้าน
         if not self.order_number:
             last_order = Order.objects.filter(
                 entrepreneur=self.entrepreneur
@@ -240,6 +262,9 @@ class Order(models.Model):
                 self.order_number = 1
 
         super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Order #{self.order_number} - {self.customer.username}"
 
         
 

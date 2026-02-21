@@ -7,33 +7,31 @@
 <link rel="stylesheet" href="{% static 'product_detail.css' %}">
 
 <style>
-    /* สไตล์สำหรับดาวรีวิว */
     .star-rating i {
-        color: #FFC107; /* สีเหลืองทอง */
+        color: #FFC107;
         font-size: 0.9rem;
         margin-right: 1px;
     }
     .star-rating i.empty {
-        color: #e0e0e0; /* สีเทาสำหรับดาวว่าง */
+        color: #e0e0e0;
     }
 
-    /* ปรับปุ่มหัวใจให้เห็นชัดๆ */
     .favorite-toggle {
         background: none;
         border: none;
         font-size: 1.8rem;
         cursor: pointer;
         transition: transform 0.2s;
-        color: #ccc; /* สีปกติ (ยังไม่กด) */
+        color: #ccc;
     }
     .favorite-toggle:hover {
         transform: scale(1.1);
     }
     .fav-active {
-        color: #ff4081 !important; /* สีชมพูเมื่อกดแล้ว */
+        color: #ff4081 !important;
     }
     .fav-active i {
-        font-weight: 900; /* ทำให้เป็น Solid icon */
+        font-weight: 900;
     }
 </style>
 
@@ -90,9 +88,7 @@
                             <span class="review-date">{{ review.created_at|date:"d M Y" }}</span>
                         </div>
                         
-                        <div class="star-rating" data-rating="{{ review.rating }}">
-                            </div>
-
+                        <div class="star-rating" data-rating="{{ review.rating }}"></div>
                         <p class="review-comment">{{ review.comment }}</p>
                         
                         {% if review.reply %}
@@ -123,10 +119,18 @@
 
             <p class="detail-product-price">ราคา: {{ product.price }} บาท</p>
 
+            <!-- ✅ เพิ่มแสดงสถานะสต็อก -->
+            {% if product.stock <= 0 %}
+                <p style="color:red; font-weight:bold;">สินค้าหมด</p>
+            {% else %}
+                <p style="color:green;">เหลือ {{ product.stock }} ชิ้น</p>
+            {% endif %}
+
             <div class="action-buttons" style="display:flex; gap:12px; margin-top:20px;">
                 <button type="button"
                         class="btn-add-cart"
                         id="btnAddToCart"
+                        {% if product.stock <= 0 %}disabled{% endif %}
                         data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
                     🛒 เพิ่มลงตะกร้า
                 </button>
@@ -134,6 +138,7 @@
                 <button type="button" 
                         class="btn-buy-now"
                         id="btnBuyNow"
+                        {% if product.stock <= 0 %}disabled{% endif %}
                         style="background: #E65100; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer;"
                         data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
                     ⚡ สั่งซื้อสินค้า
@@ -168,29 +173,6 @@
             <div class="detail-product-description">
                 <h3>คำอธิบาย</h3>
                 <p>{{ product.description|linebreaks }}</p>
-            </div>
-
-            <div class="report-section" style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; text-align: right;">
-                <button type="button" class="btn-report" onclick="openReportModal()" data-logged-in="{% if user.is_authenticated %}1{% else %}0{% endif %}">
-                    <i class="fa-solid fa-flag"></i> รายงานปัญหาสินค้า
-                </button>
-            </div>
-
-            <div id="reportModal" class="modal-overlay" style="display:none;">
-                <div class="modal-box" style="max-width: 400px;">
-                    <h3>รายงานสินค้า</h3>
-                    <form id="reportForm" data-report-url="{% url 'petjoy:report_product' product.id %}">
-                        {% csrf_token %}
-                        <select name="reason" id="reportReason" style="width: 100%; padding: 10px; margin-bottom: 10px;">
-                            <option value="inappropriate">เนื้อหาไม่เหมาะสม</option>
-                            <option value="scam">เข้าข่ายหลอกลวง</option>
-                            <option value="other">อื่นๆ</option>
-                        </select>
-                        <textarea name="details" id="reportDetails" placeholder="รายละเอียด..." style="width: 100%; height: 80px; margin-bottom: 10px;"></textarea>
-                        <button type="button" onclick="submitReportNew()" class="modal-confirm-btn">ส่งรายงาน</button>
-                        <button type="button" onclick="closeReportModal()" class="modal-cancel-btn">ยกเลิก</button>
-                    </form>
-                </div>
             </div>
 
         </div>

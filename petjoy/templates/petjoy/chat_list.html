@@ -7,12 +7,6 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    .chat-container {
-        display: flex;
-        max-width: 1200px;
-        margin: 40px auto;
-        gap: 30px;
-    }
     .profile-main-card {
         flex: 1;
         background: #fff;
@@ -35,7 +29,7 @@
         display: flex;
         align-items: center;
         padding: 15px;
-        padding-right: 50px; /* เผื่อที่ให้ปุ่ม 3 จุด */
+        padding-right: 50px;
         text-decoration: none;
         color: #333;
         width: 100%;
@@ -77,7 +71,6 @@
         flex-shrink: 0;
     }
 
-    /* === ส่วนเมนู 3 จุด === */
     .chat-options {
         position: absolute;
         right: 15px;
@@ -102,7 +95,7 @@
     }
 
     .options-dropdown {
-        display: none; /* ซ่อนไว้ก่อน */
+        display: none;
         position: absolute;
         right: 0;
         top: 30px;
@@ -142,7 +135,8 @@
     }
 </style>
 
-<div class="chat-container">
+<!-- ✅ ใช้โครงสร้างเดียวกับ profile -->
+<div class="profile-container">
 
     {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
 
@@ -186,7 +180,8 @@
 
             <div class="chat-options">
                 <button type="button" class="options-btn" onclick="toggleDropdown(event, 'dropdown-{{ room.id }}')">
-                    <i class="fas fa-ellipsis-v"></i> </button>
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
                 
                 <div id="dropdown-{{ room.id }}" class="options-dropdown">
                     <form action="{% url 'petjoy:delete_chat' room.id %}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบแชทนี้? ประวัติการสนทนาจะหายไปทั้งหมด');">
@@ -209,22 +204,18 @@
 </div>
 
 <script>
-    // ฟังก์ชันเปิด/ปิด Dropdown
     function toggleDropdown(event, dropdownId) {
-        event.preventDefault(); // ป้องกันไม่ให้คลิกแล้วเด้งเข้าห้องแชท
+        event.preventDefault();
         event.stopPropagation();
         
-        // ปิด dropdown อื่นๆ ก่อน
         document.querySelectorAll('.options-dropdown').forEach(d => {
             if (d.id !== dropdownId) d.classList.remove('show');
         });
 
-        // เปิด/ปิด ตัวที่เลือก
         const dropdown = document.getElementById(dropdownId);
         dropdown.classList.toggle('show');
     }
 
-    // คลิกที่อื่นเพื่อปิด dropdown
     window.onclick = function(event) {
         if (!event.target.closest('.options-btn')) {
             document.querySelectorAll('.options-dropdown').forEach(d => {

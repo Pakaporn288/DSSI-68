@@ -185,7 +185,11 @@
                         </td>
 
                         <td style="text-align:center;">
-                            {{ product.total_stock }}/{{ product.stock }}
+                            {% if product.stock > 0 %}
+                                {{ product.total_stock }}/{{ product.stock }}
+                            {% else %}
+                                <span style="color:#E53935; font-weight:700;">สินค้าหมด</span>
+                            {% endif %}
                         </td>
 
                         <td style="text-align:center;">
