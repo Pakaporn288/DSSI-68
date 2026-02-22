@@ -15,7 +15,6 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
     
-    /* Wrapper เพื่อจัดตำแหน่งปุ่มเมนู */
     .chat-item-wrapper {
         position: relative;
         border-bottom: 1px solid #eee;
@@ -135,13 +134,57 @@
     }
 </style>
 
-<!-- ✅ ใช้โครงสร้างเดียวกับ profile -->
 <div class="profile-container">
 
     {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
 
     <section class="profile-main-card">
         <h2 class="section-title">ข้อความ</h2>
+
+        {% if support_room %}
+        <div class="chat-item-wrapper">
+            <a href="{% url 'petjoy:customer-support-chat' %}" class="chat-item">
+                <div class="chat-icon" style="background: #444;">
+                    🎧
+                </div>
+                <div class="chat-info">
+                    <div class="chat-name">แอดมิน (ฝ่ายสนับสนุน)</div>
+                    <p class="last-message">
+                        {% with support_room.messages.last as last_msg %}
+                            {% if last_msg %}
+                                {% if last_msg.message and last_msg.message != "None" %}
+                                    {{ last_msg.message|truncatechars:50 }}
+                                {% else %}
+                                    📷 ส่งรูปภาพ
+                                {% endif %}
+                            {% else %}
+                                ติดต่อสอบถามแอดมิน
+                            {% endif %}
+                        {% endwith %}
+                    </p>
+                </div>
+                {% if support_room.messages.last %}
+                    <div class="chat-date">{{ support_room.messages.last.timestamp|date:"H:i" }}</div>
+                {% endif %}
+            </a>
+
+            <div class="chat-options">
+                <button type="button" class="options-btn" onclick="toggleDropdown(event, 'dropdown-support-{{ support_room.id }}')">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                
+                <div id="dropdown-support-{{ support_room.id }}" class="options-dropdown">
+                    <form action="{% url 'petjoy:delete-support-chat' support_room.id %}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ที่จะลบแชทนี้? ประวัติการสนทนาจะหายไปทั้งหมด');">
+                        {% csrf_token %}
+                        <button type="submit" class="dropdown-item delete">
+                            <i class="fas fa-trash-alt"></i> ลบแชท
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+        </div>
+        {% endif %}
 
         {% for room in rooms %}
         <div class="chat-item-wrapper">
@@ -166,7 +209,11 @@
                     </div>
                     <p class="last-message">
                         {% if room.last_message %}
-                            {{ room.last_message.message|truncatechars:50 }}
+                            {% if room.last_message.message and room.last_message.message != "None" %}
+                                {{ room.last_message.message|truncatechars:50 }}
+                            {% else %}
+                                📷 ส่งรูปภาพ
+                            {% endif %}
                         {% else %}
                             ยังไม่มีข้อความ
                         {% endif %}
@@ -194,10 +241,12 @@
             </div>
         </div>
         {% empty %}
+            {% if not support_room %}
             <div style="text-align: center; padding: 40px; color: #777;">
                 <p>คุณยังไม่มีห้องแชทกับร้านค้าใด ๆ</p>
                 <p style="font-size: 0.9rem; margin-top: 10px;">สามารถเริ่มแชทได้จากหน้าสินค้ารายการใดก็ได้</p>
             </div>
+            {% endif %}
         {% endfor %}
 
     </section>

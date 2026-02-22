@@ -40,6 +40,7 @@ from .models import ProductReport
 from django.urls import reverse
 from django.contrib.auth.models import User
 from .forms import RegisterForm
+from .models import CustomerAdminChatRoom, CustomerAdminChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -217,12 +218,31 @@ def update_cart(request):
 
 @login_required
 def order_detail_customer(request, order_id):
-    order = get_object_or_404(Order, id=order_id)
-    items = order.items.all()
-    return render(request, "petjoy/order_detail_customer.html", {
-        "order": order,
-        "items": items
-    })
+    # ดึงข้อมูลออเดอร์ของลูกค้า (ระวังอย่ามี .profile ต่อท้ายนะคะ ให้ใช้ request.user)
+    order = get_object_or_404(Order, id=order_id, customer=request.user)
+    
+    # 🟢 เพิ่มบล็อกนี้เข้าไป เพื่อรอรับคำสั่ง "ขอยกเลิก" จากหน้า HTML
+    if request.method == "POST":
+        action = request.POST.get("action")
+        
+        if action == "cancel_by_customer":
+            cancel_reason = request.POST.get("cancel_reason")
+            
+            # เช็คว่าสถานะยังสามารถยกเลิกได้อยู่
+            if order.status in ['waiting', 'paid', 'preparing']:
+                # เปลี่ยนสถานะเป็น "ขอยกเลิก" (ส่งคำร้องให้ร้านค้า)
+                order.status = 'cancel_requested' 
+                order.cancel_reason = cancel_reason
+                
+                # แจ้งเตือนให้ร้านค้ารู้ว่ามีอัปเดต
+                order.has_unread_status_update = True 
+                order.save()
+                
+                messages.success(request, 'ส่งคำร้องขอยกเลิกไปยังร้านค้าเรียบร้อยแล้ว กรุณารอการอนุมัติ')
+                return redirect('petjoy:order_detail_customer', order_id=order.id)
+                
+    # โค้ดเดิมของคุณสำหรับแสดงหน้าเว็บ
+    return render(request, "petjoy/order_detail_customer.html", {"order": order})
 
 @login_required(login_url='petjoy:login')
 def cart_detail(request):
@@ -249,10 +269,11 @@ def notification_list(request):
     for addr in addresses:
         q |= Q(customer_name=addr.full_name, customer_phone=addr.phone)
 
+    # ดึงคำสั่งซื้อทั้งหมดที่เกี่ยวข้อง และเช็คสถานะสำคัญ
     orders = (
         Order.objects
         .filter(q)
-        .prefetch_related('items__product')
+        .prefetch_related('items__product', 'reviews')
         .order_by('-created_at')
     )
 
@@ -270,7 +291,7 @@ def notification_list(request):
         else:
             order.display_title = "คำสั่งซื้อของคุณ"
 
-    # 🔔 ถือว่าเข้ามาอ่านแจ้งเตือนแล้ว
+    # 🔔 อัปเดตสถานะว่าอ่านแล้ว เฉพาะรายการที่ยังไม่ได้อ่าน
     orders.filter(has_unread_status_update=True).update(
         has_unread_status_update=False
     )
@@ -971,7 +992,14 @@ def admin_chat_list(request):
     # ดึงห้องแชทที่แอดมิน (ในฐานะ customer) คุยกับร้านต่างๆ
     rooms = ChatRoom.objects.filter(customer=request.user).order_by('-id')
     
-    return render(request, 'petjoy/admin/admin_chat_list.html', {'rooms': rooms})
+    # ดึงห้องแชทที่ลูกค้าทักหาแอดมิน
+    customer_rooms = CustomerAdminChatRoom.objects.all().order_by('-created_at')
+    
+    # ✨ ส่ง customer_rooms ไปพร้อมกับ rooms
+    return render(request, 'petjoy/admin/admin_chat_list.html', {
+        'rooms': rooms,
+        'customer_rooms': customer_rooms
+    })
 
 @login_required
 def admin_chat_room(request, room_id):
@@ -1411,13 +1439,13 @@ def admin_dashboard(request):
     # นับเฉพาะ User ทั่วไป (ไม่รวม Admin และ ร้านค้า)
     total_general_users = User.objects.filter(is_superuser=False, entrepreneur__isnull=True).count()
     
-    # ร้านค้าที่อนุมัติแล้ว
-    total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
+    # ⭐ แก้ไข: ร้านค้าที่อนุมัติแล้ว (ไม่นับร้านของแอดมิน)
+    total_shops = Entrepreneur.objects.exclude(user__is_superuser=True).filter(verification_status='approved').count()
     
-    # ร้านค้าที่รออนุมัติ
-    pending_shops_count = Entrepreneur.objects.filter(verification_status='pending').count()
+    # ⭐ แก้ไข: ร้านค้าที่รออนุมัติ (ไม่นับร้านของแอดมิน)
+    pending_shops_count = Entrepreneur.objects.exclude(user__is_superuser=True).filter(verification_status='pending').count()
     
-    # ⭐ แก้ไข: รายได้รวม (เฉพาะออเดอร์ที่สำเร็จ + ร้านต้อง Active อยู่) ⭐
+    # รายได้รวม (เฉพาะออเดอร์ที่สำเร็จ + ร้านต้อง Active อยู่)
     total_income = Order.objects.filter(
         status__in=["paid", "preparing", "delivering", "success"], # สถานะออเดอร์ปกติ
         entrepreneur__isnull=False,                   # ร้านต้องมีอยู่จริง
@@ -1430,8 +1458,8 @@ def admin_dashboard(request):
     # ใช้ select_related เพื่อลด Query และดึงข้อมูล User/Product ทันที
     recent_reports = ProductReport.objects.select_related('product', 'product__owner', 'user').order_by('-created_at')[:10]
 
-    # --- 3. ร้านค้าล่าสุด ---
-    recent_shops = Entrepreneur.objects.filter(verification_status='approved').order_by("-id")[:5]
+    # --- 3. ⭐ แก้ไข: ร้านค้าล่าสุด (ไม่ดึงร้านของแอดมินมาโชว์ในตาราง) ---
+    recent_shops = Entrepreneur.objects.exclude(user__is_superuser=True).filter(verification_status='approved').order_by("-id")[:5]
 
     context = {
         "total_users": total_general_users, 
@@ -1461,8 +1489,8 @@ def admin_user_list(request):
     if user_type == 'admin':
         users = users.filter(is_superuser=True)
     elif user_type == 'entrepreneur':
-        # กรองคนที่มีข้อมูลในตาราง Entrepreneur
-        users = users.filter(entrepreneur__isnull=False)
+        # ✅ แก้ตรงนี้: กรองคนที่มีข้อมูลในตาราง Entrepreneur "และต้องไม่ใช่แอดมิน"
+        users = users.filter(entrepreneur__isnull=False, is_superuser=False)
     elif user_type == 'user':
         # กรองคนที่ไม่ใช่ admin และไม่ใช่ entrepreneur
         users = users.filter(is_superuser=False, entrepreneur__isnull=True)
@@ -1601,7 +1629,7 @@ def admin_shop_list(request):
     status_filter = request.GET.get('status', '') # รับค่า filter
     search_query = request.GET.get('q', '')
 
-    shops = Entrepreneur.objects.all().order_by('-id') # เรียงจากใหม่ไปเก่า
+    shops = Entrepreneur.objects.exclude(user__is_staff=True).order_by('-id')
 
     # Filter ตามสถานะ
     if status_filter:
@@ -2121,6 +2149,42 @@ def search_view(request):
         'categories': categories,
     })
 
+@login_required
+def start_chat_admin(request):
+    """
+    สร้างหรือดึงห้องแชทระหว่าง User (ลูกค้า) กับ Admin (Superuser)
+    """
+    # 1. หา Admin สักคนในระบบ (ดึงคนแรกที่เป็น superuser)
+    admin_user = get_user_model().objects.filter(is_superuser=True).first()
+    
+    if not admin_user:
+        messages.error(request, "ไม่พบข้อมูลผู้ดูแลระบบในขณะนี้")
+        return redirect('petjoy:chat_list')
+
+    # 2. ตรวจสอบว่ามีห้องแชทระหว่าง ลูกค้า(customer) และ Admin นี้อยู่แล้วหรือยัง
+    # โดยอิงจาก customer=request.user และ entrepreneur=None (หรือถ้า ChatRoom คุณเชื่อม User กับ User ให้เช็คแบบนั้น)
+    # **หมายเหตุ:** โครงสร้าง ChatRoom ของคุณปกติเชื่อม Customer กับ Entrepreneur
+    # หากแอดมินไม่มี Entrepreneur profile เราจะประยุกต์ใช้ field อื่น หรือสร้าง dummy
+    
+    # สมมติว่าในระบบของคุณ ChatRoom เชื่อมผ่าน `customer` และ `entrepreneur`
+    # วิธีที่ง่ายที่สุดสำหรับโครงสร้างเดิมคือการหา/สร้าง Entrepreneur ที่เป็นของ Admin
+    admin_entrepreneur, created = Entrepreneur.objects.get_or_create(
+        user=admin_user,
+        defaults={
+            'store_name': 'Admin Support',
+            'phone': '0000000000',
+            'verification_status': 'approved'
+        }
+    )
+
+    room, created = ChatRoom.objects.get_or_create(
+        customer=request.user,
+        entrepreneur=admin_entrepreneur
+    )
+
+    # 3. ส่งลูกค้าเข้าไปในห้องแชทที่ได้
+    return redirect('petjoy:chat_room', room_id=room.id)
+
 
 @login_required
 def toggle_favorite(request):
@@ -2190,38 +2254,107 @@ def order_detail(request, order_id):
     order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
 
     if request.method == "POST":
+        
+        # 🟢 1. ส่วนรับคำสั่งจากปุ่ม "อนุมัติ" หรือ "ปฏิเสธ" คำร้องขอยกเลิก
+        action = request.POST.get("action")
+        
+        if action == "approve_cancel":
+            if order.status == "cancel_requested":
+                # อนุมัติ -> เปลี่ยนสถานะเป็นยกเลิก และคืนสต๊อก
+                order.status = "cancelled"
+                order.cancel_reason = "ร้านค้าอนุมัติการยกเลิกแล้ว"
+                order.has_unread_status_update = True
+                order.save()
+                
+                for item in order.items.all():
+                    item.product.stock += item.quantity
+                    item.product.save()
+                    
+                messages.success(request, "อนุมัติการยกเลิกคำสั่งซื้อเรียบร้อยแล้ว")
+                return redirect("petjoy:orders-detail", order_id=order.id)
+                
+        elif action == "reject_cancel":
+            if order.status == "cancel_requested":
+                # ปฏิเสธ -> คืนสถานะกลับเป็น "กำลังเตรียมของ"
+                order.status = "preparing" 
+                order.has_unread_status_update = True
+                order.save()
+                
+                messages.error(request, "ปฏิเสธคำร้องขอยกเลิก ระบบแจ้งเตือนลูกค้าแล้ว")
+                return redirect("petjoy:orders-detail", order_id=order.id)
+
+        # 🟢 2. โค้ดเดิมของคุณ (สำหรับเปลี่ยนสถานะออเดอร์ปกติ)
         new_status = request.POST.get("status")
-        tracking_number = request.POST.get("tracking_number")
-        cancel_reason = request.POST.get("cancel_reason")
+        if new_status: # ใส่ if ครอบไว้กันชนกับข้างบน
+            tracking_number = request.POST.get("tracking_number")
+            cancel_reason = request.POST.get("cancel_reason")
 
-        # 🟢 เพิ่มเงื่อนไขคืนสต๊อกตรงนี้:
-        # ถ้าสถานะใหม่คือ 'cancelled' และสถานะเดิมยังไม่ได้เป็น 'cancelled' (ป้องกันการคืนสต๊อกซ้ำ)
-        if new_status == 'cancelled' and order.status != 'cancelled':
-            # วนลูปสินค้าทุกชิ้นในออเดอร์นี้ เพื่อบวกสต๊อกกลับคืน
-            for item in order.items.all():
-                item.product.stock += item.quantity
-                item.product.save() # บันทึกสต๊อกใหม่ลงฐานข้อมูล
+            # เงื่อนไขคืนสต๊อกตรงนี้ (ของคุณเดิม)
+            if new_status == 'cancelled' and order.status != 'cancelled':
+                for item in order.items.all():
+                    item.product.stock += item.quantity
+                    item.product.save()
 
-        # อัปเดตข้อมูลออเดอร์
-        order.status = new_status
-        if new_status == 'delivering':
-            order.tracking_number = tracking_number
-        if new_status == 'cancelled':
-            order.cancel_reason = cancel_reason
+            # อัปเดตข้อมูลออเดอร์
+            order.status = new_status
+            if new_status == 'delivering':
+                order.tracking_number = tracking_number
+            if new_status == 'cancelled':
+                order.cancel_reason = cancel_reason
 
-        order.has_unread_status_update = True
-
-        order.save()
-        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว")
-        return redirect("petjoy:orders-detail", order_id=order.id)
-
-    # 🟢 แก้ไขบรรทัดนี้: เพิ่ม "entrepreneur": entrepreneur เข้าไปในปีกกาค่ะ
+            order.has_unread_status_update = True
+            order.save()
+            
+            messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว")
+            return redirect("petjoy:orders-detail", order_id=order.id)
+    
     return render(request, "petjoy/entrepreneur/orders_detail.html", {
         "order": order,
         "entrepreneur": entrepreneur
     })
 
+@login_required
+def cancel_order(request, order_id):
+    entrepreneur = request.user.entrepreneur
+    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
 
+    if order.status in ['paid', 'preparing']:
+        order.status = 'cancelled'
+        order.cancel_reason = "ยกเลิกโดยร้านค้า"
+        order.has_unread_status_update = True
+        order.save()
+
+        # คืนสต๊อกสินค้า
+        for item in order.items.all():
+            item.product.stock += item.quantity
+            item.product.save()
+
+        messages.success(request, "ยกเลิกคำสั่งซื้อเรียบร้อยแล้ว")
+    else:
+        messages.error(request, "ไม่สามารถยกเลิกคำสั่งซื้อนี้ได้")
+
+    return redirect("petjoy:orders-detail", order_id=order_id)
+
+@login_required
+def handle_cancellation_request(request, order_id):
+    if request.method == "POST":
+        order = get_object_or_404(Order, id=order_id, customer=request.user.profile)
+        cancel_reason = request.POST.get('cancel_reason')
+        
+        if order.status in ['waiting', 'paid', 'preparing']:
+            # คืนสต๊อกสินค้า
+            for item in order.items.all():
+                item.product.stock += item.quantity
+                item.product.save()
+            
+            # อัปเดตสถานะออเดอร์
+            order.status = 'cancelled'
+            order.cancel_reason = cancel_reason
+            order.save()
+            
+            messages.success(request, 'ยกเลิกคำสั่งซื้อเรียบร้อยแล้ว')
+            
+    return redirect('petjoy:order_detail_customer', order_id=order.id)
 
 @login_required
 def update_order_status(request, order_id):
@@ -2241,7 +2374,72 @@ def update_order_status(request, order_id):
 
     return redirect("petjoy:orders-list")
 
+@login_required
+def customer_support_chat(request):
+    room, created = CustomerAdminChatRoom.objects.get_or_create(user=request.user)
+    
+    if request.method == 'POST':
+        msg = request.POST.get('message')
+        attachment = request.FILES.get('attachment')
+        if msg or attachment:
+            CustomerAdminChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=msg,
+                attachment=attachment
+            )
+        return redirect('petjoy:customer-support-chat')
+        
+    # ✨ จุดสำคัญ: สั่งให้เรนเดอร์ไปที่ chat_room.html ตัวเดิมเลย!
+    return render(request, 'petjoy/chat_room.html', {
+        'room': room,
+        'messages': room.messages.all(),
+        'is_support': True  # ส่งตัวแปรนี้ไปบอกเทมเพลตว่านี่คือแชทแอดมิน
+    })
 
+@login_required
+def delete_support_chat(request, room_id):
+    """ฟังก์ชันสำหรับลูกค้าลบห้องแชทของตัวเองที่คุยกับแอดมิน"""
+    if request.method == 'POST':
+        # หาห้องแชทที่เป็นของ User คนนี้จริงๆ เท่านั้น (ป้องกันคนอื่นมาลบ)
+        room = get_object_or_404(CustomerAdminChatRoom, id=room_id, user=request.user)
+        room.delete()
+        
+    # ลบเสร็จแล้วให้เด้งกลับมาที่หน้า Chat List ของลูกค้า
+    return redirect('petjoy:chat_list')  
+
+@staff_member_required
+def admin_customer_chat_room(request, room_id):
+    # แอดมินตอบกลับลูกค้า
+    room = get_object_or_404(CustomerAdminChatRoom, id=room_id)
+    if request.method == 'POST':
+        msg = request.POST.get('message')
+        if msg:
+            CustomerAdminChatMessage.objects.create(
+                room=room,
+                sender=request.user,
+                message=msg
+            )
+        return redirect('petjoy:admin-customer-chat-room', room_id=room.id)
+    
+    # ✨ สิ่งที่เพิ่มเข้ามา: ดึงประวัติข้อความในห้องแชทนี้
+    messages_list = room.messages.all().order_by('id')
+    
+    # ✨ สิ่งที่แก้ไข: เปลี่ยนชื่อไฟล์ HTML และเพิ่มตัวแปรใน { ... }
+    return render(request, 'petjoy/admin/admin_chat_room.html', {
+        'room': room,
+        'messages': messages_list,     # ส่งข้อความไปแสดงบนหน้าจอ
+        'current_user': request.user,  # ส่งข้อมูลแอดมิน (คนล็อกอินปัจจุบัน) ไปเช็คฝั่งซ้าย/ขวาของแชท
+        'is_customer_chat': True       # ส่งค่านี้ไปบอกหน้าเว็บว่า "นี่คือแชทลูกค้านะ"
+    })
+
+@staff_member_required
+def admin_delete_customer_chat(request, room_id):
+    """ลบห้องแชทระหว่างลูกค้ากับแอดมิน"""
+    if request.method == 'POST':
+        room = get_object_or_404(CustomerAdminChatRoom, id=room_id)
+        room.delete()
+    return redirect('petjoy:admin-chat-list')
 
 @login_required
 def start_chat_customer(request, user_id, order_id):
@@ -2260,7 +2458,6 @@ def start_chat_customer(request, user_id, order_id):
     )
 
     return redirect('petjoy:entrepreneur-chat-room', room_id=room.id)
-
 
 
 @login_required
@@ -2320,9 +2517,13 @@ def chat_list(request):
         hidden_by_customer=False   # ⭐ เพิ่มตรงนี้
     ).order_by('-id')
     
+    # ✨ เพิ่มตรงนี้: ดึงข้อมูลห้องแชทแอดมินของลูกค้ารายนี้
+    support_room = CustomerAdminChatRoom.objects.filter(user=request.user).first()
+    
     return render(request, 'petjoy/chat_list.html', {
         'rooms': rooms,
-        'current_user': request.user
+        'current_user': request.user,
+        'support_room': support_room, # ✨ เพิ่มตรงนี้: ส่งตัวแปรไปให้ HTML
     })
 
 @login_required

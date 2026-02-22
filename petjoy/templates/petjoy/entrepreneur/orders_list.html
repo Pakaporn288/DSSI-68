@@ -93,6 +93,8 @@
     .status-preparing { background: #D1ECF1; color: #0C5460; }
     .status-delivering { background: #CCE5FF; color: #004085; }
     .status-success { background: #C3E6CB; color: #155724; }
+    /* เพิ่มสีป้ายสถานะขอยกเลิก (สีส้ม) */
+    .status-cancel-requested { background: #FFE0B2; color: #E65100; }
     /* เพิ่มสีป้ายสถานะยกเลิก */
     .status-cancelled { background: #F8D7DA; color: #721C24; }
 
@@ -236,6 +238,8 @@
                                 <span class="status-badge status-delivering">กำลังจัดส่ง</span>
                             {% elif order.status == "success" %}
                                 <span class="status-badge status-success">สำเร็จ</span>
+                            {% elif order.status == "cancel_requested" %}
+                                <span class="status-badge status-cancel-requested">ขอยกเลิก</span>
                             {% elif order.status == "cancelled" %}
                                 <span class="status-badge status-cancelled">ยกเลิกแล้ว</span>
                             {% endif %}

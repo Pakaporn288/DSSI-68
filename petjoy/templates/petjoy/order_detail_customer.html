@@ -167,6 +167,7 @@
     .status-success { background: #2E7D32; }
     .status-cancel { background: #d32f2f; }
     .status-other { background: #757575; }
+    .status-cancel_requested { background: #FF9800; color: white; }
 
     .order-header-meta {
         display: flex;
@@ -175,6 +176,23 @@
         margin-bottom: 25px;
         padding-bottom: 15px;
         border-bottom: 2px solid #f0f0f0;
+    }
+
+    /* สไตล์เพิ่มเติมสำหรับ Dropdown และ Textarea */
+    .cancel-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #333;
+        margin-bottom: 15px;
+        background-color: #fff;
+        cursor: pointer;
+    }
+    .cancel-select:focus {
+        outline: none;
+        border-color: #ff8c00;
     }
 </style>
 
@@ -217,20 +235,42 @@
                 <h2 class="section-title" style="margin-bottom: 5px;">รายละเอียดคำสั่งซื้อ</h2>
                 <span style="color: #888;">หมายเลขคำสั่งซื้อ: PETJ-{{ order.id|stringformat:"05d" }}</span>
             </div>
-            {% if order.status == 'cancelled' %}
-            <div style="background-color: #fee2e2; border-left: 5px solid #ef4444; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-                <p style="color: #b91c1c; margin: 0; font-weight: 700; font-size: 1.1rem;">❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว</p>
-                {% if order.cancel_reason %}
-                    <p style="color: #991b1b; margin: 5px 0 0 0;"><strong>เหตุผล:</strong> {{ order.cancel_reason }}</p>
-                {% endif %}
-            </div>
-            {% endif %}
+            
             <div style="text-align: right;">
                 <span class="status-badge status-{{ order.status }}">
                     {{ order.get_status_display }}
                 </span>
             </div>
         </div>
+
+        {% if order.status == 'cancelled' %}
+        <div style="margin-bottom: 25px; background-color: #fef2f2; border: 1px solid #fecaca; padding: 18px 20px; border-radius: 10px; display: flex; gap: 12px; align-items: flex-start;">
+            <span style="font-size: 1.2rem; line-height: 1.2;">❌</span>
+            <div>
+                <p style="color: #dc2626; margin: 0; font-weight: 700; font-size: 1.05rem;">คำสั่งซื้อนี้ถูกยกเลิกแล้ว</p>
+                {% if order.cancel_reason %}
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #fecaca; color: #b91c1c; font-size: 0.9rem;">
+                        <strong style="color: #991b1b;">เหตุผล:</strong> {{ order.cancel_reason }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if order.status == 'cancel_requested' %}
+        <div style="margin-bottom: 25px; background-color: #fafafa; border: 1px solid #eaeaea; padding: 18px 20px; border-radius: 10px; display: flex; gap: 12px; align-items: flex-start;">
+            <span style="font-size: 1.2rem; line-height: 1.2;">⏳</span>
+            <div>
+                <p style="color: #444; margin: 0; font-weight: 700; font-size: 1.05rem;">กำลังรอร้านค้าอนุมัติคำร้องขอยกเลิก</p>
+                <p style="color: #666; margin: 4px 0 0 0; font-size: 0.95rem;">ระบบได้ส่งคำร้องไปยังร้านค้าแล้ว กรุณารอการตรวจสอบสักครู่ค่ะ</p>
+                {% if order.cancel_reason %}
+                    <div style="margin-top: 10px; padding-top: 10px; border-top: 1px dashed #ddd; color: #777; font-size: 0.9rem;">
+                        <strong style="color: #555;">เหตุผลของคุณ:</strong> {{ order.cancel_reason }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
 
         <div class="info-grid">
             <div class="info-block">
@@ -279,11 +319,13 @@
                 </tr>
             </thead>
             <tbody>
-                {% for item in items %}
+                {% for item in order.items.all %}
                 <tr>
                     <td>
                         <div class="item-name-col">
-                            {% if item.product.image %}
+                            {% if item.product.image1 %}
+                                <img src="{{ item.product.image1.url }}" class="item-img">
+                            {% elif item.product.image %}
                                 <img src="{{ item.product.image.url }}" class="item-img">
                             {% else %}
                                 <img src="{% static 'images/no-image.png' %}" class="item-img">
@@ -317,19 +359,103 @@
                 </tr>
             </tfoot>
         </table>
+        
         {% if order.status == 'waiting' or order.status == 'paid' or order.status == 'preparing' %}
         <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; text-align: right;">
-            <form method="POST" action="">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="cancel_by_customer">
-                <button type="submit" onclick="return confirm('คุณแน่ใจหรือไม่ว่าต้องการยกเลิกคำสั่งซื้อนี้?');"style="background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                    ยกเลิกคำสั่งซื้อ
-                </button>
-            </form>
+            <button type="button" onclick="openCancelModal()" style="background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                ยกเลิกคำสั่งซื้อ
+            </button>
+        </div>
+        {% endif %}
+
+        {% if order.slip_image %}
+        <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px;">
+            <h4 style="margin-top: 0; color: #856404;">คำแนะนำการขอคืนเงิน</h4>
+            <p style="margin: 0; color: #856404;">กรุณาแคปหน้ารายละเอียดคำสั่งซื้อนี้และแนบให้ <a href="{% url 'petjoy:customer-support-chat' %}" style="color: #004085; text-decoration: underline; font-weight: bold;">ติดต่อแอดมิน</a> เพื่อขอความช่วยเหลือ</p>
         </div>
         {% endif %}
 
     </section>
 </div>
+
+<div id="cancelModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);">
+        <h3 style="margin-top: 0; font-size: 1.5rem; color: #333; text-align: center;">ยกเลิกคำสั่งซื้อ</h3>
+        <form method="POST" action="" onsubmit="return prepareCancelReason()">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="cancel_by_customer">
+            <input type="hidden" name="cancel_reason" id="finalCancelReason">
+
+            <label for="reasonSelect" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">เลือกเหตุผลการยกเลิก:</label>
+            <select id="reasonSelect" class="cancel-select" onchange="toggleCustomReason()" required>
+                <option value="" disabled selected>-- กรุณาเลือกเหตุผล --</option>
+                <option value="ต้องการเปลี่ยนที่อยู่จัดส่ง">ต้องการเปลี่ยนที่อยู่จัดส่ง</option>
+                <option value="ต้องการเปลี่ยนสินค้า/เปลี่ยนใจ">ต้องการเปลี่ยนสินค้า/เปลี่ยนใจ</option>
+                <option value="เจอสินค้าที่อื่นราคาถูกกว่า">เจอสินค้าที่อื่นราคาถูกกว่า</option>
+                <option value="ร้านค้าตอบกลับล่าช้า">ร้านค้าตอบกลับล่าช้า</option>
+                <option value="other">อื่นๆ (โปรดระบุ)</option>
+            </select>
+
+            <div id="customReasonWrapper" style="display: none;">
+                <label for="cancelReason" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555;">ระบุเหตุผลเพิ่มเติม:</label>
+                <textarea id="cancelReason" rows="3" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; color: #333; resize: none;" placeholder="พิมพ์เหตุผลของคุณที่นี่..."></textarea>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <button type="button" onclick="closeCancelModal()" style="background: #f0f0f0; color: #555; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    ยกเลิก
+                </button>
+                <button type="submit" style="background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    ยืนยัน
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openCancelModal() {
+        document.getElementById('cancelModal').style.display = 'flex';
+    }
+
+    function closeCancelModal() {
+        document.getElementById('cancelModal').style.display = 'none';
+        // Reset form when closed
+        document.getElementById('reasonSelect').value = '';
+        document.getElementById('customReasonWrapper').style.display = 'none';
+        document.getElementById('cancelReason').value = '';
+    }
+
+    function toggleCustomReason() {
+        const select = document.getElementById('reasonSelect');
+        const customWrapper = document.getElementById('customReasonWrapper');
+        const textarea = document.getElementById('cancelReason');
+
+        if (select.value === 'other') {
+            customWrapper.style.display = 'block';
+            textarea.required = true;
+        } else {
+            customWrapper.style.display = 'none';
+            textarea.required = false;
+        }
+    }
+
+    function prepareCancelReason() {
+        const select = document.getElementById('reasonSelect');
+        const textarea = document.getElementById('cancelReason');
+        const finalInput = document.getElementById('finalCancelReason');
+
+        if (select.value === 'other') {
+            if (!textarea.value.trim()) {
+                alert('กรุณาระบุเหตุผลของคุณ');
+                return false;
+            }
+            finalInput.value = textarea.value.trim();
+        } else {
+            finalInput.value = select.value;
+        }
+        return true;
+    }
+</script>
 
 {% endblock %}

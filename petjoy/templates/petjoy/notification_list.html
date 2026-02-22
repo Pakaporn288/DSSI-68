@@ -34,36 +34,67 @@
                             box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
                     <div>
                         <strong>{{ order.display_title }}</strong><br>
-                        <span style="color:#ef4444;font-weight:600;">คำสั่งซื้อถูกยกเลิกแล้ว</span><br>
-                        
+                        <span style="color:#d32f2f;font-weight:600;">คำสั่งซื้อถูกยกเลิกแล้ว</span><br>
                         {% if order.cancel_reason %}
-                            <small style="color:#666; font-size:13px;">เหตุผล: {{ order.cancel_reason }}</small><br>
+                            <small style="color:#666;">เหตุผล: {{ order.cancel_reason }}</small><br>
                         {% endif %}
-                        
                         <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
-            {% endif %}
+            
+            {% elif order.status == 'cancel_requested' %}
+            <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                            box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#f59e0b;font-weight:600;">กำลังรอร้านค้าอนุมัติคำร้องขอยกเลิก</span><br>
+                        {% if order.cancel_reason %}
+                            <small style="color:#666;">เหตุผลของคุณ: {{ order.cancel_reason }}</small><br>
+                        {% endif %}
+                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                </div>
+            </a>
 
-            {% if order.has_unread_status_update and order.reviews.exists %}
-                {% for review in order.reviews.all %}
-                    {% if review.reply %}
-                    <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
-                        <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
-                                    box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <strong>{{ order.display_title }}</strong><br>
-                                <span style="color:#ff7a00;font-weight:600;">ร้านค้าตอบกลับรีวิวของคุณแล้ว</span><br>
-                                <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
-                            </div>
-                        </div>
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
+            {% elif order.status == 'delivering' %}
+            <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                            box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#3b82f6;font-weight:600;">กำลังจัดส่งสินค้า</span><br>
+                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                </div>
+            </a>
 
-            {% if order.status == 'success' %}
+            {% elif order.status == 'preparing' %}
+            <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                            box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#f59e0b;font-weight:600;">ร้านค้ากำลังเตรียมจัดส่งสินค้า</span><br>
+                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                </div>
+            </a>
+
+            {% elif order.status == 'paid' %}
+            <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                            box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#10b981;font-weight:600;">ชำระเงินเรียบร้อยแล้ว</span><br>
+                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                </div>
+            </a>
+
+            {% elif order.status == 'success' %}
             <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
                         box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
                 <div>
@@ -86,12 +117,43 @@
             </div>
             {% endif %}
 
+            {# กรณีที่ร้านค้าปฏิเสธการยกเลิก #}
+            {% if order.cancel_reason and order.status != 'cancelled' and order.status != 'cancel_requested' %}
+            <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                            box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <strong>{{ order.display_title }}</strong><br>
+                        <span style="color:#d32f2f;font-weight:600;">ร้านปฎิเสธการยกเลิก</span><br>
+                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    </div>
+                </div>
+            </a>
+            {% endif %}
+
+            {# การแจ้งเตือนเมื่อร้านตอบกลับรีวิว #}
+            {% if order.status == 'success' %}
+                {% for review in order.reviews.all %}
+                    {% if review.reply %}
+                    <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
+                        <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                                    box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
+                            <div>
+                                <strong>{{ order.display_title }}</strong><br>
+                                <span style="color:#ff7a00;font-weight:600;">ร้านค้าตอบกลับรีวิวของคุณแล้ว</span><br>
+                                <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                            </div>
+                        </div>
+                    </a>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+
         {% endfor %}
     {% else %}
         <div style="text-align:center; padding:60px 20px; background:#fff; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
             <i class="ri-notification-off-line" style="font-size:48px; color:#ccc; margin-bottom:15px; display:block;"></i>
-            <h3 style="color:#666; margin:0 0 10px 0;">ไม่มีการแจ้งเตือนใหม่</h3>
-            <p style="color:#999; margin:0;">เมื่อมีการอัปเดตคำสั่งซื้อของคุณ จะแสดงที่นี่</p>
+            <h3 style="color:#666; margin:0; font-size:18px;">ยังไม่มีการแจ้งเตือน</h3>
         </div>
     {% endif %}
 

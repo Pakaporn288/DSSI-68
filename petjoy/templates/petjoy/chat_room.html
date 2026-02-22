@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
 
 <style>
+    /* สไตล์เดิมทั้งหมดของคุณ */
     .profile-main-card {
         flex: 1;
         background: #fff;
@@ -151,7 +152,6 @@
     }
 </style>
 
-<!-- ✅ ใช้โครงสร้างเดียวกับ chat_list -->
 <div class="profile-container">
 
     {% include "petjoy/partials/profile_sidebar.html" with active_menu="ข้อความ" %}
@@ -160,7 +160,9 @@
         
         <div class="chat-header">
             <div class="chat-title">
-                {% if user == room.customer %}
+                {% if is_support %}
+                    แชทกับ: แอดมิน (ฝ่ายสนับสนุน)
+                {% elif user == room.customer %}
                     แชทกับร้าน: {{ room.entrepreneur.store_name }}
                 {% else %}
                     แชทกับลูกค้า: {{ room.customer.username }}

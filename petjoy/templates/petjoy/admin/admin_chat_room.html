@@ -1,7 +1,13 @@
 {% extends 'petjoy/admin/admin_base.html' %}
 {% load static %}
 {% block nav_chat %}active{% endblock %}
-{% block title %}แชท: {{ room.entrepreneur.store_name }}{% endblock %}
+{% block title %}
+    {% if is_customer_chat %}
+        แชทกับลูกค้า: {{ room.user.username }}
+    {% else %}
+        แชท: {{ room.entrepreneur.store_name }}
+    {% endif %}
+{% endblock %}
 
 {% block content %}
 <div class="admin-card" style="height: calc(100vh - 140px); display: flex; flex-direction: column; padding: 0;">
@@ -9,21 +15,29 @@
     <div style="padding: 15px 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #f8f9fa; border-radius: 16px 16px 0 0;">
         <div style="display: flex; align-items: center; gap: 10px;">
             <a href="{% url 'petjoy:admin-chat-list' %}" style="text-decoration: none; color: #555; font-size: 1.2rem;">←</a>
-            <h3 style="margin: 0; color: #333;">{{ room.entrepreneur.store_name }}</h3>
+            <h3 style="margin: 0; color: #333;">
+                {% if is_customer_chat %}
+                    {{ room.user.username }} <span style="font-size: 0.9rem; color: #007bff; font-weight: normal;">(ลูกค้า)</span>
+                {% else %}
+                    {{ room.entrepreneur.store_name }}
+                {% endif %}
+            </h3>
         </div>
 
-        {% if room.entrepreneur.user %}
-            <a href="{% url 'petjoy:admin-delete-user' room.entrepreneur.user.id %}" 
-               onclick="return confirm('ต้องการลบบัญชีร้านค้านี้?')" 
-               class="btn-action danger" 
-               style="padding: 6px 12px; font-size: 0.8rem;">
-               🚨 ลบบัญชีร้านนี้
-            </a>
-        {% else %}
-            <button class="btn-action" 
-                    style="padding: 6px 12px; font-size: 0.8rem; background: #ccc; cursor: not-allowed; border:none; color:white;">
-               🚫 บัญชีถูกลบแล้ว
-            </button>
+        {% if not is_customer_chat %}
+            {% if room.entrepreneur.user %}
+                <a href="{% url 'petjoy:admin-delete-user' room.entrepreneur.user.id %}" 
+                   onclick="return confirm('ต้องการลบบัญชีร้านค้านี้?')" 
+                   class="btn-action danger" 
+                   style="padding: 6px 12px; font-size: 0.8rem;">
+                   🚨 ลบบัญชีร้านนี้
+                </a>
+            {% else %}
+                <button class="btn-action" 
+                        style="padding: 6px 12px; font-size: 0.8rem; background: #ccc; cursor: not-allowed; border:none; color:white;">
+                   🚫 บัญชีถูกลบแล้ว
+                </button>
+            {% endif %}
         {% endif %}
     </div>
 
@@ -39,15 +53,19 @@
                 <span style="font-size: 0.7rem; color: #999; margin-top: 4px;">{{ message.timestamp|date:"H:i" }}</span>
             </div>
         {% empty %}
-            <div style="text-align: center; color: #ccc; margin-top: 50px;">เริ่มการสนทนากับร้านค้าได้เลย</div>
+            <div style="text-align: center; color: #ccc; margin-top: 50px;">
+                {% if is_customer_chat %}ลูกค้าเพิ่งเริ่มการสนทนา{% else %}เริ่มการสนทนากับร้านค้าได้เลย{% endif %}
+            </div>
         {% endfor %}
     </div>
 
     <div style="padding: 15px; border-top: 1px solid #eee; background: #fff; border-radius: 0 0 16px 16px;">
-        {% if room.entrepreneur.user %}
+        {% if is_customer_chat or room.entrepreneur.user %}
             <form method="post" style="display: flex; gap: 10px;">
                 {% csrf_token %}
-                <input type="text" name="message" placeholder="พิมพ์ข้อความเตือน หรือแจ้งปัญหา..." autocomplete="off" required
+                <input type="text" name="message" 
+                       placeholder="{% if is_customer_chat %}ตอบกลับลูกค้า...{% else %}พิมพ์ข้อความเตือน หรือแจ้งปัญหา...{% endif %}" 
+                       autocomplete="off" required
                        style="flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none;">
                 <button type="submit" style="background: #E65100; color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">ส่ง</button>
             </form>

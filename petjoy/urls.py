@@ -61,6 +61,8 @@ urlpatterns = [
     path('chat/start/<int:entrepreneur_id>/', views.start_chat_view, name='start_chat'),
     path('chat/room/<int:room_id>/', views.chat_room, name='chat_room'),
     path('chat/delete/<int:room_id>/', views.delete_chat, name='delete_chat'),
+    path("chat/support/", views.customer_support_chat, name="customer-support-chat"),
+    path("system/chat/customer/<int:room_id>/", views.admin_customer_chat_room, name="admin-customer-chat-room"),
     path('entrepreneur/chat/', entrepreneur_chat_list, name='entrepreneur-chat-list'),
     path('entrepreneur/chat/room/<int:room_id>/', entrepreneur_chat_room, name='entrepreneur-chat-room'),
     path('entrepreneur/chat/start/customer/<int:user_id>/<int:order_id>/',views.start_chat_customer,name='start_chat_customer'),
@@ -91,6 +93,8 @@ urlpatterns = [
     path("system/chat/", views.admin_chat_list, name="admin-chat-list"),
     path("system/chat/start/<int:entrepreneur_id>/", views.admin_start_chat, name="admin-start-chat"),
     path("system/chat/room/<int:room_id>/", views.admin_chat_room, name="admin-chat-room"),
+    path("system/chat/customer/delete/<int:room_id>/", views.admin_delete_customer_chat, name="admin-delete-customer-chat"),
+    path("chat/support/delete/<int:room_id>/", views.delete_support_chat, name="delete-support-chat"),
     # แถมหน้ารายการคำสั่งซื้อของแอดมิน (เผื่อคลิกจาก Sidebar)
     path("system/orders/", views.admin_orders_list, name="admin-orders-list"),
     path("system/reports/chat/<int:report_id>/", views.admin_start_chat_from_report, name="admin-start-chat-report"),
@@ -103,7 +107,6 @@ urlpatterns = [
     path("system/settings/categories/",views.admin_category_settings,name="admin-category-settings"),
     path("category/<int:category_id>/",views.category_products,name="category-products"),
 
-
-
-
+    path('orders/<int:order_id>/cancel/', views.cancel_order, name='cancel_order'),
+    path('orders/<int:order_id>/handle-cancellation/', views.handle_cancellation_request, name='handle_cancellation_request'),
 ]

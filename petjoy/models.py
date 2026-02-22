@@ -196,6 +196,7 @@ class Order(models.Model):
         ("preparing", "กำลังเตรียมของ"),
         ("delivering", "กำลังจัดส่ง"),
         ("success", "สำเร็จ"),
+        ('cancel_requested', 'ขอยกเลิก'),
         ("cancelled", "ยกเลิกสินค้า"),
     ]
 
@@ -327,7 +328,16 @@ class ChatMessage(models.Model):
     def __str__(self):
         return f"{self.sender.username}: {str(self.message)[:50]}"
     
-# models.py
+class CustomerAdminChatRoom(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_support_rooms')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+class CustomerAdminChatMessage(models.Model):
+    room = models.ForeignKey(CustomerAdminChatRoom, on_delete=models.CASCADE, related_name='messages')
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    message = models.TextField(blank=True, null=True)
+    attachment = models.ImageField(upload_to='support_chat_attachments/', blank=True, null=True)
+    timestamp = models.DateTimeField(auto_now_add=True)
 
 class QuickReply(models.Model):
     entrepreneur = models.ForeignKey(Entrepreneur, on_delete=models.CASCADE, related_name='quick_replies')

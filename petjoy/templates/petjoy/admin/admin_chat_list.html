@@ -1,33 +1,92 @@
 {% extends 'petjoy/admin/admin_base.html' %}
 {% load static %}
 {% block nav_chat %}active{% endblock %}
-{% block title %}แชทกับร้านค้า{% endblock %}
-{% block page_title %}💬 แชทกับร้านค้า{% endblock %}
+{% block title %}ข้อความ{% endblock %}
+{% block page_title %}💬 ข้อความ {% endblock %}
 
 {% block content %}
 <div class="admin-card">
-    <div class="admin-card-header">
-        <h3>รายการสนทนา</h3>
+    <div class="admin-card-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+        <h3 style="margin: 0;">รายการสนทนาทั้งหมด</h3>
+        
+        <div>
+            <select id="chatTypeFilter" onchange="filterChats()" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; outline: none; cursor: pointer;">
+                <option value="all">ดูทั้งหมด</option>
+                <option value="customer">เฉพาะลูกค้า</option>
+                <option value="shop">เฉพาะร้านค้า</option>
+            </select>
+        </div>
     </div>
 
     <div class="admin-table-wrapper">
         <table class="admin-table">
             <thead>
                 <tr>
-                    <th>ร้านค้า</th>
+                    <th>คู่สนทนา</th>
+                    <th style="width: 100px; text-align: center;">ประเภท</th>
                     <th>ข้อความล่าสุด</th>
                     <th style="width: 180px;">จัดการ</th>
                 </tr>
             </thead>
             <tbody>
+                {% for c_room in customer_rooms %}
+                <tr class="chat-row" data-type="customer">
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            {% if c_room.user.profile.image %}
+                                <img src="{{ c_room.user.profile.image.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            {% elif c_room.user.profile.profile_image %}
+                                <img src="{{ c_room.user.profile.profile_image.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
+                            {% else %}
+                                <div style="width:40px; height:40px; border-radius:50%; background:#007bff; display:flex; align-items:center; justify-content:center; color:white; font-size: 1.2rem;">
+                                    👤
+                                </div>
+                            {% endif %}
+                            
+                            <div>
+                                <strong>{{ c_room.user.username }}</strong><br>
+                                <small style="color:#777;">{{ c_room.user.email }}</small>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <span style="background: #e3f2fd; color: #007bff; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">ลูกค้า</span>
+                    </td>
+                    <td>
+                        {% with c_room.messages.last as last_msg %}
+                            {% if last_msg %}
+                                {{ last_msg.message|truncatechars:50 }} 
+                                <span style="color:#999; font-size:0.8em;">({{ last_msg.timestamp|timesince }} ที่แล้ว)</span>
+                            {% else %}
+                                <span style="color:#ccc;">ยังไม่มีข้อความ</span>
+                            {% endif %}
+                        {% endwith %}
+                    </td>
+                    <td>
+                        <div style="display: flex; gap: 5px;">
+                            <a href="{% url 'petjoy:admin-customer-chat-room' c_room.id %}" class="btn-action view" style="flex:1; text-align:center;">เปิดแชท</a>
+                            
+                            <form method="post" action="{% url 'petjoy:admin-delete-customer-chat' c_room.id %}" onsubmit="return confirm('ยืนยันที่จะลบประวัติแชทลูกค้านี้? (ข้อมูลจะหายไปถาวร)');" style="margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-action danger" style="padding: 6px 10px;" title="ลบแชท">
+                                    🗑️
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+
                 {% for room in rooms %}
-                <tr>
+                <tr class="chat-row" data-type="shop">
                     <td>
                         <div style="display:flex; align-items:center; gap:10px;">
                             {% if room.entrepreneur.profile_image %}
                                 <img src="{{ room.entrepreneur.profile_image.url }}" style="width:40px; height:40px; border-radius:50%; object-fit:cover;">
                             {% else %}
-                                <div style="width:40px; height:40px; border-radius:50%; background:#ddd;"></div>
+                                <div style="width:40px; height:40px; border-radius:50%; background:#ff8c00; display:flex; align-items:center; justify-content:center; color:white; font-size: 1.2rem;">
+                                    🏪
+                                </div>
                             {% endif %}
                             <div>
                                 <strong>{{ room.entrepreneur.store_name }}</strong><br>
@@ -35,13 +94,16 @@
                             </div>
                         </div>
                     </td>
+                    <td style="text-align: center;">
+                        <span style="background: #fff3e0; color: #e65100; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold;">ร้านค้า</span>
+                    </td>
                     <td>
                         {% with room.messages.last as last_msg %}
                             {% if last_msg %}
                                 {{ last_msg.message|truncatechars:50 }} 
-                                <span style="color:#999; font-size:0.8em;">({{ last_msg.timestamp|timesince }})</span>
+                                <span style="color:#999; font-size:0.8em;">({{ last_msg.timestamp|timesince }} ที่แล้ว)</span>
                             {% else %}
-                                -
+                                <span style="color:#ccc;">ยังไม่มีข้อความ</span>
                             {% endif %}
                         {% endwith %}
                     </td>
@@ -51,20 +113,57 @@
                             
                             <form method="post" action="{% url 'petjoy:admin-delete-chat' room.id %}" onsubmit="return confirm('ยืนยันที่จะลบประวัติแชทนี้? (ข้อมูลจะหายไปถาวร)');" style="margin:0;">
                                 {% csrf_token %}
-                                <button type="submit" class="btn-action danger" style="padding: 6px 10px;">
+                                <button type="submit" class="btn-action danger" style="padding: 6px 10px;" title="ลบแชท">
                                     🗑️
                                 </button>
                             </form>
                         </div>
                     </td>
                 </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="3" class="empty">ยังไม่มีการสนทนา</td>
-                </tr>
                 {% endfor %}
+
+                {% if not rooms and not customer_rooms %}
+                <tr id="emptyRow">
+                    <td colspan="4" class="empty" style="text-align:center; padding:40px; color:#999;">
+                        ยังไม่มีการสนทนาในระบบ
+                    </td>
+                </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
 </div>
+
+<script>
+    function filterChats() {
+        const filterValue = document.getElementById('chatTypeFilter').value;
+        const rows = document.querySelectorAll('.chat-row');
+        let visibleCount = 0;
+
+        rows.forEach(row => {
+            // เช็คว่าประเภทแชทตรงกับที่เลือกไหม หรือถ้าเลือกทั้งหมดก็ให้แสดง
+            if (filterValue === 'all' || row.getAttribute('data-type') === filterValue) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        // จัดการกรณีที่กรองแล้วไม่พบข้อมูลเลย
+        let emptyRow = document.getElementById('filterEmptyRow');
+        if (visibleCount === 0 && rows.length > 0) {
+            if (!emptyRow) {
+                const tbody = document.querySelector('tbody');
+                emptyRow = document.createElement('tr');
+                emptyRow.id = 'filterEmptyRow';
+                emptyRow.innerHTML = '<td colspan="4" style="text-align:center; padding:40px; color:#999;">ไม่พบรายการที่ตรงกับตัวกรอง</td>';
+                tbody.appendChild(emptyRow);
+            }
+            emptyRow.style.display = '';
+        } else if (emptyRow) {
+            emptyRow.style.display = 'none';
+        }
+    }
+</script>
 {% endblock %}
