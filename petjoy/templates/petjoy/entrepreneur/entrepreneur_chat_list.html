@@ -256,7 +256,13 @@
                                     {% with room.messages.last as last_message %}
                                         {% if last_message %}
                                             {% if last_message.sender == current_user %}คุณ: {% endif %}
-                                            {{ last_message.message|truncatechars:40 }}
+                                            
+                                            {% if last_message.message and last_message.message != "None" %}
+                                                {{ last_message.message|truncatechars:40 }}
+                                            {% else %}
+                                                📷 ส่งรูปภาพ
+                                            {% endif %}
+                                            
                                         {% else %}
                                             เริ่มการสนทนา
                                         {% endif %}

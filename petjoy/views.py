@@ -1778,7 +1778,6 @@ def admin_order_analytics(request):
         entrepreneur__user__profile__is_banned=False
     )
 
-    
     total_revenue = orders.aggregate(total=Sum('total_price'))['total'] or 0
     total_orders_count = orders.count()
     
@@ -1786,20 +1785,25 @@ def admin_order_analytics(request):
     total_shops = Entrepreneur.objects.filter(verification_status='approved').count()
 
     # --- 2.1 5 อันดับสินค้าขายดี (เฉพาะจากร้านที่อนุมัติแล้ว) ---
+    # ✨ เพิ่ม 'product__owner__store_name' เข้ามาดึงชื่อร้าน
     top_products_query = OrderItem.objects.filter(
         order__in=orders,
-        product__owner__verification_status='approved'  # ✅ กรองเฉพาะร้านที่อนุมัติ
-    ).values('product__name') \
+        product__owner__verification_status='approved'  
+    ).values('product__name', 'product__owner__store_name') \
      .annotate(total_sold=Sum('quantity')) \
      .order_by('-total_sold')[:5]
     
-    top_products_labels = [item['product__name'] for item in top_products_query]
+    # ✨ เปลี่ยนตรงนี้: เอาชื่อสินค้า + ชื่อร้านค้า มารวมกันเป็น Label ของกราฟ
+    top_products_labels = [
+        f"{item['product__name']} (ร้าน: {item['product__owner__store_name'] or 'ไม่ระบุ'})" 
+        for item in top_products_query
+    ]
     top_products_data = [item['total_sold'] for item in top_products_query]
 
     # --- 2.2 5 อันดับร้านค้าขายดี (เฉพาะร้านที่อนุมัติแล้ว) ---
     top_shops_query = OrderItem.objects.filter(
         order__in=orders,
-        product__owner__verification_status='approved'  # ✅ กรองเฉพาะร้านที่อนุมัติ
+        product__owner__verification_status='approved'  
     ).values('product__owner__store_name') \
      .annotate(total_sold=Sum('quantity')) \
      .order_by('-total_sold')[:5]
