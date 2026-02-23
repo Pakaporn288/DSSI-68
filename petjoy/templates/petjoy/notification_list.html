@@ -38,7 +38,7 @@
                         {% if order.cancel_reason %}
                             <small style="color:#666;">เหตุผล: {{ order.cancel_reason }}</small><br>
                         {% endif %}
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -53,7 +53,7 @@
                         {% if order.cancel_reason %}
                             <small style="color:#666;">เหตุผลของคุณ: {{ order.cancel_reason }}</small><br>
                         {% endif %}
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -65,7 +65,7 @@
                     <div>
                         <strong>{{ order.display_title }}</strong><br>
                         <span style="color:#3b82f6;font-weight:600;">กำลังจัดส่งสินค้า</span><br>
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -77,7 +77,7 @@
                     <div>
                         <strong>{{ order.display_title }}</strong><br>
                         <span style="color:#f59e0b;font-weight:600;">ร้านค้ากำลังเตรียมจัดส่งสินค้า</span><br>
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -89,7 +89,7 @@
                     <div>
                         <strong>{{ order.display_title }}</strong><br>
                         <span style="color:#10b981;font-weight:600;">ชำระเงินเรียบร้อยแล้ว</span><br>
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -100,7 +100,7 @@
                 <div>
                     <strong>{{ order.display_title }}</strong><br>
                     <span style="color:#22c55e;font-weight:600;">จัดส่งสำเร็จ</span><br>
-                    <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                    <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                 </div>
 
                 {% if not order.reviews.exists %}
@@ -125,7 +125,7 @@
                     <div>
                         <strong>{{ order.display_title }}</strong><br>
                         <span style="color:#d32f2f;font-weight:600;">ร้านปฎิเสธการยกเลิก</span><br>
-                        <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                        <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                     </div>
                 </div>
             </a>
@@ -141,7 +141,7 @@
                             <div>
                                 <strong>{{ order.display_title }}</strong><br>
                                 <span style="color:#ff7a00;font-weight:600;">ร้านค้าตอบกลับรีวิวของคุณแล้ว</span><br>
-                                <small style="color:#aaa;">{{ order.created_at|date:"d M Y • H:i" }}</small>
+                                <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
                             </div>
                         </div>
                     </a>
