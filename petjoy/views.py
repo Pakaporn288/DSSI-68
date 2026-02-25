@@ -216,33 +216,111 @@ def update_cart(request):
 
     return redirect("petjoy:cart-detail")
 
+
 @login_required
 def order_detail_customer(request, order_id):
-    # ดึงข้อมูลออเดอร์ของลูกค้า (ระวังอย่ามี .profile ต่อท้ายนะคะ ให้ใช้ request.user)
+    # ดึงข้อมูลออเดอร์ของลูกค้า
     order = get_object_or_404(Order, id=order_id, customer=request.user)
     
-    # 🟢 เพิ่มบล็อกนี้เข้าไป เพื่อรอรับคำสั่ง "ขอยกเลิก" จากหน้า HTML
     if request.method == "POST":
         action = request.POST.get("action")
         
+        # 🔴 1. ขอยกเลิกคำสั่งซื้อ
         if action == "cancel_by_customer":
             cancel_reason = request.POST.get("cancel_reason")
             
             # เช็คว่าสถานะยังสามารถยกเลิกได้อยู่
             if order.status in ['waiting', 'paid', 'preparing']:
-                # เปลี่ยนสถานะเป็น "ขอยกเลิก" (ส่งคำร้องให้ร้านค้า)
                 order.status = 'cancel_requested' 
                 order.cancel_reason = cancel_reason
-                
-                # แจ้งเตือนให้ร้านค้ารู้ว่ามีอัปเดต
                 order.has_unread_status_update = True 
                 order.save()
                 
                 messages.success(request, 'ส่งคำร้องขอยกเลิกไปยังร้านค้าเรียบร้อยแล้ว กรุณารอการอนุมัติ')
-                return redirect('petjoy:order_detail_customer', order_id=order.id)
+            else:
+                messages.error(request, 'ไม่สามารถขอยกเลิกได้ในสถานะนี้')
                 
-    # โค้ดเดิมของคุณสำหรับแสดงหน้าเว็บ
-    return render(request, "petjoy/order_detail_customer.html", {"order": order})
+            return redirect('petjoy:order_detail_customer', order_id=order.id)
+                
+        # 🟢 2. ขอคืนสินค้า (แนบไฟล์ได้หลายไฟล์)
+        elif action == "return_by_customer":
+            return_reason = request.POST.get("return_reason")
+            attachments = request.FILES.getlist("return_attachment")
+            
+            # เช็คความปลอดภัยว่าสถานะคือ success หรือ completed และยังไม่เกิน 7 วัน
+            if order.status in ['success', 'completed'] and (timezone.now() - order.updated_at).days <= 7:
+                order.is_return_requested = True
+                order.has_unread_status_update = True
+                order.save()
+                
+                # หาหรือสร้างห้องแชทระหว่างลูกค้ากับร้านค้านี้
+                room, created = ChatRoom.objects.get_or_create(
+                    customer=request.user,
+                    entrepreneur=order.entrepreneur
+                )
+                
+                msg_text = f"🚨 แจ้งขอคืนสินค้า (Order #{order.order_number})\nเหตุผล: {return_reason}"
+                
+                # จัดการแยกส่งทีละรูปเข้าห้องแชท
+                if not attachments:
+                    ChatMessage.objects.create(
+                        room=room,
+                        sender=request.user,
+                        message=msg_text
+                    )
+                else:
+                    # ส่งข้อความหลัก พร้อมรูปที่ 1
+                    ChatMessage.objects.create(
+                        room=room,
+                        sender=request.user,
+                        message=msg_text,
+                        attachment=attachments[0]
+                    )
+                    # วนลูปส่งรูปที่ 2, 3... ตามไป
+                    for file in attachments[1:]:
+                        ChatMessage.objects.create(
+                            room=room,
+                            sender=request.user,
+                            message="", 
+                            attachment=file
+                        )
+                
+                messages.success(request, "ส่งคำขอคืนสินค้าและส่งหลักฐานทั้งหมดไปที่แชทร้านค้าแล้ว!")
+            else:
+                messages.error(request, "ไม่สามารถขอคืนสินค้าได้ (เกิน 7 วัน หรือ สถานะไม่ถูกต้อง)")
+                
+            return redirect('petjoy:order_detail_customer', order_id=order.id)
+
+        # ⭐ 3. ลูกค้ายืนยันการรับสินค้า (2-Step Verification) ⭐
+        elif action == "confirm_receipt":
+            # ต้องรอให้ร้านค้าเปลี่ยนเป็น success (จัดส่งสำเร็จ) ก่อน ลูกค้าถึงจะกดยืนยันได้
+            if order.status == 'success':
+                order.status = 'completed' # เปลี่ยนเป็นเสร็จสมบูรณ์
+                order.save()
+                messages.success(request, "ยืนยันการรับสินค้าเรียบร้อยแล้ว ขอบคุณที่ใช้บริการ!")
+            else:
+                messages.error(request, "ยังไม่สามารถยืนยันได้ (ต้องรอร้านค้าจัดส่งสำเร็จก่อน)")
+                
+            return redirect('petjoy:order_detail_customer', order_id=order.id)
+
+    # (สำหรับ GET request)
+    return render(request, 'petjoy/order_detail_customer.html', {
+        'order': order
+    })
+
+    # 🔵 3. ส่วนเช็คเงื่อนไขปุ่ม: เช็คว่าสถานะ success, ยังไม่เคยขอคืน และยังไม่เกิน 7 วัน
+    can_return = False
+    if order.status == 'success' and not order.is_return_requested:
+        if order.updated_at: # ตรวจสอบว่ามีวันที่อัปเดต
+            days_since_success = (timezone.now() - order.updated_at).days
+            if days_since_success <= 7:
+                can_return = True
+
+    # ส่งตัวแปร order และ can_return ไปที่ HTML
+    return render(request, "petjoy/order_detail_customer.html", {
+        "order": order,
+        "can_return": can_return
+    })
 
 @login_required(login_url='petjoy:login')
 def cart_detail(request):
@@ -269,12 +347,12 @@ def notification_list(request):
     for addr in addresses:
         q |= Q(customer_name=addr.full_name, customer_phone=addr.phone)
 
-    # ดึงคำสั่งซื้อทั้งหมดที่เกี่ยวข้อง และเช็คสถานะสำคัญ
+    # ⭐ จุดที่แก้ไข: เปลี่ยนจาก order_by('-created_at') เป็น order_by('-updated_at') ⭐
     orders = (
         Order.objects
         .filter(q)
         .prefetch_related('items__product', 'reviews')
-        .order_by('-created_at')
+        .order_by('-updated_at')
     )
 
     # สร้าง display_title ให้แต่ละ order
@@ -2230,24 +2308,57 @@ def favorites_list(request):
 
 @login_required
 def orders_list(request):
+    # 1. เช็คความปลอดภัยก่อนว่า User คนนี้เป็นร้านค้า
+    if not hasattr(request.user, 'entrepreneur'):
+        return redirect('petjoy:homepage') 
+
     entrepreneur = request.user.entrepreneur
 
-    orders = Order.objects.filter(
-        entrepreneur=entrepreneur
-    ).order_by('-created_at')
+    # 2. ดึงออเดอร์ทั้งหมดของร้านค้าเพื่อเอามานับสถิติ (ไม่กรอง)
+    all_orders = Order.objects.filter(entrepreneur=entrepreneur).order_by('-created_at')
 
+    # 3. เตรียมคำนวณสถิติสำหรับกล่องด้านบน (ใช้ all_orders)
     context = {
         "entrepreneur": entrepreneur,
-        "orders": orders,
-
-        # ค่าไว้ใช้ในส่วนสรุปบนสุด
-        "shipping_count": orders.filter(status="delivering").count(),
-        "success_count": orders.filter(status="success").count(),
-        "canceled_count": orders.filter(status="cancelled").count(),
-
-        # - 5 orders ล่าสุด
-        "recent_orders": orders[:5],
+        "shipping_count": all_orders.filter(status="delivering").count(),
+        
+        # 🟢 แก้ไขจุดที่ 1: จัดส่งสำเร็จ ต้องไม่นับรวมรายการที่ "ขอคืนสินค้า"
+        "success_count": all_orders.filter(status="success", is_return_requested=False).count(),
+        
+        "canceled_count": all_orders.filter(status="cancelled").count(),
+        "waiting_count": all_orders.filter(status="waiting").count(), # เผื่อคุณอยากใช้
+        "cancel_request_count": all_orders.filter(status="cancel_requested").count(),
+        "return_request_count": all_orders.filter(is_return_requested=True).count(),
+        "recent_orders": all_orders[:5], # 5 รายการล่าสุด
+        "all_orders_count": all_orders.count() # จำนวนออเดอร์ทั้งหมด
     }
+
+    # 4. ส่วนสำหรับ "กรองข้อมูลในตาราง"
+    orders_for_table = all_orders # เริ่มต้นให้เท่ากับทั้งหมดก่อน
+    
+    # รับค่าการกรองจาก URL
+    filter_status = request.GET.get('status')
+    filter_return = request.GET.get('is_return')
+
+    if filter_return == 'true':
+        # ถ้ากดมาจากกล่อง "ขอคืนสินค้า"
+        orders_for_table = orders_for_table.filter(is_return_requested=True)
+    elif filter_status:
+        # ถ้าเลือกสถานะอื่นๆ หรือกดจากกล่อง "ขอยกเลิก" (status=cancel_requested)
+        if filter_status == 'all':
+             pass # ไม่ต้องกรอง ปล่อยผ่าน
+        
+        # 🟢 แก้ไขจุดที่ 2: ถ้ากรองดู "จัดส่งสำเร็จ" ต้องซ่อนรายการที่ขอคืนสินค้าออกไป
+        elif filter_status == 'success':
+             orders_for_table = orders_for_table.filter(status='success', is_return_requested=False)
+             
+        else:
+             orders_for_table = orders_for_table.filter(status=filter_status)
+
+    # ส่งออเดอร์ที่ถูกกรองแล้วไปแสดงในตาราง และส่งค่า filter ปัจจุบันกลับไปด้วย
+    context["orders"] = orders_for_table
+    context["current_filter_status"] = filter_status
+    context["current_filter_return"] = filter_return
 
     return render(request, "petjoy/entrepreneur/orders_list.html", context)
 
@@ -2259,9 +2370,10 @@ def order_detail(request, order_id):
 
     if request.method == "POST":
         
-        # 🟢 1. ส่วนรับคำสั่งจากปุ่ม "อนุมัติ" หรือ "ปฏิเสธ" คำร้องขอยกเลิก
+        # 🟢 1. ส่วนรับคำสั่งจากปุ่มต่างๆ (ยกเลิก / ขอคืนสินค้า)
         action = request.POST.get("action")
         
+        # --- จัดการคำร้อง "ขอยกเลิก" (Cancel Request) ---
         if action == "approve_cancel":
             if order.status == "cancel_requested":
                 # อนุมัติ -> เปลี่ยนสถานะเป็นยกเลิก และคืนสต๊อก
@@ -2287,9 +2399,32 @@ def order_detail(request, order_id):
                 messages.error(request, "ปฏิเสธคำร้องขอยกเลิก ระบบแจ้งเตือนลูกค้าแล้ว")
                 return redirect("petjoy:orders-detail", order_id=order.id)
 
-        # 🟢 2. โค้ดเดิมของคุณ (สำหรับเปลี่ยนสถานะออเดอร์ปกติ)
+        # --- จัดการคำร้อง "ขอคืนสินค้า" (Return Request) ---
+        elif action == "approve_return":
+            if order.is_return_requested:
+                # อนุมัติคืนสินค้า -> ยกเลิกยอดเงิน (เปลี่ยนเป็น cancelled) ปลดป้ายคืนสินค้า และ "ไม่บวกสต๊อกกลับ"
+                order.status = "cancelled"
+                order.is_return_requested = False
+                order.cancel_reason = "ร้านค้าอนุมัติการคืนเงิน/คืนสินค้าแล้ว"
+                order.has_unread_status_update = True
+                order.save()
+                
+                messages.success(request, "อนุมัติการคืนเงิน/คืนสินค้าเรียบร้อยแล้ว (ออเดอร์นี้จะไม่ถูกนับรายได้ และไม่มีการคืนสต๊อก)")
+                return redirect("petjoy:orders-detail", order_id=order.id)
+
+        elif action == "reject_return":
+            if order.is_return_requested:
+                # ปฏิเสธการคืน/เจรจาจบ -> ปลดป้ายขอคืนสินค้าออก ให้สถานะกลับไปเป็นจัดส่งสำเร็จเหมือนเดิม
+                order.is_return_requested = False
+                order.has_unread_status_update = True
+                order.save()
+                
+                messages.success(request, "เคลียร์ปัญหาขอคืนสินค้าเรียบร้อย ออเดอร์กลับสู่สถานะจัดส่งสำเร็จ")
+                return redirect("petjoy:orders-detail", order_id=order.id)
+
+        # 🟢 2. โค้ดเดิมของคุณ (สำหรับเปลี่ยนสถานะออเดอร์ปกติ ผ่าน Select Dropdown)
         new_status = request.POST.get("status")
-        if new_status: # ใส่ if ครอบไว้กันชนกับข้างบน
+        if new_status: 
             tracking_number = request.POST.get("tracking_number")
             cancel_reason = request.POST.get("cancel_reason")
 

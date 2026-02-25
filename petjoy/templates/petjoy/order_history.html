@@ -84,6 +84,8 @@
     .order-shop {
         font-size: 0.95rem;
         color: #555;
+        margin-top: 5px;
+        margin-bottom: 5px;
     }
     .order-total {
         font-size: 1.4rem; 
@@ -101,18 +103,17 @@
         display: inline-block;
         min-width: 100px;
     }
-    .status-cancel_requested {
-        background-color: #FFF3E0;
-        color: #E65100;
-    }
-
+    
+    /* สีสถานะต่างๆ */
+    .status-cancel_requested { background-color: #FFF3E0; color: #E65100; }
     .status-waiting { background: #FFA726; }
     .status-paid { background: #4CAF50; } 
     .status-preparing { background: #1976D2; }
     .status-delivering { background: #33a7d2; }
     .status-success { background: #2E7D32; }
-    .status-other { background: #757575; }
+    .status-completed { background: #15803d; } /* ⭐ เพิ่มสีให้สถานะ เสร็จสมบูรณ์ ⭐ */
     .status-cancelled { background: #b91c1c; }
+    .status-other { background: #757575; }
 
     .btn-detail {
         background: #ff8c00;
@@ -166,25 +167,31 @@
         <div class="order-list">
             {% for order in orders %}
             <div class="order-card">
+                
                 <div class="order-info">
+                    <strong>หมายเลขคำสั่งซื้อ: PETJ-{{ order.id|stringformat:"05d" }}</strong>
                     <div class="order-total">
                         ฿{{ order.total_price|floatformat:2|intcomma }}
                     </div>
-                    <p class="order-shop">หมายเลขคำสั่งซื้อ: PETJ-{{ order.id|stringformat:"05d" }}</p>
+                    {% if order.status == 'cancelled' %}
+                        <div style="color: #dc2626; font-size: 0.9rem; margin-top: 5px; font-weight: bold;">❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว</div>
+                    {% endif %}
                 </div>
-
-                    <div class="order-total-wrapper">
-                        <strong>ร้าน: {{ order.entrepreneur.store_name }}</strong>
-                        <p class="order-shop">สั่งเมื่อ: {{ order.created_at|date:"d M Y H:i" }}</p>
-                        {% if order.status == 'cancelled' %}
-                            <span class="cancelled-alert">❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว</span>
-                        {% endif %}
-                    </div>
                 
                 <div class="order-status-wrapper">
-                    <span class="status-badge status-{{ order.status }}">
-                        {{ order.get_status_display }}
-                    </span>
+                    {% if order.is_return_requested %}
+                        <span class="status-badge" style="background-color: #f44336; color: white;">
+                            กำลังขอคืนสินค้า
+                        </span>
+                    {% else %}
+                        <span class="status-badge status-{{ order.status }}">
+                            {% if order.status == 'completed' %}
+                                เสร็จสมบูรณ์
+                            {% else %}
+                                {{ order.get_status_display }}
+                            {% endif %}
+                        </span>
+                    {% endif %}
                 </div>
 
                 <div class="order-total-wrapper">
@@ -206,9 +213,10 @@
                 <div class="order-actions">
                     <a href="{% url 'petjoy:order_detail_customer' order.id %}" class="btn-detail">ดูรายละเอียด</a>
                 </div>
+
             </div>
             {% empty %}
-                <p>ยังไม่มีประวัติการสั่งซื้อ</p>
+                <p style="text-align: center; color: #888; margin-top: 40px;">ยังไม่มีประวัติการสั่งซื้อ</p>
             {% endfor %}
         </div>
     </section>

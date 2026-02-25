@@ -5,9 +5,9 @@
 
 {% block content %}
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
 <style>
-    /* สไตล์เดิมทั้งหมดของคุณ */
     .profile-main-card {
         flex: 1;
         background: #fff;
@@ -38,8 +38,9 @@
         color: #666;
         text-decoration: none;
         font-size: 0.9rem;
+        transition: 0.2s;
     }
-    .back-link:hover { text-decoration: underline; }
+    .back-link:hover { color: #ff6b3d; }
 
     .messages-area {
         flex: 1;
@@ -63,6 +64,7 @@
         word-wrap: break-word;
     }
 
+    /* จัดตำแหน่งขวา (ลูกค้า) / ซ้าย (ร้านค้า) */
     .message-bubble.sent {
         align-self: flex-end;
         background-color: #ff6b3d;
@@ -77,6 +79,23 @@
         border-bottom-left-radius: 4px;
     }
 
+    /* =========================================
+       ⭐ สไตล์ถอดกล่องแชทออก (สำหรับข้อความระบบ) ⭐
+       ========================================= */
+    .message-bubble.is-form-bubble {
+        background: transparent !important;
+        color: #333333 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 85% !important;
+    }
+    .message-bubble.is-form-bubble .message-time {
+        color: #888 !important;
+        margin-top: 6px;
+        padding-right: 5px;
+    }
+
     .message-time {
         font-size: 0.7rem;
         margin-top: 4px;
@@ -84,31 +103,57 @@
         text-align: right;
     }
 
+    /* =========================================
+       ⭐ กล่องฟอร์มพิมพ์แชทด้านล่าง (อิงแบบร้านค้า) ⭐
+       ========================================= */
     .chat-input-area {
         display: flex;
-        gap: 10px;
-        padding-top: 10px;
+        gap: 12px;
+        padding-top: 15px;
         border-top: 1px solid #eee;
         align-items: center;
+        background: #fff;
+    }
+
+    .attach-btn {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        border: none;
+        background-color: #f1f1f1;
+        color: #555;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        transition: all 0.2s ease;
+    }
+    .attach-btn:hover {
+        background-color: #ff6b3d;
+        color: #fff;
     }
 
     .chat-input {
         flex: 1;
-        height: 42px;
-        padding: 0 16px;
+        height: 45px;
+        padding: 0 20px;
         border: 1px solid #ddd;
         border-radius: 25px;
         outline: none;
-        transition: border-color 0.2s;
+        font-size: 0.95rem;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: #f9f9f9;
     }
-
     .chat-input:focus {
         border-color: #ff6b3d;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(255, 107, 61, 0.1);
     }
 
     .send-btn {
-        height: 42px;
-        padding: 0 22px;
+        height: 45px;
+        padding: 0 25px;
         border-radius: 25px;
         background-color: #ff6b3d;
         color: #fff;
@@ -118,37 +163,29 @@
         font-size: 0.95rem;
         display: flex;
         align-items: center;
-        justify-content: center;
+        gap: 8px;
         transition: all 0.2s ease;
     }
-
     .send-btn:hover {
         background-color: #e85c30;
-        transform: translateY(-1px);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(232, 92, 48, 0.3);
     }
 
-    .file-input {
-        display: none;
+    /* ป้ายกำกับวันที่ */
+    .chat-date-wrapper {
+        text-align: center;
+        margin: 20px 0 10px 0;
     }
-
-    .attach-btn {
-        width: 42px;
-        height: 42px;
-        border-radius: 50%;
-        border: 1px solid #ddd;
-        background-color: #fff;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        transition: all 0.2s ease;
-    }
-
-    .attach-btn:hover {
-        background-color: #ff6b3d;
-        color: #fff;
-        border-color: #ff6b3d;
+    .date-badge {
+        background: #e9ecef;
+        color: #6c757d;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        display: inline-block;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
     }
 </style>
 
@@ -168,26 +205,47 @@
                     แชทกับลูกค้า: {{ room.customer.username }}
                 {% endif %}
             </div>
-            <a href="javascript:history.back()" class="back-link">❮ ย้อนกลับ</a>
+            <a href="javascript:history.back()" class="back-link"><i class="fas fa-chevron-left"></i> ย้อนกลับ</a>
         </div>
 
         <div class="messages-area" id="messagesArea">
             {% for message in messages %}
+                
+                {% ifchanged message.timestamp.date %}
+                    <div class="chat-date-wrapper chat-date-separator" data-date="{{ message.timestamp|date:'Y-m-d' }}">
+                        {{ message.timestamp|date:"j F Y" }}
+                    </div>
+                {% endifchanged %}
+
                 <div class="message-bubble {% if message.sender == user %}sent{% else %}received{% endif %}">
                     
                     {% if message.message %}
-                        {{ message.message }}
+                        <div class="msg-content" style="white-space: pre-wrap;">{{ message.message|safe }}</div>
                     {% endif %}
 
                     {% if message.attachment %}
-                        <div style="margin-top:8px;">
-                            <img src="{{ message.attachment.url }}" style="max-width:200px; border-radius:8px;">
+                        <div style="margin-top:10px;">
+                            {% with url=message.attachment.url|lower %}
+                                {% if '.mp4' in url or '.mov' in url or '.webm' in url or '.avi' in url %}
+                                    <video controls preload="metadata" style="max-width:100%; width:260px; border-radius:8px; background:#000; outline:none;">
+                                        <source src="{{ message.attachment.url }}">
+                                        เบราว์เซอร์ของคุณไม่รองรับการแสดงผลวิดีโอ
+                                    </video>
+                                {% else %}
+                                    <a href="{{ message.attachment.url }}" target="_blank" style="text-decoration: none; display: block;">
+                                        <img src="{{ message.attachment.url }}" 
+                                             style="max-width:100%; width:220px; border-radius:8px; object-fit: cover;"
+                                             alt="ไฟล์แนบ"
+                                             onerror="this.onerror=null; this.outerHTML='<div class=\'return-details\'><div style=\'display: flex; align-items: center; gap: 10px; margin-bottom: 10px;\'><i class=\'fas fa-box-open\' style=\'font-size: 1.5rem; color: #E65100;\'></i><div style=\'font-weight: bold; font-size: 1rem;\'>หลักฐานประกอบการคืนสินค้า</div></div><div style=\'font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.4;\'>ไฟล์แนบนี้เป็นเอกสารที่ไม่สามารถแสดงตัวอย่างได้ กรุณากดเพื่อเปิดดู</div><div style=\'background: #FFF1E7; color: #E65100; text-align: center; padding: 8px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; border: 1px solid #FF8A50; transition: 0.2s;\'><i class=\'fas fa-external-link-alt\'></i> คลิกเพื่อเปิดดูหลักฐาน</div></div>';">
+                                    </a>
+                                {% endif %}
+                            {% endwith %}
                         </div>
                     {% endif %}
 
                     <div class="message-time">
                         {% if message.timestamp %}
-                            {{ message.timestamp|date:"H:i" }}
+                            {{ message.timestamp|date:"H:i" }} น.
                         {% endif %}
                     </div>
                 </div>
@@ -196,24 +254,111 @@
             {% endfor %}
         </div>
 
-        <form method="post" enctype="multipart/form-data" class="chat-input-area">
+        <form method="post" enctype="multipart/form-data" class="chat-input-area" id="chatForm">
             {% csrf_token %}
 
-            <label for="attachment" class="attach-btn">📎</label>
-            <input type="file" id="attachment" name="attachment" accept="image/*" class="file-input">
+            <input type="file" id="fileAttachment" name="attachment" hidden accept="image/*,video/*,application/pdf">
+            <button type="button" class="attach-btn" onclick="document.getElementById('fileAttachment').click();">
+                <i class="fas fa-paperclip"></i>
+            </button>
 
-            <input type="text" name="message" class="chat-input" placeholder="พิมพ์ข้อความ..." autocomplete="off">
-            <button type="submit" class="send-btn">ส่ง</button>
+            <input type="text" name="message" id="chatInput" class="chat-input" placeholder="พิมพ์ข้อความ..." autocomplete="off">
+            
+            <button type="submit" class="send-btn">
+                ส่ง <i class="fas fa-paper-plane"></i>
+            </button>
         </form>
 
     </section>
 </div>
 
 <script>
+    // ส่งฟอร์มอัตโนมัติเมื่อเลือกไฟล์เสร็จ
+    document.getElementById('fileAttachment').addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+            document.getElementById('chatForm').submit();
+        }
+    });
+
+    // เลื่อนแชทลงมาล่างสุดเสมอ
     window.onload = function() {
         var chatBox = document.getElementById("messagesArea");
         chatBox.scrollTop = chatBox.scrollHeight;
     };
-</script>
 
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. แปลงวันที่ (วันนี้ / เมื่อวาน)
+        const separators = document.querySelectorAll('.chat-date-separator');
+        const today = new Date();
+        const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+        
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getDate()).padStart(2, '0');
+
+        separators.forEach(sep => {
+            const msgDate = sep.getAttribute('data-date');
+            let displayText = sep.innerText;
+            if (msgDate === todayStr) displayText = 'วันนี้';
+            else if (msgDate === yesterdayStr) displayText = 'เมื่อวาน';
+            sep.innerHTML = '<span class="date-badge">' + displayText + '</span>';
+        });
+
+        // ⭐ 2. แปลงเป็นฟอร์มไร้พื้นหลัง (เฉพาะฟอร์มที่มาจากระบบคืนสินค้าเท่านั้น) ⭐
+        document.querySelectorAll('.message-bubble').forEach(function(bubble) {
+            
+            let contentDiv = bubble.querySelector('.msg-content');
+            if (!contentDiv) return;
+
+            let textContent = contentDiv.innerText || "";
+            let isReturnFormSystem = textContent.includes('แจ้งขอคืนสินค้า');
+
+            if (isReturnFormSystem) {
+                // ลบพื้นหลังสีส้ม/เทาของกล่องแชทออก
+                bubble.classList.add('is-form-bubble');
+                
+                // ⭐ ยกเลิก pre-wrap เพื่อลบช่องว่างมหาศาล (เกิดจากการเคาะบรรทัดในฐานข้อมูล) ⭐
+                contentDiv.style.whiteSpace = 'normal';
+                
+                // ดึงเฉพาะ Order ID และ เหตุผล มาใช้งานเท่านั้น (ทิ้งช่องว่างที่เหลือทั้งหมด)
+                let orderMatch = textContent.match(/Order\s*#(\d+)/i) || textContent.match(/#(\d+)/i);
+                let reasonMatch = textContent.match(/เหตุผล:\s*([^\n]+)/i) || textContent.match(/เหตุผลที่ต้องการคืน:\s*([^\n]+)/i);
+                
+                let orderId = orderMatch ? orderMatch[1] : 'ไม่ระบุ';
+                let reason = reasonMatch ? reasonMatch[1].trim() : 'ไม่ได้ระบุเหตุผล';
+
+                // ค้นหากล่องไฟล์แนบ (มันจะอยู่ถัดจาก msg-content ทันที)
+                let attachmentDiv = bubble.querySelector('div[style*="margin-top:10px"]') || bubble.querySelector('div[style*="margin-top: 10px"]');
+                
+                // ถ้าระบุสไตล์ไม่เจอ ให้ลองดึง element ตัวถัดไปแทน
+                if (!attachmentDiv && contentDiv.nextElementSibling && !contentDiv.nextElementSibling.classList.contains('message-time')) {
+                    attachmentDiv = contentDiv.nextElementSibling;
+                }
+
+                let attachmentHTML = '';
+                if (attachmentDiv) {
+                    attachmentHTML = attachmentDiv.innerHTML;
+                }
+
+                // นำข้อความและไฟล์แนบมาใส่ไว้ในกรอบเดียวกันทั้งหมด
+                contentDiv.innerHTML = `
+                    <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #fff; text-align: left; min-width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                        <div style="font-weight: bold; font-size: 1rem; color: #d32f2f; margin-bottom: 8px;">
+                            🚨 แจ้งขอคืนสินค้า (Order #${orderId})
+                        </div>
+                        <div style="font-size: 0.95rem; color: #333; margin-bottom: ${attachmentHTML ? '15px' : '0'};">
+                            <strong>เหตุผล:</strong> ${reason}
+                        </div>
+                        ${attachmentHTML ? `<div style="border-top: 1px dashed #ccc; padding-top: 15px;">${attachmentHTML}</div>` : ''}
+                    </div>
+                `;
+
+                // ลบกล่องไฟล์แนบที่เคยอยู่แยกด้านนอกทิ้งไป
+                if (attachmentDiv) {
+                    attachmentDiv.remove();
+                }
+            }
+        });
+    });
+</script>
 {% endblock %}

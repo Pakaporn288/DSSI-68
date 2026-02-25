@@ -1,3 +1,4 @@
+{% extends "petjoy/base.html" %}
 {% load static %}
 {% block content %}
 
@@ -193,7 +194,6 @@
         text-align: right;
     }
 
-    /* ⭐ CSS สำหรับรูปภาพในแชท */
     .chat-image {
         max-width: 100%;
         width: auto;
@@ -255,7 +255,6 @@
 
     <div class="quick-sidebar">
         <h3>ตอบกลับด่วน</h3>
-
         {% if quick_replies %}
             {% for qr in quick_replies %}
                 <div class="quick-button"
@@ -288,7 +287,7 @@
 
                 <div class="chat-user-name">
                     {% if room.customer.is_superuser %}
-                        เจ้าหน้าที่ดูแลระบบ (PetJoy Support)
+                        เจ้าหน้าที่ดูแลระบบ 
                     {% else %}
                         {{ room.customer.username }}
                     {% endif %}
@@ -303,22 +302,27 @@
 
         <div class="messages-area" id="messagesArea">
             {% for message in messages %}
-                {% ifchanged message.local_date %}
-                    <div class="chat-date">
-                        {{ message.date_label }}
+                
+                {% ifchanged message.timestamp.date %}
+                    <div class="chat-date chat-date-separator" data-date="{{ message.timestamp|date:'Y-m-d' }}">
+                        {{ message.timestamp|date:"d/m/Y" }}
                     </div>
                 {% endifchanged %}
 
                 <div class="bubble {% if message.sender == current_user %}sent{% else %}received{% endif %}">
                     <div class="message-content">
+                        
                         {% if message.attachment %}
-                            <a href="{{ message.attachment.url }}" target="_blank">
-                                <img src="{{ message.attachment.url }}" class="chat-image" alt="sent image">
+                            <a href="{{ message.attachment.url }}" target="_blank" style="text-decoration: none; display: block; margin-bottom: 8px;">
+                                <img src="{{ message.attachment.url }}" 
+                                     class="chat-image" 
+                                     alt="ไฟล์แนบ"
+                                     onerror="this.onerror=null; this.outerHTML='<div style=\'background: #ffffff; border: 1px solid #FFE2D2; padding: 15px; border-radius: 8px; min-width: 240px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05);\'><div style=\'display: flex; align-items: center; gap: 10px; margin-bottom: 10px;\'><i class=\'fas fa-box-open\' style=\'font-size: 1.5rem; color: #E65100;\'></i><div style=\'font-weight: bold; color: #333; font-size: 1rem;\'>หลักฐานประกอบการคืนสินค้า</div></div><div style=\'font-size: 0.85rem; color: #666; margin-bottom: 12px; line-height: 1.4;\'>ไฟล์แนบนี้อาจเป็นวิดีโอหรือเอกสารที่ไม่สามารถแสดงตัวอย่างได้ กรุณากดเพื่อเปิดดู</div><div style=\'background: #FFF1E7; color: #E65100; text-align: center; padding: 8px; border-radius: 6px; font-size: 0.9rem; font-weight: bold; border: 1px solid #FF8A50; transition: 0.2s;\'><i class=\'fas fa-external-link-alt\'></i> คลิกเพื่อเปิดดูหลักฐาน</div></div>';">
                             </a>
                         {% endif %}
 
                         {% if message.message %}
-                            {{ message.message|safe }}
+                            <div style="white-space: pre-wrap;">{{ message.message|safe }}</div>
                         {% endif %}
                     </div>
                     <div class="time">{{ message.timestamp|date:"H:i" }}</div>
@@ -329,7 +333,7 @@
         <form method="post" class="chat-input-area" enctype="multipart/form-data" id="chatForm">
             {% csrf_token %}
 
-            <input type="file" id="fileAttachment" name="attachment" hidden accept="image/*">
+            <input type="file" id="fileAttachment" name="attachment" hidden accept="image/*,video/*,application/pdf">
 
             <button type="button" class="attach-btn"
                     onclick="document.getElementById('fileAttachment').click();">
@@ -368,12 +372,42 @@ window.onload = function() {
     box.scrollTop = box.scrollHeight;
 };
 
-// ⭐ สคริปต์ส่งรูปภาพทันทีที่เลือกไฟล์ ⭐
 document.getElementById('fileAttachment').addEventListener('change', function() {
     if (this.files && this.files[0]) {
-        // Submit Form ทันที
         document.getElementById('chatForm').submit();
     }
+});
+
+// สคริปต์คำนวณ วันนี้ / เมื่อวาน / วันที่ปกติ
+document.addEventListener("DOMContentLoaded", function() {
+    const separators = document.querySelectorAll('.chat-date-separator');
+    const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
+    
+    const today = new Date();
+    const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+    
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth() + 1).padStart(2, '0') + '-' + String(yesterday.getDate()).padStart(2, '0');
+
+    separators.forEach(sep => {
+        const msgDate = sep.getAttribute('data-date');
+        if (msgDate === todayStr) {
+            sep.innerText = 'วันนี้';
+        } else if (msgDate === yesterdayStr) {
+            sep.innerText = 'เมื่อวาน';
+        } else {
+            if (msgDate) {
+                const parts = msgDate.split('-'); 
+                if (parts.length === 3) {
+                    const year = parts[0];
+                    const month = parseInt(parts[1], 10) - 1;
+                    const day = parseInt(parts[2], 10);
+                    sep.innerText = day + ' ' + thaiMonths[month] + ' ' + year;
+                }
+            }
+        }
+    });
 });
 </script>
 

@@ -1,4 +1,5 @@
 {% load static %}
+{% load humanize %}
 
 <link rel="stylesheet" href="{% static 'entrepreneur.css' %}">
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -153,6 +154,7 @@
         color: #4A5568;
         font-size: 0.95rem;
     }
+
 </style>
 
 
@@ -215,7 +217,7 @@
             </div>
 
             <div class="order-row">
-                <strong>ยอดรวม:</strong> <span>{{ order.total_price }} บาท</span>
+                <strong>ยอดรวม:</strong> <span>{{ order.total_price|intcomma }} บาท</span>
             </div>
 
             <div class="order-row">
@@ -224,9 +226,39 @@
 
             <div style="margin-top:15px;">
                 <a href="{% url 'petjoy:start_chat_customer' order.customer.id order.id %}" class="save-btn" style="text-decoration:none; display:inline-block;">
-                    💬 ทักหาลูกค้า
+                     ทักหาลูกค้า
                 </a>
             </div>
+
+            {% if order.is_return_requested %}
+            <div class="cancel-request-card" style="border-color: #f44336; background: #fffafa;">
+                <div class="cancel-request-header" style="color: #c62828;">
+                    <span>⚠️ ลูกค้ายื่นคำร้องขอคืนสินค้า</span>
+                </div>
+                <div class="cancel-reason-text">
+                    <strong>ข้อความจากระบบ:</strong> ลูกค้าได้ส่งคำร้องขอคืนสินค้าและแนบหลักฐานเหตุผลไปที่ห้องแชทของร้านค้าเรียบร้อยแล้ว กรุณาเข้าไปตรวจสอบและเจรจากับลูกค้า
+                </div>
+                <div style="margin-top: 15px; margin-bottom: 15px;">
+                    <a href="{% url 'petjoy:start_chat_customer' order.customer.id order.id %}" style="background: #8992a6; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem; text-decoration: none; display: inline-block;">
+                         ไปที่ห้องแชทเพื่อตรวจสอบหลักฐาน
+                    </a>
+                </div>
+
+                <hr style="border: 0; border-top: 1px dashed #f44336; margin: 15px 0;">
+                <p style="color: #c62828; font-weight: 700; font-size: 0.95rem; margin-bottom: 10px;">เมื่อเจรจาเสร็จสิ้น กรุณาเลือกการตัดสินใจ:</p>
+                
+                <form method="POST" action="" style="display: flex; gap: 10px; margin: 0;">
+                    {% csrf_token %}
+                    <button type="submit" name="action" value="approve_return" onclick="return confirm('ยืนยันการอนุมัติคืนเงิน? สถานะจะถูกเปลี่ยนเป็นยกเลิก (ไม่มีการดึงสต๊อกกลับ)');" style="background: #47de42; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                        อนุมัติการคืนสินค้า (คืนเงิน)
+                    </button>
+                    
+                    <button type="submit" name="action" value="reject_return" onclick="return confirm('ยืนยันการปฏิเสธคำร้อง? ออเดอร์จะกลับไปเป็นสถานะสำเร็จตามเดิม');" style="background: #edf2f7; color: #4a5568; border: none; padding: 8px 16px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 0.9rem;">
+                        ปฏิเสธคำขอคืนสินค้า
+                    </button>
+                </form>
+            </div>
+            {% endif %}
 
             {% if order.status == 'cancel_requested' %}
             <div class="cancel-request-card">
@@ -271,19 +303,19 @@
                             <tr>
                                 <td class="col-product">{{ item.product.name }}</td>
                                 <td class="col-qty">{{ item.quantity }}</td>
-                                <td class="col-price">{{ item.price }} บาท</td>
-                                <td class="col-total">{{ item.total_price }} บาท</td>
+                                <td class="col-price">{{ item.price|intcomma }} บาท</td>
+                                <td class="col-total">{{ item.total_price|intcomma }} บาท</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                     <tfoot>
                         <tr style="background-color: #fffaf5;">
                             <td colspan="3" style="text-align: right; font-weight: 700; color: #555; padding-right: 20px;">ค่าจัดส่ง</td>
-                            <td style="font-weight: 700; color: #555; text-align: right;">{{ order.shipping_cost|default:0 }} บาท</td>
+                            <td style="font-weight: 700; color: #555; text-align: right;">{{ order.shipping_cost|default:0|intcomma }} บาท</td>
                         </tr>
                         <tr style="background-color: #fff3e0;">
                             <td colspan="3" style="text-align: right; font-weight: 800; color: #E65100; padding-right: 20px;">ยอดรวมสุทธิ</td>
-                            <td style="font-weight: 800; color: #E65100; text-align: right;">{{ order.total_price }} บาท</td>
+                            <td style="font-weight: 800; color: #E65100; text-align: right;">{{ order.total_price|intcomma }} บาท</td>
                         </tr>
                     </tfoot>
                 </table>
@@ -293,67 +325,79 @@
 
             <hr style="margin: 20px 0;">
 
-            <h3 style="font-weight:700; margin-bottom:10px;">อัปเดตสถานะคำสั่งซื้อ</h3>
+            {% if order.status != 'cancel_requested' and not order.is_return_requested %}
+                <h3 style="font-weight:700; margin-bottom:10px;">อัปเดตสถานะคำสั่งซื้อ</h3>
 
-            <form method="POST">
-                {% csrf_token %}
-                <select name="status" id="status-select" class="status-select" {% if order.status == 'cancelled' %}disabled style="background-color: #f5f5f5; cursor: not-allowed;"{% endif %}>
-                    <option value="waiting" {% if order.status == "waiting" %}selected{% endif %}>รอชำระเงิน</option>
-                    <option value="paid" {% if order.status == "paid" %}selected{% endif %}>ชำระเงินแล้ว</option>
-                    <option value="preparing" {% if order.status == "preparing" %}selected{% endif %}>กำลังเตรียมของ</option>
-                    <option value="delivering" {% if order.status == "delivering" %}selected{% endif %}>กำลังจัดส่ง</option>
-                    <option value="success" {% if order.status == "success" %}selected{% endif %}>สำเร็จ</option>
-                    <option value="cancelled" {% if order.status == "cancelled" %}selected{% endif %}>ยกเลิกสินค้า</option>
-                </select>
+                <form method="POST">
+                    {% csrf_token %}
+                    <select name="status" id="status-select" class="status-select" {% if order.status == 'cancelled' %}disabled style="background-color: #f5f5f5; cursor: not-allowed;"{% endif %}>
+                        <option value="waiting" {% if order.status == "waiting" %}selected{% endif %}>รอชำระเงิน</option>
+                        <option value="paid" {% if order.status == "paid" %}selected{% endif %}>ชำระเงินแล้ว</option>
+                        <option value="preparing" {% if order.status == "preparing" %}selected{% endif %}>กำลังเตรียมของ</option>
+                        <option value="delivering" {% if order.status == "delivering" %}selected{% endif %}>กำลังจัดส่ง</option>
+                        <option value="success" {% if order.status == "success" %}selected{% endif %}>สำเร็จ</option>
+                        <option value="cancelled" {% if order.status == "cancelled" %}selected{% endif %}>ยกเลิกสินค้า</option>
+                    </select>
 
-                <div id="tracking-input-container" style="margin-top: 15px; display: none;">
-                    <label style="font-weight:700; display: block; margin-bottom: 5px;">กรอกเลขพัสดุ:</label>
-                    <input type="text" name="tracking_number" value="{{ order.tracking_number|default:'' }}" class="status-select" style="width: 100%; max-width: 300px;" placeholder="ระบุเลขพัสดุที่นี่">
-                </div>
-
-                <div id="cancel-reason-container" style="margin-top: 15px; display: none;">
-                    <label style="font-weight:700; display: block; margin-bottom: 5px; color: #d32f2f;">เหตุผลการยกเลิก:</label>
-                    <textarea name="cancel_reason" rows="3" class="status-select" style="width: 100%; max-width: 400px; border: 1px solid #d32f2f; {% if order.status == 'cancelled' %}background-color: #f5f5f5; cursor: not-allowed;{% endif %}" placeholder="ระบุเหตุผลที่ยกเลิกคำสั่งซื้อ..." {% if order.status == 'cancelled' %}readonly{% endif %}>{{ order.cancel_reason|default_if_none:"" }}</textarea>
-                </div>
-
-                {% if order.status == 'success' %}
-                <div id="success-message-container" style="margin-top: 15px;">
-                    <div class="success-badge">
-                        ✅ คำสั่งซื้อนี้สำเร็จแล้ว 
-                        {% if order.tracking_number %}
-                            <br><small>เลขพัสดุ: {{ order.tracking_number }}</small>
-                        {% endif %}
+                    <div id="tracking-input-container" style="margin-top: 15px; display: none;">
+                        <label style="font-weight:700; display: block; margin-bottom: 5px;">กรอกเลขพัสดุ:</label>
+                        <input type="text" name="tracking_number" value="{{ order.tracking_number|default:'' }}" class="status-select" style="width: 100%; max-width: 300px;" placeholder="ระบุเลขพัสดุที่นี่">
                     </div>
-                </div>
-                {% endif %}
 
-                {% if order.status == 'cancelled' %}
-                <div id="cancelled-message-container" style="margin-top: 15px;">
-                    <div class="success-badge" style="background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;">
-                        ❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว
-                        {% if order.cancel_reason %}
-                            <br><small style="color: #c62828;">เหตุผล: {{ order.cancel_reason }}</small>
-                        {% endif %}
+                    <div id="cancel-reason-container" style="margin-top: 15px; display: none;">
+                        <label style="font-weight:700; display: block; margin-bottom: 5px; color: #d32f2f;">เหตุผลการยกเลิก:</label>
+                        <textarea name="cancel_reason" rows="3" class="status-select" style="width: 100%; max-width: 400px; border: 1px solid #d32f2f; {% if order.status == 'cancelled' %}background-color: #f5f5f5; cursor: not-allowed;{% endif %}" placeholder="ระบุเหตุผลที่ยกเลิกคำสั่งซื้อ..." {% if order.status == 'cancelled' %}readonly{% endif %}>{{ order.cancel_reason|default_if_none:"" }}</textarea>
                     </div>
+
+                    {% if order.status == 'success' %}
+                    <div id="success-message-container" style="margin-top: 15px;">
+                        <div class="success-badge">
+                            ✅ คำสั่งซื้อนี้สำเร็จแล้ว 
+                            {% if order.tracking_number %}
+                                <br><small>เลขพัสดุ: {{ order.tracking_number }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if order.status == 'cancelled' %}
+                    <div id="cancelled-message-container" style="margin-top: 15px;">
+                        <div class="success-badge" style="background: #ffebee; color: #c62828; border: 1px solid #ef9a9a;">
+                            ❌ คำสั่งซื้อนี้ถูกยกเลิกแล้ว
+                            {% if order.cancel_reason %}
+                                <br><small style="color: #c62828;">เหตุผล: {{ order.cancel_reason }}</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if order.status != 'cancelled' %}
+                        <button type="submit" class="save-btn" id="save-button">บันทึกสถานะ</button>
+                    {% endif %}
+                </form>
+
+                <hr style="margin: 20px 0;">
+
+                <div id="slip-section-container">
+                    <h3 style="font-weight:700; margin-bottom:10px;">สลิปโอนเงิน</h3>
+
+                    {% if order.slip_image %}
+                        <img src="{{ order.slip_image.url }}" class="slip-img">
+                    {% else %}
+                        <p style="color:#888;">ยังไม่มีการแนบสลิป</p>
+                    {% endif %}
                 </div>
+            {% else %}
+                {% if order.is_return_requested %}
+                    <div style="text-align: center; padding: 20px; background: #F9FAFB; border-radius: 8px; color: #6B7280; margin-top: 20px; font-weight: 600;">
+                        <i class="fas fa-lock"></i> คำสั่งซื้อนี้กำลังอยู่ระหว่างการพิจารณาขอคืนสินค้า จึงไม่สามารถอัปเดตสถานะอื่นๆ ได้ กรุณาเลือกการตัดสินใจด้านบน
+                    </div>
+                {% elif order.status == 'cancel_requested' %}
+                    <div style="text-align: center; padding: 20px; background: #F9FAFB; border-radius: 8px; color: #6B7280; margin-top: 20px; font-weight: 600;">
+                        <i class="fas fa-lock"></i> โปรดตอบรับหรือปฏิเสธคำร้องขอยกเลิกด้านบน ก่อนดำเนินการอัปเดตสถานะอื่นๆ
+                    </div>
                 {% endif %}
-
-                {% if order.status != 'cancelled' %}
-                    <button type="submit" class="save-btn" id="save-button">บันทึกสถานะ</button>
-                {% endif %}
-            </form>
-
-            <hr style="margin: 20px 0;">
-
-            <div id="slip-section-container">
-                <h3 style="font-weight:700; margin-bottom:10px;">สลิปโอนเงิน</h3>
-
-                {% if order.slip_image %}
-                    <img src="{{ order.slip_image.url }}" class="slip-img">
-                {% else %}
-                    <p style="color:#888;">ยังไม่มีการแนบสลิป</p>
-                {% endif %}
-            </div>
+            {% endif %}
 
             <a href="{% url 'petjoy:orders-list' %}" class="back-btn">⬅ กลับไปหน้ารายการคำสั่งซื้อ</a>
 
@@ -371,6 +415,7 @@
         const cancelReasonContainer = document.getElementById('cancel-reason-container');
 
         function updateVisibility() {
+            if (!statusSelect) return; // ถ้าไม่มีปุ่มเลือกสถานะ (กรณีซ่อน) ให้ข้ามไป
             const status = statusSelect.value;
 
             if (status === 'preparing' || status === 'delivering' || status === 'success' || status === 'cancelled') {
@@ -393,6 +438,8 @@
         }
 
         updateVisibility();
-        statusSelect.addEventListener('change', updateVisibility);
+        if (statusSelect) {
+            statusSelect.addEventListener('change', updateVisibility);
+        }
     });
 </script>

@@ -134,7 +134,7 @@
         color: #333;
     }
     
-    /* Summary Row Styles (เพิ่มใหม่) */
+    /* Summary Row Styles */
     .summary-row td {
         padding: 10px;
         text-align: right;
@@ -165,6 +165,7 @@
     .status-preparing { background: #1976D2; }
     .status-delivering { background: #33a7d2; }
     .status-success { background: #2E7D32; }
+    .status-completed { background: #15803d; } 
     .status-cancel { background: #d32f2f; }
     .status-other { background: #757575; }
     .status-cancel_requested { background: #FF9800; color: white; }
@@ -193,6 +194,29 @@
     .cancel-select:focus {
         outline: none;
         border-color: #ff8c00;
+    }
+
+    /* ปุ่ม Action รวมมิตรขวาล่าง */
+    .action-buttons-wrapper {
+        margin-top: 30px; 
+        border-top: 1px solid #eee; 
+        padding-top: 20px; 
+        display: flex; 
+        justify-content: flex-end; 
+        gap: 15px;
+        align-items: center;
+    }
+    .btn-action {
+        padding: 12px 24px;
+        border: none;
+        border-radius: 8px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+    }
+    .btn-action:hover:not(:disabled) {
+        transform: translateY(-2px);
     }
 </style>
 
@@ -237,9 +261,15 @@
             </div>
             
             <div style="text-align: right;">
-                <span class="status-badge status-{{ order.status }}">
-                    {{ order.get_status_display }}
-                </span>
+                {% if order.is_return_requested %}
+                    <span class="status-badge" style="background-color: #f44336; color: white;">
+                        กำลังดำเนินการขอคืนสินค้า
+                    </span>
+                {% else %}
+                    <span class="status-badge status-{{ order.status }}">
+                        {% if order.status == 'completed' %}เสร็จสมบูรณ์{% else %}{{ order.get_status_display }}{% endif %}
+                    </span>
+                {% endif %}
             </div>
         </div>
 
@@ -359,19 +389,49 @@
                 </tr>
             </tfoot>
         </table>
-        
-        {% if order.status == 'waiting' or order.status == 'paid' or order.status == 'preparing' %}
-        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; text-align: right;">
-            <button type="button" onclick="openCancelModal()" style="background: #ef4444; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
-                ยกเลิกคำสั่งซื้อ
-            </button>
-        </div>
-        {% endif %}
 
+        <div class="action-buttons-wrapper">
+            
+            {% if order.status == 'waiting' or order.status == 'paid' or order.status == 'preparing' %}
+                <button type="button" onclick="openCancelModal()" class="btn-action" style="background: #ef4444; color: white;">
+                    ยกเลิกคำสั่งซื้อ
+                </button>
+            {% endif %}
+
+            {% if order.status == 'delivering' %}
+                <button disabled class="btn-action" style="background: #e5e7eb; color: #9ca3af; cursor: not-allowed;">
+                    <i class="fas fa-truck"></i> ยืนยันสินค้าได้รับแล้ว (รอร้านค้าจัดส่งสำเร็จ)
+                </button>
+            {% endif %}
+
+            {% if order.status == 'success' and not order.is_return_requested %}
+                <button type="button" onclick="openReturnModal()" class="btn-action" style="background: #fff; color: #f44336; border: 1px solid #f44336;">
+                    ขอคืนสินค้า
+                </button>
+
+                <form method="POST" style="margin: 0;">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="confirm_receipt">
+                    <button type="submit" 
+                            onclick="return confirm('คุณยืนยันว่าได้รับสินค้าเรียบร้อยแล้วใช่หรือไม่?');" 
+                            class="btn-action" 
+                            style="background: #22c55e; color: white; box-shadow: 0 4px 10px rgba(34, 197, 94, 0.3);">
+                        <i class="fas fa-check-circle"></i> ฉันได้รับสินค้าแล้ว
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if order.status == 'completed' and can_return and not order.is_return_requested %}
+                <button type="button" onclick="openReturnModal()" class="btn-action" style="background: #fff; color: #f44336; border: 1px solid #f44336;">
+                    ขอคืนสินค้า
+                </button>
+            {% endif %}
+
+        </div>
         {% if order.slip_image %}
         <div style="margin-top: 30px; padding: 20px; background: #fff3cd; border: 1px solid #ffeeba; border-radius: 8px;">
             <h4 style="margin-top: 0; color: #856404;">คำแนะนำการขอคืนเงิน</h4>
-            <p style="margin: 0; color: #856404;">กรุณาแคปหน้ารายละเอียดคำสั่งซื้อนี้และแนบให้ <a href="{% url 'petjoy:customer-support-chat' %}" style="color: #004085; text-decoration: underline; font-weight: bold;">ติดต่อแอดมิน</a> เพื่อขอความช่วยเหลือ</p>
+            <p style="margin: 0; color: #856404;">กรุณาแคปหน้ารายละเอียดคำสั่งซื้อนี้มอบให้ร้านค้าหรือ <a href="{% url 'petjoy:customer-support-chat' %}" style="color: #004085; text-decoration: underline; font-weight: bold;">ติดต่อแอดมิน</a> เพื่อขอความช่วยเหลือ</p>
         </div>
         {% endif %}
 
@@ -413,14 +473,45 @@
     </div>
 </div>
 
+<div id="returnModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000; justify-content: center; align-items: center;">
+    <div style="background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 500px; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);">
+        <h3 style="margin-top: 0; font-size: 1.5rem; color: #f44336; text-align: center;">ขอคืนสินค้า</h3>
+        <p style="color: #666; font-size: 0.95rem; text-align: center; margin-bottom: 20px;">กรุณาระบุเหตุผลและแนบรูปภาพหรือวิดีโอเพื่อยืนยันปัญหา (Order #{{ order.id|stringformat:"05d" }})</p>
+        
+        <form method="POST" enctype="multipart/form-data" action="{% url 'petjoy:order_detail_customer' order.id %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="return_by_customer">
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; color: #555; margin-bottom: 10px;">เหตุผลการคืนสินค้า:</label>
+                <textarea name="return_reason" required rows="3" placeholder="ระบุเหตุผล เช่น สินค้าชำรุด, ได้ของไม่ครบ..." style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; color: #333; resize: none; box-sizing: border-box;"></textarea>
+            </div>
+            
+            <div style="margin-bottom: 25px;">
+                <label style="display: block; font-weight: 600; color: #555; margin-bottom: 10px;">แนบรูปภาพ หรือ วิดีโอ (บังคับ):</label>
+                <input type="file" name="return_attachment" accept="image/*,video/*" multiple required style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+            </div>
+            
+            <div style="margin-top: 20px; display: flex; justify-content: space-between;">
+                <button type="button" onclick="closeReturnModal()" style="background: #f0f0f0; color: #555; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    ปิด
+                </button>
+                <button type="submit" style="background: #f44336; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.3s;">
+                    ส่งคำร้อง
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+    /* สคริปต์สำหรับการยกเลิกเดิม */
     function openCancelModal() {
         document.getElementById('cancelModal').style.display = 'flex';
     }
 
     function closeCancelModal() {
         document.getElementById('cancelModal').style.display = 'none';
-        // Reset form when closed
         document.getElementById('reasonSelect').value = '';
         document.getElementById('customReasonWrapper').style.display = 'none';
         document.getElementById('cancelReason').value = '';
@@ -455,6 +546,15 @@
             finalInput.value = select.value;
         }
         return true;
+    }
+
+    /* ⭐ สคริปต์สำหรับขอคืนสินค้าที่เพิ่มใหม่ ⭐ */
+    function openReturnModal() {
+        document.getElementById('returnModal').style.display = 'flex';
+    }
+
+    function closeReturnModal() {
+        document.getElementById('returnModal').style.display = 'none';
     }
 </script>
 

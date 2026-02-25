@@ -223,6 +223,7 @@ class Order(models.Model):
     customer_phone = models.CharField(max_length=20, null=True, blank=True)
     customer_address = models.TextField(null=True, blank=True)
     cancel_reason = models.TextField(blank=True, null=True, help_text="เหตุผลที่ยกเลิกคำสั่งซื้อ")
+    is_return_requested = models.BooleanField(default=False, help_text="ลูกค้ากดขอคืนสินค้าแล้วหรือไม่")
 
     shipping_cost = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
 
