@@ -48,7 +48,18 @@
                 
                 <div style="padding: 10px 15px; border-radius: 12px; line-height: 1.4; font-size: 0.95rem;
                             {% if message.sender == current_user %}background: #E65100; color: white; border-bottom-right-radius: 2px;{% else %}background: #f1f1f1; color: #333; border-bottom-left-radius: 2px;{% endif %}">
-                    {{ message.message }}
+                    
+                    {% if message.attachment %}
+                        <div style="margin-bottom: 5px;">
+                            <a href="{{ message.attachment.url }}" target="_blank" style="color: inherit; text-decoration: underline; font-weight: bold; display: flex; align-items: center; gap: 5px;">
+                                📎 ดูไฟล์แนบ
+                            </a>
+                        </div>
+                    {% endif %}
+                    
+                    {% if message.message %}
+                        {{ message.message }}
+                    {% endif %}
                 </div>
                 <span style="font-size: 0.7rem; color: #999; margin-top: 4px;">{{ message.timestamp|date:"H:i" }}</span>
             </div>
@@ -61,13 +72,19 @@
 
     <div style="padding: 15px; border-top: 1px solid #eee; background: #fff; border-radius: 0 0 16px 16px;">
         {% if is_customer_chat or room.entrepreneur.user %}
-            <form method="post" style="display: flex; gap: 10px;">
+            <form method="post" enctype="multipart/form-data" style="display: flex; gap: 10px; align-items: center;">
                 {% csrf_token %}
+                
+                <label style="cursor: pointer; font-size: 1.2rem; padding: 5px; margin: 0; color: #555;" title="แนบไฟล์">
+                    📎
+                    <input type="file" name="attachment" style="display: none;">
+                </label>
+
                 <input type="text" name="message" 
                        placeholder="{% if is_customer_chat %}ตอบกลับลูกค้า...{% else %}พิมพ์ข้อความเตือน หรือแจ้งปัญหา...{% endif %}" 
-                       autocomplete="off" required
+                       autocomplete="off" 
                        style="flex: 1; padding: 12px 15px; border-radius: 25px; border: 1px solid #ddd; outline: none;">
-                <button type="submit" style="background: #E65100; color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">ส่ง</button>
+                <button type="submit" style="background: #E65100; color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold; height: 44px;">ส่ง</button>
             </form>
         {% else %}
             <div style="text-align: center; color: #999; padding: 10px; background: #f9f9f9; border-radius: 12px; border: 1px dashed #ccc;">

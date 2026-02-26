@@ -204,6 +204,23 @@
         cursor: pointer;
     }
 
+    /* =========================================
+       ⭐ สไตล์ถอดกล่องแชทออก (สำหรับข้อความระบบคืนสินค้า) ⭐
+       ========================================= */
+    .bubble.is-form-bubble {
+        background: transparent !important;
+        color: #333333 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        border: none !important;
+        max-width: 85% !important;
+    }
+    .bubble.is-form-bubble .time {
+        color: #888 !important;
+        margin-top: 6px;
+        padding-right: 5px;
+    }
+
     /* Input */
     .chat-input-area {
         padding: 15px 20px;
@@ -378,7 +395,7 @@ document.getElementById('fileAttachment').addEventListener('change', function() 
     }
 });
 
-// สคริปต์คำนวณ วันนี้ / เมื่อวาน / วันที่ปกติ
+// สคริปต์คำนวณ วันนี้ / เมื่อวาน / วันที่ปกติ และ ⭐ จัดกลุ่มไฟล์แนบขอคืนสินค้า ⭐
 document.addEventListener("DOMContentLoaded", function() {
     const separators = document.querySelectorAll('.chat-date-separator');
     const thaiMonths = ["ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."];
@@ -406,6 +423,107 @@ document.addEventListener("DOMContentLoaded", function() {
                     sep.innerText = day + ' ' + thaiMonths[month] + ' ' + year;
                 }
             }
+        }
+    });
+
+    // ⭐ ระบบรวบรวมรูปภาพทั้งหมด (Grouping) เข้าฟอร์มเดียวกัน ⭐
+    document.querySelectorAll('.bubble').forEach(function(bubble) {
+        
+        let contentDiv = bubble.querySelector('.message-content');
+        if (!contentDiv) return;
+
+        let textDiv = contentDiv.querySelector('div[style*="white-space: pre-wrap"]');
+        let textContent = textDiv ? textDiv.innerText : "";
+        let isReturnFormSystem = textContent.includes('แจ้งขอคืนสินค้า');
+
+        if (isReturnFormSystem) {
+            // ลบพื้นหลังและจัดสไตล์กล่องใหม่
+            bubble.classList.add('is-form-bubble');
+            if(textDiv) textDiv.style.whiteSpace = 'normal';
+            
+            // ดึงเฉพาะ Order ID และ เหตุผล
+            let orderMatch = textContent.match(/Order\s*#(\d+)/i) || textContent.match(/#(\d+)/i);
+            let reasonMatch = textContent.match(/เหตุผล:\s*([^\n]+)/i) || textContent.match(/เหตุผลที่ต้องการคืน:\s*([^\n]+)/i);
+            
+            let orderId = orderMatch ? orderMatch[1] : 'ไม่ระบุ';
+            let reason = reasonMatch ? reasonMatch[1].trim() : 'ไม่ได้ระบุเหตุผล';
+
+            // ดึงไฟล์แนบตัวแรก
+            let attachAnchor = contentDiv.querySelector('a[target="_blank"]');
+            let allAttachmentsHTML = '';
+
+            if (attachAnchor) {
+                let cloned = attachAnchor.cloneNode(true);
+                cloned.style.marginBottom = '0';
+                cloned.style.display = 'inline-block';
+                // จำกัดขนาดรูปให้แสดงเป็นแกลเลอรี่สวยๆ
+                let img = cloned.querySelector('img');
+                if(img) {
+                    img.style.width = '100px';
+                    img.style.height = '100px';
+                    img.style.objectFit = 'cover';
+                }
+                allAttachmentsHTML += cloned.outerHTML;
+            }
+
+            // ⭐ เดินหน้าค้นหาข้อความถัดไป ว่าเป็นไฟล์แนบที่ส่งตามมาติดๆ หรือไม่ ⭐
+            let nextNode = bubble.nextElementSibling;
+            while (nextNode) {
+                // ข้ามตัวคั่นวันที่
+                if (nextNode.classList.contains('chat-date-separator')) {
+                    nextNode = nextNode.nextElementSibling;
+                    continue;
+                }
+
+                if (nextNode.classList.contains('bubble')) {
+                    let isSameSide = nextNode.classList.contains('sent') === bubble.classList.contains('sent');
+                    let nextContent = nextNode.querySelector('.message-content');
+                    let nextTextDiv = nextContent ? nextContent.querySelector('div[style*="white-space: pre-wrap"]') : null;
+
+                    // เช็คว่าเป็นข้อความฝั่งเดียวกัน และ "ไม่มีข้อความ/ข้อความว่าง" (มีแต่รูป)
+                    if (isSameSide && (!nextTextDiv || nextTextDiv.innerText.trim() === '')) {
+                        let nextAttach = nextContent.querySelector('a[target="_blank"]');
+                        if (nextAttach) {
+                            let clonedNext = nextAttach.cloneNode(true);
+                            clonedNext.style.marginBottom = '0';
+                            clonedNext.style.display = 'inline-block';
+                            
+                            let nextImg = clonedNext.querySelector('img');
+                            if(nextImg) {
+                                nextImg.style.width = '100px';
+                                nextImg.style.height = '100px';
+                                nextImg.style.objectFit = 'cover';
+                            }
+                            allAttachmentsHTML += clonedNext.outerHTML;
+                        }
+                        
+                        // จำกล่องแชทนี้ไว้เพื่อซ่อน/ลบทิ้ง (เพราะเอารูปไปรวมในกล่องหลักแล้ว)
+                        let toRemove = nextNode;
+                        nextNode = nextNode.nextElementSibling;
+                        toRemove.remove(); 
+                    } else {
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+
+            // นำข้อความและไฟล์แนบทั้งหมดมาประกอบร่างในฟอร์มเดียวกัน
+            contentDiv.innerHTML = `
+                <div style="border: 1px solid #FFE2D2; border-radius: 12px; padding: 18px; background: #fff; text-align: left; min-width: 280px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <div style="font-weight: 800; font-size: 1.05rem; color: #E65100; margin-bottom: 10px; border-bottom: 1px solid #FFE2D2; padding-bottom: 10px;">
+                        🚨 แจ้งขอคืนสินค้า (Order #${orderId})
+                    </div>
+                    <div style="font-size: 0.95rem; color: #333; margin-bottom: ${allAttachmentsHTML ? '15px' : '0'}; line-height: 1.5;">
+                        <strong>เหตุผล:</strong> ${reason}
+                    </div>
+                    ${allAttachmentsHTML ? `
+                    <div style="display: flex; flex-wrap: wrap; gap: 8px;">
+                        ${allAttachmentsHTML}
+                    </div>` : ''}
+                </div>
+            `;
         }
     });
 });

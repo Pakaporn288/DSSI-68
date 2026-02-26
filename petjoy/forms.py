@@ -25,6 +25,10 @@ class ProfileUpdateForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = ['image']
+        # เพิ่ม widgets เพื่อบังคับให้แสดงแค่ช่องเลือกไฟล์ (ซ่อนข้อความ Currently)
+        widgets = {
+            'image': forms.FileInput(attrs={'class': 'form-control'}),
+        }
 
 # ฟอร์มนี้คือฟอร์มสมัครสมาชิกที่ถูกต้องเพียงอันเดียวที่เราจะใช้
 class RegisterForm(UserCreationForm):

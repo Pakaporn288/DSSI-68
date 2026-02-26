@@ -7,9 +7,38 @@
 
 <link rel="stylesheet" href="{% static 'profile_new.css' %}">
 
+<style>
+    /* เพิ่มสไตล์ให้ปุ่มอัปโหลดไฟล์ดูสวยงามขึ้นนิดหน่อยครับ */
+    .file-input-custom {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        font-size: 0.95rem;
+        color: #555;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 5px;
+    }
+    .file-input-custom::file-selector-button {
+        padding: 8px 16px;
+        border-radius: 6px;
+        border: none;
+        background-color: #e7c58b;
+        color: white;
+        font-weight: bold;
+        cursor: pointer;
+        margin-right: 15px;
+        transition: background-color 0.2s;
+    }
+    .file-input-custom::file-selector-button:hover {
+        background-color: #e57e00;
+    }
+</style>
+
 <div class="profile-container">
 
-    <!-- ===== Sidebar ===== -->
     <aside class="profile-sidebar-card">
         <div class="sidebar-user-box">
             {% if user.profile.image %}
@@ -23,7 +52,6 @@
 
         <nav class="sidebar-menu">
 
-            <!-- รายการเมนู -->
             <a href="{% url 'petjoy:profile' %}" class="menu-item {% if not editing %}active{% endif %}">
                 ข้อมูลส่วนตัว
             </a>
@@ -52,14 +80,9 @@
         </nav>
     </aside>
 
-    <!-- ===== Main Content ===== -->
     <section class="profile-main-card">
 
         {% if editing %}
-        <!-- ===========================
-             EDIT MODE
-        ============================ -->
-        
         <h2 class="section-title">แก้ไขข้อมูลส่วนตัว</h2>
 
         <form method="post" enctype="multipart/form-data" class="profile-form">
@@ -84,7 +107,7 @@
 
             <div class="input-box">
                 <label>รูปโปรไฟล์</label>
-                {{ profile_form.image }}
+                <input type="file" name="image" accept="image/*" id="id_image" class="file-input-custom">
             </div>
 
             <div class="input-box">
@@ -100,10 +123,6 @@
         </form>
 
         {% else %}
-        <!-- ===========================
-             VIEW MODE
-        ============================ -->
-
         <div class="profile-header">
             <div class="profile-img-wrapper">
                 {% if user.profile.image %}

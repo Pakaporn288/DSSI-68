@@ -224,7 +224,7 @@
                     {% endif %}
 
                     {% if message.attachment %}
-                        <div style="margin-top:10px;">
+                        <div style="margin-top:10px;" class="attachment-box">
                             {% with url=message.attachment.url|lower %}
                                 {% if '.mp4' in url or '.mov' in url or '.webm' in url or '.avi' in url %}
                                     <video controls preload="metadata" style="max-width:100%; width:260px; border-radius:8px; background:#000; outline:none;">
@@ -304,10 +304,11 @@
             sep.innerHTML = '<span class="date-badge">' + displayText + '</span>';
         });
 
-        // ⭐ 2. แปลงเป็นฟอร์มไร้พื้นหลัง (เฉพาะฟอร์มที่มาจากระบบคืนสินค้าเท่านั้น) ⭐
+        // ⭐ 2. แปลงเป็นฟอร์มไร้พื้นหลัง และรวบรวมรูปภาพทั้งหมด (Grouping) ⭐
         document.querySelectorAll('.message-bubble').forEach(function(bubble) {
             
             let contentDiv = bubble.querySelector('.msg-content');
+            // ข้ามบับเบิ้ลที่ไม่มีข้อความ (เป็นแค่รูปที่ถูกส่งตามมา)
             if (!contentDiv) return;
 
             let textContent = contentDiv.innerText || "";
@@ -316,44 +317,79 @@
             if (isReturnFormSystem) {
                 // ลบพื้นหลังสีส้ม/เทาของกล่องแชทออก
                 bubble.classList.add('is-form-bubble');
-                
-                // ⭐ ยกเลิก pre-wrap เพื่อลบช่องว่างมหาศาล (เกิดจากการเคาะบรรทัดในฐานข้อมูล) ⭐
                 contentDiv.style.whiteSpace = 'normal';
                 
-                // ดึงเฉพาะ Order ID และ เหตุผล มาใช้งานเท่านั้น (ทิ้งช่องว่างที่เหลือทั้งหมด)
+                // ดึงเฉพาะ Order ID และ เหตุผล
                 let orderMatch = textContent.match(/Order\s*#(\d+)/i) || textContent.match(/#(\d+)/i);
                 let reasonMatch = textContent.match(/เหตุผล:\s*([^\n]+)/i) || textContent.match(/เหตุผลที่ต้องการคืน:\s*([^\n]+)/i);
                 
                 let orderId = orderMatch ? orderMatch[1] : 'ไม่ระบุ';
                 let reason = reasonMatch ? reasonMatch[1].trim() : 'ไม่ได้ระบุเหตุผล';
 
-                // ค้นหากล่องไฟล์แนบ (มันจะอยู่ถัดจาก msg-content ทันที)
-                let attachmentDiv = bubble.querySelector('div[style*="margin-top:10px"]') || bubble.querySelector('div[style*="margin-top: 10px"]');
-                
-                // ถ้าระบุสไตล์ไม่เจอ ให้ลองดึง element ตัวถัดไปแทน
-                if (!attachmentDiv && contentDiv.nextElementSibling && !contentDiv.nextElementSibling.classList.contains('message-time')) {
-                    attachmentDiv = contentDiv.nextElementSibling;
-                }
+                // ดึงไฟล์แนบตัวแรกที่มาพร้อมกับข้อความนี้
+                let attachmentDiv = bubble.querySelector('.attachment-box');
+                let allAttachmentsHTML = '';
 
-                let attachmentHTML = '';
                 if (attachmentDiv) {
-                    attachmentHTML = attachmentDiv.innerHTML;
+                    // ก๊อปปี้ HTML ของรูปแรกมาเก็บไว้
+                    let clonedDiv = attachmentDiv.cloneNode(true);
+                    clonedDiv.style.marginTop = '0';
+                    allAttachmentsHTML += clonedDiv.outerHTML;
                 }
 
-                // นำข้อความและไฟล์แนบมาใส่ไว้ในกรอบเดียวกันทั้งหมด
+                // ⭐ เดินหน้าค้นหาข้อความถัดไป ว่าเป็นไฟล์แนบที่ส่งตามมาติดๆ หรือไม่ ⭐
+                let nextNode = bubble.nextElementSibling;
+                while (nextNode) {
+                    // ข้ามตัวคั่นวันที่
+                    if (nextNode.classList.contains('chat-date-separator')) {
+                        nextNode = nextNode.nextElementSibling;
+                        continue;
+                    }
+
+                    if (nextNode.classList.contains('message-bubble')) {
+                        // เช็คว่าเป็นข้อความที่ถูกส่งจากฝั่งเดียวกัน และ "ไม่มีข้อความ" (เป็นแค่ไฟล์แนบเพียวๆ)
+                        let isSameSide = nextNode.classList.contains('sent') === bubble.classList.contains('sent');
+                        let nextContent = nextNode.querySelector('.msg-content');
+
+                        if (isSameSide && !nextContent) {
+                            // เป็นไฟล์แนบที่ตามมาแน่นอน! ก๊อปปี้ HTML ของรูปนั้น
+                            let nextAttachDiv = nextNode.querySelector('.attachment-box');
+                            if (nextAttachDiv) {
+                                let clonedNextDiv = nextAttachDiv.cloneNode(true);
+                                clonedNextDiv.style.marginTop = '0';
+                                allAttachmentsHTML += clonedNextDiv.outerHTML;
+                            }
+                            
+                            // จำกล่องแชทนี้ไว้เพื่อซ่อน/ลบทิ้ง (เพราะเอารูปไปรวมในกล่องหลักแล้ว)
+                            let toRemove = nextNode;
+                            nextNode = nextNode.nextElementSibling;
+                            toRemove.remove(); 
+                        } else {
+                            // ถ้าเจอข้อความปกติให้หยุดค้นหา
+                            break;
+                        }
+                    } else {
+                        break;
+                    }
+                }
+
+                // นำข้อความและไฟล์แนบ "ทั้งหมด" มาใส่ไว้ในฟอร์มเดียวกัน
                 contentDiv.innerHTML = `
                     <div style="border: 1px solid #ddd; border-radius: 8px; padding: 15px; background: #fff; text-align: left; min-width: 280px; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
                         <div style="font-weight: bold; font-size: 1rem; color: #d32f2f; margin-bottom: 8px;">
                             🚨 แจ้งขอคืนสินค้า (Order #${orderId})
                         </div>
-                        <div style="font-size: 0.95rem; color: #333; margin-bottom: ${attachmentHTML ? '15px' : '0'};">
+                        <div style="font-size: 0.95rem; color: #333; margin-bottom: ${allAttachmentsHTML ? '15px' : '0'};">
                             <strong>เหตุผล:</strong> ${reason}
                         </div>
-                        ${attachmentHTML ? `<div style="border-top: 1px dashed #ccc; padding-top: 15px;">${attachmentHTML}</div>` : ''}
+                        ${allAttachmentsHTML ? `
+                        <div style="border-top: 1px dashed #ccc; padding-top: 15px; display: flex; flex-wrap: wrap; gap: 10px;">
+                            ${allAttachmentsHTML}
+                        </div>` : ''}
                     </div>
                 `;
 
-                // ลบกล่องไฟล์แนบที่เคยอยู่แยกด้านนอกทิ้งไป
+                // ลบกล่องไฟล์แนบต้นฉบับที่อยู่ด้านนอกทิ้ง
                 if (attachmentDiv) {
                     attachmentDiv.remove();
                 }
