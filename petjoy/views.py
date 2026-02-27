@@ -1,46 +1,35 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 import json
 from django.views import View
 from .ai_service import get_ai_response
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.contrib import messages
-from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import login, authenticate, logout, update_session_auth_hash, get_user_model
 import logging
-from django.contrib.auth import get_user_model
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
-from .models import Product, Review, Category, Profile, CartItem   
-from django.db.models import Avg, Q
+from django.db.models import Avg, Q, Sum, Count, F
 from django.core.paginator import Paginator
-from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm
-from django.contrib.admin.views.decorators import staff_member_required
-from .models import Address
+from django.utils import timezone
+from django.db.models.functions import TruncDate, Coalesce
 from django.utils.decorators import method_decorator
 from django.db import transaction
 from django.forms import Form
-from django.shortcuts import get_object_or_404
-from .models import Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur
-from django.template.loader import render_to_string
-from petjoy.models import Order
-from .models import Review, ReviewReply
-from .models import QuickReply
-from django.utils import timezone
-from django.db.models.functions import TruncDate
-from django.db.models import Sum, Count, F
 from datetime import timedelta
-from django.shortcuts import render, redirect
-from .models import Entrepreneur, Order
-from django.db.models.functions import Coalesce
-from .models import ProductReport
-from django.urls import reverse
-from django.contrib.auth.models import User
-from .forms import RegisterForm
-from .models import CustomerAdminChatRoom, CustomerAdminChatMessage
+
+from .forms import ProductForm, UserUpdateForm, ProfileUpdateForm, RegisterForm
+from .models import (
+    Product, Review, ReviewReply, Category, Profile, CartItem, Address,
+    Order, OrderItem, ChatRoom, ChatMessage, Entrepreneur, QuickReply,
+    ProductReport, CustomerAdminChatRoom, CustomerAdminChatMessage
+)
+
+from django.template.loader import render_to_string
+from django.contrib.admin.views.decorators import staff_member_required
 
 logger = logging.getLogger(__name__)
 
@@ -965,52 +954,59 @@ def address_set_default(request, id):
     Address.objects.filter(id=id, user=request.user).update(is_default=True)
     return redirect('petjoy:address_list')
 
-def address_edit(request, id):
-    address = Address.objects.get(id=id, user=request.user)
-
-    if request.method == "POST":
-        address.full_name = request.POST["full_name"]
-        address.phone = request.POST["phone"]
-        address.address_line = request.POST["address_line"]
-        address.subdistrict = request.POST["subdistrict"]
-        address.district = request.POST["district"]
-        address.province = request.POST["province"]
-        address.zipcode = request.POST["zipcode"]
-        address.save()
-        return redirect("petjoy:address_list")
-
-    return render(request, "petjoy/address_form.html", {"address": address})
 
 @login_required
-def update_order_status(request, order_id): # ชื่อฟังก์ชันอาจแตกต่างกันไปตามระบบของคุณ
-    order = get_object_or_404(Order, id=order_id)
-    
+def update_order_status(request, order_id): # รวมกรณีทั่วไปและกรณีผู้ประกอบการ
+    # ถ้าเป็นผู้ประกอบการ ให้ดึงออเดอร์แบบกรอง entrepreneur
+    entrepreneur_action = False
+    if hasattr(request.user, 'entrepreneur'):
+        entrepreneur = request.user.entrepreneur
+        order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
+        entrepreneur_action = True
+    else:
+        order = get_object_or_404(Order, id=order_id)
+
     if request.method == "POST":
         new_status = request.POST.get('status')
         cancel_reason = request.POST.get('cancel_reason')
-        
-        # ป้องกันการคืนสต๊อกซ้ำ (ถ้ายกเลิกไปแล้วไม่ต้องคืนอีก)
+
+        # กรณียกเลิกและยังไม่ยกเลิกก่อนหน้า ให้คืนสต๊อกภายใน transaction
         if new_status == 'cancelled' and order.status != 'cancelled':
             with transaction.atomic():
-                # คืนสต๊อกสินค้า
                 for item in order.items.all():
                     product = item.product
                     product.stock += item.quantity
                     product.save()
-                
-                # บันทึกสถานะและเหตุผล
+
                 order.status = new_status
-                order.cancel_reason = cancel_reason
+                if cancel_reason:
+                    order.cancel_reason = cancel_reason
+                order.has_unread_status_update = True
                 order.save()
-                
+
                 messages.success(request, "ยกเลิกคำสั่งซื้อและคืนสินค้าเข้าสต๊อกเรียบร้อยแล้ว")
         else:
-            # อัปเดตสถานะปกติอื่นๆ
+            # อัปเดตสถานะปกติ (รวม Tracking / แจ้งเตือนลูกค้า)
             order.status = new_status
+            tracking_number = request.POST.get('tracking_number')
+            if tracking_number:
+                order.tracking_number = tracking_number
+            if new_status == 'cancelled' and cancel_reason:
+                order.cancel_reason = cancel_reason
+
+            # ถ้ามาจากผู้ประกอบการ ให้ตั้ง flag แจ้งเตือนลูกค้า
+            if entrepreneur_action:
+                order.has_unread_status_update = True
+
             order.save()
             messages.success(request, "อัปเดตสถานะเรียบร้อยแล้ว")
-            
+
         return redirect('petjoy:orders-detail', order_id=order.id)
+
+    # GET fallback: ถ้าเป็น entrepreneur ให้กลับไปหน้า orders list
+    if entrepreneur_action:
+        return redirect("petjoy:orders-list")
+    return redirect('petjoy:orders-detail', order_id=order.id)
 
 # views.py
 
@@ -2495,23 +2491,7 @@ def handle_cancellation_request(request, order_id):
             
     return redirect('petjoy:order_detail_customer', order_id=order.id)
 
-@login_required
-def update_order_status(request, order_id):
-    entrepreneur = request.user.entrepreneur
-    order = get_object_or_404(Order, id=order_id, entrepreneur=entrepreneur)
 
-    if request.method == "POST":
-        new_status = request.POST.get("status")
-        order.status = new_status
-
-        # 🔔 บรรทัดแจ้งเตือนลูกค้า (เพิ่มตรงนี้)
-        order.has_unread_status_update = True
-
-        order.save()
-        messages.success(request, "อัปเดตสถานะคำสั่งซื้อเรียบร้อยแล้ว!")
-        return redirect("petjoy:orders-detail", order_id=order_id)
-
-    return redirect("petjoy:orders-list")
 
 @login_required
 def customer_support_chat(request):
@@ -2868,160 +2848,3 @@ def buy_now(request):
         return redirect(f"{checkout_url}?selected_items={cart_item.id}&checkout_step=1")
 
     return redirect('petjoy:product-list')
-
-# # สำหรับหน้าสินค้าแมว (ลูกค้าทั่วไป)
-# def cat_products_view(request):
-#     cat_category = Category.objects.filter(name__iexact='cat').first()
-    
-#     # ⭐ กรองสินค้า: หมวดแมว + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
-#     if cat_category:
-#         products = Product.objects.filter(
-#             category=cat_category,
-#             owner__user__isnull=False,
-#             owner__user__profile__is_banned=False,
-#             owner__verification_status='approved'
-#         )
-#     else:
-#         products = Product.objects.none()
-
-#     # --- Pagination ---
-#     per_page = 15
-#     paginator = Paginator(products, per_page)
-#     page_number = request.GET.get('page') or 1
-#     page_obj = paginator.get_page(page_number)
-
-#     # AJAX
-#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         from django.template.loader import render_to_string
-#         from django.http import HttpResponse
-#         html = render_to_string('petjoy/partials/food_products_grid.html', {
-#             'products': page_obj,
-#             'page_obj': page_obj,
-#             'paginator': paginator,
-#             'selected_type': 'cat',
-#         })
-#         return HttpResponse(html)
-
-#     return render(request, 'petjoy/cat_products.html', {
-#         'products': page_obj, 
-#         'page_obj': page_obj, 
-#         'paginator': paginator
-#     })
-
-# # สำหรับหน้าสินค้าสุนัข (ลูกค้าทั่วไป)
-# def dog_products_view(request):
-#     dog_category = Category.objects.filter(name__iexact='dog').first()
-    
-#     # ⭐ กรองสินค้า: หมวดหมา + ร้านต้องอยู่ + ร้านไม่โดนแบน + ร้านอนุมัติแล้ว
-#     if dog_category:
-#         products = Product.objects.filter(
-#             category=dog_category,
-#             owner__user__isnull=False,
-#             owner__user__profile__is_banned=False,
-#             owner__verification_status='approved'
-#         )
-#     else:
-#         products = Product.objects.none()
-
-#     # --- Pagination ---
-#     per_page = 15
-#     paginator = Paginator(products, per_page)
-#     page_number = request.GET.get('page') or 1
-#     page_obj = paginator.get_page(page_number)
-
-#     # AJAX
-#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         from django.template.loader import render_to_string
-#         from django.http import HttpResponse
-#         html = render_to_string('petjoy/partials/food_products_grid.html', {
-#             'products': page_obj,
-#             'page_obj': page_obj,
-#             'paginator': paginator,
-#             'selected_type': 'dog',
-#         })
-#         return HttpResponse(html)
-
-#     return render(request, 'petjoy/dog_products.html', {
-#         'products': page_obj, 
-#         'page_obj': page_obj, 
-#         'paginator': paginator
-#     })
-
-
-# def food_products_view(request):
-#     typ_raw = request.GET.get('type', '').strip()
-#     typ = typ_raw.lower()
-    
-#     # ⭐ เริ่มต้น Query: ดึงสินค้าทั้งหมด
-#     # เงื่อนไข: 
-#     # 1. เจ้าของต้องมีตัวตน (ไม่เป็น Null)
-#     # 2. ไม่โดนแบน (is_banned=False)
-#     # 3. ร้านต้องได้รับการอนุมัติแล้ว (approved) เท่านั้น!
-#     products = Product.objects.filter(
-#         owner__user__isnull=False,
-#         owner__user__profile__is_banned=False,
-#         owner__verification_status='approved' 
-#     )
-
-#     # แปลงคำค้นหาภาษาไทยเป็น key
-#     map_th = {'สุนัข': 'dog', 'หมา': 'dog', 'แมว': 'cat'}
-#     if typ in map_th:
-#         typ = map_th[typ]
-
-#     # กรณีเลือกประเภทย่อย (หมา/แมว)
-#     if typ in ('dog', 'cat'):
-#         # กรองจาก products ที่เรา clean มาแล้วข้างบน
-#         products = products.filter(food_type=typ)
-
-#         # หากไม่เจอสินค้า ให้ลองหาจากหมวดหมู่ (Backup Logic)
-#         if not products.exists():
-#             cat = Category.objects.filter(Q(name__iexact=f'food-{typ}') | Q(display_name__icontains=typ)).first()
-#             if cat:
-#                 # ต้องกรองซ้ำอีกรอบสำหรับ backup logic
-#                 products = Product.objects.filter(
-#                     category=cat,
-#                     owner__user__isnull=False,
-#                     owner__user__profile__is_banned=False,
-#                     owner__verification_status='approved'
-#                 )
-#             else:
-#                 food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
-#                 if food_cat:
-#                     products = Product.objects.filter(
-#                         category=food_cat,
-#                         owner__user__isnull=False,
-#                         owner__user__profile__is_banned=False,
-#                         owner__verification_status='approved'
-#                     ).filter(
-#                         Q(name__icontains=typ) | Q(features__icontains=typ) | Q(description__icontains=typ)
-#                     )
-#     else:
-#         # กรณีดูทั้งหมด (ไม่ระบุประเภท) -> ดึงหมวดอาหารทั้งหมด
-#         food_cat = Category.objects.filter(Q(name__iexact='food') | Q(display_name__icontains='อาหาร')).first()
-#         if food_cat:
-#             products = products.filter(category=food_cat)
-
-#     # --- ส่วน Pagination (หน้าละ 15 ชิ้น) ---
-#     per_page = 15
-#     paginator = Paginator(products, per_page)
-#     page_number = request.GET.get('page') or 1
-#     page_obj = paginator.get_page(page_number)
-
-#     # รองรับ AJAX (Partial Load)
-#     if request.GET.get('partial') == '1' or request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-#         from django.template.loader import render_to_string
-#         from django.http import HttpResponse
-#         html = render_to_string('petjoy/partials/food_products_grid.html', {
-#             'products': page_obj,
-#             'page_obj': page_obj,
-#             'paginator': paginator,
-#             'selected_type': typ_raw,
-#         })
-#         return HttpResponse(html)
-
-#     return render(request, 'petjoy/food_products.html', {
-#         'products': page_obj,
-#         'selected_type': typ_raw,
-#         'page_obj': page_obj,
-#         'paginator': paginator,
-#     })
