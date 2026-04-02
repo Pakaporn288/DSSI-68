@@ -138,6 +138,16 @@
     object_repr: 'moa: สวัสดีค่ะ'
     action_flag: 3
     change_message: ''
+- model: admin.logentry
+  pk: 15
+  fields:
+    action_time: '2026-01-15T11:49:14.626Z'
+    user: 12
+    content_type: 4
+    object_id: '19'
+    object_repr: Pawsitive
+    action_flag: 2
+    change_message: '[{"changed": {"fields": ["password"]}}]'
 - model: auth.permission
   pk: 1
   fields:
@@ -642,6 +652,102 @@
     name: Can view product report
     content_type: 21
     codename: view_productreport
+- model: auth.permission
+  pk: 85
+  fields:
+    name: Can add review reply
+    content_type: 22
+    codename: add_reviewreply
+- model: auth.permission
+  pk: 86
+  fields:
+    name: Can change review reply
+    content_type: 22
+    codename: change_reviewreply
+- model: auth.permission
+  pk: 87
+  fields:
+    name: Can delete review reply
+    content_type: 22
+    codename: delete_reviewreply
+- model: auth.permission
+  pk: 88
+  fields:
+    name: Can view review reply
+    content_type: 22
+    codename: view_reviewreply
+- model: auth.permission
+  pk: 89
+  fields:
+    name: Can add quick reply
+    content_type: 23
+    codename: add_quickreply
+- model: auth.permission
+  pk: 90
+  fields:
+    name: Can change quick reply
+    content_type: 23
+    codename: change_quickreply
+- model: auth.permission
+  pk: 91
+  fields:
+    name: Can delete quick reply
+    content_type: 23
+    codename: delete_quickreply
+- model: auth.permission
+  pk: 92
+  fields:
+    name: Can view quick reply
+    content_type: 23
+    codename: view_quickreply
+- model: auth.permission
+  pk: 93
+  fields:
+    name: Can add customer admin chat message
+    content_type: 24
+    codename: add_customeradminchatmessage
+- model: auth.permission
+  pk: 94
+  fields:
+    name: Can change customer admin chat message
+    content_type: 24
+    codename: change_customeradminchatmessage
+- model: auth.permission
+  pk: 95
+  fields:
+    name: Can delete customer admin chat message
+    content_type: 24
+    codename: delete_customeradminchatmessage
+- model: auth.permission
+  pk: 96
+  fields:
+    name: Can view customer admin chat message
+    content_type: 24
+    codename: view_customeradminchatmessage
+- model: auth.permission
+  pk: 97
+  fields:
+    name: Can add customer admin chat room
+    content_type: 25
+    codename: add_customeradminchatroom
+- model: auth.permission
+  pk: 98
+  fields:
+    name: Can change customer admin chat room
+    content_type: 25
+    codename: change_customeradminchatroom
+- model: auth.permission
+  pk: 99
+  fields:
+    name: Can delete customer admin chat room
+    content_type: 25
+    codename: delete_customeradminchatroom
+- model: auth.permission
+  pk: 100
+  fields:
+    name: Can view customer admin chat room
+    content_type: 25
+    codename: view_customeradminchatroom
 - model: auth.user
   pk: 1
   fields:
@@ -655,21 +761,6 @@
     is_staff: true
     is_active: true
     date_joined: '2025-09-14T05:41:28Z'
-    groups: []
-    user_permissions: []
-- model: auth.user
-  pk: 3
-  fields:
-    password: pbkdf2_sha256$1000000$oOWMhsyb35OiMCgmk8cFnC$c9giihfaxk6MqOSZYhzMR2bCfE1I1r6K+UbY6nJyKXs=
-    last_login: null
-    is_superuser: false
-    username: shop_owner
-    first_name: ''
-    last_name: ''
-    email: ''
-    is_staff: false
-    is_active: true
-    date_joined: '2025-09-14T06:56:43.768Z'
     groups: []
     user_permissions: []
 - model: auth.user
@@ -735,12 +826,12 @@
 - model: auth.user
   pk: 8
   fields:
-    password: pbkdf2_sha256$1000000$b4PAs9QlO1NY3oCLuMu2Dv$9dnsW5v0POzKYqdh/UoRWpYA/a50MwDmqoWtl4d/sfg=
-    last_login: '2025-12-24T13:28:52.506Z'
+    password: pbkdf2_sha256$1000000$FTPQFFyrYcWvtm5lGVpGjC$4pH5YJqDEdqxsStnMgeLpproPFayw1ER7CIHYIOEw+I=
+    last_login: '2026-03-05T19:50:16.664Z'
     is_superuser: false
     username: moa
-    first_name: Pakaporn
-    last_name: Somchan
+    first_name: ออม
+    last_name: สมจันทร์
     email: pakaporn.so.66@ubu.ac.th
     is_staff: false
     is_active: true
@@ -766,7 +857,7 @@
   pk: 10
   fields:
     password: pbkdf2_sha256$1000000$P9MPTdeg7hKE8pk8RyCqoH$6ujbw8MSFiZQ5l8knlxKOwt4tbcemRxOjes0EbW8MNk=
-    last_login: '2025-12-09T15:53:26.590Z'
+    last_login: '2026-02-24T06:35:58.259Z'
     is_superuser: false
     username: pan
     first_name: ''
@@ -781,7 +872,7 @@
   pk: 11
   fields:
     password: pbkdf2_sha256$1000000$vdPzeyyVdX2DgKMXPLhOVr$1muGMwed0eKyTdS5p32HTAWvIpKZ6uEn17yVGxK7n6g=
-    last_login: '2025-12-19T07:14:49.351Z'
+    last_login: '2026-02-26T07:54:59.462Z'
     is_superuser: false
     username: Ma_Noi
     first_name: ''
@@ -796,7 +887,7 @@
   pk: 12
   fields:
     password: pbkdf2_sha256$1000000$ZAbzyibwEuKpvf6vVx0ZXe$Ol465Dv4fO1Du5wma1rFf9KL+XmXsbSRYfO/xpzUQzE=
-    last_login: '2025-12-08T08:23:58.865Z'
+    last_login: '2026-01-15T11:48:38.528Z'
     is_superuser: true
     username: mama
     first_name: ''
@@ -808,25 +899,10 @@
     groups: []
     user_permissions: []
 - model: auth.user
-  pk: 15
-  fields:
-    password: pbkdf2_sha256$1000000$LT9fdfxpYcqJLlr1KEkAFg$kq310GNEb43bKHa3ik8Xx4z4vZMzhNJp60aNYZpTb/U=
-    last_login: '2025-12-24T13:29:22.428Z'
-    is_superuser: false
-    username: Petopia
-    first_name: ''
-    last_name: ''
-    email: Petopia@gmail.com
-    is_staff: false
-    is_active: true
-    date_joined: '2025-10-19T08:41:21.171Z'
-    groups: []
-    user_permissions: []
-- model: auth.user
   pk: 16
   fields:
     password: pbkdf2_sha256$1000000$xNnATAhcWfXfsbNHd4SKX3$8MeskuXCtRJq2+6OPxW2q/lIRa4pda/H6m78NEfe/D8=
-    last_login: '2025-12-23T09:53:24.349Z'
+    last_login: '2026-03-03T10:18:29.011Z'
     is_superuser: false
     username: ClickPet
     first_name: ''
@@ -841,7 +917,7 @@
   pk: 17
   fields:
     password: pbkdf2_sha256$1000000$J9vx8gXdLXdfe4h9NrkQXK$RZVgzJlu+lQlUAOG+1ED7rrbothwciL/Mcr5ZOi8kI8=
-    last_login: '2025-12-07T04:24:58.029Z'
+    last_login: '2026-01-15T17:48:11.351Z'
     is_superuser: false
     username: Groom & Go
     first_name: ''
@@ -850,6 +926,51 @@
     is_staff: false
     is_active: true
     date_joined: '2025-12-07T04:24:57.337Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 18
+  fields:
+    password: pbkdf2_sha256$1000000$pFnY9J0aKTxEfgOltBZjwQ$fK7AX/IIKXV8cAqwODGgX8EQupQKRmaaculrTfZaDNw=
+    last_login: '2026-03-03T10:14:27.614Z'
+    is_superuser: true
+    username: admin
+    first_name: ''
+    last_name: ''
+    email: admin01@gmail.com
+    is_staff: true
+    is_active: true
+    date_joined: '2026-01-14T11:14:46.872Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 19
+  fields:
+    password: pbkdf2_sha256$1000000$lGQkX6LvZUfTfDc79ZBu6A$1HByv68i/fiyzhSgi75i0sTSAR+tKUfrLrVbeGvvWoA=
+    last_login: '2026-03-02T13:45:59.422Z'
+    is_superuser: false
+    username: Pawsitive
+    first_name: ''
+    last_name: ''
+    email: pawsitive@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2026-01-15T10:57:02.436Z'
+    groups: []
+    user_permissions: []
+- model: auth.user
+  pk: 22
+  fields:
+    password: pbkdf2_sha256$1000000$nfwxH2OvIiVL5z6ErACJpB$afiFyThICJPMfJp6bMm264IBDOdQkJAJlCS6jiMSGwY=
+    last_login: '2026-01-16T03:49:09.692Z'
+    is_superuser: false
+    username: บ้านเพื่อนสี่ขา
+    first_name: ''
+    last_name: ''
+    email: Legs@gmail.com
+    is_staff: false
+    is_active: true
+    date_joined: '2026-01-16T03:41:11.939Z'
     groups: []
     user_permissions: []
 - model: contenttypes.contenttype
@@ -957,6 +1078,41 @@
   fields:
     app_label: petjoy
     model: productreport
+- model: contenttypes.contenttype
+  pk: 22
+  fields:
+    app_label: petjoy
+    model: reviewreply
+- model: contenttypes.contenttype
+  pk: 23
+  fields:
+    app_label: petjoy
+    model: quickreply
+- model: contenttypes.contenttype
+  pk: 24
+  fields:
+    app_label: petjoy
+    model: customeradminchatmessage
+- model: contenttypes.contenttype
+  pk: 25
+  fields:
+    app_label: petjoy
+    model: customeradminchatroom
+- model: sessions.session
+  pk: 08r7l0w3rl06fd07if5ajhuw9v04j6qr
+  fields:
+    session_data: .eJxVjDsOwjAQRO_iGln-7dpQ0nMGa9d2cAA5UpxUiLuTSClgynlv5i0irUuNay9zHLO4iCBOvx1Tepa2g_ygdp9kmtoyjyx3RR60y9uUy-t6uH8HlXrd1qlw4AAGivYWIJmklSNtvNGI7BjdFkIEe1YKWFmFNtshDF4ZwgDi8wW7qTZE:1vgags:aU3lc9AOY4Ic-CZt4elh-EeezKyARGjJLQxlTmazgWA
+    expire_date: '2026-01-30T03:40:02.370Z'
+- model: sessions.session
+  pk: 8gxyjth2k6tebmb5ndice6qeej5yv6vu
+  fields:
+    session_data: .eJxVjMsOgjAQAP-lZ9NsKX3g0TvfQHa3W0FNSSicjP9umnDQ68xk3mrCY5-no8o2LUldlXHq8gsJ-SmlmfTAcl81r2XfFtIt0aetelyTvG5n-zeYsc7ti9n2ngw4Iw7ZiEngO4bAkaBLbBEk5WgQiJ31dgh5yK4PkbB3EkF9vgv7OBo:1vYPug:jzVlOGyNKtgfhXnJeSBj4B3NDjb6hC36SVLXQBZtxDw
+    expire_date: '2026-01-07T14:32:30.491Z'
+- model: sessions.session
+  pk: 9sp3ti2ig9if95i6cn1ukm9wr1sq8iis
+  fields:
+    session_data: .eJxVjEEOgjAQRe_StWkKpePg0j1nIDOdqaCmTSisjHdXEha6_e-9_zIjbes0blWXcRZzMWhOvxtTfGjegdwp34qNJa_LzHZX7EGrHYro83q4fwcT1elbJyASFQldDL1vHTfaJIyoDsS1yNSyQxAihrPnLvWpYfSpA88qCMG8PxE8OMQ:1vYPu8:83qFxJrCZ7I6YXDGERSarZyAO_C48ncdp4LMOJUFCvA
+    expire_date: '2026-01-07T14:31:56.368Z'
 - model: sessions.session
   pk: ids5ijhecmhnpq8iwwcoro3wvoioqlv0
   fields:
@@ -978,25 +1134,43 @@
     session_data: .eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1v0MNL:p1Hg1XvgLYEk0wTcpgi4r19h7PIANiISQsKgl3A3ooE
     expire_date: '2025-10-05T15:53:19.501Z'
 - model: sessions.session
+  pk: v1i07nn7yvv1yewth7n4ycwhvm68058z
+  fields:
+    session_data: .eJxVjMEOwiAQRP-FsyHtUhA8eu83kIVdpGogKe3J-O9K0oMmc5r3Zl7C475lvzde_ULiIkYrTr9lwPjg0gndsdyqjLVs6xJkV-RBm5wr8fN6uH8HGVv-ri2CU9jjDGtylCgpOGsmox2AnTg4lSLGIVAakwVrpilYdkAYBhXF-wMZMzi1:1vx3cO:ik6osDYN_-83JI--R2emChcwAz_MR59gMdVqzjPnKR4
+    expire_date: '2026-03-16T13:47:28.991Z'
+- model: sessions.session
   pk: vt6pu3annxd3mv2jloqp2ufa1medun32
   fields:
     session_data: .eJxVjEEOwiAQRe_C2pAOJQgu3XsGMsMMUjWQlHbVeHdt0oVu_3vvbyriupS4dpnjxOqiQJ1-N8L0lLoDfmC9N51aXeaJ9K7og3Z9ayyv6-H-HRTs5VsbJmvYeZszhiziE-XRo_eOBiDLiZMFYeeCOJYAo5DDJH44G7BAWb0_GgM5LA:1uyPYh:1jisc1PR3x6veK_8AVjMOx4iK8YAjaeUplfuhTfUJnE
     expire_date: '2025-09-30T06:52:59.638Z'
+- model: sessions.session
+  pk: ykxpkwrwq87ikqhrbyiqv2g5x3wt6vbe
+  fields:
+    session_data: .eJxVTjkOgzAQ_MvWyFpsbBzK9HlBFFnrgyMQLGFTIf4ekCiS6ebUbGBozb1ZU1jM4KEBDcWvZsmNYT4N_6a5i8zFOS-DZWeEXW5ij-jDdL-yfwM9pf5ou2C11ZLLUNZCSsddiRWVvOalUrayqjpASklxQ5QWBSrhRavbGjkpLY9R1wc3xjWbIYdPMp4yQbPByY7rCZonSAWvArqFZm9yzDRBoxEZ7vsXh3dLGA:1vzbEW:mgMrGqxPKGuzMnMbSFWm2LWh6DzRllRl9eoLjEL7Fio
+    expire_date: '2026-03-23T14:05:20.063Z'
+- model: sessions.session
+  pk: zhncuiourziupzh4l08ji2azzfql4xg5
+  fields:
+    session_data: .eJxVjEEOwiAQRe_C2pACMqBL956BDDODVA1NSrsy3l2bdKHb_977L5VwXWpau8xpZHVW5qQOv2NGekjbCN-x3SZNU1vmMetN0Tvt-jqxPC-7-3dQsddvXRCZrTNigMUHAAwgtkCORx8hBIxEMlBkh7ZQ5kwiFIdg0DnjvVHvDzNTOPY:1vx3ax:rsa3RlJfUTyTF-9L55IqM6BW2oFSDDkfY9yzeO2nCOQ
+    expire_date: '2026-03-16T13:45:59.427Z'
 - model: petjoy.category
   pk: 1
   fields:
     name: Dog
     display_name: สุนัข
+    image: category_images/DOG.jpg
 - model: petjoy.category
   pk: 2
   fields:
     name: Cat
     display_name: แมว
+    image: category_images/CAT.jpg
 - model: petjoy.category
   pk: 3
   fields:
     name: food
     display_name: อาหารสัตว์
+    image: category_images/food.png
 - model: petjoy.product
   pk: 1
   fields:
@@ -1024,19 +1198,6 @@
     food_type: null
     owner: null
 - model: petjoy.product
-  pk: 6
-  fields:
-    name: ลูกบอลสุนัข
-    description: ''
-    price: '99.00'
-    category: 1
-    image: product_images/Dog_ball_e7g1Uaf.jpg
-    features: ''
-    total_stock: 5
-    stock: 5
-    food_type: null
-    owner: null
-- model: petjoy.product
   pk: 12
   fields:
     name: ตุ๊กตาปลาทูใส่แคทนิป
@@ -1048,7 +1209,7 @@
     features: บรรจุแคทนิปออร์แกนิก 100%, เนื้อผ้าทนทานต่อกรงเล็บ, ขนาดเหมาะสำหรับการกอดและเตะ,
       ช่วยให้แมวผ่อนคลาย
     total_stock: 10
-    stock: 10
+    stock: 9
     food_type: null
     owner: 1
 - model: petjoy.product
@@ -1204,7 +1365,7 @@
     features: "KONG Extreme Black ลูกบอลยางสีดำเพื่อความสนุกในการกัดที่ทนทาน\r\nทนต่อการเจาะเพื่อการเล่นที่ปลอดภัยอย่างต่อเนื่อง\r\
       \nผลิตในประเทศอเมริกา"
     total_stock: 10
-    stock: 10
+    stock: 9
     food_type: null
     owner: 1
 - model: petjoy.product
@@ -1274,7 +1435,7 @@
     image: product_images/15.jpg
     features: "Length:5cm      \r\nWidth:2.5cm     \r\nTail Length:5cm"
     total_stock: 10
-    stock: 10
+    stock: 2
     food_type: null
     owner: 1
 - model: petjoy.product
@@ -1640,8 +1801,8 @@
     image: product_images/40.jpg
     features: "เชือกฝ้ายถัก ช่วยขัดฟัน มัดปม \r\nบอลเทนนิสคู่ มีน้ำหนัก เขวี้ยงได้ไกล\r\
       \nของเล่นชักกะเย่อ สานสัมพันธ์กับสุนัข"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 7
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1655,8 +1816,8 @@
     features: สนุกกับเกมด้วยลูกบอล Nerf Dog Mega Tough Hydrosport ขนาด 4 นิ้ว! การผสมผสานอันเป็นเอกลักษณ์ระหว่างยางโฟมที่แข็งแรงและ
       TPR ที่ทนทาน ทนทานต่อการเคี้ยวเป็นเวลานาน พร้อมเสียงเอี๊ยดอ๊าดแบบโต้ตอบที่น้องหมาชื่นชอบ
       เหมาะสำหรับการโยนและคาบกลับมา หรือเล่นคนเดียว แถมยังลอยน้ำได้อีกด้วย!
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1670,8 +1831,8 @@
     image: product_images/42.jpg
     features: "ผ้านุ่ม ยืดหยุ่น คี้ยวมันส์\r\nแรดสีม่วงตัวใหญ่ มีนอขาว ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
       \nมีเสียงอี๊ดๆ เวลากัด"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1685,8 +1846,8 @@
     image: product_images/43.jpg
     features: "ผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\nหมีเท็ดดี้ตัวเล็กสีน้ำตาล ดึงความสนใจสุนัขได้เป็นอย่างดี\
       \ สุนัขวิ่งไล่ทุกตัว\r\nมีเสียงอี๊ดๆ เวลากัด"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1700,8 +1861,8 @@
     image: product_images/44.jpg
     features: "ผ้านุ่ม ยืดหยุ่น คี้ยวมันส์\r\nช้างตัวใหญ่ สีชมพูสดใส ดึงความสนใจสุนัขได้เป็นอย่างดี\r\
       \nมีเสียงอี๊ดๆ เวลากัด"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1716,8 +1877,8 @@
     image: product_images/45.jpg
     features: ใส่อาหารหรือขนมเข้าไปในท่อหลายๆ อัน เพื่อให้แมวได้ สูดกลิ่นและเขี่ยออกมากิน
       แต่ละท่อมีปลายลักษณะโค้ง ทำให้ง่ายต่อการใช้งานและทำความสะอาด
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1732,8 +1893,8 @@
     image: product_images/46.jpg
     features: สามารถต่อกันได้อย่างง่ายดาย เพื่อสร้าง layout กว่า 100 แบบ ซึ่ งทำให้คุณสามารถสร้างประสบการณ์สัมผัสใหม่ๆ
       ให้กับแมวของ คุณอย่างต่อเนื่อง และช่วยรักษาความขี้เล่นของเขาไว้
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1748,8 +1909,8 @@
     image: product_images/47.jpg
     features: "ของเล่นประตูรูปแคทนิป 2 แบบให้เลือก: ปู/ดาว และ นกแก้ว/ดาว\r\nใช้ได้กับมือจับประตูทุกชนิด\r\
       \nบรรจุแคทนิป"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1765,8 +1926,8 @@
     image: product_images/48.png
     features: "ออกแบบให้แมว ตะปบและเล่นได้รอบทิศ สนุกเหมือนล่าเหยื่อจริง\r\nชาร์จไฟด้วยสาย\
       \ TYPE-C (แถมสายชาร์จ)"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1781,8 +1942,8 @@
     image: product_images/49.jpg
     features: "ด้วยช่องเปิดด้านบนที่ แคบจึงป้องกันไม่ให้เข้าถึงอาหารได้โดยง่าย และด้วยฐานล่างที่\
       \ กว้างและคงทนจึงเพิ่มความมั่นคงแข็งแรง\r\nปรับความยากได้ 3 ระดับ\r\nถอดและทำความสะอาดได้ง่าย"
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 8
     food_type: null
     owner: 5
 - model: petjoy.product
@@ -1795,8 +1956,8 @@
     category: 3
     image: product_images/51.png
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: cat
     owner: 5
 - model: petjoy.product
@@ -1809,8 +1970,8 @@
     category: 3
     image: product_images/52.png
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: cat
     owner: 5
 - model: petjoy.product
@@ -1823,8 +1984,8 @@
     category: 3
     image: product_images/53.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: cat
     owner: 5
 - model: petjoy.product
@@ -1837,8 +1998,8 @@
     category: 3
     image: product_images/54.jpg
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 8
     food_type: cat
     owner: 5
 - model: petjoy.product
@@ -1850,8 +2011,8 @@
     category: 3
     image: product_images/55.jpg
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: cat
     owner: 5
 - model: petjoy.product
@@ -1866,8 +2027,8 @@
     category: 3
     image: product_images/56.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1882,8 +2043,8 @@
     category: 3
     image: product_images/57.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 9
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1900,8 +2061,8 @@
     category: 3
     image: product_images/58.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1922,8 +2083,8 @@
     category: 3
     image: product_images/59.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1944,8 +2105,8 @@
     category: 3
     image: product_images/60.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1963,8 +2124,8 @@
     category: 3
     image: product_images/ทดสอบอาหาร.webp
     features: ''
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: dog
     owner: 5
 - model: petjoy.product
@@ -1978,15 +2139,309 @@
     image: product_images/ทดสอบของเลน.jpg
     features: Kanimal ของเล่นแมวยัดไส้ Catnip ผลิตจากผ้าอย่างดี ไม่เป็นอันตรายต่อน้องเเมว
       สามารถยัด Catnip เพิ่มลงบนของเล่นได้
-    total_stock: 0
-    stock: 0
+    total_stock: 10
+    stock: 10
     food_type: null
     owner: 5
+- model: petjoy.product
+  pk: 72
+  fields:
+    name: อาหารลูกสุนัข เอโปร ไอ.คิว.ฟอร์มูล่า 1 กก.
+    description: สำหรับลูกสุนัขทุกสายพันธุ์ตั้งแต่หย่านมถึง 1 ปี มีคุณค่าทางโภชนาการครบถ้วน
+      เสริม DHA และกรดอะมิโนเพื่อพัฒนาสมองและร่างกายให้เติบโตแข็งแรง รสชาติอร่อย
+    price: '150.00'
+    category: 3
+    image: product_images/39_y3srt9v.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 7
+- model: petjoy.product
+  pk: 73
+  fields:
+    name: อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 8 กก.
+    description: เป็นอาหารสำหรับแมวโตทุกสายพันธุ์ เน้นคุณค่าทางโภชนาการครบถ้วนจากวัตถุดิบคุณภาพสูง
+      ช่วยให้ขนสวยเงางาม บำรุงกระดูกและฟัน ควบคุมความเค็ม มีทอรีนบำรุงสายตา
+    price: '450.00'
+    category: 3
+    image: product_images/38_gP2VGnr.png
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 7
+- model: petjoy.product
+  pk: 74
+  fields:
+    name: อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 3 มิกซ์ 20 กก.
+    description: เป็นอาหารแมวโต สูตร 3 สี (เม็ดปลา, เม็ดกุ้ง, เม็ดหอย) สำหรับแมวอายุ
+      1 ปีขึ้นไป เน้นบำรุงขนผิวหนังด้วยโอเมก้า 3&6, สังกะสี, ไบโอติน, เสริมสร้างกระดูกและฟันด้วยแคลเซียม/ฟอสฟอรัส/วิตามิน
+      D, บำรุงสายตาด้วยทอรีน, เสริมภูมิคุ้มกันด้วยซีลีเนียม/วิตามิน E, และควบคุมความเค็มเพื่อลดความเสี่ยงโรคไต
+      พร้อมเนื้อสัมผัสเม็ดช่วยลดคราบหินปูน.
+    price: '590.00'
+    category: 3
+    image: product_images/37_Z6dkhIc.png
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 7
+- model: petjoy.product
+  pk: 75
+  fields:
+    name: อาหารแมว ซอย แคท รสปลาทูน่า 10 กก.
+    description: เป็นอาหารเม็ดสำหรับแมวโตทุกสายพันธุ์ มีคุณสมบัติเด่นคือ สูตรโซเดียมต่ำ
+      ช่วยลดความเสี่ยงโรคไต, บำรุงเหงือกฟัน, ผิวหนังและขน, สายตา, เสริมภูมิคุ้มกันและสร้างกระดูกฟันให้แข็งแรง
+      โดยมีโปรตีนไม่น้อยกว่า 26%
+    price: '550.00'
+    category: 3
+    image: product_images/36_TZJIiyb.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 7
+- model: petjoy.product
+  pk: 76
+  fields:
+    name: อาหารแมว ซอย แคท 10 กก.
+    description: "- บำรุงขนและผิวหนัง: อุดมไปด้วยโอเมก้า 3 และ 6, สังกะสี และไบโอติน\r\
+      \n- ลดความเสี่ยงโรคไต: สูตรควบคุมโซเดียมต่ำ\r\n- กระดูกและฟันแข็งแรง: มีแคลเซียมและฟอสฟอรัส\r\
+      \n- ระบบภูมิคุ้มกัน: เสริมด้วยซีลีเนียมและวิตามิน อี\r\n- บำรุงสายตา: มีทอรีนเป็นส่วนประกอบหลัก"
+    price: '550.00'
+    category: 3
+    image: product_images/35_8nsxOBk.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: cat
+    owner: 7
+- model: petjoy.product
+  pk: 77
+  fields:
+    name: อาหารลูกสุนัข เอโปร รสตับย่าง 10 กก.
+    description: เป็นอาหารเม็ดสำหรับลูกสุนัขทุกสายพันธุ์ (หย่านม-1 ปี) มีสารอาหารครบถ้วน
+      ช่วยเสริมสร้างโครงสร้างแข็งแรง (โปรตีน, แคลเซียม, ฟอสฟอรัส) บำรุงสายตา (วิตามินเอ)
+      และระบบขับถ่าย (ใยอาหาร)
+    price: '650.00'
+    category: 3
+    image: product_images/34_QyZXF5S.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 7
+- model: petjoy.product
+  pk: 78
+  fields:
+    name: อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.
+    description: เป็นอาหารแห้งครบถ้วนสำหรับลูกสุนัขทุกสายพันธุ์ อายุ 1 เดือนถึง 1
+      ปี ช่วยเสริมสร้างร่างกายให้แข็งแรงด้วยโปรตีนสูง, มีใยอาหารช่วยระบบย่อยอาหาร,
+      วิตามินบำรุงสายตา, และแคลเซียมฟอสฟอรัสสำหรับกระดูกฟันที่แข็งแรง
+    price: '650.00'
+    category: 3
+    image: product_images/33_7IskQUa.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 7
+- model: petjoy.product
+  pk: 79
+  fields:
+    name: อาหารสุนัขโตพันธุ์เล็ก เอโปร รสเนื้อ ไก่ ไข่และผัก 10 กก.
+    description: "อาหารสุนัข A Pro Adult Small Breed Dog Food Beef Chicken Egg and\
+      \ Vegetables Flavor สูตรนี้ให้คุณค่าทางโภชนาการที่สมดุลและมีประโยชน์ต่อสุขภาพหลายด้าน:\
+      \ \r\nโปรตีน: ช่วยซ่อมแซมเนื้อเยื่อและเสริมสร้างโครงสร้างร่างกายให้สมบูรณ์แข็งแรง\r\
+      \nคาร์โบไฮเดรต: เป็นแหล่งพลังงานสำคัญสำหรับกิจกรรมประจำวันของสุนัข\r\nไขมัน:\
+      \ ให้พลังงานและช่วยบำรุงผิวหนังและขนให้สวยงามเงางาม\r\nวิตามิน A: ช่วยบำรุงสายตา\r\
+      \nวิตามิน D, แคลเซียม และฟอสฟอรัส: ช่วยเสริมสร้างกระดูกและฟันให้แข็งแรง\r\n\
+      ใยอาหาร: ช่วยให้ระบบการขับถ่ายทำงานได้อย่างมีประสิทธิภาพ\r\nสารสกัดจากยัคคา\
+      \ (Yucca Extract): สารสกัดจากธรรมชาติที่ช่วยลดกลิ่นมูล เหมาะสำหรับสุนัขที่เลี้ยงภายในบ้าน"
+    price: '650.00'
+    category: 3
+    image: product_images/32_cHatEBV.jpg
+    features: ''
+    total_stock: 10
+    stock: 10
+    food_type: dog
+    owner: 7
+- model: petjoy.product
+  pk: 80
+  fields:
+    name: อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.
+    description: เป็นอาหารแห้งสำหรับสุนัขโตอายุ 1 ปีขึ้นไป มีสารอาหารครบถ้วน บำรุงกระดูก
+      ฟัน และขนสวย ราคาและโปรโมชั่นแตกต่างกันไปในแต่ละร้านค้าออนไลน์ เช่น Shopee,
+      Lazada, Makro, Big C, มีคุณค่าทางโภชนาการจากโปรตีน, คาร์โบไฮเดรต, ไขมัน, วิตามิน
+      และใยอาหาร ช่วยให้ระบบขับถ่ายดี
+    price: '750.00'
+    category: 3
+    image: product_images/31_X3LBfrZ.jpg
+    features: ''
+    total_stock: 10
+    stock: 9
+    food_type: dog
+    owner: 7
+- model: petjoy.product
+  pk: 81
+  fields:
+    name: Petstages Dogwood Mesquite - กิ่งไม้แทะเล่นของสุนัข
+    description: "แท่งไม้ แทะสนุกสำหรับสุนัขของ  Petstages รุ่นใหม่ล่าสุด เป็นไม้วัสดุธรรมชาติที่สุนัขแทะ\
+      \ และกินลงไปได้ รูปทรงและกลิ่นที่คุ้นเคย จะช่วยให้สุนัข\r\nมีความสุขมากขึ้น"
+    price: '390.00'
+    category: 1
+    image: product_images/30_W2ZK13j.jpg
+    features: "- แข็งแรงทนทาน รสชาติและรสสัมผัสคือไม้จริงๆ บวกกันกลิ่น BBQ ที่หอมยั่วใจ\
+      \ จะทำให้สุนัขเพลิดเพลินมากขึ้น\r\n- ความแข็ง ระดับปานกลาง (Medium)\r\n- ไม่มีเสี้ยน\
+      \ ไม่แตกเป็นชิ้น วัสดุคัดสรรจากไม้ชั้นดี ไม่แตกเป็นแท่งเล็กหรือเสี้ยน ปลอดภัย\
+      \ 100% สำหรับสุนัขของเรา\r\n- เป็นของเล่นก็ได้ สุนัขทุกตัวชอบเล่นกิ่งไม้ แน่นอน\
+      \ นี่คืออุปกรณ์ชั้นยอด ที่ช่วยให้คุณมีกิจกรรมกับสุนัข เขวี้ยงไปเก็บ หรือดึงเล่นก็มันส์\r\
+      \n- มีหลายไซส์ กิ่งไม้ของ Petstages มีหลายขนาดให้เลือก เพื่อความเหมาะสมกับสุนัขทุกสายพันธ์"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 82
+  fields:
+    name: KONG Cozie Funky Monkey - ตุ๊กตาลิง
+    description: KONG Cozie Funky Monkey เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง
+      ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ
+    price: '320.00'
+    category: 1
+    image: product_images/29_gy0O9Uw.jpg
+    features: "เพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา\r\nผ้านุ่ม ยืดหยุ่น เคี้ยวมันส์\r\
+      \nสิงโต สีฟ้าชมพูสดใส ดึงความสนใจสุนัขได้เป็นอย่างดี\r\nมีเสียงอี๊ดๆ เวลากัด\r\
+      \nKONG Cozie Funky Monkey เป็นของเล่นที่ออกแบบสำหรับสุนัขเล็กไปถึงกลาง"
+    total_stock: 10
+    stock: 9
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 83
+  fields:
+    name: KONG Cozie Ali Alligator - ตุ๊กตาจรเข้
+    description: Kong Cozie Ali Alligator เป็นของเล่นสุนัขนำเข้า ตุ๊กตาผ้านุ่ม คุณภาพสูง
+      ทนทาน ปลอดภัยต่อสุนัข เวลากัดจะมีเสียงร้องอี๊ดๆ
+    price: '320.00'
+    category: 1
+    image: product_images/28_1hbvILw.jpg
+    features: "เพิ่มความสนุกสนานเพลิดเพลินให้กับสุนัขของเรา\r\n\r\nผ้านุ่ม ยืดหยุ่น\
+      \ เคี้ยวมันส์\r\nจรเข้ ขนฟูสีเขียว ดึงความสนใจสุนัขได้เป็นอย่างดี\r\nมีเสียงอี๊ดๆ\
+      \ เวลากัด"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 84
+  fields:
+    name: Petstages Flip & Chew กิ่งไม้แทะเล่นของสุนัข
+    description: "แท่งไม้ แทะสนุกสำหรับสุนัขของ  Petstages รุ่นใหม่ล่าสุด เป็นไม้วัสดุธรรมชาติที่สุนัขแทะ\
+      \ และกินลงไปได้ รูปทรงและกลิ่นที่คุ้นเคย จะช่วยให้สุนัข\r\nมีความสุขมากขึ้น"
+    price: '480.00'
+    category: 1
+    image: product_images/27_1sKne3V.jpg
+    features: "- แข็งแรงทนทาน รสชาติและรสสัมผัสคือไม้จริงๆ บวกกับกลิ่นไม้ธรรมชาติ\
+      \ ที่หอมยั่วใจ จะทำให้สุนัขเพลิดเพลินมากขึ้น\r\n- ความแข็ง ระดับปานกลาง (Medium)\r\
+      \n- ไม่มีเสี้ยน ไม่แตกเป็นชิ้น วัสดุคัดสรรจากไม้ชั้นดี ไม่แตกเป็นแท่งเล็กหรือเสี้ยน\
+      \ ปลอดภัย 100% สำหรับสุนัขของเรา\r\n- เป็นของเล่นก็ได้ สุนัขทุกตัวชอบเล่นกิ่งไม้\
+      \ แน่นอน นี่คืออุปกรณ์ชั้นยอด ที่ช่วยให้คุณมีกิจกรรมกับสุนัข เขวี้ยงไปเก็บ หรือดึงเล่นก็มันส์\r\
+      \n- มีหลายไซส์ กิ่งไม้ของ Petstages มีหลายขนาดให้เลือก เพื่อความเหมาะสมกับสุนัขทุกสายพันธ์"
+    total_stock: 10
+    stock: 9
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 85
+  fields:
+    name: Q-monster Q-balls ลูกบอลฝึกทักษะสุนัข
+    description: สีสันชัดเจน บีบมีเสียง กระตุ้นความสนใจของสุนัขได้เป็นอย่างดี
+    price: '199.00'
+    category: 1
+    image: product_images/26_NbHvUaN.jpg
+    features: "ตัวลูกบอลเคลือบด้วยยางพารา 2 ชั้น ทำให้ทนทาน  เด้งดี เขวี้ยงได้ไกล\
+      \ สุนัขรู้สึกมันส์และเพลิดเพลินที่ได้เล่น\r\n\r\nผลิตจากยางพาราธรรมชาติ 100%"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 86
+  fields:
+    name: Kanimal ของเล่นแมว เบ็ดตกแมว ลูกบอลพันเชือก
+    description: "ของเล่นสำหรับแมว \r\nฝึกทักษะในการกระโดดและเคลื่อนไหว \r\nเพื่อความเพลิดเพลินและออกกำลังกายสำหรับน้องแมว\r\
+      \nเชือกยืดหยุ่น สปริงตัวบอลเพิ่มความสนุกเมื่อแมวตะปบ"
+    price: '89.00'
+    category: 2
+    image: product_images/23_ibhlPKp.jpg
+    features: ขนาด ไม้ยาว 40cm  ลูกบอลเส้นผ่านศูนย์กลาง 4.5cm
+    total_stock: 10
+    stock: 8
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 87
+  fields:
+    name: Catit Play Pirates Catnip Toy - Pouch of Gold ของเล่นแคทนิปแมว รูปถุงมหาสมบัติ
+    description: Pirates Catnip Toy – Pouch of Gold ของเล่นกัญชาแมว รูปถุงมหาสมบัติ
+      (ในซีรีย์ Pirates)
+    price: '89.00'
+    category: 2
+    image: product_images/25_0k28kCc.jpg
+    features: "มี catnip เกรดคุณภาพสูง \r\nมีกระดิ่ง \r\nขนนกสีสันสดใส \r\nวัสดุประกอบไปด้วย:\r\
+      \nPolyster, Fabric, Catnip, Crinkle Film."
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 88
+  fields:
+    name: รางบอลของเล่นสำหรับแมว มาพร้อมสปริงค์หนูสีสันสดใส
+    description: รางบอลพร้อมสปริงค์หนูของเล่นสำหรับแมว
+    price: '250.00'
+    category: 2
+    image: product_images/22_6XGZYE3.png
+    features: "ในเซ็ทมีบอลมาให้ 2 ลูก พร้อมหนูสำหรับตบเพื่อความเพลิดเพลิน\r\nสีสันสดใส\r\
+      \nขนาดฐานกว้าง  25.5cm"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 89
+  fields:
+    name: รางบอลของเล่นสำหรับแมว สีชมพูน่ารัก พร้อมบอล 3 ลูก
+    description: รางบอลของเล่นสำหรับแมว สีชมพูน่ารัก พร้อมบอล 3 ลูก
+    price: '230.00'
+    category: 2
+    image: product_images/21_mmB7N59.png
+    features: '-'
+    total_stock: 10
+    stock: 9
+    food_type: null
+    owner: 7
+- model: petjoy.product
+  pk: 90
+  fields:
+    name: รางบอล UFO ของเล่นสำหรับแมว มีแคทนิป (สีม่วง)
+    description: รางบอล UFO ของเล่นสำหรับแมว มีแคทนิป  (สีม่วง)
+    price: '249.00'
+    category: 2
+    image: product_images/24_EKR4hBa.png
+    features: "สีม่วงพลาสเทลน่ารัก\r\nมีบอล 3 ลูกในเซท\r\nมีแคทนิป ช่วยให้เเมวผ่อนคลาย"
+    total_stock: 10
+    stock: 10
+    food_type: null
+    owner: 7
 - model: petjoy.profile
   pk: 1
   fields:
     user: 1
     image: profile_pics/458440515_1254363705538350_6279119048900114851_n.jpg
+    is_banned: false
     favorites:
     - 12
 - model: petjoy.profile
@@ -1994,75 +2449,101 @@
   fields:
     user: 4
     image: profile_pics/default.jpg
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 3
   fields:
     user: 5
     image: profile_pics/2ca1a0e050d0803adcdf6db37639506e.jpg
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 4
   fields:
     user: 6
     image: profile_pics/2ca1a0e050d0803adcdf6db37639506e_EYrWo2r.jpg
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 5
   fields:
     user: 7
     image: profile_pics/ทดสอบ.jpg
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 6
   fields:
     user: 8
     image: profile_pics/458733204_1254363712205016_5797029805066597002_n.jpg
+    is_banned: false
     favorites:
     - 34
     - 23
-    - 39
+    - 24
+    - 25
     - 40
-    - 47
     - 43
-    - 69
     - 14
+    - 69
 - model: petjoy.profile
   pk: 7
   fields:
     user: 9
     image: ''
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 8
   fields:
     user: 10
-    image: ''
+    image: profile_pics/356427879_9692066017501005_981478053147889216_n.jpg
+    is_banned: false
     favorites:
+    - 27
     - 1
 - model: petjoy.profile
   pk: 9
   fields:
     user: 11
     image: ''
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 11
   fields:
     user: 12
     image: ''
-    favorites: []
-- model: petjoy.profile
-  pk: 13
-  fields:
-    user: 15
-    image: ''
+    is_banned: false
     favorites: []
 - model: petjoy.profile
   pk: 14
   fields:
     user: 16
     image: ''
+    is_banned: false
+    favorites: []
+- model: petjoy.profile
+  pk: 15
+  fields:
+    user: 18
+    image: ''
+    is_banned: false
+    favorites: []
+- model: petjoy.profile
+  pk: 16
+  fields:
+    user: 19
+    image: ''
+    is_banned: false
+    favorites: []
+- model: petjoy.profile
+  pk: 18
+  fields:
+    user: 22
+    image: ''
+    is_banned: false
     favorites: []
 - model: petjoy.review
   pk: 1
@@ -2074,6 +2555,132 @@
     comment: ของใช้ได้ แต่ด้ามจับไม่ค่อยแข็งแรงเท่าไร แมวเล่นแป๊บเดียวก็เบื่อบ้างบางครั้ง
       ถือว่าพอใช้ได้แต่ยังไม่ประทับใจมากนักครับ
     created_at: '2025-09-14T07:49:35.672Z'
+- model: petjoy.review
+  pk: 2
+  fields:
+    product: 34
+    user: 8
+    order: 16
+    rating: 5
+    comment: น้องแมวที่บ้านชอบมากค่ะ
+    created_at: '2025-12-24T14:37:45.384Z'
+- model: petjoy.review
+  pk: 3
+  fields:
+    product: 46
+    user: 8
+    order: 17
+    rating: 5
+    comment: ส่งเร็วมากค่ะ
+    created_at: '2026-01-08T09:53:26.364Z'
+- model: petjoy.review
+  pk: 4
+  fields:
+    product: 39
+    user: 8
+    order: 18
+    rating: 5
+    comment: น้องหมาที่บ้านชอบมากค่ะ
+    created_at: '2026-01-14T06:03:45.910Z'
+- model: petjoy.review
+  pk: 5
+  fields:
+    product: 34
+    user: 10
+    order: 19
+    rating: 5
+    comment: น่ารักดี
+    created_at: '2026-01-14T09:29:41.369Z'
+- model: petjoy.review
+  pk: 6
+  fields:
+    product: 24
+    user: 8
+    order: 20
+    rating: 5
+    comment: ส่งเร็วมากค่ะ
+    created_at: '2026-01-15T13:31:57.130Z'
+- model: petjoy.review
+  pk: 7
+  fields:
+    product: 64
+    user: 8
+    order: 21
+    rating: 5
+    comment: น้องหมาชอบมากค่ะ
+    created_at: '2026-01-15T14:17:32.128Z'
+- model: petjoy.review
+  pk: 8
+  fields:
+    product: 70
+    user: 10
+    order: 22
+    rating: 4
+    comment: ดี
+    created_at: '2026-01-15T14:18:59.092Z'
+- model: petjoy.review
+  pk: 9
+  fields:
+    product: 58
+    user: 10
+    order: 23
+    rating: 3
+    comment: เหมือนของเล่นเด็ก
+    created_at: '2026-01-15T14:19:55.949Z'
+- model: petjoy.review
+  pk: 10
+  fields:
+    product: 58
+    user: 8
+    order: 24
+    rating: 5
+    comment: น่ารักมากค่ะ
+    created_at: '2026-01-15T14:21:08.540Z'
+- model: petjoy.review
+  pk: 11
+  fields:
+    product: 22
+    user: 8
+    order: 28
+    rating: 5
+    comment: สินค้าดีค่ะ
+    created_at: '2026-01-16T03:38:08.495Z'
+- model: petjoy.review
+  pk: 12
+  fields:
+    product: 86
+    user: 8
+    order: 29
+    rating: 4
+    comment: "แมวชอบค่ะ\r\n"
+    created_at: '2026-01-16T03:44:41.777Z'
+- model: petjoy.review
+  pk: 13
+  fields:
+    product: 56
+    user: 10
+    order: 36
+    rating: 5
+    comment: น่ารักดี
+    created_at: '2026-02-23T13:25:40.484Z'
+- model: petjoy.review
+  pk: 14
+  fields:
+    product: 82
+    user: 10
+    order: 51
+    rating: 5
+    comment: น่ารักมากค่ะ
+    created_at: '2026-02-25T12:04:06.411Z'
+- model: petjoy.review
+  pk: 15
+  fields:
+    product: 84
+    user: 8
+    order: 53
+    rating: 5
+    comment: น้องหมาชอบค่ะ
+    created_at: '2026-03-02T14:29:37.490Z'
 - model: petjoy.chathistory
   pk: 1
   fields:
@@ -2716,6 +3323,539 @@
     user_message: สวัสดีค่ะ
     ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ มีอะไรให้ช่วยไหมคะ หรือกำลังมองหาสินค้าอะไรอยู่เป็นพิเศษหรือเปล่าคะ
     created_at: '2025-12-24T07:15:40.523Z'
+- model: petjoy.chathistory
+  pk: 72
+  fields:
+    user: 8
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ
+
+      มีอะไรให้ PetJoy Bot ช่วยแนะนำสินค้าสำหรับสัตว์เลี้ยงของคุณได้บ้างคะ/ครับ?'
+    created_at: '2026-01-15T18:01:07.763Z'
+- model: petjoy.chathistory
+  pk: 73
+  fields:
+    user: 8
+    user_message: สวัสดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2026-02-01T15:52:19.119Z'
+- model: petjoy.chathistory
+  pk: 74
+  fields:
+    user: null
+    user_message: .
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2026-02-02T13:53:32.421Z'
+- model: petjoy.chathistory
+  pk: 75
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ
+    created_at: '2026-02-02T13:59:01.790Z'
+- model: petjoy.chathistory
+  pk: 76
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว (กรุณาดู Error log ที่เครื่อง
+      Server)
+    created_at: '2026-02-02T14:05:54.713Z'
+- model: petjoy.chathistory
+  pk: 77
+  fields:
+    user: null
+    user_message: สอบถามสินค้า
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว (กรุณาดู Error log ที่เครื่อง
+      Server)
+    created_at: '2026-02-02T14:09:33.564Z'
+- model: petjoy.chathistory
+  pk: 78
+  fields:
+    user: null
+    user_message: สอบถามค่ะ
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว
+    created_at: '2026-02-02T14:12:54.659Z'
+- model: petjoy.chathistory
+  pk: 79
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว
+    created_at: '2026-02-02T14:16:38.620Z'
+- model: petjoy.chathistory
+  pk: 80
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว
+    created_at: '2026-02-02T14:23:08.839Z'
+- model: petjoy.chathistory
+  pk: 81
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว
+    created_at: '2026-02-02T14:25:46.914Z'
+- model: petjoy.chathistory
+  pk: 82
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว
+    created_at: '2026-02-02T14:26:18.702Z'
+- model: petjoy.chathistory
+  pk: 83
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: ขออภัยค่ะ ระบบ AI กำลังประมวลผลหนัก กรุณาลองใหม่ในอีก 1 นาทีนะคะ
+    created_at: '2026-02-02T14:27:11.579Z'
+- model: petjoy.chathistory
+  pk: 84
+  fields:
+    user: null
+    user_message: ทดสอบ
+    ai_response: สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ! ตอนนี้เรามีสินค้าพร้อมส่งมากมาย
+      ทั้งอาหารสุนัขและแมวคุณภาพดี รวมถึงของเล่นสนุกๆ จาก KONG และ Catit ให้เลือกซื้อเลยค่ะ
+    created_at: '2026-02-02T14:29:13.196Z'
+- model: petjoy.chathistory
+  pk: 85
+  fields:
+    user: null
+    user_message: หวัดดี
+    ai_response: สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy Bot นะคะ 😊 คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?
+    created_at: '2026-02-02T14:32:27.459Z'
+- model: petjoy.chathistory
+  pk: 86
+  fields:
+    user: null
+    user_message: ฉันอยากได้สินค้าน้องหมา มีแนะนำไหม
+    ai_response: 'สวัสดีค่ะ! PetJoy Bot ยินดีแนะนำสินค้าสำหรับน้องหมาค่ะ
+
+
+      ตอนนี้เรามีสินค้าพร้อมส่งหลายอย่างเลยค่ะ **ถ้าเน้นเรื่องอาหาร** เรามีอาหารสุนัขโต
+      สมาร์ทฮาร์ท แพลนต์เบส 3กก. (สำหรับสุนัขแพ้โปรตีนจากเนื้อสัตว์) และอาหารเปียกอย่าง
+      เพดดิกรี กระป๋องรสเนื้อ 400ก. หรือ เพดดิกรี อาหารสุนัขโตรสไก่และผัก 1.5กก. ก็มีพร้อมค่ะ
+
+
+      **สำหรับของเล่น** ถ้าชอบแบบทนทาน เรามีลูกบอลยาง KONG Ball Extreme Bounce (129.00
+      บาท) และ KONG Goodie Bone Extreme (220.00 บาท) หรือจะเป็นตุ๊กตาผ้านุ่มมีเสียงอี๊ดๆ
+      อย่าง KONG Cozie Rosie Rhino (299.00 บาท) ก็กำลังน่ารักเลยค่ะ'
+    created_at: '2026-02-02T14:32:48.598Z'
+- model: petjoy.chathistory
+  pk: 87
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾
+
+
+      PetJoy Bot ยินดีให้บริการค่ะ คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?
+      🐕🐈
+
+
+      ไม่ว่าจะเป็นอาหาร ของเล่น หรือของใช้ เรามีสินค้าพร้อมส่งเพียบเลยค่ะ! 😊'
+    created_at: '2026-02-02T14:34:42.370Z'
+- model: petjoy.chathistory
+  pk: 88
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: "สวัสดีค่ะ! \U0001F44B PetJoy Bot ยินดีให้บริการค่ะ \U0001F436\U0001F431\
+      \n \nคุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?\n \nแจ้งความต้องการได้เลยนะคะ\
+      \ หรือจะให้เราแนะนำสินค้าขายดีที่มีพร้อมส่งก็ได้ค่ะ \U0001F60A"
+    created_at: '2026-02-02T14:34:49.977Z'
+- model: petjoy.chathistory
+  pk: 89
+  fields:
+    user: null
+    user_message: ฉันอยากได้สินค้าน้องหมา มีแนะนำไหม
+    ai_response: 'PetJoy ยินดีแนะนำค่ะ 🐶 เรามีสินค้าพร้อมส่งสำหรับน้องหมาหลากหลายรายการเลยค่ะ:
+
+
+      สำหรับอาหาร:
+
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** ราคา **299.00.-** (โปรตีนจากพืช เหมาะสำหรับน้องหมาที่แพ้เนื้อสัตว์)
+
+      - **อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.** ราคา **750.00.-** (ขนาดคุ้มค่า สารอาหารครบถ้วน)
+
+      - **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** ราคา **300.00.-** (บำรุงแม่สุนัขตั้งท้อง/ให้นม
+      และลูกสุนัข)
+
+
+      สำหรับของเล่นยอดนิยม:
+
+
+      - **KONG Goodie Bone Extreme กระดูกยางสีดำ** ราคา **220.00.-** (เหนียวทนพิเศษ
+      สำหรับน้องหมากัดแทะรุนแรง)
+
+      - **KONG Wobbler ยางกลมซ่อนขนม** ราคา **159.00.-** (ของเล่นฝึกทักษะและเครื่องให้อาหารในตัว)
+
+      - **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** ราคา **299.00.-** (ตุ๊กตาผ้านุ่ม
+      มีเสียงอี๊ดๆ เพิ่มความเพลิดเพลิน)
+
+      - **KONG Flyer จานร่อนสีแดง** ราคา **119.00.-** (จานร่อนยางธรรมชาติ ยืดหยุ่น
+      ปลอดภัย)
+
+
+      สำหรับสุขภาพช่องปาก:
+
+
+      - **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** ราคา **59.00.-** (ขนมขัดฟันรูปตัว X สำหรับลูกสุนัข)
+
+
+      สนใจดูรายละเอียดสินค้าชิ้นไหนเพิ่มเติมได้เลยนะคะ 😊'
+    created_at: '2026-02-02T14:35:13.903Z'
+- model: petjoy.chathistory
+  pk: 90
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾
+
+
+      **PetJoy Bot** พร้อมให้บริการค่ะ 😊
+
+
+      คุณลูกค้ามองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ? ลองดูรายการสินค้าเด่นๆ ที่เรามีพร้อมส่งก่อนได้เลยค่ะ:
+
+
+      สำหรับน้องหมา 🐕:
+
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช
+      เหมาะสำหรับสุนัขที่แพ้เนื้อสัตว์
+
+      - **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม
+      มีเสียงอี๊ดๆ เวลาเล่น
+
+      - **KONG Ball Extreme Bounce ลูกบอลยางสีดำ** (ราคา **129.00.-**) ลูกบอลทนทานพิเศษสำหรับสุนัขที่กัดแทะรุนแรง
+
+
+      สำหรับน้องแมว 🐈:
+
+
+      - **ตุ๊กตาปลาทูใส่แคทนิป** (ราคา **220.00.-**) ปลาทูขนาดสมจริง อัดแน่นด้วยแคทนิปเกรดพรีเมียม
+
+      - **รางบอลของเล่นสำหรับแมว** (ราคา **199.00.-**) รางบอล 3 ชั้น ช่วยกระตุ้นสัญชาตญาณนักล่า
+
+      - **Catit Digger ให้อาหารและขนม** (ราคา **399.00.-**) ของเล่นฝึกทักษะการเขี่ยอาหารคลายเหงา
+
+
+      สนใจสินค้าตัวไหน หรือต้องการให้แนะนำเพิ่มเติม บอก PetJoy Bot ได้เลยนะคะ! ✨'
+    created_at: '2026-02-02T14:47:17.462Z'
+- model: petjoy.chathistory
+  pk: 91
+  fields:
+    user: null
+    user_message: hi
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 💖
+
+
+      PetJoy Bot ยินดีช่วยเหลือและแนะนำสินค้าสำหรับน้องหมาน้องแมวสุดรักของคุณค่ะ 🐾
+
+
+      คุณกำลังมองหาอะไรอยู่คะ? (เช่น อาหารสุนัข, ของเล่นแมว, หรือของใช้ทั่วไป) แจ้งได้เลยน้าา
+      😊'
+    created_at: '2026-02-02T14:47:30.606Z'
+- model: petjoy.chathistory
+  pk: 92
+  fields:
+    user: null
+    user_message: hi
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ 😊
+
+
+      มีอะไรให้น้อง PetJoy Bot ช่วยดูแลหรือกำลังมองหาสินค้าสำหรับน้องหมาน้องแมวอยู่หรือเปล่าคะ?
+
+
+      สอบถามได้เลยน้า! 💖'
+    created_at: '2026-02-02T14:47:37.909Z'
+- model: petjoy.chathistory
+  pk: 93
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾
+
+
+      PetJoy Bot ยินดีให้บริการค่ะ คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ?
+      🐶🐱
+
+
+      ลองดูสินค้าแนะนำของเราได้เลยค่ะ:
+
+
+      สำหรับสุนัข:
+
+      - **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) เสริมโปรตีนสูง
+      บำรุงกระดูกและฟันให้แข็งแรง
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช
+      ลดความเสี่ยงการแพ้โปรตีนจากเนื้อสัตว์
+
+      - **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม
+      มีเสียงอี๊ดๆ เพิ่มความสนุกสนาน
+
+
+      สำหรับแมว:
+
+      - **ตุ๊กตาปลาทูใส่แคทนิป** (ราคา **220.00.-**) น้องแมวกอดรัดฟัดเหวี่ยง ช่วยลดความเครียด
+
+      - **รางบอลของเล่นสำหรับแมว** (ราคา **199.00.-**) รางบอล 3 ชั้น กระตุ้นสัญชาตญาณนักล่า
+
+      - **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** (ราคา **599.00.-**) บำรุงสายตาและขนสวยเงางาม
+      ลดความเสี่ยงนิ่วและโรคไต
+
+
+      สอบถามสินค้าอื่นๆ หรือต้องการให้ช่วยแนะนำเพิ่มเติมได้เลยนะคะ 😊'
+    created_at: '2026-02-02T14:51:20.241Z'
+- model: petjoy.chathistory
+  pk: 94
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! PetJoy Bot ยินดีให้บริการค่ะ 🐾
+
+
+      วันนี้มองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ? บอกได้เลยนะคะ เดี๋ยว PetJoy
+      Bot ช่วยแนะนำให้! 😊'
+    created_at: '2026-02-02T16:17:07.386Z'
+- model: petjoy.chathistory
+  pk: 95
+  fields:
+    user: null
+    user_message: มีสินค้าน้องหมาแนะนำไหม
+    ai_response: 'Hello! PetJoy ยินดีต้อนรับน้องหมาค่ะ 🐶 เรามีสินค้าหลากหลายพร้อมส่งเลยค่ะ
+
+
+      เราขอแนะนำสินค้าน่าสนใจสำหรับสุนัข ดังนี้:
+
+
+      - **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) สูตรโปรตีนสูง
+      เสริมสร้างร่างกายและกระดูกฟันให้แข็งแรง
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) เหมาะสำหรับสุนัขโตที่แพ้โปรตีนจากเนื้อสัตว์
+      ช่วยลดความเสี่ยงการแพ้
+
+      - **KONG Goodie Bone Extreme กระดูกยางสีดำ** (ราคา **220.00.-**) ของเล่นยางธรรมชาติเหนียวพิเศษ
+      ทนทานมาก สำหรับสายแทะโหด
+
+      - **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม
+      คุณภาพสูง เวลากัดมีเสียงร้องอี๊ดๆ
+
+      - **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**) ขนมขัดฟันรูปตัว X สำหรับลูกสุนัข
+      ช่วยลดคราบพลัคและหินปูน
+
+
+      สนใจชิ้นไหน หรืออยากดูอาหารสำหรับสุนัขวัยอื่นเพิ่มเติมไหมคะ? 😊'
+    created_at: '2026-02-02T16:17:26.073Z'
+- model: petjoy.chathistory
+  pk: 96
+  fields:
+    user: null
+    user_message: ร้านแนะนำละ
+    ai_response: 'สวัสดีค่ะ! PetJoy ยินดีแนะนำสินค้าขายดีประจำร้านเลยค่ะ 🥰
+
+      ไม่ว่าจะน้องหมาหรือน้องแมว เราก็มีของเล่นและอาหารน่าสนใจพร้อมส่งเลยนะคะ:
+
+
+      **สำหรับน้องหมา 🐶**
+
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** ราคา **299.00.-** สูตรโปรตีนจากพืช
+      ลดความเสี่ยงการแพ้โปรตีนจากเนื้อสัตว์
+
+      - **KONG Ball Extreme Bounce ลูกบอลยางสีดำ** ราคา **129.00.-** ลูกบอลยางธรรมชาติ
+      เหนียวพิเศษ เหมาะสำหรับสุนัขที่กัดแทะรุนแรง
+
+      - **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** ราคา **299.00.-** ตุ๊กตาผ้านุ่ม
+      มีเสียงอี๊ดๆ ช่วยเพิ่มความสนุกสนาน
+
+
+      **สำหรับน้องแมว 😼**
+
+
+      - **ตุ๊กตาปลาทูใส่แคทนิป** ราคา **220.00.-** อัดแน่นด้วยแคทนิป ช่วยลดความเครียดให้น้องแมว
+
+      - **รางบอลของเล่นสำหรับแมว** ราคา **199.00.-** รางบอล 3 ชั้น ช่วยกระตุ้นสัญชาตญาณนักล่า
+
+      - **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** ราคา **599.00.-** สูตรควบคุมโซเดียม บำรุงผิวหนังและขนสวยเงางาม
+
+
+      สนใจสินค้าตัวไหนเป็นพิเศษ สอบถามเพิ่มเติมได้เลยนะคะ! 😊'
+    created_at: '2026-02-02T16:17:47.099Z'
+- model: petjoy.chathistory
+  pk: 97
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ 😊
+
+
+      มีอะไรให้น้อง PetJoy Bot ช่วยดูแลเกี่ยวกับน้องหมาน้องแมวที่บ้านได้บ้างคะ? 🐾'
+    created_at: '2026-02-02T16:20:28.071Z'
+- model: petjoy.chathistory
+  pk: 98
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾
+
+
+      PetJoy Bot พร้อมให้บริการค่ะ 😊 คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?
+
+
+      สามารถสอบถามรายการสินค้าหรือให้เราแนะนำสินค้าเฉพาะสำหรับสัตว์เลี้ยงของคุณได้เลยนะคะ!
+      🛒'
+    created_at: '2026-02-03T15:19:45.614Z'
+- model: petjoy.chathistory
+  pk: 99
+  fields:
+    user: null
+    user_message: สวัสดี
+    ai_response: 'สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾
+
+
+      มีอะไรให้ PetJoy Bot ช่วยดูแลน้องหมาน้องแมวของคุณลูกค้าได้บ้างคะ? 😊
+
+
+      (เช่น สอบถามอาหาร, ของเล่น, หรือต้องการให้แนะนำสินค้า)'
+    created_at: '2026-02-03T15:19:52.611Z'
+- model: petjoy.chathistory
+  pk: 100
+  fields:
+    user: null
+    user_message: สอบถามอาหาร
+    ai_response: 'PetJoy ยินดีต้อนรับค่ะ 🐾 ร้านเรามีอาหารพร้อมส่งสำหรับน้องหมาและน้องแมวหลายรายการเลยค่ะ
+
+
+      รบกวนคุณลูกค้าแจ้งเพิ่มนิดนึงนะคะว่าสนใจอาหารสำหรับน้องหมา 🐶 หรือน้องแมว 🐱 คะ?
+
+
+      ---
+
+
+      ### **ตัวอย่างอาหารสุนัขที่เรามีพร้อมส่ง 🐶**
+
+
+      **อาหารเม็ด (Dry Food):**
+
+
+      - **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) โปรตีนสูง
+      เสริมแคลเซียมและฟอสฟอรัส
+
+      - **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช
+      ลดความเสี่ยงแพ้เนื้อสัตว์
+
+      - **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** (ราคา **300.00.-**) บำรุงแม่สุนัขตั้งท้อง/ให้นม
+      และลูกสุนัขช่วงหย่านม
+
+      - **อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.** (ราคา **750.00.-**) สำหรับสุนัขโต
+      สารอาหารครบถ้วน
+
+
+      **อาหารเปียก/ขนม (Wet Food / Snacks):**
+
+
+      - **เพดดิกรี กระป๋องรสเนื้อ 400ก.** (ราคา **65.00.-**) อาหารเปียกเนื้อนุ่ม อร่อย
+      ครบคุณค่า
+
+      - **เพดดิกรี เพาซ์ รสไก่ชิ้นในน้ำเกรวี่ 130ก.** (ราคา **29.00.-**) บำรุงผิวและขนเงางาม
+
+      - **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**) ขนมขัดฟันรูปตัว X ลดคราบพลัค
+
+
+      ---
+
+
+      ### **ตัวอย่างอาหารแมวที่เรามีพร้อมส่ง 🐱**
+
+
+      **อาหารเม็ด (Dry Food):**
+
+
+      - **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** (ราคา **599.00.-**) บำรุงสายตาและลดความเสี่ยงนิ่ว
+      (FLUTD)
+
+      - **อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 8 กก.** (ราคา **450.00.-**) สำหรับแมวโต
+      ควบคุมความเค็ม ลดความเสี่ยงโรคไต
+
+      - **อาหารแมว ซอย แคท รสปลาทูน่า 10 กก.** (ราคา **550.00.-**) สูตรโซเดียมต่ำ
+      บำรุงขนสวย
+
+
+      **อาหารเปียก (Wet Food):**
+
+
+      - **อาหารลูกแมวเพาช์มีโอ ปลาทูน่าในเยลลี่ 80 กรัม** (ราคา **17.00.-**) ทำจากเนื้อปลาแท้ๆ
+      สำหรับลูกแมว
+
+      - **อาหารแมวเพาช์มีโอ รสปลาทะเล 80 กรัม** (ราคา **17.00.-**) รสชาติอร่อยถูกใจน้องเหมียว
+
+
+      ---
+
+      หากระบุอายุและขนาดของสัตว์เลี้ยง จะช่วยให้แนะนำสินค้าที่ตรงความต้องการได้มากขึ้นนะคะ
+      😊'
+    created_at: '2026-02-03T15:20:22.176Z'
+- model: petjoy.chathistory
+  pk: 101
+  fields:
+    user: null
+    user_message: น้องหมาอายุ2เดือน ตัวเล็กมากๆ
+    ai_response: "สวัสดีค่ะ PetJoy ยินดีต้อนรับน้องหมาตัวจิ๋วอายุ 2 เดือนนะคะ! \U0001F436\
+      \ น้องอยู่ในช่วงที่ต้องการโภชนาการสูงและการเสริมพัฒนาการค่ะ\n\nเรามีสินค้าแนะนำสำหรับลูกสุนัขวัยนี้ที่พร้อมส่งค่ะ:\n\
+      \n**อาหารสำหรับลูกสุนัข (เน้นบำรุงและเคี้ยวง่าย):**\n\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข\
+      \ 2.6 กก.** (ราคา **300.00.-**)\n    - เหมาะกับน้องที่เพิ่งหย่านมเพราะเม็ดอาหารสามารถดูดซึมน้ำได้ดี\
+      \ ทำให้เคี้ยวง่ายขึ้นค่ะ\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา\
+      \ **650.00.-**)\n    - อาหารแห้งสูตรครบถ้วนสำหรับลูกสุนัข ช่วยเสริมสร้างร่างกายและกระดูกฟันให้แข็งแรงด้วยโปรตีนสูงและแคลเซียม\n\
+      \n**ขนมและของเล่นสำหรับลูกสุนัข (เน้นแทะและเสริมทักษะ):**\n\n- **เพดดิกรี เดนต้าสติ๊กพัพพี\
+      \ 56ก.** (ราคา **59.00.-**)\n    - ขนมขัดฟันรูปตัว X ออกแบบมาเพื่อลูกสุนัขโดยเฉพาะ\
+      \ ช่วยดูแลสุขภาพช่องปากค่ะ\n- **ของเล่นสุนัข เชือกฝ้ายถัก + บอลคู่** (ราคา **119.00.-**)\n\
+      \    - ของเล่นเชือก เหมาะสำหรับน้องที่กำลังคันฟันและชอบแทะ\n- **KONG Cozie Rosie\
+      \ Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**)\n    - ตุ๊กตาผ้านุ่มคุณภาพสูง ปลอดภัย\
+      \ และมีเสียงอี๊ดๆ ให้น้องหมาเพลิดเพลินค่ะ\n- **Petstages Dogwood Mesquite -\
+      \ กิ่งไม้แทะเล่นของสุนัข** (ราคา **390.00.-**)\n    - ไม้แทะจากวัสดุธรรมชาติ\
+      \ ช่วยคลายเครียดและลดพฤติกรรมทำลายข้าวของ\n\nสนใจสอบถามข้อมูลเพิ่มเติมเกี่ยวกับสินค้าชิ้นไหนได้เลยนะคะ\
+      \ \U0001F60A"
+    created_at: '2026-02-03T15:21:01.465Z'
+- model: petjoy.chathistory
+  pk: 102
+  fields:
+    user: null
+    user_message: สอบถามสินค้า ของน้องหมาอายุ2เดือน
+    ai_response: "สวัสดีค่ะ! น้องหมาอายุ 2 เดือนน่ารักมากๆ เลยนะคะ \U0001F970\nPetJoy\
+      \ มีสินค้าสำหรับลูกสุนัขวัยกำลังโตพร้อมส่งค่ะ เน้นอาหารบำรุงและของเล่นสำหรับวัยเคี้ยวเลย:\n\
+      \n**หมวดอาหารลูกสุนัข (เน้นบำรุงการเจริญเติบโต):**\n\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข\
+      \ 2.6 กก.** (ราคา **300.00.-**)\n    - เหมาะสำหรับลูกสุนัขช่วงหย่านมถึง 3 เดือนโดยเฉพาะ\
+      \ ช่วยเสริมพัฒนาการสมองและกระดูกแข็งแรง\n\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง\
+      \ 10 กก.** (ราคา **650.00.-**)\n    - สำหรับลูกสุนัขทุกสายพันธุ์ อายุ 1 เดือนถึง\
+      \ 1 ปี อัดแน่นด้วยโปรตีนสูงเพื่อสร้างร่างกาย\n\n- **อาหารลูกสุนัข เอโปร ไอ.คิว.ฟอร์มูล่า\
+      \ 1 กก.** (ราคา **150.00.-**)\n    - อาหารเม็ดสำหรับลูกสุนัข มีคุณค่าทางโภชนาการครบถ้วนและอร่อย\n\
+      \n**หมวดของเล่นและขนม (สำหรับวัยกำลังคันเหงือก):**\n\n- **เพดดิกรี เดนต้าสติ๊กพัพพี\
+      \ 56ก.** (ราคา **59.00.-**)\n    - ขนมขัดฟันสำหรับลูกสุนัขโดยเฉพาะ ช่วยลดคราบพลัคและหินปูน\n\
+      \n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**)\n    - ตุ๊กตาผ้านุ่มสำหรับสุนัข\
+      \ กัดมีเสียงอี๊ดๆ ช่วยเพิ่มความสนุก\n\n- **Q-monster Q-balls ลูกบอลฝึกทักษะสุนัข**\
+      \ (ราคา **199.00.-**)\n    - ลูกบอลสีสันสดใส บีบมีเสียง ช่วยกระตุ้นความสนใจและฝึกทักษะ\n\
+      \n- **ของเล่นสุนัข เชือกฝ้ายถัก + บอลคู่** (ราคา **119.00.-**)\n    - เหมาะสำหรับวัยกำลังแทะ\
+      \ ช่วยนวดเหงือกและทำความสะอาดฟันได้ด้วยค่ะ\n\nสนใจสินค้าตัวไหนเพิ่มเติม แจ้งได้เลยนะคะ!\
+      \ \U0001F60A"
+    created_at: '2026-02-03T15:22:48.949Z'
+- model: petjoy.chathistory
+  pk: 103
+  fields:
+    user: null
+    user_message: สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก. คือของร้านไหนหรอ
+    ai_response: "สวัสดีค่ะ! \U0001F60A ยินดีต้อนรับสู่ PetJoy ค่ะ\n\nสินค้า **สมาร์ทฮาร์ท\
+      \ อาหารแม่และลูกสุนัข 2.6 กก.** เป็นอาหารสุนัขจากแบรนด์ SmartHeart ค่ะ และมีจำหน่ายที่ร้าน\
+      \ PetJoy ของเราเลยค่ะ!\n\nรายละเอียดสินค้าพร้อมส่ง:\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข\
+      \ 2.6 กก.** (ราคา **300.00.-**)\n  *   จุดเด่น: โปรตีนสูง, มี DHA เสริมพัฒนาการทางสมอง,\
+      \ บำรุงกระดูกและฟัน เหมาะสำหรับแม่สุนัขและลูกสุนัขตั้งแต่หย่านมถึง 3 เดือน\n\
+      \nสนใจให้ PetJoy จัดส่งให้เลยไหมคะ? หรือดูอาหารสุนัขรุ่นอื่นเพิ่มเติมดีคะ?"
+    created_at: '2026-02-03T15:23:29.972Z'
 - model: petjoy.entrepreneur
   pk: 1
   fields:
@@ -2725,13 +3865,17 @@
     email: ma@gmail.com
     phone: ''
     profile_image: entrepreneur_profiles/ราน1.jpg
-    tax_id: null
-    shop_address: null
+    tax_id: ' 0994000158126'
+    shop_address: 456 ถนนมิตรภาพ (กม. 12) ตำบลในเมือง อำเภอเมืองนครราชสีมา จังหวัดนครราชสีมา
+      30000
     bank_name: กสิกรไทย
     account_name: The Pet Hub
     account_number: '123456789'
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '50.00'
+    verification_status: approved
 - model: petjoy.entrepreneur
   pk: 2
   fields:
@@ -2748,6 +3892,9 @@
     account_number: null
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '0.00'
+    verification_status: rejected
 - model: petjoy.entrepreneur
   pk: 3
   fields:
@@ -2764,22 +3911,28 @@
     account_number: null
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '0.00'
+    verification_status: rejected
 - model: petjoy.entrepreneur
   pk: 4
   fields:
-    user: 15
+    user: null
     store_name: Petopia
     owner_name: ภคพร
     email: Petopia@gmail.com
     phone: '0647120613'
     profile_image: entrepreneur_profiles/ราน2.jpg
-    tax_id: null
+    tax_id: ' 0994000158441'
     shop_address: null
     bank_name: กรุงไทย
     account_name: เปียอโรสโซ่
     account_number: '123456789'
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '0.00'
+    verification_status: rejected
 - model: petjoy.entrepreneur
   pk: 5
   fields:
@@ -2789,13 +3942,16 @@
     email: ClickPet@gmail.com
     phone: '0647120613'
     profile_image: entrepreneur_profiles/ราน3.jpg
-    tax_id: null
+    tax_id: 0994000158441
     shop_address: null
     bank_name: ไทยพาณิชย์
     account_name: ClickPet
     account_number: '1235498786'
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '50.00'
+    verification_status: approved
 - model: petjoy.entrepreneur
   pk: 6
   fields:
@@ -2812,23 +3968,91 @@
     account_number: null
     bank_book_copy: ''
     id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '0.00'
+    verification_status: approved
+- model: petjoy.entrepreneur
+  pk: 7
+  fields:
+    user: 19
+    store_name: อุ้งเท้าป่วน
+    owner_name: จอนนี่
+    email: pawsitive@gmail.com
+    phone: '123456'
+    profile_image: entrepreneur_profiles/รานทดสอบ.jpg
+    tax_id: 0994000158441
+    shop_address: เลขที่ 88/5 โครงการเดอะการ์เด้น (ชั้น 1) ถนนสุขุมวิท 63 แขวงพระโขนงเหนือ
+      เขตวัฒนา กรุงเทพมหานคร 10110
+    bank_name: กสิกร
+    account_name: นายจอนนี่ วินสัน
+    account_number: '1234567890'
+    bank_book_copy: bankbooks/กสกร.jpg
+    id_card_copy: idcards/บตรปชช.jpg
+    commerce_doc: commerce_docs/การคา.jpg
+    shipping_cost: '50.00'
+    verification_status: approved
+- model: petjoy.entrepreneur
+  pk: 10
+  fields:
+    user: 22
+    store_name: บ้านเพื่อนสี่ขา
+    owner_name: ใยไหม
+    email: Legs@gmail.com
+    phone: 05686856
+    profile_image: ''
+    tax_id: 0994000160843
+    shop_address: เลขที่ 9/9 โครงการกรีนสเปซ ซอยอารีย์ 5 ถนนพหลโยธิน แขวงพญาไท เขตพญาไท
+      กรุงเทพมหานคร 10400
+    bank_name: กสิกร
+    account_name: นายจอนนี่ วินสัน
+    account_number: '1234567890'
+    bank_book_copy: bankbooks/กสกร_gmkjsZp.jpg
+    id_card_copy: idcards/บตรปชช_nfzZEVK.jpg
+    commerce_doc: commerce_docs/การคา_r2b0x7l.jpg
+    shipping_cost: '0.00'
+    verification_status: approved
+- model: petjoy.entrepreneur
+  pk: 11
+  fields:
+    user: 1
+    store_name: Admin Support
+    owner_name: ''
+    email: ''
+    phone: '0000000000'
+    profile_image: ''
+    tax_id: null
+    shop_address: null
+    bank_name: null
+    account_name: null
+    account_number: null
+    bank_book_copy: ''
+    id_card_copy: ''
+    commerce_doc: ''
+    shipping_cost: '0.00'
+    verification_status: approved
 - model: petjoy.cartitem
-  pk: 26
+  pk: 52
+  fields:
+    user: 8
+    product: 29
+    quantity: 1
+- model: petjoy.cartitem
+  pk: 56
+  fields:
+    user: 8
+    product: 80
+    quantity: 1
+- model: petjoy.cartitem
+  pk: 57
   fields:
     user: 8
     product: 24
     quantity: 1
 - model: petjoy.cartitem
-  pk: 35
+  pk: 63
   fields:
-    user: 8
-    product: 46
-    quantity: 1
-- model: petjoy.cartitem
-  pk: 38
-  fields:
-    user: 8
-    product: 31
+    user: 10
+    product: 59
     quantity: 1
 - model: petjoy.address
   pk: 3
@@ -2843,10 +4067,10 @@
     zipcode: '12345'
     is_default: true
 - model: petjoy.address
-  pk: 7
+  pk: 8
   fields:
     user: 8
-    full_name: เจ้า ออม
+    full_name: ภคพร สมจันทร์
     phone: '0647120613'
     address_line: มหาวิทยาอุบลราชธานี
     province: xxxxx
@@ -2854,3 +4078,1384 @@
     subdistrict: xxxxxx
     zipcode: '12345'
     is_default: true
+- model: petjoy.address
+  pk: 9
+  fields:
+    user: 10
+    full_name: น้องหมวย
+    phone: 064888888
+    address_line: 15/9
+    province: xxxxx
+    district: xxxxxx
+    subdistrict: xxxxxx
+    zipcode: บ้านโนน
+    is_default: false
+- model: petjoy.address
+  pk: 11
+  fields:
+    user: 8
+    full_name: สมชาย
+    phone: 081-234-5678
+    address_line: 12/7
+    province: จังหวัด
+    district: ศรีรัตนะ
+    subdistrict: เสื่องข้าว
+    zipcode: '33240'
+    is_default: false
+- model: petjoy.order
+  pk: 15
+  fields:
+    customer: 1
+    entrepreneur: 4
+    order_number: 1
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '99.00'
+    status: paid
+    slip_image: slips/Screenshot-2567-07-03-at-13.24.34_CzJM1b4.png
+    tracking_number: null
+    created_at: '2025-12-24T14:11:41.171Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 16
+  fields:
+    customer: 1
+    entrepreneur: 4
+    order_number: 2
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '99.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13.24.34_yRNd7e9.png
+    tracking_number: null
+    created_at: '2025-12-24T14:31:56.353Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 17
+  fields:
+    customer: 1
+    entrepreneur: 4
+    order_number: 3
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '999.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_mTM8g7X.24.34.png
+    tracking_number: null
+    created_at: '2026-01-08T09:52:58.244Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 18
+  fields:
+    customer: 1
+    entrepreneur: 4
+    order_number: 4
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '199.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_fvFqOtK.24.34.png
+    tracking_number: EF582568151TH
+    created_at: '2026-01-14T05:34:51.621Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 19
+  fields:
+    customer: 1
+    entrepreneur: 4
+    order_number: 5
+    customer_name: น้องหมวย
+    customer_phone: 064888888
+    customer_address: 15/9 xxxxxx xxxxxx xxxxx บ้านโนน
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '99.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_8KsxlKk.24.34.png
+    tracking_number: EF58548428151TH
+    created_at: '2026-01-14T09:28:27.901Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 20
+  fields:
+    customer: 1
+    entrepreneur: 1
+    order_number: 1
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '699.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_NISWS2G.24.34.png
+    tracking_number: RG453678925TH
+    created_at: '2026-01-15T13:29:56.482Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 21
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 1
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '209.00'
+    status: success
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-01-15T14:16:48.626Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 22
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 2
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '189.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_JSYyWCE.24.34.png
+    tracking_number: null
+    created_at: '2026-01-15T14:18:25.013Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 23
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 3
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '599.00'
+    status: success
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-01-15T14:19:17.709Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 24
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 4
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '599.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_mG7fxUh.24.34.png
+    tracking_number: null
+    created_at: '2026-01-15T14:20:43.736Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 25
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 5
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '0.00'
+    total_price: '199.00'
+    status: paid
+    slip_image: slips/Screenshot-2567-07-03-at-13_VC30YdL.24.34.png
+    tracking_number: null
+    created_at: '2026-01-15T14:59:39.534Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 26
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 6
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '169.00'
+    status: paid
+    slip_image: slips/Screenshot-2567-07-03-at-13_vAmTX5U.24.34.png
+    tracking_number: null
+    created_at: '2026-01-15T16:52:57.982Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 27
+  fields:
+    customer: 1
+    entrepreneur: 7
+    order_number: 1
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '800.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_kZeUBpH.24.34.png
+    tracking_number: RG45368752925TH
+    created_at: '2026-01-15T17:51:58.192Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 28
+  fields:
+    customer: 1
+    entrepreneur: 1
+    order_number: 2
+    customer_name: สมชาย
+    customer_phone: 081-234-5678
+    customer_address: 12 /7 เสื่องข้าว ศรีรัตนะ จังหวัด 33240
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '179.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_kz7Xlrk.24.34.png
+    tracking_number: RG453678925TH
+    created_at: '2026-01-15T18:29:22.452Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 29
+  fields:
+    customer: 1
+    entrepreneur: 7
+    order_number: 2
+    customer_name: สมชาย
+    customer_phone: 081-234-5678
+    customer_address: 12/7 เสื่องข้าว ศรีรัตนะ จังหวัด 33240
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '228.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_xcpt5A9.24.34.png
+    tracking_number: RG453678925TH
+    created_at: '2026-01-16T03:40:02.341Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 30
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 7
+    customer_name: สมชาย
+    customer_phone: 081-234-5678
+    customer_address: 12/7 เสื่องข้าว ศรีรัตนะ จังหวัด 33240
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '84.00'
+    status: success
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-02-01T13:11:57.425Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 31
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 8
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '349.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_3r4aw0z.24.34.png
+    tracking_number: null
+    created_at: '2026-02-11T05:27:51.514Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 32
+  fields:
+    customer: 1
+    entrepreneur: 5
+    order_number: 9
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '159.00'
+    status: paid
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-02-11T07:06:44.717Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 35
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 10
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '409.00'
+    status: paid
+    slip_image: slips/Screenshot-2567-07-03-at-13_gZVYDwC.24.34.png
+    tracking_number: null
+    created_at: '2026-02-20T14:25:37.553Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 36
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 11
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '139.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_TdRsk5M.24.34.png
+    tracking_number: EF58548428151TH
+    created_at: '2026-02-21T08:46:24.052Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 37
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 3
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ลูกค้าขอยกเลิก
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '340.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_u3h2xmt.24.34.png
+    tracking_number: EF582568151TH
+    created_at: '2026-02-21T12:34:08.899Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 38
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 4
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ลูกค้าขอยกเลิก
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '79.00'
+    status: cancelled
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-02-21T17:31:09.609Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 39
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 5
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ร้านค้าอนุมัติการยกเลิกแล้ว
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '79.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_rNOtSuT.24.34.png
+    tracking_number: null
+    created_at: '2026-02-21T17:55:24.662Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 40
+  fields:
+    customer: 8
+    entrepreneur: 1
+    order_number: 6
+    customer_name: สมชาย
+    customer_phone: 081-234-5678
+    customer_address: 12/7 เสื่องข้าว ศรีรัตนะ จังหวัด 33240
+    cancel_reason: ลูกค้าขอยกเลิก
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '108.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_G1oDr6u.24.34.png
+    tracking_number: null
+    created_at: '2026-02-21T18:48:54.513Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 41
+  fields:
+    customer: 8
+    entrepreneur: 1
+    order_number: 7
+    customer_name: สมชาย
+    customer_phone: 081-234-5678
+    customer_address: 12/7 เสื่องข้าว ศรีรัตนะ จังหวัด 33240
+    cancel_reason: ร้านค้าอนุมัติการยกเลิกแล้ว
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '79.00'
+    status: cancelled
+    slip_image: ''
+    tracking_number: null
+    created_at: '2026-02-22T06:26:50.885Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 42
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 8
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ร้านค้าอนุมัติการยกเลิกแล้ว
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '79.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_kZpohD8.24.34.png
+    tracking_number: EF58548428151TH
+    created_at: '2026-02-22T12:35:46.552Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 43
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 9
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ร้านค้าอนุมัติการยกเลิกแล้ว
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '179.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_waxJVes.24.34.png
+    tracking_number: null
+    created_at: '2026-02-22T13:23:05.275Z'
+    updated_at: '2026-02-23T14:52:38.627Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 44
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 12
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '169.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_EFGPLAn.24.34.png
+    tracking_number: EF582568151TH
+    created_at: '2026-02-23T13:32:52.934Z'
+    updated_at: '2026-02-25T08:35:40.238Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 45
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 10
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '79.00'
+    status: completed
+    slip_image: slips/Screenshot-2567-07-03-at-13_FxVp908.24.34.png
+    tracking_number: null
+    created_at: '2026-02-23T13:34:47.546Z'
+    updated_at: '2026-02-25T11:37:20.100Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 46
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 13
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: ร้านค้าอนุมัติการคืนเงิน/คืนสินค้าแล้ว
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '259.00'
+    status: cancelled
+    slip_image: slips/Screenshot-2567-07-03-at-13_BVM6KbR.24.34.png
+    tracking_number: null
+    created_at: '2026-02-23T13:34:47.563Z'
+    updated_at: '2026-02-24T11:56:19.097Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 47
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 14
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: เจอสินค้าที่อื่นราคาถูกกว่า
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '169.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_UpCp3Yq.24.34.png
+    tracking_number: null
+    created_at: '2026-02-23T16:03:08.183Z'
+    updated_at: '2026-02-25T11:45:28.877Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 48
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 15
+    customer_name: น้องหมวย
+    customer_phone: 064888888
+    customer_address: 15/9 xxxxxx xxxxxx xxxxx บ้านโนน
+    cancel_reason: null
+    is_return_requested: true
+    shipping_cost: '50.00'
+    total_price: '1248.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_EYn15FZ.24.34.png
+    tracking_number: EF58548428151TH
+    created_at: '2026-02-25T08:51:35.780Z'
+    updated_at: '2026-02-25T08:53:48.129Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 49
+  fields:
+    customer: 10
+    entrepreneur: 5
+    order_number: 16
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '349.00'
+    status: completed
+    slip_image: slips/Screenshot-2567-07-03-at-13_DRl7wHI.24.34.png
+    tracking_number: EF7528548428151TH
+    created_at: '2026-02-25T11:49:09.297Z'
+    updated_at: '2026-02-25T11:54:37.582Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 50
+  fields:
+    customer: 10
+    entrepreneur: 7
+    order_number: 3
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: true
+    shipping_cost: '50.00'
+    total_price: '280.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_MwemecH.24.34.png
+    tracking_number: EF123TH
+    created_at: '2026-02-25T12:01:34.439Z'
+    updated_at: '2026-02-26T07:31:03.156Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 51
+  fields:
+    customer: 10
+    entrepreneur: 7
+    order_number: 4
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '370.00'
+    status: completed
+    slip_image: slips/Screenshot-2567-07-03-at-13_eKOWo6C.24.34.png
+    tracking_number: EF1234TH
+    created_at: '2026-02-25T12:01:49.141Z'
+    updated_at: '2026-02-25T12:03:50.200Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 52
+  fields:
+    customer: 10
+    entrepreneur: 1
+    order_number: 11
+    customer_name: เจ้าลี่
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: true
+    shipping_cost: '50.00'
+    total_price: '270.00'
+    status: success
+    slip_image: slips/Screenshot-2567-07-03-at-13_tysb9EA.24.34.png
+    tracking_number: null
+    created_at: '2026-02-26T07:55:20.695Z'
+    updated_at: '2026-02-26T07:55:56.032Z'
+    has_unread_status_update: false
+- model: petjoy.order
+  pk: 53
+  fields:
+    customer: 8
+    entrepreneur: 7
+    order_number: 5
+    customer_name: ภคพร สมจันทร์
+    customer_phone: '0647120613'
+    customer_address: มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345
+    cancel_reason: null
+    is_return_requested: false
+    shipping_cost: '50.00'
+    total_price: '530.00'
+    status: completed
+    slip_image: slips/Screenshot-2567-07-03-at-13_Lu5wCqH.24.34.png
+    tracking_number: EF582568151TH
+    created_at: '2026-03-02T14:26:30.162Z'
+    updated_at: '2026-03-02T14:30:47.416Z'
+    has_unread_status_update: false
+- model: petjoy.orderitem
+  pk: 16
+  fields:
+    order: 15
+    product: 34
+    quantity: 1
+    price: '99.00'
+- model: petjoy.orderitem
+  pk: 17
+  fields:
+    order: 16
+    product: 34
+    quantity: 1
+    price: '99.00'
+- model: petjoy.orderitem
+  pk: 18
+  fields:
+    order: 17
+    product: 46
+    quantity: 1
+    price: '999.00'
+- model: petjoy.orderitem
+  pk: 19
+  fields:
+    order: 18
+    product: 39
+    quantity: 1
+    price: '199.00'
+- model: petjoy.orderitem
+  pk: 20
+  fields:
+    order: 19
+    product: 34
+    quantity: 1
+    price: '99.00'
+- model: petjoy.orderitem
+  pk: 21
+  fields:
+    order: 20
+    product: 24
+    quantity: 1
+    price: '699.00'
+- model: petjoy.orderitem
+  pk: 22
+  fields:
+    order: 21
+    product: 64
+    quantity: 1
+    price: '209.00'
+- model: petjoy.orderitem
+  pk: 23
+  fields:
+    order: 22
+    product: 70
+    quantity: 1
+    price: '189.00'
+- model: petjoy.orderitem
+  pk: 24
+  fields:
+    order: 23
+    product: 58
+    quantity: 1
+    price: '599.00'
+- model: petjoy.orderitem
+  pk: 25
+  fields:
+    order: 24
+    product: 58
+    quantity: 1
+    price: '599.00'
+- model: petjoy.orderitem
+  pk: 26
+  fields:
+    order: 25
+    product: 50
+    quantity: 1
+    price: '199.00'
+- model: petjoy.orderitem
+  pk: 27
+  fields:
+    order: 26
+    product: 49
+    quantity: 1
+    price: '119.00'
+- model: petjoy.orderitem
+  pk: 28
+  fields:
+    order: 27
+    product: 80
+    quantity: 1
+    price: '750.00'
+- model: petjoy.orderitem
+  pk: 29
+  fields:
+    order: 28
+    product: 22
+    quantity: 1
+    price: '129.00'
+- model: petjoy.orderitem
+  pk: 30
+  fields:
+    order: 29
+    product: 86
+    quantity: 2
+    price: '89.00'
+- model: petjoy.orderitem
+  pk: 31
+  fields:
+    order: 30
+    product: 62
+    quantity: 2
+    price: '17.00'
+- model: petjoy.orderitem
+  pk: 32
+  fields:
+    order: 31
+    product: 52
+    quantity: 1
+    price: '299.00'
+- model: petjoy.orderitem
+  pk: 33
+  fields:
+    order: 32
+    product: 65
+    quantity: 1
+    price: '109.00'
+- model: petjoy.orderitem
+  pk: 34
+  fields:
+    order: 35
+    product: 55
+    quantity: 1
+    price: '359.00'
+- model: petjoy.orderitem
+  pk: 35
+  fields:
+    order: 36
+    product: 56
+    quantity: 1
+    price: '89.00'
+- model: petjoy.orderitem
+  pk: 36
+  fields:
+    order: 37
+    product: 27
+    quantity: 10
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 37
+  fields:
+    order: 38
+    product: 27
+    quantity: 1
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 38
+  fields:
+    order: 39
+    product: 27
+    quantity: 1
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 39
+  fields:
+    order: 40
+    product: 27
+    quantity: 2
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 40
+  fields:
+    order: 41
+    product: 27
+    quantity: 1
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 41
+  fields:
+    order: 42
+    product: 27
+    quantity: 1
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 42
+  fields:
+    order: 43
+    product: 23
+    quantity: 1
+    price: '129.00'
+- model: petjoy.orderitem
+  pk: 43
+  fields:
+    order: 44
+    product: 49
+    quantity: 1
+    price: '119.00'
+- model: petjoy.orderitem
+  pk: 44
+  fields:
+    order: 45
+    product: 27
+    quantity: 1
+    price: '29.00'
+- model: petjoy.orderitem
+  pk: 45
+  fields:
+    order: 46
+    product: 64
+    quantity: 1
+    price: '209.00'
+- model: petjoy.orderitem
+  pk: 46
+  fields:
+    order: 47
+    product: 49
+    quantity: 1
+    price: '119.00'
+- model: petjoy.orderitem
+  pk: 47
+  fields:
+    order: 48
+    product: 58
+    quantity: 2
+    price: '599.00'
+- model: petjoy.orderitem
+  pk: 48
+  fields:
+    order: 49
+    product: 51
+    quantity: 1
+    price: '299.00'
+- model: petjoy.orderitem
+  pk: 49
+  fields:
+    order: 50
+    product: 89
+    quantity: 1
+    price: '230.00'
+- model: petjoy.orderitem
+  pk: 50
+  fields:
+    order: 51
+    product: 82
+    quantity: 1
+    price: '320.00'
+- model: petjoy.orderitem
+  pk: 51
+  fields:
+    order: 52
+    product: 12
+    quantity: 1
+    price: '220.00'
+- model: petjoy.orderitem
+  pk: 52
+  fields:
+    order: 53
+    product: 84
+    quantity: 1
+    price: '480.00'
+- model: petjoy.chatroom
+  pk: 13
+  fields:
+    customer: 10
+    entrepreneur: 4
+    hidden_by_customer: true
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 15
+  fields:
+    customer: 8
+    entrepreneur: 1
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 17
+  fields:
+    customer: 8
+    entrepreneur: 7
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 18
+  fields:
+    customer: 18
+    entrepreneur: 7
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 19
+  fields:
+    customer: 1
+    entrepreneur: 5
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 21
+  fields:
+    customer: 10
+    entrepreneur: 1
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 22
+  fields:
+    customer: 10
+    entrepreneur: 11
+    hidden_by_customer: true
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 23
+  fields:
+    customer: 10
+    entrepreneur: 5
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatroom
+  pk: 24
+  fields:
+    customer: 10
+    entrepreneur: 7
+    hidden_by_customer: false
+    hidden_by_entrepreneur: false
+- model: petjoy.chatmessage
+  pk: 21
+  fields:
+    room: 13
+    sender: 10
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: true
+    timestamp: '2026-01-14T09:31:23.342Z'
+- model: petjoy.chatmessage
+  pk: 27
+  fields:
+    room: 15
+    sender: 8
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: true
+    timestamp: '2026-01-15T18:26:16.510Z'
+- model: petjoy.chatmessage
+  pk: 31
+  fields:
+    room: 17
+    sender: 8
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: true
+    timestamp: '2026-01-16T03:39:00.876Z'
+- model: petjoy.chatmessage
+  pk: 32
+  fields:
+    room: 17
+    sender: 19
+    message: สวัสดีค่ะ ร้านยินดีให้บริการค่ะ
+    attachment: ''
+    is_read: false
+    timestamp: '2026-01-16T03:43:33.137Z'
+- model: petjoy.chatmessage
+  pk: 33
+  fields:
+    room: 18
+    sender: 18
+    message: '⚠️ แจ้งเตือนจากแอดมิน: สินค้าของคุณ ''Kanimal ของเล่นแมว เบ็ดตกแมว ลูกบอลพันเชือก''
+      ถูกรายงาน
+
+      หัวข้อ: เข้าข่ายหลอกลวง
+
+      รายละเอียด: -
+
+      กรุณาตรวจสอบความถูกต้องหรือแก้ไขสินค้า หากพบการละเมิดจะถูกลบออกจากระบบ'
+    attachment: ''
+    is_read: true
+    timestamp: '2026-01-16T03:47:49.199Z'
+- model: petjoy.chatmessage
+  pk: 34
+  fields:
+    room: 13
+    sender: 10
+    message: ดีค่ะ
+    attachment: ''
+    is_read: false
+    timestamp: '2026-02-01T07:38:41.707Z'
+- model: petjoy.chatmessage
+  pk: 44
+  fields:
+    room: 21
+    sender: 11
+    message: สวัสดีค่ะ ลูกค้าโอนเงินผิดค่ะ
+    attachment: ''
+    is_read: false
+    timestamp: '2026-02-21T15:04:20.350Z'
+- model: petjoy.chatmessage
+  pk: 45
+  fields:
+    room: 21
+    sender: 10
+    message: null
+    attachment: chat_attachments/Screenshot-2567-07-03-at-13_PSHNPWE.24.34.png
+    is_read: true
+    timestamp: '2026-02-21T15:04:31.955Z'
+- model: petjoy.chatmessage
+  pk: 46
+  fields:
+    room: 22
+    sender: 10
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: false
+    timestamp: '2026-02-22T14:57:09.670Z'
+- model: petjoy.chatmessage
+  pk: 50
+  fields:
+    room: 23
+    sender: 16
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: false
+    timestamp: '2026-02-23T16:56:43.802Z'
+- model: petjoy.chatmessage
+  pk: 51
+  fields:
+    room: 23
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #13)
+
+      เหตุผล: ลอง'
+    attachment: chat_attachments/นก.jpg
+    is_read: true
+    timestamp: '2026-02-24T09:00:08.343Z'
+- model: petjoy.chatmessage
+  pk: 52
+  fields:
+    room: 23
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #14)
+
+      เหตุผล: ไม่เอาแล้วค่ะ'
+    attachment: chat_attachments/ทดสอบคลป.mkv
+    is_read: true
+    timestamp: '2026-02-24T11:59:43.784Z'
+- model: petjoy.chatmessage
+  pk: 53
+  fields:
+    room: 21
+    sender: 10
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: true
+    timestamp: '2026-02-24T15:49:04.306Z'
+- model: petjoy.chatmessage
+  pk: 54
+  fields:
+    room: 23
+    sender: 10
+    message: สวัสดีค่ะ
+    attachment: ''
+    is_read: true
+    timestamp: '2026-02-25T05:27:51.754Z'
+- model: petjoy.chatmessage
+  pk: 55
+  fields:
+    room: 23
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #14)
+
+      เหตุผล: ของเสียหายค่ะ'
+    attachment: chat_attachments/ทดสอบคลป_P5uAwZ8.mkv
+    is_read: true
+    timestamp: '2026-02-25T05:28:55.043Z'
+- model: petjoy.chatmessage
+  pk: 56
+  fields:
+    room: 23
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #15)
+
+      เหตุผล: สินค้าชำรุด'
+    attachment: chat_attachments/ทดสอบคลป_3GubTkP.mkv
+    is_read: true
+    timestamp: '2026-02-25T08:53:48.155Z'
+- model: petjoy.chatmessage
+  pk: 57
+  fields:
+    room: 24
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #3)
+
+      เหตุผล: สินค้าชำรุด'
+    attachment: chat_attachments/รานทดสอบ.jpg
+    is_read: true
+    timestamp: '2026-02-26T07:31:03.208Z'
+- model: petjoy.chatmessage
+  pk: 58
+  fields:
+    room: 24
+    sender: 10
+    message: ''
+    attachment: chat_attachments/ลอง_jB3ZxpW.jpg
+    is_read: true
+    timestamp: '2026-02-26T07:31:03.234Z'
+- model: petjoy.chatmessage
+  pk: 59
+  fields:
+    room: 24
+    sender: 10
+    message: ''
+    attachment: chat_attachments/ลกบอลแมว_12HVRDn.jpg
+    is_read: true
+    timestamp: '2026-02-26T07:31:03.239Z'
+- model: petjoy.chatmessage
+  pk: 60
+  fields:
+    room: 24
+    sender: 10
+    message: ''
+    attachment: chat_attachments/อาหารแมว.png
+    is_read: true
+    timestamp: '2026-02-26T07:31:03.242Z'
+- model: petjoy.chatmessage
+  pk: 61
+  fields:
+    room: 21
+    sender: 10
+    message: '🚨 แจ้งขอคืนสินค้า (Order #11)
+
+      เหตุผล: สินค้าชำรุด'
+    attachment: chat_attachments/ทดสอบคลป_TeINnlX.mkv
+    is_read: true
+    timestamp: '2026-02-26T07:55:56.055Z'
+- model: petjoy.chatmessage
+  pk: 62
+  fields:
+    room: 21
+    sender: 10
+    message: ''
+    attachment: chat_attachments/ลกบอลแมว_MCZCTtV.jpg
+    is_read: true
+    timestamp: '2026-02-26T07:55:56.070Z'
+- model: petjoy.chatmessage
+  pk: 63
+  fields:
+    room: 21
+    sender: 10
+    message: ''
+    attachment: chat_attachments/อาหารแมว_tCwlRK9.png
+    is_read: true
+    timestamp: '2026-02-26T07:55:56.080Z'
+- model: petjoy.customeradminchatroom
+  pk: 2
+  fields:
+    user: 10
+    created_at: '2026-02-23T16:03:20.283Z'
+- model: petjoy.customeradminchatmessage
+  pk: 3
+  fields:
+    room: 2
+    sender: 10
+    message: สวัสดีค่ะ
+    attachment: ''
+    timestamp: '2026-02-24T12:44:11.362Z'
+- model: petjoy.customeradminchatmessage
+  pk: 4
+  fields:
+    room: 2
+    sender: 10
+    message: ดีค่ะ
+    attachment: ''
+    timestamp: '2026-02-24T14:48:47.612Z'
+- model: petjoy.quickreply
+  pk: 1
+  fields:
+    entrepreneur: 4
+    message: สวัสดีค่ะ 😊 ทางร้านพร้อมให้บริการค่ะ
+    created_at: '2026-01-14T08:34:53.368Z'
+- model: petjoy.quickreply
+  pk: 2
+  fields:
+    entrepreneur: 4
+    message: ส่งของให้แล้วน้าาา 🚚 ขอบคุณที่มาอุดหนุนร้านเรานะคะ ไว้มาใหม่น้า ✨💕
+    created_at: '2026-01-14T09:39:51.139Z'
+- model: petjoy.quickreply
+  pk: 3
+  fields:
+    entrepreneur: 7
+    message: สวัสดีค่ะ ร้านยินดีให้บริการค่ะ
+    created_at: '2026-01-16T03:01:47.145Z'
+- model: petjoy.quickreply
+  pk: 4
+  fields:
+    entrepreneur: 7
+    message: ขอบคุณที่ใช้บริการค่ะ
+    created_at: '2026-01-16T03:43:21.753Z'
+- model: petjoy.quickreply
+  pk: 5
+  fields:
+    entrepreneur: 5
+    message: สวัสดีค่ะ ร้านยินดีให้บริการค่ะ
+    created_at: '2026-02-20T14:14:52.451Z'
+- model: petjoy.quickreply
+  pk: 6
+  fields:
+    entrepreneur: 1
+    message: สวัสดีค่ะ
+    created_at: '2026-02-23T14:36:31.409Z'
+- model: petjoy.reviewreply
+  pk: 1
+  fields:
+    review: 2
+    entrepreneur: 4
+    message: ขอบพระคุณที่ไว้ใจร้านของเราค่ะ
+    created_at: '2026-01-08T08:12:18.198Z'
+- model: petjoy.reviewreply
+  pk: 2
+  fields:
+    review: 3
+    entrepreneur: 4
+    message: ขอบคุณลูกค้าที่อุดหนุนมากๆค่ะ
+    created_at: '2026-01-08T09:54:03.635Z'
+- model: petjoy.reviewreply
+  pk: 3
+  fields:
+    review: 4
+    entrepreneur: 4
+    message: ขอบคุณที่ไว้ใจทางร้านค่ะ
+    created_at: '2026-01-14T06:04:29.823Z'
+- model: petjoy.reviewreply
+  pk: 4
+  fields:
+    review: 5
+    entrepreneur: 4
+    message: ขอบคุณสำหรับรีวิวนะคะ
+    created_at: '2026-01-14T09:30:09.587Z'
+- model: petjoy.reviewreply
+  pk: 5
+  fields:
+    review: 6
+    entrepreneur: 1
+    message: ขอบคุณลูกค้ามากค่ะ
+    created_at: '2026-01-15T13:32:19.453Z'
+- model: petjoy.reviewreply
+  pk: 6
+  fields:
+    review: 12
+    entrepreneur: 7
+    message: ขอบคุณมากค่ะ
+    created_at: '2026-01-16T03:45:03.459Z'
+- model: petjoy.reviewreply
+  pk: 7
+  fields:
+    review: 15
+    entrepreneur: 7
+    message: ขอบคุณมากๆนะคะ
+    created_at: '2026-03-02T14:30:47.402Z'
