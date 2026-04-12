@@ -43,8 +43,31 @@
 
     <div id="chatBox" style="flex: 1; overflow-y: auto; padding: 20px; background: #fff; display: flex; flex-direction: column; gap: 10px;">
         {% for message in messages %}
+
+            {% if forloop.first %}
+                <div style="text-align:center; margin: 8px 0;">
+                    <span style="background:#f0f0f0; color:#999; font-size:0.75rem; padding:4px 12px; border-radius:99px;">
+                        {{ message.timestamp|date:"d M Y" }}
+                    </span>
+                </div>
+            {% else %}
+                {% with prev_msg=messages|slice:forloop.counter0|last %}
+                    {% if prev_msg.timestamp|date:"d M Y" != message.timestamp|date:"d M Y" %}
+                        <div style="text-align:center; margin: 8px 0;">
+                            <span style="background:#f0f0f0; color:#999; font-size:0.75rem; padding:4px 12px; border-radius:99px;">
+                                {{ message.timestamp|date:"d M Y" }}
+                            </span>
+                        </div>
+                    {% endif %}
+                {% endwith %}
+            {% endif %}
+
             <div style="display: flex; flex-direction: column; max-width: 70%; 
                         {% if message.sender == current_user %}align-self: flex-end; align-items: flex-end;{% else %}align-self: flex-start; align-items: flex-start;{% endif %}">
+
+                <span style="font-size: 0.75rem; color: #aaa; margin-bottom: 3px;">
+                    {{ message.sender.username }}
+                </span>
                 
                 <div style="padding: 10px 15px; border-radius: 12px; line-height: 1.4; font-size: 0.95rem;
                             {% if message.sender == current_user %}background: #E65100; color: white; border-bottom-right-radius: 2px;{% else %}background: #f1f1f1; color: #333; border-bottom-left-radius: 2px;{% endif %}">

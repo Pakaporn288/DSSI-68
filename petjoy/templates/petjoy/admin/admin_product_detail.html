@@ -80,9 +80,15 @@
             </table>
 
             <div style="margin-top: 25px; padding-top: 20px; border-top: 1px dashed #ddd; display: flex; gap: 10px; justify-content: flex-end;">
+                {% if reports %}
+                <a href="{% url 'petjoy:admin-start-chat-report' reports.first.id %}" class="btn-action view" style="text-decoration: none;">
+                    💬 ติดต่อร้านค้า
+                </a>
+                {% else %}
                 <a href="{% url 'petjoy:admin-start-chat' product.owner.id %}" class="btn-action view" style="text-decoration: none;">
                     💬 ติดต่อร้านค้า
                 </a>
+                {% endif %}
                 
                 <a href="{% url 'petjoy:admin-delete-product-reported' product.id %}" 
                    class="btn-action danger" 
