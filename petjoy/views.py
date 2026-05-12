@@ -51,26 +51,12 @@ def ask_ai_view(request):
             if not user_message:
                 return JsonResponse({'error': 'No message provided'}, status=400)
 
-            # --- เงื่อนไขใหม่: เช็คว่าเป็นสมาชิกหรือไม่ ---
-            if request.user.is_authenticated:
-                # ถ้า Login -> ส่ง ID ไปให้ AI จำประวัติ
-                user_id = str(request.user.id)
-            else:
-                # ถ้าไม่ Login -> ส่ง None (AI จะไม่จำประวัติ)
-                user_id = None
+            user_id = None
 
             # เรียก AI
             ai_reply = get_ai_response(user_message, user_id)
 
-            # --- การบันทึก Database ---
-            # บันทึกเฉพาะคนที่ Login แล้วเท่านั้น (ตามที่คุณขอ)
-            if request.user.is_authenticated:
-                # ตรวจสอบว่า Model คุณชื่อ ChatMessage หรือ ChatHistory
-                # อันนี้อ้างอิงจากที่คุณเคยส่งไฟล์ models.py มา
-                ChatMessage.objects.create(
-                    sender=request.user, # หรือ user=request.user แล้วแต่ชื่อ field
-                    message=user_message,
-                )
+                        # ไม่บันทึกประวัติการคุย (no DB write)
 
             return JsonResponse({'reply': ai_reply})
 
@@ -314,17 +300,10 @@ def notification_list(request):
     if not request.user.is_authenticated:
         return redirect("petjoy:login")
 
-    # ใช้วิธีเดียวกับ order_history (ชื่อ + เบอร์)
-    addresses = Address.objects.filter(user=request.user)
-    q = Q()
-    for addr in addresses:
-        q |= Q(customer_name=addr.full_name, customer_phone=addr.phone)
-
-    # ⭐ จุดที่แก้ไข: เปลี่ยนจาก order_by('-created_at') เป็น order_by('-updated_at') ⭐
     orders = (
         Order.objects
-        .filter(q)
-        .prefetch_related('items__product', 'reviews')
+        .filter(customer=request.user)
+        .prefetch_related('items__product', 'reviews__reply')
         .order_by('-updated_at')
     )
 
@@ -334,7 +313,6 @@ def notification_list(request):
         if items.exists():
             first_product = items.first().product.name
             count = items.count()
-
             if count > 1:
                 order.display_title = f"{first_product} และอีก {count - 1} รายการ"
             else:
@@ -342,13 +320,24 @@ def notification_list(request):
         else:
             order.display_title = "คำสั่งซื้อของคุณ"
 
-    # 🔔 อัปเดตสถานะว่าอ่านแล้ว เฉพาะรายการที่ยังไม่ได้อ่าน
+    # ดึง review reply ที่ยังไม่ได้อ่านของ user นี้
+    unread_replies = ReviewReply.objects.filter(
+        review__user=request.user,
+        is_read=False
+    ).select_related('review__order', 'review__product')
+
+    # Mark ว่าอ่านแล้วทันทีที่เปิดหน้า
+    unread_reply_ids = list(unread_replies.values_list('id', flat=True))
+    ReviewReply.objects.filter(id__in=unread_reply_ids).update(is_read=True)
+
+    # อัปเดต has_unread_status_update เฉพาะ order ที่ไม่มี reply unread
     orders.filter(has_unread_status_update=True).update(
         has_unread_status_update=False
     )
 
     return render(request, "petjoy/notification_list.html", {
-        "orders": orders
+        "orders": orders,
+        "unread_replies": unread_replies,
     })
 
 @login_required

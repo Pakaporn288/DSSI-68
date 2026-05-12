@@ -12,22 +12,13 @@ api_key = os.getenv("GEMINI_API_KEY")
 if api_key:
     genai.configure(api_key=api_key)
 
-user_memory = {}
-
 def get_ai_response(user_message, user_id):
     if not api_key:
         return "ขออภัยค่ะ ระบบ AI ยังไม่ได้ตั้งค่า API Key"
 
     try:
-        # 1. จัดการความจำ (Memory)
-        memory_context = ""
-        if user_id:
-            if user_id not in user_memory:
-                user_memory[user_id] = []
-            user_memory[user_id].append(user_message)
-            memory_context = "\n".join(user_memory[user_id][-5:])
-        else:
-            memory_context = "ผู้ใช้งานทั่วไป (ไม่จำประวัติ)"
+        # No persistent or in-memory chat history: do not include prior messages
+        memory_context = "(ไม่มีการเก็บประวัติ)"
 
         # 2. ดึงสินค้า
         products = Product.objects.all()
@@ -43,12 +34,11 @@ def get_ai_response(user_message, user_id):
         # 3. Prompt (เพิ่มกฎห้ามใช้ ##)
         system_instruction = f"""
         คุณคือ 'PetJoy Bot' ผู้ช่วยขายของร้าน PetJoy
-        
+
         ข้อมูลสินค้าที่มี:
         {product_context}
 
-        ประวัติการคุย:
-        {memory_context}
+
 
         กฎเหล็กในการตอบ:
         1. **ห้ามใช้เครื่องหมายหัวข้อใหญ่ (เช่น ## หรือ ###) เด็ดขาด** ให้ใช้ตัวหนา (**) แทน
@@ -66,9 +56,7 @@ def get_ai_response(user_message, user_id):
         response = model.generate_content(user_message)
         ai_text = response.text.strip()
         
-        if user_id:
-            user_memory[user_id].append(f"AI: {ai_text}")
-        
+        # Do not store AI responses in process memory or DB
         return ai_text
 
     except Exception as e:

@@ -25,6 +25,20 @@
         <h2 style="margin:0; font-size:22px;">การแจ้งเตือน</h2>
     </div>
 
+    {% for reply in unread_replies %}
+    <a href="{% url 'petjoy:order_detail_customer' reply.review.order.id %}" style="text-decoration:none; color:inherit;">
+        <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
+                    box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;
+                    border-left: 4px solid #ff7a00;">
+            <div>
+                <strong>{{ reply.review.product.name }}</strong><br>
+                <span style="color:#ff7a00;font-weight:600;">ร้านค้าตอบกลับรีวิวของคุณแล้ว</span><br>
+                <small style="color:#aaa;">{{ reply.created_at|date:"d M Y • H:i" }}</small>
+            </div>
+        </div>
+    </a>
+    {% endfor %}
+
     {% if orders %}
         {% for order in orders %}
             
@@ -119,33 +133,8 @@
                     </div>
                 </div>
             </a>
-
-            {% elif order.status == 'completed' %}
-            <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
-                        box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
-                <div>
-                    <strong>{{ order.display_title }}</strong><br>
-                    <span style="color:#15803d;font-weight:600;">คำสั่งซื้อเสร็จสมบูรณ์</span><br>
-                    <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
-                </div>
-
-                <div>
-                    {% if not order.reviews.exists %}
-                    <a href="{% url 'petjoy:review_product' order.id %}"
-                       style="padding:8px 16px;background:#ff7a00;color:#fff;
-                              border-radius:999px;font-size:14px;text-decoration:none; display:inline-block;">
-                        รีวิวสินค้า
-                    </a>
-                    {% else %}
-                    <span style="color:#22c55e; font-size:14px;">
-                        <i class="ri-checkbox-circle-fill"></i> รีวิวแล้ว
-                    </span>
-                    {% endif %}
-                </div>
-            </div>
             {% endif %}
 
-            
             {% if order.cancel_reason and order.status != 'cancelled' and order.status != 'cancel_requested' and not order.is_return_requested %}
             <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
                 <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
@@ -159,26 +148,10 @@
             </a>
             {% endif %}
 
-            {# การแจ้งเตือนเมื่อร้านตอบกลับรีวิว (ปรับให้ทำงานตอนที่ออเดอร์ completed แล้ว) #}
-            {% if order.status == 'completed' %}
-                {% for review in order.reviews.all %}
-                    {% if review.reply %}
-                    <a href="{% url 'petjoy:order_detail_customer' order.id %}" style="text-decoration:none; color:inherit;">
-                        <div style="background:#fff;border-radius:20px;padding:20px 22px;margin-bottom:16px;
-                                    box-shadow:0 6px 18px rgba(0,0,0,0.06);display:flex;justify-content:space-between;align-items:center;">
-                            <div>
-                                <strong>{{ order.display_title }}</strong><br>
-                                <span style="color:#ff7a00;font-weight:600;">ร้านค้าตอบกลับรีวิวของคุณแล้ว</span><br>
-                                <small style="color:#aaa;">{{ order.updated_at|date:"d M Y • H:i" }}</small>
-                            </div>
-                        </div>
-                    </a>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-
         {% endfor %}
-    {% else %}
+    {% endif %}
+
+    {% if not orders and not unread_replies %}
         <div style="text-align:center; padding:60px 20px; background:#fff; border-radius:20px; box-shadow:0 4px 15px rgba(0,0,0,0.05);">
             <i class="ri-notification-off-line" style="font-size:48px; color:#ccc; margin-bottom:15px; display:block;"></i>
             <h3 style="color:#666; margin:0; font-size:18px;">ยังไม่มีการแจ้งเตือน</h3>

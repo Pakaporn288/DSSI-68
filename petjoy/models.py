@@ -90,14 +90,6 @@ class Review(models.Model):
         return f'Review for {self.product.name} by {self.user.username}'
 
 
-class ChatHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    user_message = models.TextField()
-    ai_response = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return f"Chat by {self.user.username if self.user else 'Anonymous'} at {self.created_at}"
 
 
 # models.py
@@ -374,6 +366,7 @@ class ReviewReply(models.Model):
     )
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    is_read = models.BooleanField(default=False)  # ← เพิ่มบรรทัดนี้
 
     def __str__(self):
         return f"Reply to review {self.review.id}"
