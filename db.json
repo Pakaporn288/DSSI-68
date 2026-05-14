@@ -1189,7 +1189,7 @@
   "pk": 8,
   "fields": {
     "password": "pbkdf2_sha256$1000000$FTPQFFyrYcWvtm5lGVpGjC$4pH5YJqDEdqxsStnMgeLpproPFayw1ER7CIHYIOEw+I=",
-    "last_login": "2026-03-05T19:50:16.664Z",
+    "last_login": "2026-05-14T06:42:10.464Z",
     "is_superuser": false,
     "username": "moa",
     "first_name": "ออม",
@@ -1225,7 +1225,7 @@
   "pk": 10,
   "fields": {
     "password": "pbkdf2_sha256$1000000$P9MPTdeg7hKE8pk8RyCqoH$6ujbw8MSFiZQ5l8knlxKOwt4tbcemRxOjes0EbW8MNk=",
-    "last_login": "2026-02-24T06:35:58.259Z",
+    "last_login": "2026-04-20T08:51:53.129Z",
     "is_superuser": false,
     "username": "pan",
     "first_name": "",
@@ -1243,7 +1243,7 @@
   "pk": 11,
   "fields": {
     "password": "pbkdf2_sha256$1000000$vdPzeyyVdX2DgKMXPLhOVr$1muGMwed0eKyTdS5p32HTAWvIpKZ6uEn17yVGxK7n6g=",
-    "last_login": "2026-02-26T07:54:59.462Z",
+    "last_login": "2026-05-12T06:07:44.606Z",
     "is_superuser": false,
     "username": "Ma_Noi",
     "first_name": "",
@@ -1279,7 +1279,7 @@
   "pk": 16,
   "fields": {
     "password": "pbkdf2_sha256$1000000$xNnATAhcWfXfsbNHd4SKX3$8MeskuXCtRJq2+6OPxW2q/lIRa4pda/H6m78NEfe/D8=",
-    "last_login": "2026-03-03T10:18:29.011Z",
+    "last_login": "2026-05-14T07:26:31.961Z",
     "is_superuser": false,
     "username": "ClickPet",
     "first_name": "",
@@ -1315,7 +1315,7 @@
   "pk": 18,
   "fields": {
     "password": "pbkdf2_sha256$1000000$pFnY9J0aKTxEfgOltBZjwQ$fK7AX/IIKXV8cAqwODGgX8EQupQKRmaaculrTfZaDNw=",
-    "last_login": "2026-03-03T10:14:27.614Z",
+    "last_login": "2026-05-14T08:15:58.480Z",
     "is_superuser": true,
     "username": "admin",
     "first_name": "",
@@ -1582,6 +1582,14 @@
 },
 {
   "model": "sessions.session",
+  "pk": "8ohfvz3ga86smqaxb24vcnfk2ilq18gs",
+  "fields": {
+    "session_data": ".eJxVjEEOwiAQRe_C2hAYCgWX7nsGMsOMUjVtUtqV8e7apAvd_vfef6mM21rz1mTJI6uzskadfkfC8pBpJ3zH6TbrMk_rMpLeFX3QpoeZ5Xk53L-Diq1-68SIloQkdtbZnqDrycUSJTFYjoZc6gTJgDfO4zVQT94HYYASoFin3h8UGDgb:1wEkMD:9Z3RbDtyhXftxi_4wpLFnavGKnLBNvOjVjRvSf0FLRw",
+    "expire_date": "2026-05-04T08:51:53.139Z"
+  }
+},
+{
+  "model": "sessions.session",
   "pk": "9sp3ti2ig9if95i6cn1ukm9wr1sq8iis",
   "fields": {
     "session_data": ".eJxVjEEOgjAQRe_StWkKpePg0j1nIDOdqaCmTSisjHdXEha6_e-9_zIjbes0blWXcRZzMWhOvxtTfGjegdwp34qNJa_LzHZX7EGrHYro83q4fwcT1elbJyASFQldDL1vHTfaJIyoDsS1yNSyQxAihrPnLvWpYfSpA88qCMG8PxE8OMQ:1vYPu8:83qFxJrCZ7I6YXDGERSarZyAO_C48ncdp4LMOJUFCvA",
@@ -1590,10 +1598,42 @@
 },
 {
   "model": "sessions.session",
+  "pk": "bj4ho0w3r8hdqr2onhxpw4n0vekixvt1",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQRP-FsyHtUhA8eu83kIVdpGogKe3J-O9K0oMmc5r3Zl7C475lvzde_ULiIkYrTr9lwPjg0gndsdyqjLVs6xJkV-RBm5wr8fN6uH8HGVv-ri2CU9jjDGtylCgpOGsmox2AnTg4lSLGIVAakwVrpilYdkAYBhXF-wMZMzi1:1wBrTR:Vy8IoBpd04B25psUTVvz0ltvniz_Q3knxzip9bVHdqY",
+    "expire_date": "2026-04-26T09:51:25.456Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dacc3kteahx8ykvm380gc1589ag1vojv",
+  "fields": {
+    "session_data": ".eJxVjDsOwjAQRO_iGln-7dpQ0nMGa9d2cAA5UpxUiLuTSClgynlv5i0irUuNay9zHLO4iCBOvx1Tepa2g_ygdp9kmtoyjyx3RR60y9uUy-t6uH8HlXrd1qlw4AAGivYWIJmklSNtvNGI7BjdFkIEe1YKWFmFNtshDF4ZwgDi8wW7qTZE:1wMgJ2:pa_asDTLCdRP-gq3v7ztMOgPkwEY8GS2--xEOh6u0I0",
+    "expire_date": "2026-05-26T06:09:24.802Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "dt1twn2qzccc621y1i6poikipf64r8zi",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQRP-FsyHtUhA8eu83kIVdpGogKe3J-O9K0oMmc5r3Zl7C475lvzde_ULiIkYrTr9lwPjg0gndsdyqjLVs6xJkV-RBm5wr8fN6uH8HGVv-ri2CU9jjDGtylCgpOGsmox2AnTg4lSLGIVAakwVrpilYdkAYBhXF-wMZMzi1:1wMgEZ:Ah1rmnA-4JKRySo7_gNCUR3p-QJwsqU8_XLghWuS8g0",
+    "expire_date": "2026-05-26T06:04:47.020Z"
+  }
+},
+{
+  "model": "sessions.session",
   "pk": "ids5ijhecmhnpq8iwwcoro3wvoioqlv0",
   "fields": {
     "session_data": ".eJxVjEEOwiAQRe_C2hCgDIJL9z0DGYapVA0kpV0Z765NutDtf-_9l4i4rSVunZc4Z3ERXpx-t4T04LqDfMd6a5JaXZc5yV2RB-1ybJmf18P9OyjYy7c2xNYzemdB6YGAgkUgIk1GWcqEnD1TmACNcagCDjrBeWLnFYDNRrw__eM4WQ:1vYIHF:A0pV5wMBFQCcpnIOUxnIaMkKPmjCy-h8X9HrrS09lt8",
     "expire_date": "2026-01-07T06:23:17.070Z"
+  }
+},
+{
+  "model": "sessions.session",
+  "pk": "iox50ef76jc58n2m4whaliqk9zqh7j9d",
+  "fields": {
+    "session_data": ".eJxVjMEOwiAQRP-FsyHtUhA8eu83kIVdpGogKe3J-O9K0oMmc5r3Zl7C475lvzde_ULiIkYrTr9lwPjg0gndsdyqjLVs6xJkV-RBm5wr8fN6uH8HGVv-ri2CU9jjDGtylCgpOGsmox2AnTg4lSLGIVAakwVrpilYdkAYBhXF-wMZMzi1:1wNREc:n9YDneAGDnQ_g5anXf8mQOfVeyOz4vJ0ylDJO7lgitg",
+    "expire_date": "2026-05-28T08:15:58.488Z"
   }
 },
 {
@@ -1866,7 +1906,7 @@
     "image": "product_images/4.jpeg",
     "features": "KONG Extreme Black ลูกบอลยางสีดำเพื่อความสนุกในการกัดที่ทนทาน\r\nทนต่อการเจาะเพื่อการเล่นที่ปลอดภัยอย่างต่อเนื่อง\r\nผลิตในประเทศอเมริกา",
     "total_stock": 10,
-    "stock": 9,
+    "stock": 8,
     "food_type": null,
     "owner": 1
   }
@@ -2362,7 +2402,7 @@
     "image": "product_images/44.jpg",
     "features": "ผ้านุ่ม ยืดหยุ่น คี้ยวมันส์\r\nช้างตัวใหญ่ สีชมพูสดใส ดึงความสนใจสุนัขได้เป็นอย่างดี\r\nมีเสียงอี๊ดๆ เวลากัด",
     "total_stock": 10,
-    "stock": 10,
+    "stock": 9,
     "food_type": null,
     "owner": 5
   }
@@ -3033,6 +3073,7 @@
     "is_banned": false,
     "favorites": [
       27,
+      65,
       1
     ]
   }
@@ -3275,1036 +3316,6 @@
     "rating": 5,
     "comment": "น้องหมาชอบค่ะ",
     "created_at": "2026-03-02T14:29:37.490Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 1,
-  "fields": {
-    "user": 1,
-    "user_message": "แนะนำสินค้าแมวราคาไม่เกินร้อยหน่อยค่ะ",
-    "ai_response": "แนะนำ ลูกบอลแมว ราคา 89 บาท  เป็นของเล่นที่แมวชอบเล่นค่ะ  หรือถ้าอยากให้แมวได้กัดเล่นด้วย  ของเล่นกันแทะ ราคา 129 บาท  อาจจะเกินงบเล็กน้อยแต่คุ้มค่าค่ะ\n",
-    "created_at": "2025-09-14T10:30:07.511Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 2,
-  "fields": {
-    "user": 1,
-    "user_message": "แนะนำสินค้าหน่อย",
-    "ai_response": "สวัสดีค่ะ!  เราขอแนะนำ ลูกบอลแมว ราคา 89 บาท  และ ลูกบอลสุนัข ราคา 99 บาท  สำหรับเล่นสนุกๆ  หรือถ้าชอบไม้ล่อแมว ก็มีราคา 159 บาทค่ะ\n",
-    "created_at": "2025-09-14T14:11:20.918Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 3,
-  "fields": {
-    "user": null,
-    "user_message": "แนะนำของน้องแมว",
-    "ai_response": "ยินดีค่ะ!  สำหรับน้องแมว เราแนะนำ ลูกบอลแมว ราคา 89 บาท หรือ ไม้ล่อแมว ราคา 159 บาท  เลือกได้ตามความชอบของน้องแมวเลยค่ะ\n",
-    "created_at": "2025-09-16T10:42:03.569Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 4,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดีค่ะ",
-    "ai_response": "สวัสดีค่ะ ยินดีต้อนรับสู่ PetJoy!  มีอะไรให้ PetJoy Bot ช่วยเหลือบ้างคะ?\n",
-    "created_at": "2025-09-16T13:43:54.641Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 5,
-  "fields": {
-    "user": null,
-    "user_message": "สินค้าน้องหมา",
-    "ai_response": "สำหรับน้องหมา เรามีลูกบอลสุนัข ราคา 99 บาท  เหมาะสำหรับเล่นสนุกๆ ค่ะ\n",
-    "created_at": "2025-09-16T13:44:10.032Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 6,
-  "fields": {
-    "user": 4,
-    "user_message": "แนะนำสินค้าน้องแมวหน่อยค่ะ",
-    "ai_response": "สำหรับน้องแมว แนะนำ ลูกบอลแมว ราคา 89 บาท  หรือ ไม้ล่อแมว ราคา 159 บาทค่ะ  เลือกได้ตามความชอบของน้องแมวเลย\n",
-    "created_at": "2025-09-16T13:56:33.294Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 7,
-  "fields": {
-    "user": 4,
-    "user_message": "ดี",
-    "ai_response": "ยินดีที่ได้ช่วยเหลือค่ะ!  ต้องการทราบอะไรเพิ่มเติมคะ?  หากสนใจของเล่นสำหรับสัตว์เลี้ยง เรามีลูกบอลแมว (89 บาท), ลูกบอลสุนัข (99 บาท) และไม้ล่อแมว (159 บาท) ค่ะ\n",
-    "created_at": "2025-09-16T13:57:00.967Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 8,
-  "fields": {
-    "user": 1,
-    "user_message": "สินค้าสุนัข",
-    "ai_response": "ร้านเรามีลูกบอลสุนัข ราคา 99 บาท  เหมาะสำหรับเล่นกับสุนัขของคุณค่ะ  สนใจสินค้าอื่นๆเพิ่มเติมไหมคะ\n",
-    "created_at": "2025-09-16T15:04:20.091Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 9,
-  "fields": {
-    "user": 1,
-    "user_message": "ดี",
-    "ai_response": "ขออภัยค่ะ ฉันไม่เข้าใจคำถามของคุณ  คุณต้องการทราบข้อมูลเกี่ยวกับสินค้าของเราหรือไม่คะ?  ถ้าใช่ โปรดแจ้งรายละเอียดเพิ่มเติม เช่น สัตว์เลี้ยงที่คุณเลี้ยง หรือประเภทของสินค้าที่คุณสนใจค่ะ\n",
-    "created_at": "2025-09-16T16:56:21.980Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 10,
-  "fields": {
-    "user": null,
-    "user_message": "cat",
-    "ai_response": "สนใจของเล่นแมวหรือคะ?  เรามีลูกบอลแมว ราคา 89 บาท และไม้ล่อแมว ราคา 129 บาทค่ะ  สนใจแบบไหนดีคะ\n",
-    "created_at": "2025-09-17T07:08:57.365Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 11,
-  "fields": {
-    "user": 1,
-    "user_message": "แนะนำสินค้าแมว",
-    "ai_response": "แนะนำ ลูกบอลแมว ราคา 89 บาท และ ไม้ล่อแมว ราคา 129 บาท  ค่ะ  เล่นสนุก เพิ่มความเพลิดเพลินให้เจ้าเหมียว\n",
-    "created_at": "2025-09-17T12:28:27.917Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 12,
-  "fields": {
-    "user": null,
-    "user_message": "แนะนำสินค้า",
-    "ai_response": "สวัสดีค่ะ!  PetJoy มีลูกบอลแมว (89 บาท), ลูกบอลสุนัข (99 บาท) และไม้ล่อแมว (129 บาท)  สนใจสินค้าชิ้นไหนคะ?\n",
-    "created_at": "2025-09-17T12:34:30.787Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 13,
-  "fields": {
-    "user": null,
-    "user_message": "แนะนำสินค้าน้องแมว",
-    "ai_response": "สำหรับน้องแมว เราแนะนำ ลูกบอลแมว ราคา 89 บาท  หรือ ไม้ล่อแมว ราคา 129 บาท  ช่วยเพิ่มความสนุกและการออกกำลังกายให้แมวของคุณได้ค่ะ\n",
-    "created_at": "2025-09-17T12:37:10.438Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 14,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:37:44.856Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 15,
-  "fields": {
-    "user": null,
-    "user_message": "สุนัข",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:42:34.861Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 16,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:51:11.711Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 17,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:52:49.251Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 18,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:54:08.186Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 19,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:56:03.913Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 20,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:57:50.698Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 21,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-28T16:58:38.003Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 22,
-  "fields": {
-    "user": 1,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-29T01:30:42.489Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 23,
-  "fields": {
-    "user": 1,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-29T01:34:34.625Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 24,
-  "fields": {
-    "user": 1,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-29T01:38:32.775Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 25,
-  "fields": {
-    "user": 1,
-    "user_message": "แมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-09-29T01:41:44.806Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 26,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-10-07T08:34:16.010Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 27,
-  "fields": {
-    "user": null,
-    "user_message": "แนะนำสินค้า",
-    "ai_response": "PetJoy Bot ยินดีให้บริการค่ะ ที่ร้านมีของเล่นสำหรับทั้งสุนัขและแมวค่ะ มีทั้งลูกบอล และไม้ล่อแมว ไม่ทราบว่าคุณลูกค้ามองหาสินค้าให้สัตว์เลี้ยงชนิดใดคะ",
-    "created_at": "2025-10-07T08:35:43.445Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 28,
-  "fields": {
-    "user": null,
-    "user_message": "ขอน้องแมว",
-    "ai_response": "PetJoy Bot ยินดีให้บริการครับ\nสำหรับน้องแมว เรามีของเล่นแนะนำ 2 รายการ คือ ลูกบอลแมว ราคา 89 บาท และไม้ล่อแมว ราคา 129 บาทครับ",
-    "created_at": "2025-10-07T08:36:09.006Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 29,
-  "fields": {
-    "user": null,
-    "user_message": "น้อ",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ หากเป็นน้องแมว เรามีลูกบอลแมว (89.-) และไม้ล่อแมว (129.-) ค่ะ แต่ถ้าเป็นน้องหมา เราก็มีลูกบอลสุนัข (99.-) ให้เลือกนะคะ",
-    "created_at": "2025-10-07T09:13:27.107Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 30,
-  "fields": {
-    "user": null,
-    "user_message": "น้องแมว",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\nสำหรับน้องแมว ทางร้านมีของเล่นแนะนำคือ ลูกบอลแมว (89 บาท) และ ไม้ล่อแมว (129 บาท) ให้น้องได้สนุกเพลิดเพลินค่ะ",
-    "created_at": "2025-10-07T09:13:28.922Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 31,
-  "fields": {
-    "user": 5,
-    "user_message": "สินค้าน้องแมวมีอะไรบ้าง",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nสำหรับน้องแมวเรามี \"ลูกบอลแมว\" ราคา 89 บาท และ \"ไม้ล่อแมว\" ราคา 129 บาทค่ะ ทั้งสองอย่างเป็นของเล่นยอดนิยมที่น้องแมวจะต้องชอบแน่นอนค่ะ",
-    "created_at": "2025-10-07T16:29:33.191Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 32,
-  "fields": {
-    "user": 5,
-    "user_message": "แนะนำสินค้าน้องแมวหน่อย",
-    "ai_response": "PetJoy Bot ยินดีให้บริการค่ะ สำหรับน้องแมว ขอแนะนำ \"ลูกบอลแมว\" (89 บาท) และ \"ไม้ล่อแมว\" (129 บาท) ค่ะ เป็นของเล่นยอดนิยมที่ช่วยให้น้องแมวได้ออกกำลังกายและสนุกสนาน รับรองว่าถูกใจแน่นอนค่ะ",
-    "created_at": "2025-10-08T08:00:13.474Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 33,
-  "fields": {
-    "user": 5,
-    "user_message": "สุนัข",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\n\nสำหรับน้องสุนัข เรามี \"ลูกบอลสุนัข\" ราคา 99 บาทครับ เหมาะสำหรับให้น้องได้วิ่งเล่นและออกกำลังกายอย่างสนุกสนาน",
-    "created_at": "2025-10-08T08:15:01.239Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 34,
-  "fields": {
-    "user": 8,
-    "user_message": "สินค้าแมว",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการ\n\nสำหรับน้องแมว ทางร้านมี \"ลูกบอลแมว\" (89 บาท) และ \"ไม้ล่อแมว\" (129 บาท) ให้เลือกครับ เป็นของเล่นยอดนิยมที่น้องแมวชื่นชอบมากครับ",
-    "created_at": "2025-10-08T09:52:01.397Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 35,
-  "fields": {
-    "user": 10,
-    "user_message": "น้องหมา",
-    "ai_response": "สำหรับน้องหมา PetJoy Bot ขอแนะนำ \"ลูกบอลสุนัข\" ในราคาเพียง 99 บาทค่ะ เหมาะสำหรับให้น้องได้วิ่งเล่นสนุกและออกกำลังกายเพื่อสุขภาพที่แข็งแรงค่ะ",
-    "created_at": "2025-10-08T10:35:22.166Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 36,
-  "fields": {
-    "user": 1,
-    "user_message": "สินค้าสุนัข",
-    "ai_response": "สำหรับน้องสุนัข เรามี \"ลูกบอลสุนัข\" ราคา 99 บาทค่ะ เป็นของเล่นที่ช่วยให้น้องๆ ได้ออกกำลังกายและสนุกสนานเพลิดเพลิน",
-    "created_at": "2025-10-16T15:55:30.930Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 37,
-  "fields": {
-    "user": 8,
-    "user_message": "แมว",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nสำหรับน้องแมว เรามีของเล่นแนะนำคือ ลูกบอลแมว, ไม้ล่อแมว และตุ๊กตาปลาทูใส่แคทนิปค่ะ โดยเฉพาะตุ๊กตาปลาทูจะช่วยให้น้องแมวผ่อนคลายและมีความสุขมากเป็นพิเศษค่ะ",
-    "created_at": "2025-10-17T08:46:25.245Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 38,
-  "fields": {
-    "user": 8,
-    "user_message": "ของแมวทั้งหมด",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\n\nสินค้าสำหรับน้องแมวทั้งหมดที่มีจำหน่าย ได้แก่ ลูกบอลแมว, ไม้ล่อแมว, ตุ๊กตาปลาทูใส่แคทนิป และอาหารลูกแมว มีโอ รสปลาทะเลครับ สนใจชิ้นไหนเป็นพิเศษสอบถามได้เลยครับ",
-    "created_at": "2025-10-18T09:11:57.181Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 39,
-  "fields": {
-    "user": 8,
-    "user_message": "อาหารแมว แมวเด็กกินำได้ไหม",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nได้ค่ะ ที่ร้านมี \"อาหารลูกแมว มีโอ รสปลาทะเล\" สำหรับลูกแมวโดยเฉพาะ ช่วยเสริมสร้างการเจริญเติบโตให้แข็งแรง ราคา 599 บาทค่ะ",
-    "created_at": "2025-10-18T09:12:37.808Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 40,
-  "fields": {
-    "user": 8,
-    "user_message": "cat",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ทางร้านมีสินค้าสำหรับน้องแมวทั้งอาหารและของเล่นค่ะ ขอแนะนำอาหารแมวมีโอสำหรับทุกวัย และของเล่นสนุกๆ อย่าง ตุ๊กตาปลาทูใส่แคทนิป และไม้ล่อแมวค่ะ",
-    "created_at": "2025-10-19T07:40:27.218Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 41,
-  "fields": {
-    "user": 8,
-    "user_message": "ฉันอยากได้อาหารแมวราคาไม่เกิน100พอจะมีไหม",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nมีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ ขนาด 80 กรัม ทำจากเนื้อปลาแท้ๆ มีหลายรสชาติให้เลือก ทั้งสำหรับแมวโตและลูกแมว ราคาเพียงซองละ 17 บาทเท่านั้นค่ะ",
-    "created_at": "2025-10-19T13:40:48.574Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 42,
-  "fields": {
-    "user": null,
-    "user_message": "สินค้าแมวมีอะไรบ้าง",
-    "ai_response": "PetJoy Bot ยินดีให้บริการค่ะ สินค้าสำหรับน้องแมวมีครบครัน ทั้งอาหารและของเล่นค่ะ เรามีอาหารเม็ดและอาหารเปียกสำหรับแมวทุกวัย ส่วนของเล่นก็มีหลากหลาย เช่น รางบอล, เบ็ดตกแมว, ตุ๊กตาแคทนิป และที่ลับเล็บค่ะ",
-    "created_at": "2025-11-14T13:41:07.417Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 43,
-  "fields": {
-    "user": null,
-    "user_message": "ของเล่นแมวหน่อย",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ เรามีของเล่นแมวหลายแบบให้เลือกครับ แนะนำ \"Catit Play Circuit รางบอล\" ให้น้องแมวเล่นสนุกได้ด้วยตัวเอง หรือถ้าชอบเล่นกับเจ้าของก็มี \"ไม้ล่อแมว\" และ \"ตุ๊กตาปลาทูใส่แคทนิป\" ให้น้องแมวกอดฟัดเพลินๆ ครับ",
-    "created_at": "2025-11-18T02:03:50.477Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 44,
-  "fields": {
-    "user": null,
-    "user_message": "ของเล่นแมว",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-11-18T02:04:51.678Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 45,
-  "fields": {
-    "user": null,
-    "user_message": "ของเล่นแมว",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ทางร้านมีของเล่นแมวหลากหลายแบบให้เลือก ทั้งแบบรางบอล, ตุ๊กตาใส่แคทนิป, และเบ็ดตกแมวค่ะ หากน้องแมวชอบเล่นคนเดียว ขอแนะนำ \"Catit Play Circuit รางบอล\" หรือ \"FOFOS กล่องสุ่มเบ็ดตกแมวอัตโนมัติ\" เลยค่ะ",
-    "created_at": "2025-11-18T02:05:32.647Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 46,
-  "fields": {
-    "user": 8,
-    "user_message": "สินค้าแมว",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ ที่ร้านมีสินค้าสำหรับน้องแมวหลากหลาย ทั้งอาหาร ของเล่น และที่ลับเล็บ ไม่ทราบว่าสนใจสินค้าประเภทไหนเป็นพิเศษ หรือน้องแมวอายุเท่าไหร่ครับ จะได้แนะนำสินค้าที่เหมาะสมให้ครับ",
-    "created_at": "2025-11-20T05:36:48.482Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 47,
-  "fields": {
-    "user": null,
-    "user_message": "สินค้ามีอะไรบ้าง",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\n\nร้านเรามีสินค้าหลากหลาย ทั้งอาหาร ของเล่น และของใช้ต่างๆ ครบครันสำหรับทั้งสุนัขและแมว ไม่ทราบว่าคุณลูกค้าสนใจสินค้าสำหรับสัตว์เลี้ยงประเภทไหนเป็นพิเศษครับ",
-    "created_at": "2025-11-20T06:05:37.210Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 48,
-  "fields": {
-    "user": null,
-    "user_message": "สินค้าน้องแมว",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ สำหรับน้องแมวเรามีสินค้าทั้งอาหารและของเล่นหลากหลายประเภทเลยค่ะ\n\nเรามีทั้งอาหารเม็ดสำหรับแมวโตและลูกแมว เช่น อาหารมีโอ รวมถึงของเล่นสนุกๆ อย่างเบ็ดตกแมว รางบอล และตุ๊กตาปลาทูใส่แคทนิปค่ะ สนใจสินค้าประเภทไหนเป็นพิเศษสอบถามได้เลยนะคะ",
-    "created_at": "2025-11-20T08:17:44.330Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 49,
-  "fields": {
-    "user": null,
-    "user_message": "มีสินค้าน้องแมวแนะนำไหม",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการ\n\nสำหรับน้องแมว เรามีสินค้าแนะนำหลากหลายครับ หากเป็นของเล่นสุดไฮเทคต้อง **FOFOS Rubik's Cube Hunting** กล่องสุ่มเบ็ดตกแมวอัตโนมัติ หรือถ้าชอบแบบคลาสสิกก็มี **ตุ๊กตาปลาทูใส่แคทนิป** ให้น้องแมวกอดฟัดเพลินๆ ครับ นอกจากนี้เรายังมี **อาหารแมวมีโอ** ทั้งสูตรลูกแมวและแมวโตให้เลือกหลายรสชาติครับ",
-    "created_at": "2025-11-20T16:16:28.969Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 50,
-  "fields": {
-    "user": null,
-    "user_message": "แนะนำสินค้าน้องแมวหน่อย",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\nสำหรับน้องแมว ทางร้านมีสินค้าหลากหลาย ทั้งของเล่นและอาหาร ขอแนะนำของเล่นยอดฮิต เช่น **Catit Play Circuit รางบอล** หรือ **ตุ๊กตาปลาทูใส่แคทนิป** ส่วนอาหารก็มี **อาหารแมวมีโอ** สำหรับแมวทุกวัยให้เลือกครับ",
-    "created_at": "2025-11-21T15:08:59.045Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 51,
-  "fields": {
-    "user": null,
-    "user_message": "อาหารแมวยี่ห้อไหนดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-11-23T06:31:18.655Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 52,
-  "fields": {
-    "user": null,
-    "user_message": "อาหารแมวยี่ห้อไหนดี",
-    "ai_response": "สวัสดีค่ะ ที่ร้านเรามียี่ห้อ \"มีโอ\" ซึ่งเป็นที่นิยมและมีให้เลือกหลากหลาย ทั้งสำหรับลูกแมว แมวโต และมีอาหารเปียกด้วยค่ะ นอกจากนี้ยังมียี่ห้อ \"ซอย แคท\" และ \"เอโปร ไอ.คิว. ฟอร์มูล่า\" สำหรับแมวโตเป็นอีกทางเลือกเช่นกันค่ะ",
-    "created_at": "2025-11-23T06:32:50.097Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 53,
-  "fields": {
-    "user": null,
-    "user_message": "อาหารแมวยี่ห้อไหนดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-11-23T06:42:40.250Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 54,
-  "fields": {
-    "user": null,
-    "user_message": "อาหารแมวยี่ห้อไหนดี",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ เช่น มีโอ, ซอย แคท และ เอโปร ค่ะ ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตคะ จะได้ช่วยแนะนำสูตรที่เหมาะสมที่สุดให้ค่ะ",
-    "created_at": "2025-11-23T06:43:51.443Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 55,
-  "fields": {
-    "user": null,
-    "user_message": "ช่วยแนะนำสินค้าที่เหมาะกับแมวอายุ 2 ปีหน่อย",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nสำหรับแมวอายุ 2 ปี ขอแนะนำอาหารสำหรับแมวโต เช่น \"อาหารแมวโต มีโอ\" ที่มีให้เลือกหลายรสชาติ ส่วนของเล่นที่ช่วยให้น้องแมวได้ออกกำลังกายและคลายเหงา ขอแนะนำ \"Catit Play Circuit รางบอล\" หรือ \"ตุ๊กตาปลาทูใส่แคทนิป\" ให้น้องได้กอดรัดฟัดเหวี่ยงค่ะ",
-    "created_at": "2025-11-23T06:47:49.529Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 56,
-  "fields": {
-    "user": null,
-    "user_message": "ราคาของอาหารแมวเท่าไหร่",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2025-11-23T06:57:24.383Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 57,
-  "fields": {
-    "user": null,
-    "user_message": "ราคาของอาหารแมวเท่าไหร่",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ\n\nราคาอาหารแมวมีหลายราคาขึ้นอยู่กับชนิดและขนาดครับ แบบเปียกชนิดซองเริ่มต้นที่ 17 บาท ส่วนอาหารเม็ดแบบถุงมีราคาตั้งแต่ 489 บาท ถึง 999 บาทครับ",
-    "created_at": "2025-11-23T06:58:08.820Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 58,
-  "fields": {
-    "user": null,
-    "user_message": "คุณทำอะไรได้บ้าง",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ ดิฉันสามารถช่วยตอบคำถามและแนะนำสินค้าสำหรับน้องหมาและน้องแมวได้ค่ะ ลองบอกได้เลยว่าคุณกำลังมองหาอะไรอยู่",
-    "created_at": "2025-11-23T06:59:13.846Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 59,
-  "fields": {
-    "user": null,
-    "user_message": "อาหารแมวยี่ห้อไหนดี",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการครับ ที่ร้านมีอาหารแมวคุณภาพดีหลายยี่ห้อ เช่น มีโอ, ซอย แคท และ เอโปร ครับ โดยยี่ห้อ \"มีโอ\" เป็นที่นิยมและมีให้เลือกหลายสูตร ไม่ทราบว่าน้องแมวเป็นลูกแมวหรือแมวโตครับ จะได้แนะนำสูตรที่เหมาะสมให้",
-    "created_at": "2025-11-23T08:07:34.750Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 60,
-  "fields": {
-    "user": null,
-    "user_message": "คุณมีสินค้าอะไรแนะนำฉันบ้าง",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการ ไม่ทราบว่าคุณลูกค้ามองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ? ทางร้านมีทั้งอาหารและของเล่นคุณภาพดีให้เลือกมากมายเลยค่ะ",
-    "created_at": "2025-11-23T14:15:59.364Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 61,
-  "fields": {
-    "user": null,
-    "user_message": "มีอาหารแมวราคาไม่เกิน100ไหม",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nมีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ (Me-O Pouch) ขนาด 80 กรัม ราคาซองละ 17 บาท มีให้เลือกหลายรสชาติ เช่น ปลาทะเล, ปลาทูน่าในเยลลี่ และปลาทูกับปลาซาร์ดีนค่ะ",
-    "created_at": "2025-11-23T14:16:50.576Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 62,
-  "fields": {
-    "user": null,
-    "user_message": "มีอาหารแมวราคาไม่เกิน100ไหม",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\n\nมีค่ะ ขอแนะนำอาหารแมวเพาช์มีโอ เป็นอาหารเปียกแบบซอง ทำจากเนื้อปลาแท้ๆ ราคาซองละ 17 บาท มีให้เลือกหลายรสชาติ เช่น ปลาทะเล และปลาทูน่าในเยลลี่ค่ะ",
-    "created_at": "2025-11-23T14:49:33.989Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 63,
-  "fields": {
-    "user": null,
-    "user_message": "แมว",
-    "ai_response": "สวัสดีครับ PetJoy มีสินค้าสำหรับน้องแมวหลากหลายเลยครับ ทั้งอาหารเม็ด อาหารเปียก และของเล่นน่าสนใจมากมาย เช่น FOFOS Rubik's Cube Hunting กล่องสุ่มเบ็ดตกแมวอัตโนมัติ, Catit Play Circuit รางบอลแบบเรียบ หรือตุ๊กตาปลาทูใส่แคทนิปครับ",
-    "created_at": "2025-11-24T08:53:14.717Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 64,
-  "fields": {
-    "user": null,
-    "user_message": "มีอะไรบ้าง",
-    "ai_response": "สวัสดีครับ PetJoy Bot ยินดีให้บริการ!\n\nที่ร้าน PetJoy เรามีสินค้าหลากหลาย ทั้งอาหารสุนัขและแมวหลายสูตร รวมถึงของเล่นยอดนิยม เช่น KONG Dr. Noyz Teddy Bear สำหรับสุนัข และ Catit Play Circuit สำหรับแมวครับ",
-    "created_at": "2025-11-24T08:53:44.360Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 65,
-  "fields": {
-    "user": null,
-    "user_message": "ของแมว",
-    "ai_response": "สวัสดีค่ะ สำหรับน้องแมวที่ PetJoy เรามีทั้งอาหารเม็ดและอาหารเปียกหลากหลายรสชาติจากมีโอและซอย แคทค่ะ นอกจากนี้ยังมีของเล่นมากมาย เช่น รางบอล Catit Play Circuit, ตุ๊กตาปลาทูใส่แคทนิบ หรือ FOFOS Rubik's Cube กล่องสุ่มเบ็ดตกแมวอัตโนมัติให้เลือกสรรค่ะ",
-    "created_at": "2025-11-24T08:54:12.734Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 66,
-  "fields": {
-    "user": 8,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ ยินดีต้อนรับสู่ PetJoy Bot! มีอะไรให้ PetJoy Bot ช่วยเหลือหรือแนะนำสินค้าให้คุณลูกค้าและน้องๆ ได้บ้างคะ?",
-    "created_at": "2025-11-27T11:07:38.106Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 67,
-  "fields": {
-    "user": 8,
-    "user_message": "มีไรบ้าง",
-    "ai_response": "สวัสดีค่ะ PetJoy มีสินค้าหลากหลายสำหรับสัตว์เลี้ยงของคุณ ทั้งอาหารสุนัขและแมวคุณภาพดี รวมถึงของเล่นสนุกๆ มากมาย เช่น ตุ๊กตา, รางบอล, ของเล่นลับเล็บ และกล่องสุ่มเบ็ดตกแมวอัตโนมัติค่ะ",
-    "created_at": "2025-11-27T11:07:56.332Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 68,
-  "fields": {
-    "user": 8,
-    "user_message": "อาหารแมวหน่อย",
-    "ai_response": "เรามีอาหารแมวหลากหลายให้เลือกครับ ทั้งอาหารเม็ด Me-O สำหรับแมวโต รสโกเม่, แซลมอน, ปลาทูน่า (599 บาท) และอาหารเม็ดสำหรับลูกแมวมีโอ รสปลาทะเล, ปลาทู (599 บาท)\nนอกจากนี้ยังมีอาหารเปียก Me-O ขนาด 80 กรัม หลายรสชาติ เช่น ปลาทะเล, ปลาทูน่าในเยลลี่ (17 บาท) ให้เลือกอีกด้วยครับ",
-    "created_at": "2025-11-30T13:59:51.716Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 69,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดีค่ะ",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ มีอะไรให้ PetJoy Bot ช่วยแนะนำหรือสอบถามเกี่ยวกับสินค้าสำหรับสัตว์เลี้ยงของคุณลูกค้าได้เลยนะคะ",
-    "created_at": "2025-12-10T09:56:29.833Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 70,
-  "fields": {
-    "user": 8,
-    "user_message": "สวัสดีค่ะ",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ผู้ช่วยร้าน PetJoy ยินดีให้บริการค่ะ มีอะไรให้ช่วยแนะนำสินค้าหรือสอบถามข้อมูลเพิ่มเติมได้เลยนะคะ",
-    "created_at": "2025-12-19T07:21:47.094Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 71,
-  "fields": {
-    "user": 8,
-    "user_message": "สวัสดีค่ะ",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ มีอะไรให้ช่วยไหมคะ หรือกำลังมองหาสินค้าอะไรอยู่เป็นพิเศษหรือเปล่าคะ",
-    "created_at": "2025-12-24T07:15:40.523Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 72,
-  "fields": {
-    "user": 8,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ\nมีอะไรให้ PetJoy Bot ช่วยแนะนำสินค้าสำหรับสัตว์เลี้ยงของคุณได้บ้างคะ/ครับ?",
-    "created_at": "2026-01-15T18:01:07.763Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 73,
-  "fields": {
-    "user": 8,
-    "user_message": "สวัสดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2026-02-01T15:52:19.119Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 74,
-  "fields": {
-    "user": null,
-    "user_message": ".",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2026-02-02T13:53:32.421Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 75,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบมีปัญหา โปรดลองใหม่อีกครั้งนะคะ",
-    "created_at": "2026-02-02T13:59:01.790Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 76,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว (กรุณาดู Error log ที่เครื่อง Server)",
-    "created_at": "2026-02-02T14:05:54.713Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 77,
-  "fields": {
-    "user": null,
-    "user_message": "สอบถามสินค้า",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว (กรุณาดู Error log ที่เครื่อง Server)",
-    "created_at": "2026-02-02T14:09:33.564Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 78,
-  "fields": {
-    "user": null,
-    "user_message": "สอบถามค่ะ",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว",
-    "created_at": "2026-02-02T14:12:54.659Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 79,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว",
-    "created_at": "2026-02-02T14:16:38.620Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 80,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว",
-    "created_at": "2026-02-02T14:23:08.839Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 81,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว",
-    "created_at": "2026-02-02T14:25:46.914Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 82,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "ขออภัยค่ะ ขณะนี้ระบบ AI ขัดข้องชั่วคราว",
-    "created_at": "2026-02-02T14:26:18.702Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 83,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "ขออภัยค่ะ ระบบ AI กำลังประมวลผลหนัก กรุณาลองใหม่ในอีก 1 นาทีนะคะ",
-    "created_at": "2026-02-02T14:27:11.579Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 84,
-  "fields": {
-    "user": null,
-    "user_message": "ทดสอบ",
-    "ai_response": "สวัสดีค่ะ PetJoy Bot ยินดีให้บริการค่ะ! ตอนนี้เรามีสินค้าพร้อมส่งมากมาย ทั้งอาหารสุนัขและแมวคุณภาพดี รวมถึงของเล่นสนุกๆ จาก KONG และ Catit ให้เลือกซื้อเลยค่ะ",
-    "created_at": "2026-02-02T14:29:13.196Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 85,
-  "fields": {
-    "user": null,
-    "user_message": "หวัดดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy Bot นะคะ 😊 คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?",
-    "created_at": "2026-02-02T14:32:27.459Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 86,
-  "fields": {
-    "user": null,
-    "user_message": "ฉันอยากได้สินค้าน้องหมา มีแนะนำไหม",
-    "ai_response": "สวัสดีค่ะ! PetJoy Bot ยินดีแนะนำสินค้าสำหรับน้องหมาค่ะ\n\nตอนนี้เรามีสินค้าพร้อมส่งหลายอย่างเลยค่ะ **ถ้าเน้นเรื่องอาหาร** เรามีอาหารสุนัขโต สมาร์ทฮาร์ท แพลนต์เบส 3กก. (สำหรับสุนัขแพ้โปรตีนจากเนื้อสัตว์) และอาหารเปียกอย่าง เพดดิกรี กระป๋องรสเนื้อ 400ก. หรือ เพดดิกรี อาหารสุนัขโตรสไก่และผัก 1.5กก. ก็มีพร้อมค่ะ\n\n**สำหรับของเล่น** ถ้าชอบแบบทนทาน เรามีลูกบอลยาง KONG Ball Extreme Bounce (129.00 บาท) และ KONG Goodie Bone Extreme (220.00 บาท) หรือจะเป็นตุ๊กตาผ้านุ่มมีเสียงอี๊ดๆ อย่าง KONG Cozie Rosie Rhino (299.00 บาท) ก็กำลังน่ารักเลยค่ะ",
-    "created_at": "2026-02-02T14:32:48.598Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 87,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾\n\nPetJoy Bot ยินดีให้บริการค่ะ คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ? 🐕🐈\n\nไม่ว่าจะเป็นอาหาร ของเล่น หรือของใช้ เรามีสินค้าพร้อมส่งเพียบเลยค่ะ! 😊",
-    "created_at": "2026-02-02T14:34:42.370Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 88,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! 👋 PetJoy Bot ยินดีให้บริการค่ะ 🐶🐱\n \nคุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?\n \nแจ้งความต้องการได้เลยนะคะ หรือจะให้เราแนะนำสินค้าขายดีที่มีพร้อมส่งก็ได้ค่ะ 😊",
-    "created_at": "2026-02-02T14:34:49.977Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 89,
-  "fields": {
-    "user": null,
-    "user_message": "ฉันอยากได้สินค้าน้องหมา มีแนะนำไหม",
-    "ai_response": "PetJoy ยินดีแนะนำค่ะ 🐶 เรามีสินค้าพร้อมส่งสำหรับน้องหมาหลากหลายรายการเลยค่ะ:\n\nสำหรับอาหาร:\n\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** ราคา **299.00.-** (โปรตีนจากพืช เหมาะสำหรับน้องหมาที่แพ้เนื้อสัตว์)\n- **อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.** ราคา **750.00.-** (ขนาดคุ้มค่า สารอาหารครบถ้วน)\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** ราคา **300.00.-** (บำรุงแม่สุนัขตั้งท้อง/ให้นม และลูกสุนัข)\n\nสำหรับของเล่นยอดนิยม:\n\n- **KONG Goodie Bone Extreme กระดูกยางสีดำ** ราคา **220.00.-** (เหนียวทนพิเศษ สำหรับน้องหมากัดแทะรุนแรง)\n- **KONG Wobbler ยางกลมซ่อนขนม** ราคา **159.00.-** (ของเล่นฝึกทักษะและเครื่องให้อาหารในตัว)\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** ราคา **299.00.-** (ตุ๊กตาผ้านุ่ม มีเสียงอี๊ดๆ เพิ่มความเพลิดเพลิน)\n- **KONG Flyer จานร่อนสีแดง** ราคา **119.00.-** (จานร่อนยางธรรมชาติ ยืดหยุ่น ปลอดภัย)\n\nสำหรับสุขภาพช่องปาก:\n\n- **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** ราคา **59.00.-** (ขนมขัดฟันรูปตัว X สำหรับลูกสุนัข)\n\nสนใจดูรายละเอียดสินค้าชิ้นไหนเพิ่มเติมได้เลยนะคะ 😊",
-    "created_at": "2026-02-02T14:35:13.903Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 90,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾\n\n**PetJoy Bot** พร้อมให้บริการค่ะ 😊\n\nคุณลูกค้ามองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ? ลองดูรายการสินค้าเด่นๆ ที่เรามีพร้อมส่งก่อนได้เลยค่ะ:\n\nสำหรับน้องหมา 🐕:\n\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช เหมาะสำหรับสุนัขที่แพ้เนื้อสัตว์\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม มีเสียงอี๊ดๆ เวลาเล่น\n- **KONG Ball Extreme Bounce ลูกบอลยางสีดำ** (ราคา **129.00.-**) ลูกบอลทนทานพิเศษสำหรับสุนัขที่กัดแทะรุนแรง\n\nสำหรับน้องแมว 🐈:\n\n- **ตุ๊กตาปลาทูใส่แคทนิป** (ราคา **220.00.-**) ปลาทูขนาดสมจริง อัดแน่นด้วยแคทนิปเกรดพรีเมียม\n- **รางบอลของเล่นสำหรับแมว** (ราคา **199.00.-**) รางบอล 3 ชั้น ช่วยกระตุ้นสัญชาตญาณนักล่า\n- **Catit Digger ให้อาหารและขนม** (ราคา **399.00.-**) ของเล่นฝึกทักษะการเขี่ยอาหารคลายเหงา\n\nสนใจสินค้าตัวไหน หรือต้องการให้แนะนำเพิ่มเติม บอก PetJoy Bot ได้เลยนะคะ! ✨",
-    "created_at": "2026-02-02T14:47:17.462Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 91,
-  "fields": {
-    "user": null,
-    "user_message": "hi",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 💖\n\nPetJoy Bot ยินดีช่วยเหลือและแนะนำสินค้าสำหรับน้องหมาน้องแมวสุดรักของคุณค่ะ 🐾\n\nคุณกำลังมองหาอะไรอยู่คะ? (เช่น อาหารสุนัข, ของเล่นแมว, หรือของใช้ทั่วไป) แจ้งได้เลยน้าา 😊",
-    "created_at": "2026-02-02T14:47:30.606Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 92,
-  "fields": {
-    "user": null,
-    "user_message": "hi",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ 😊\n\nมีอะไรให้น้อง PetJoy Bot ช่วยดูแลหรือกำลังมองหาสินค้าสำหรับน้องหมาน้องแมวอยู่หรือเปล่าคะ?\n\nสอบถามได้เลยน้า! 💖",
-    "created_at": "2026-02-02T14:47:37.909Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 93,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾\n\nPetJoy Bot ยินดีให้บริการค่ะ คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวคะ? 🐶🐱\n\nลองดูสินค้าแนะนำของเราได้เลยค่ะ:\n\nสำหรับสุนัข:\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) เสริมโปรตีนสูง บำรุงกระดูกและฟันให้แข็งแรง\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช ลดความเสี่ยงการแพ้โปรตีนจากเนื้อสัตว์\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม มีเสียงอี๊ดๆ เพิ่มความสนุกสนาน\n\nสำหรับแมว:\n- **ตุ๊กตาปลาทูใส่แคทนิป** (ราคา **220.00.-**) น้องแมวกอดรัดฟัดเหวี่ยง ช่วยลดความเครียด\n- **รางบอลของเล่นสำหรับแมว** (ราคา **199.00.-**) รางบอล 3 ชั้น กระตุ้นสัญชาตญาณนักล่า\n- **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** (ราคา **599.00.-**) บำรุงสายตาและขนสวยเงางาม ลดความเสี่ยงนิ่วและโรคไต\n\nสอบถามสินค้าอื่นๆ หรือต้องการให้ช่วยแนะนำเพิ่มเติมได้เลยนะคะ 😊",
-    "created_at": "2026-02-02T14:51:20.241Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 94,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! PetJoy Bot ยินดีให้บริการค่ะ 🐾\n\nวันนี้มองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ? บอกได้เลยนะคะ เดี๋ยว PetJoy Bot ช่วยแนะนำให้! 😊",
-    "created_at": "2026-02-02T16:17:07.386Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 95,
-  "fields": {
-    "user": null,
-    "user_message": "มีสินค้าน้องหมาแนะนำไหม",
-    "ai_response": "Hello! PetJoy ยินดีต้อนรับน้องหมาค่ะ 🐶 เรามีสินค้าหลากหลายพร้อมส่งเลยค่ะ\n\nเราขอแนะนำสินค้าน่าสนใจสำหรับสุนัข ดังนี้:\n\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) สูตรโปรตีนสูง เสริมสร้างร่างกายและกระดูกฟันให้แข็งแรง\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) เหมาะสำหรับสุนัขโตที่แพ้โปรตีนจากเนื้อสัตว์ ช่วยลดความเสี่ยงการแพ้\n- **KONG Goodie Bone Extreme กระดูกยางสีดำ** (ราคา **220.00.-**) ของเล่นยางธรรมชาติเหนียวพิเศษ ทนทานมาก สำหรับสายแทะโหด\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**) ตุ๊กตาผ้านุ่ม คุณภาพสูง เวลากัดมีเสียงร้องอี๊ดๆ\n- **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**) ขนมขัดฟันรูปตัว X สำหรับลูกสุนัข ช่วยลดคราบพลัคและหินปูน\n\nสนใจชิ้นไหน หรืออยากดูอาหารสำหรับสุนัขวัยอื่นเพิ่มเติมไหมคะ? 😊",
-    "created_at": "2026-02-02T16:17:26.073Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 96,
-  "fields": {
-    "user": null,
-    "user_message": "ร้านแนะนำละ",
-    "ai_response": "สวัสดีค่ะ! PetJoy ยินดีแนะนำสินค้าขายดีประจำร้านเลยค่ะ 🥰\nไม่ว่าจะน้องหมาหรือน้องแมว เราก็มีของเล่นและอาหารน่าสนใจพร้อมส่งเลยนะคะ:\n\n**สำหรับน้องหมา 🐶**\n\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** ราคา **299.00.-** สูตรโปรตีนจากพืช ลดความเสี่ยงการแพ้โปรตีนจากเนื้อสัตว์\n- **KONG Ball Extreme Bounce ลูกบอลยางสีดำ** ราคา **129.00.-** ลูกบอลยางธรรมชาติ เหนียวพิเศษ เหมาะสำหรับสุนัขที่กัดแทะรุนแรง\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** ราคา **299.00.-** ตุ๊กตาผ้านุ่ม มีเสียงอี๊ดๆ ช่วยเพิ่มความสนุกสนาน\n\n**สำหรับน้องแมว 😼**\n\n- **ตุ๊กตาปลาทูใส่แคทนิป** ราคา **220.00.-** อัดแน่นด้วยแคทนิป ช่วยลดความเครียดให้น้องแมว\n- **รางบอลของเล่นสำหรับแมว** ราคา **199.00.-** รางบอล 3 ชั้น ช่วยกระตุ้นสัญชาตญาณนักล่า\n- **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** ราคา **599.00.-** สูตรควบคุมโซเดียม บำรุงผิวหนังและขนสวยเงางาม\n\nสนใจสินค้าตัวไหนเป็นพิเศษ สอบถามเพิ่มเติมได้เลยนะคะ! 😊",
-    "created_at": "2026-02-02T16:17:47.099Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 97,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ 😊\n\nมีอะไรให้น้อง PetJoy Bot ช่วยดูแลเกี่ยวกับน้องหมาน้องแมวที่บ้านได้บ้างคะ? 🐾",
-    "created_at": "2026-02-02T16:20:28.071Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 98,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾\n\nPetJoy Bot พร้อมให้บริการค่ะ 😊 คุณกำลังมองหาสินค้าสำหรับน้องหมาหรือน้องแมวอยู่คะ?\n\nสามารถสอบถามรายการสินค้าหรือให้เราแนะนำสินค้าเฉพาะสำหรับสัตว์เลี้ยงของคุณได้เลยนะคะ! 🛒",
-    "created_at": "2026-02-03T15:19:45.614Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 99,
-  "fields": {
-    "user": null,
-    "user_message": "สวัสดี",
-    "ai_response": "สวัสดีค่ะ! ยินดีต้อนรับสู่ PetJoy นะคะ! 🐾\n\nมีอะไรให้ PetJoy Bot ช่วยดูแลน้องหมาน้องแมวของคุณลูกค้าได้บ้างคะ? 😊\n\n(เช่น สอบถามอาหาร, ของเล่น, หรือต้องการให้แนะนำสินค้า)",
-    "created_at": "2026-02-03T15:19:52.611Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 100,
-  "fields": {
-    "user": null,
-    "user_message": "สอบถามอาหาร",
-    "ai_response": "PetJoy ยินดีต้อนรับค่ะ 🐾 ร้านเรามีอาหารพร้อมส่งสำหรับน้องหมาและน้องแมวหลายรายการเลยค่ะ\n\nรบกวนคุณลูกค้าแจ้งเพิ่มนิดนึงนะคะว่าสนใจอาหารสำหรับน้องหมา 🐶 หรือน้องแมว 🐱 คะ?\n\n---\n\n### **ตัวอย่างอาหารสุนัขที่เรามีพร้อมส่ง 🐶**\n\n**อาหารเม็ด (Dry Food):**\n\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**) โปรตีนสูง เสริมแคลเซียมและฟอสฟอรัส\n- **อาหารสุนัขสมาร์ทฮาร์ท แพลนต์เบส 3กก.** (ราคา **299.00.-**) โปรตีนจากพืช ลดความเสี่ยงแพ้เนื้อสัตว์\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** (ราคา **300.00.-**) บำรุงแม่สุนัขตั้งท้อง/ให้นม และลูกสุนัขช่วงหย่านม\n- **อาหารสุนัขโต เอโปร รสเนื้อย่าง 20 กก.** (ราคา **750.00.-**) สำหรับสุนัขโต สารอาหารครบถ้วน\n\n**อาหารเปียก/ขนม (Wet Food / Snacks):**\n\n- **เพดดิกรี กระป๋องรสเนื้อ 400ก.** (ราคา **65.00.-**) อาหารเปียกเนื้อนุ่ม อร่อย ครบคุณค่า\n- **เพดดิกรี เพาซ์ รสไก่ชิ้นในน้ำเกรวี่ 130ก.** (ราคา **29.00.-**) บำรุงผิวและขนเงางาม\n- **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**) ขนมขัดฟันรูปตัว X ลดคราบพลัค\n\n---\n\n### **ตัวอย่างอาหารแมวที่เรามีพร้อมส่ง 🐱**\n\n**อาหารเม็ด (Dry Food):**\n\n- **อาหารแมวโต มีโอ(ปลาทูน่า) 7 กก.** (ราคา **599.00.-**) บำรุงสายตาและลดความเสี่ยงนิ่ว (FLUTD)\n- **อาหารแมว เอโปร ไอ.คิว. ฟอร์มูล่า 8 กก.** (ราคา **450.00.-**) สำหรับแมวโต ควบคุมความเค็ม ลดความเสี่ยงโรคไต\n- **อาหารแมว ซอย แคท รสปลาทูน่า 10 กก.** (ราคา **550.00.-**) สูตรโซเดียมต่ำ บำรุงขนสวย\n\n**อาหารเปียก (Wet Food):**\n\n- **อาหารลูกแมวเพาช์มีโอ ปลาทูน่าในเยลลี่ 80 กรัม** (ราคา **17.00.-**) ทำจากเนื้อปลาแท้ๆ สำหรับลูกแมว\n- **อาหารแมวเพาช์มีโอ รสปลาทะเล 80 กรัม** (ราคา **17.00.-**) รสชาติอร่อยถูกใจน้องเหมียว\n\n---\nหากระบุอายุและขนาดของสัตว์เลี้ยง จะช่วยให้แนะนำสินค้าที่ตรงความต้องการได้มากขึ้นนะคะ 😊",
-    "created_at": "2026-02-03T15:20:22.176Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 101,
-  "fields": {
-    "user": null,
-    "user_message": "น้องหมาอายุ2เดือน ตัวเล็กมากๆ",
-    "ai_response": "สวัสดีค่ะ PetJoy ยินดีต้อนรับน้องหมาตัวจิ๋วอายุ 2 เดือนนะคะ! 🐶 น้องอยู่ในช่วงที่ต้องการโภชนาการสูงและการเสริมพัฒนาการค่ะ\n\nเรามีสินค้าแนะนำสำหรับลูกสุนัขวัยนี้ที่พร้อมส่งค่ะ:\n\n**อาหารสำหรับลูกสุนัข (เน้นบำรุงและเคี้ยวง่าย):**\n\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** (ราคา **300.00.-**)\n    - เหมาะกับน้องที่เพิ่งหย่านมเพราะเม็ดอาหารสามารถดูดซึมน้ำได้ดี ทำให้เคี้ยวง่ายขึ้นค่ะ\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**)\n    - อาหารแห้งสูตรครบถ้วนสำหรับลูกสุนัข ช่วยเสริมสร้างร่างกายและกระดูกฟันให้แข็งแรงด้วยโปรตีนสูงและแคลเซียม\n\n**ขนมและของเล่นสำหรับลูกสุนัข (เน้นแทะและเสริมทักษะ):**\n\n- **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**)\n    - ขนมขัดฟันรูปตัว X ออกแบบมาเพื่อลูกสุนัขโดยเฉพาะ ช่วยดูแลสุขภาพช่องปากค่ะ\n- **ของเล่นสุนัข เชือกฝ้ายถัก + บอลคู่** (ราคา **119.00.-**)\n    - ของเล่นเชือก เหมาะสำหรับน้องที่กำลังคันฟันและชอบแทะ\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**)\n    - ตุ๊กตาผ้านุ่มคุณภาพสูง ปลอดภัย และมีเสียงอี๊ดๆ ให้น้องหมาเพลิดเพลินค่ะ\n- **Petstages Dogwood Mesquite - กิ่งไม้แทะเล่นของสุนัข** (ราคา **390.00.-**)\n    - ไม้แทะจากวัสดุธรรมชาติ ช่วยคลายเครียดและลดพฤติกรรมทำลายข้าวของ\n\nสนใจสอบถามข้อมูลเพิ่มเติมเกี่ยวกับสินค้าชิ้นไหนได้เลยนะคะ 😊",
-    "created_at": "2026-02-03T15:21:01.465Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 102,
-  "fields": {
-    "user": null,
-    "user_message": "สอบถามสินค้า ของน้องหมาอายุ2เดือน",
-    "ai_response": "สวัสดีค่ะ! น้องหมาอายุ 2 เดือนน่ารักมากๆ เลยนะคะ 🥰\nPetJoy มีสินค้าสำหรับลูกสุนัขวัยกำลังโตพร้อมส่งค่ะ เน้นอาหารบำรุงและของเล่นสำหรับวัยเคี้ยวเลย:\n\n**หมวดอาหารลูกสุนัข (เน้นบำรุงการเจริญเติบโต):**\n\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** (ราคา **300.00.-**)\n    - เหมาะสำหรับลูกสุนัขช่วงหย่านมถึง 3 เดือนโดยเฉพาะ ช่วยเสริมพัฒนาการสมองและกระดูกแข็งแรง\n\n- **อาหารลูกสุนัขโต เอโปร รสเนื้อย่าง 10 กก.** (ราคา **650.00.-**)\n    - สำหรับลูกสุนัขทุกสายพันธุ์ อายุ 1 เดือนถึง 1 ปี อัดแน่นด้วยโปรตีนสูงเพื่อสร้างร่างกาย\n\n- **อาหารลูกสุนัข เอโปร ไอ.คิว.ฟอร์มูล่า 1 กก.** (ราคา **150.00.-**)\n    - อาหารเม็ดสำหรับลูกสุนัข มีคุณค่าทางโภชนาการครบถ้วนและอร่อย\n\n**หมวดของเล่นและขนม (สำหรับวัยกำลังคันเหงือก):**\n\n- **เพดดิกรี เดนต้าสติ๊กพัพพี 56ก.** (ราคา **59.00.-**)\n    - ขนมขัดฟันสำหรับลูกสุนัขโดยเฉพาะ ช่วยลดคราบพลัคและหินปูน\n\n- **KONG Cozie Rosie Rhino - แรดม่วงโรซี่** (ราคา **299.00.-**)\n    - ตุ๊กตาผ้านุ่มสำหรับสุนัข กัดมีเสียงอี๊ดๆ ช่วยเพิ่มความสนุก\n\n- **Q-monster Q-balls ลูกบอลฝึกทักษะสุนัข** (ราคา **199.00.-**)\n    - ลูกบอลสีสันสดใส บีบมีเสียง ช่วยกระตุ้นความสนใจและฝึกทักษะ\n\n- **ของเล่นสุนัข เชือกฝ้ายถัก + บอลคู่** (ราคา **119.00.-**)\n    - เหมาะสำหรับวัยกำลังแทะ ช่วยนวดเหงือกและทำความสะอาดฟันได้ด้วยค่ะ\n\nสนใจสินค้าตัวไหนเพิ่มเติม แจ้งได้เลยนะคะ! 😊",
-    "created_at": "2026-02-03T15:22:48.949Z"
-  }
-},
-{
-  "model": "petjoy.chathistory",
-  "pk": 103,
-  "fields": {
-    "user": null,
-    "user_message": "สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก. คือของร้านไหนหรอ",
-    "ai_response": "สวัสดีค่ะ! 😊 ยินดีต้อนรับสู่ PetJoy ค่ะ\n\nสินค้า **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** เป็นอาหารสุนัขจากแบรนด์ SmartHeart ค่ะ และมีจำหน่ายที่ร้าน PetJoy ของเราเลยค่ะ!\n\nรายละเอียดสินค้าพร้อมส่ง:\n- **สมาร์ทฮาร์ท อาหารแม่และลูกสุนัข 2.6 กก.** (ราคา **300.00.-**)\n  *   จุดเด่น: โปรตีนสูง, มี DHA เสริมพัฒนาการทางสมอง, บำรุงกระดูกและฟัน เหมาะสำหรับแม่สุนัขและลูกสุนัขตั้งแต่หย่านมถึง 3 เดือน\n\nสนใจให้ PetJoy จัดส่งให้เลยไหมคะ? หรือดูอาหารสุนัขรุ่นอื่นเพิ่มเติมดีคะ?",
-    "created_at": "2026-02-03T15:23:29.972Z"
   }
 },
 {
@@ -5416,6 +4427,72 @@
   }
 },
 {
+  "model": "petjoy.order",
+  "pk": 54,
+  "fields": {
+    "customer": 10,
+    "entrepreneur": 1,
+    "order_number": 12,
+    "customer_name": "เจ้าลี่",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "cancel_reason": null,
+    "is_return_requested": false,
+    "shipping_cost": "50.00",
+    "total_price": "179.00",
+    "status": "paid",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13_HLEHhvp.24.34.png",
+    "tracking_number": null,
+    "created_at": "2026-04-12T07:15:02.429Z",
+    "updated_at": "2026-04-12T07:15:02.429Z",
+    "has_unread_status_update": false
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 55,
+  "fields": {
+    "customer": 8,
+    "entrepreneur": 1,
+    "order_number": 13,
+    "customer_name": "ภคพร สมจันทร์",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "cancel_reason": "ร้านค้าอนุมัติการยกเลิกแล้ว",
+    "is_return_requested": false,
+    "shipping_cost": "50.00",
+    "total_price": "179.00",
+    "status": "cancelled",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13_2ZqVNii.24.34.png",
+    "tracking_number": null,
+    "created_at": "2026-05-12T06:09:24.763Z",
+    "updated_at": "2026-05-12T06:10:31.530Z",
+    "has_unread_status_update": false
+  }
+},
+{
+  "model": "petjoy.order",
+  "pk": 56,
+  "fields": {
+    "customer": 8,
+    "entrepreneur": 5,
+    "order_number": 17,
+    "customer_name": "ภคพร สมจันทร์",
+    "customer_phone": "0647120613",
+    "customer_address": "มหาวิทยาอุบลราชธานี xxxxxx xxxxxx xxxxx 12345",
+    "cancel_reason": null,
+    "is_return_requested": false,
+    "shipping_cost": "50.00",
+    "total_price": "349.00",
+    "status": "paid",
+    "slip_image": "slips/Screenshot-2567-07-03-at-13_FyTeA0A.24.34.png",
+    "tracking_number": null,
+    "created_at": "2026-05-14T07:14:09.298Z",
+    "updated_at": "2026-05-14T07:14:09.298Z",
+    "has_unread_status_update": false
+  }
+},
+{
   "model": "petjoy.orderitem",
   "pk": 16,
   "fields": {
@@ -5786,6 +4863,36 @@
   }
 },
 {
+  "model": "petjoy.orderitem",
+  "pk": 53,
+  "fields": {
+    "order": 54,
+    "product": 22,
+    "quantity": 1,
+    "price": "129.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 54,
+  "fields": {
+    "order": 55,
+    "product": 23,
+    "quantity": 1,
+    "price": "129.00"
+  }
+},
+{
+  "model": "petjoy.orderitem",
+  "pk": 55,
+  "fields": {
+    "order": 56,
+    "product": 53,
+    "quantity": 1,
+    "price": "299.00"
+  }
+},
+{
   "model": "petjoy.chatroom",
   "pk": 13,
   "fields": {
@@ -5871,6 +4978,16 @@
   "fields": {
     "customer": 10,
     "entrepreneur": 7,
+    "hidden_by_customer": false,
+    "hidden_by_entrepreneur": false
+  }
+},
+{
+  "model": "petjoy.chatroom",
+  "pk": 25,
+  "fields": {
+    "customer": 18,
+    "entrepreneur": 1,
     "hidden_by_customer": false,
     "hidden_by_entrepreneur": false
   }
@@ -6152,6 +5269,30 @@
   }
 },
 {
+  "model": "petjoy.chatmessage",
+  "pk": 67,
+  "fields": {
+    "room": 25,
+    "sender": 18,
+    "message": "⚠️ แจ้งเตือนจากแอดมิน: สินค้าของคุณ 'ของเล่นเบ็ดตกแมว' ถูกรายงาน\nหัวข้อ: เข้าข่ายหลอกลวง\nรายละเอียด: -\nกรุณาตรวจสอบความถูกต้องหรือแก้ไขสินค้า หากพบการละเมิดจะถูกลบออกจากระบบ",
+    "attachment": "",
+    "is_read": true,
+    "timestamp": "2026-04-12T09:45:26.581Z"
+  }
+},
+{
+  "model": "petjoy.chatmessage",
+  "pk": 69,
+  "fields": {
+    "room": 25,
+    "sender": 18,
+    "message": "⚠️ แจ้งเตือนจากแอดมิน: สินค้าของคุณ 'KONG Dr. Noyz Beaver  ตุ๊กตาบีเวอร์สีน้ำตาลนุ่ม' ถูกรายงาน\nหัวข้อ: ละเมิดลิขสิทธิ์\nรายละเอียด: -\nกรุณาตรวจสอบความถูกต้องหรือแก้ไขสินค้า หากพบการละเมิดจะถูกลบออกจากระบบ",
+    "attachment": "",
+    "is_read": true,
+    "timestamp": "2026-05-12T06:07:06.630Z"
+  }
+},
+{
   "model": "petjoy.customeradminchatroom",
   "pk": 2,
   "fields": {
@@ -6236,13 +5377,25 @@
   }
 },
 {
+  "model": "petjoy.productreport",
+  "pk": 8,
+  "fields": {
+    "user": 10,
+    "product": 25,
+    "reason": "scam",
+    "details": "",
+    "created_at": "2026-04-12T09:37:09.790Z"
+  }
+},
+{
   "model": "petjoy.reviewreply",
   "pk": 1,
   "fields": {
     "review": 2,
     "entrepreneur": 4,
     "message": "ขอบพระคุณที่ไว้ใจร้านของเราค่ะ",
-    "created_at": "2026-01-08T08:12:18.198Z"
+    "created_at": "2026-01-08T08:12:18.198Z",
+    "is_read": true
   }
 },
 {
@@ -6252,7 +5405,8 @@
     "review": 3,
     "entrepreneur": 4,
     "message": "ขอบคุณลูกค้าที่อุดหนุนมากๆค่ะ",
-    "created_at": "2026-01-08T09:54:03.635Z"
+    "created_at": "2026-01-08T09:54:03.635Z",
+    "is_read": true
   }
 },
 {
@@ -6262,7 +5416,8 @@
     "review": 4,
     "entrepreneur": 4,
     "message": "ขอบคุณที่ไว้ใจทางร้านค่ะ",
-    "created_at": "2026-01-14T06:04:29.823Z"
+    "created_at": "2026-01-14T06:04:29.823Z",
+    "is_read": true
   }
 },
 {
@@ -6272,7 +5427,8 @@
     "review": 5,
     "entrepreneur": 4,
     "message": "ขอบคุณสำหรับรีวิวนะคะ",
-    "created_at": "2026-01-14T09:30:09.587Z"
+    "created_at": "2026-01-14T09:30:09.587Z",
+    "is_read": true
   }
 },
 {
@@ -6282,7 +5438,8 @@
     "review": 6,
     "entrepreneur": 1,
     "message": "ขอบคุณลูกค้ามากค่ะ",
-    "created_at": "2026-01-15T13:32:19.453Z"
+    "created_at": "2026-01-15T13:32:19.453Z",
+    "is_read": true
   }
 },
 {
@@ -6292,7 +5449,8 @@
     "review": 12,
     "entrepreneur": 7,
     "message": "ขอบคุณมากค่ะ",
-    "created_at": "2026-01-16T03:45:03.459Z"
+    "created_at": "2026-01-16T03:45:03.459Z",
+    "is_read": true
   }
 },
 {
@@ -6302,7 +5460,8 @@
     "review": 15,
     "entrepreneur": 7,
     "message": "ขอบคุณมากๆนะคะ",
-    "created_at": "2026-03-02T14:30:47.402Z"
+    "created_at": "2026-03-02T14:30:47.402Z",
+    "is_read": true
   }
 }
 ]
