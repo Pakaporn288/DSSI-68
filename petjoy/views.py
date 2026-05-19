@@ -34,7 +34,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 logger = logging.getLogger(__name__)
 
 def homepage(request):
-    products = Product.objects.order_by('?')[:4]  # 👈 สุ่ม 6 ชิ้น (ตามคอมเมนต์เดิมในไฟล์)
+    products = Product.objects.order_by('?')[:4] 
     categories = Category.objects.all().order_by('id')
 
     return render(request, 'petjoy/homepage.html', {
@@ -2395,27 +2395,27 @@ def delete_support_chat(request, room_id):
 
 @staff_member_required
 def admin_customer_chat_room(request, room_id):
-    # แอดมินตอบกลับลูกค้า
     room = get_object_or_404(CustomerAdminChatRoom, id=room_id)
     if request.method == 'POST':
-        msg = request.POST.get('message')
-        if msg:
+        msg = request.POST.get('message', '').strip()
+        attachment = request.FILES.get('attachment')  # ✅ เพิ่มบรรทัดนี้
+
+        # ✅ ส่งได้ถ้ามีข้อความ หรือมีไฟล์แนบ (อย่างใดอย่างหนึ่งก็พอ)
+        if msg or attachment:
             CustomerAdminChatMessage.objects.create(
                 room=room,
                 sender=request.user,
-                message=msg
+                message=msg or None,
+                attachment=attachment  # ✅ เพิ่มบรรทัดนี้
             )
         return redirect('petjoy:admin-customer-chat-room', room_id=room.id)
     
-    # ✨ สิ่งที่เพิ่มเข้ามา: ดึงประวัติข้อความในห้องแชทนี้
     messages_list = room.messages.all().order_by('id')
-    
-    # ✨ สิ่งที่แก้ไข: เปลี่ยนชื่อไฟล์ HTML และเพิ่มตัวแปรใน { ... }
     return render(request, 'petjoy/admin/admin_chat_room.html', {
         'room': room,
-        'messages': messages_list,     # ส่งข้อความไปแสดงบนหน้าจอ
-        'current_user': request.user,  # ส่งข้อมูลแอดมิน (คนล็อกอินปัจจุบัน) ไปเช็คฝั่งซ้าย/ขวาของแชท
-        'is_customer_chat': True       # ส่งค่านี้ไปบอกหน้าเว็บว่า "นี่คือแชทลูกค้านะ"
+        'messages': messages_list,
+        'current_user': request.user,
+        'is_customer_chat': True
     })
 
 @staff_member_required

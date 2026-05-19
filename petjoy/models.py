@@ -137,8 +137,6 @@ class Entrepreneur(models.Model):
         default='pending'
     )
 
-    def __str__(self):
-        return self.store_name
 
 
 class CartItem(models.Model):
