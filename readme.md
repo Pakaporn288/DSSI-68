@@ -41,7 +41,7 @@ pip install -r requirements.txt
 - สร้างไฟล์ `.env` ในไดเร็กทอรีรูท
 - เพิ่มตัวแปรต่อไปนี้:
   ```env
-  GOOGLE_API_KEY="...."
+  GOOGLE_API_KEY=" GEMINI API"
 
   ```
 -  Database settings PostgreSQL:
