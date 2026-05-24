@@ -261,7 +261,7 @@
                           <div style="line-height: 1.6;">
                               {% if shop_data.owner.bank_name %}
                                 <div style="font-weight: bold; color: var(--brand);">{{ shop_data.owner.bank_name }}</div>
-                                <div>เลขบัญชี: <strong>{{ shop_data.owner }}</strong></div>
+                                <div>เลขบัญชี: <strong>{{ shop_data.owner.account_number }}</strong></div>
                                 <div>ชื่อ: {{ shop_data.owner.account_name }}</div>
                               {% else %}
                                 <div style="color:red; font-weight:600">*ร้านนี้ยังไม่ระบุเลขบัญชี*</div>
